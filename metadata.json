@@ -1,0 +1,6 @@
+{
+  "name": "Gillian Anderson Official",
+  "description": "The official web platform and community portal for Gillian Anderson, featuring the latest journal entries, media, exclusive experiences, and community highlights.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

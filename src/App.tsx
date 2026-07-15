@@ -1,0 +1,1422 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState, useEffect } from 'react';
+import {
+  Star,
+  Crown,
+  Calendar,
+  HelpCircle,
+  ShoppingBag,
+  Heart,
+  Play,
+  ArrowRight,
+  Search,
+  User,
+  MessageSquare,
+  ChevronLeft,
+  ChevronRight,
+  Mail,
+  Send,
+  Check,
+  Instagram,
+  Youtube,
+  Music,
+  Menu,
+  X,
+  Award,
+  Compass,
+  Pause,
+  Sparkles,
+  Home,
+  BookOpen
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { PaletteType, applyTheme } from './utils/theme';
+import NotificationBell from './components/NotificationBell';
+
+// Import Types
+import { JournalEntry, MediaItem } from './types';
+
+// Import Static Data
+import {
+  HERO_SLIDES,
+  MEDIA_ITEMS
+} from './data';
+
+// Import Custom Modals & Pages
+import AskGillianModal from './components/AskGillianModal';
+import VideoPlayerModal from './components/VideoPlayerModal';
+import ShopModal from './components/ShopModal';
+import CharityModal from './components/CharityModal';
+import ExperienceModal from './components/ExperienceModal';
+import MembershipModal from './components/MembershipModal';
+import Modal from './components/Modal';
+import { TermsOfServiceModal, PrivacyPolicyModal, CharityDisclosuresModal } from './components/LegalModals';
+
+// Import Core Inline Sections
+import AboutSection from './components/AboutSection';
+import JournalSection from './components/JournalSection';
+import MediaSection from './components/MediaSection';
+import CommunitySection from './components/CommunitySection';
+import EventsSection from './components/EventsSection';
+import ExperiencesSection from './components/ExperiencesSection';
+import MembershipSection from './components/MembershipSection';
+import ShopSection from './components/ShopSection';
+import CharitySection from './components/CharitySection';
+import FAQSection from './components/FAQSection';
+import FanPortal from './components/FanPortal';
+import AdminPortal from './components/AdminPortal';
+
+interface ScrollRevealProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+function ScrollReveal({ children, className = '' }: ScrollRevealProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 35 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-12% 0px -12% 0px' }}
+      transition={{
+        type: 'spring',
+        stiffness: 55,
+        damping: 18,
+        duration: 0.7,
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export default function App() {
+  // Load and apply portal accent theme
+  useEffect(() => {
+    const saved = localStorage.getItem('kr_portal_accent') as PaletteType;
+    if (saved) {
+      applyTheme(saved);
+    }
+    const handleThemeChange = (e: StorageEvent) => {
+      if (e.key === 'kr_portal_accent' && e.newValue) {
+        applyTheme(e.newValue as PaletteType);
+      }
+    };
+    window.addEventListener('storage', handleThemeChange);
+    return () => window.removeEventListener('storage', handleThemeChange);
+  }, []);
+
+  // View Mode: 'landing', 'portal' or 'admin'
+  const [viewMode, setViewMode] = useState<'landing' | 'portal' | 'admin'>('landing');
+
+  // User Authentication & Profile States (Landing Page level)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    const checkUser = () => {
+      const loggedIn = localStorage.getItem('kr_is_logged_in') === 'true';
+      const name = localStorage.getItem('kr_auth_name');
+      setIsLoggedIn(loggedIn);
+      if (loggedIn || name) {
+        setUserName(name || 'John Smith');
+      } else {
+        setUserName('');
+      }
+    };
+    checkUser();
+    window.addEventListener('storage', checkUser);
+    return () => window.removeEventListener('storage', checkUser);
+  }, [viewMode]);
+
+  // Mobile navigation collapsible menu state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Navigation active link (for scrolling highlight)
+  const [activeNav, setActiveNav] = useState('HOME');
+
+  // Scroll progress indicator state for long-form content navigation
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalScroll > 0) {
+        const progress = (window.scrollY / totalScroll) * 100;
+        setScrollProgress(progress);
+      } else {
+        setScrollProgress(0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [viewMode]);
+
+  // Global Scroll Reset when navigation or view mode changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeNav, viewMode]);
+
+  // Hero Slider State
+  const [currentSlideIdx, setCurrentSlideIdx] = useState(0);
+  const [isPlayingSlide, setIsPlayingSlide] = useState(true);
+
+  // Auto-rotate Hero Slides with elegant interval
+  useEffect(() => {
+    if (!isPlayingSlide) return;
+    const interval = setInterval(() => {
+      setCurrentSlideIdx((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [isPlayingSlide, currentSlideIdx]);
+
+  // State to track loaded status of images for progressive blur-up / shimmer
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+
+  const handleImageLoad = (src: string) => {
+    setLoadedImages((prev) => ({ ...prev, [src]: true }));
+  };
+
+  // Preload all hero images and critical app assets on mount (non-blocking)
+  useEffect(() => {
+    // 1. Preload the current first hero slide with high priority
+    const firstHero = new Image();
+    firstHero.src = HERO_SLIDES[0].image;
+
+    // 2. Preload all other hero images
+    HERO_SLIDES.slice(1).forEach((slide) => {
+      const img = new Image();
+      img.src = slide.image;
+    });
+
+    // 3. Preload core section images after a short delay (non-blocking)
+    const timer = setTimeout(() => {
+      const otherImages = [
+        '/src/assets/images/pillar_ask_gillian_1784103625430.jpg',
+        '/src/assets/images/pillar_charity_1784103654464.jpg',
+        '/src/assets/images/pillar_events_1784103610855.jpg',
+        '/src/assets/images/pillar_experiences_1784103582190.jpg',
+        '/src/assets/images/pillar_membership_1784103595657.jpg',
+        '/src/assets/images/pillar_shop_1784103639052.jpg'
+      ];
+      otherImages.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Modal Triggers
+  const [isAskGillianOpen, setIsAskGillianOpen] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+  const [isShopOpen, setIsShopOpen] = useState(false);
+  const [isCharityOpen, setIsCharityOpen] = useState(false);
+  const [isExperienceOpen, setIsExperienceOpen] = useState(false);
+  const [isMembershipOpen, setIsMembershipOpen] = useState(false);
+  const [isEventsOpen, setIsEventsOpen] = useState(false);
+  
+  // Legal Modals Triggers
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isDisclosuresOpen, setIsDisclosuresOpen] = useState(false);
+
+  // Newsletter Subscription
+  const [subscribeEmail, setSubscribeEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+  const [subscribeError, setSubscribeError] = useState<string | null>(null);
+
+  // Search Toggle (Simulated)
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleNextSlide = () => {
+    setCurrentSlideIdx((prev) => (prev + 1) % HERO_SLIDES.length);
+  };
+
+  const handlePrevSlide = () => {
+    setCurrentSlideIdx((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  };
+
+  const handleEmailChange = (val: string) => {
+    setSubscribeEmail(val);
+    if (!val) {
+      setSubscribeError(null);
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(val)) {
+        setSubscribeError('Please enter a valid email address.');
+      } else {
+        setSubscribeError(null);
+      }
+    }
+  };
+
+  // Newsletter Subscription submit
+  const handleSubscribeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!subscribeEmail) return;
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(subscribeEmail)) {
+      setSubscribeError('Please enter a valid email address.');
+      return;
+    }
+
+    setSubscribed(true);
+    setSubscribeEmail('');
+    setSubscribeError(null);
+  };
+
+  const handleNavClick = (link: string) => {
+    setActiveNav(link);
+    setMobileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const activeSlide = HERO_SLIDES[currentSlideIdx];
+
+  // Hero entry animation variants with elegant spring stiffness and stagger
+  const heroContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const heroItemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 80,
+        damping: 15,
+      },
+    },
+  };
+
+  const heroScaleVariants = {
+    hidden: { opacity: 0, scale: 0.94, y: 15 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 70,
+        damping: 16,
+      },
+    },
+  };
+
+  if (viewMode === 'portal') {
+    return <FanPortal onBackToHome={() => setViewMode('landing')} />;
+  }
+
+  if (viewMode === 'admin') {
+    return <AdminPortal onBackToHome={() => setViewMode('landing')} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-20 lg:pb-0 overflow-x-hidden">
+      {/* 1. Header (Navbar) */}
+      <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6">
+          {/* Logo */}
+          <a href="#" className="flex items-center gap-2 group" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
+            <span className="font-serif text-lg font-bold tracking-widest text-white transition-colors group-hover:text-gold-500">
+              GA
+            </span>
+            <div className="h-4 w-[1px] bg-neutral-800" />
+            <div className="flex flex-col">
+              <span className="font-serif text-[11px] font-bold tracking-widest text-neutral-300">
+                GILLIAN ANDERSON
+              </span>
+              <span className="font-mono text-[7px] tracking-[0.25em] text-gold-500/70">
+                OFFICIAL
+              </span>
+            </div>
+          </a>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+            {[
+              'HOME',
+              'ABOUT',
+              'JOURNAL',
+              'MEDIA',
+              'COMMUNITY',
+              'EXPERIENCES',
+              'MEMBERSHIP',
+              'EVENTS',
+              'SHOP',
+              'CHARITY',
+              'FAQ',
+            ].map((link) => (
+              <button
+                key={link}
+                onClick={() => handleNavClick(link)}
+                className={`px-3 py-1.5 text-[10px] font-medium tracking-widest transition-colors rounded ${
+                  activeNav === link
+                    ? 'text-gold-500 font-semibold bg-gold-500/10 border border-gold-500/30'
+                    : 'text-neutral-400 hover:text-white hover:bg-neutral-900/40 border border-transparent'
+                }`}
+              >
+                {link}
+              </button>
+            ))}
+          </nav>
+
+          {/* Right Header Actions */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Search toggler */}
+            <div className="relative">
+              <button
+                onClick={() => setSearchOpen(!searchOpen)}
+                className="p-2 text-neutral-400 hover:text-white transition-colors rounded"
+                aria-label="Toggle search"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+              <AnimatePresence>
+                {searchOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: 140 }}
+                    exit={{ opacity: 0, width: 0 }}
+                    className="absolute right-full top-1/2 -translate-y-1/2 overflow-hidden mr-2"
+                  >
+                    <input
+                      type="text"
+                      placeholder="Search site..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-neutral-900 text-[10px] border border-neutral-800 rounded px-2.5 py-1 text-white outline-none focus:border-gold-500/50"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Notification Bell */}
+            <NotificationBell />
+
+            {/* Fan Portal button */}
+            <button
+              onClick={() => setViewMode('portal')}
+              className="hidden sm:inline-flex border border-gold-500/30 bg-gold-500/5 hover:bg-gold-500/10 text-gold-500 px-3 py-1.5 rounded text-[10px] font-bold tracking-widest transition-all active:scale-95 shadow-md shadow-gold-500/5"
+            >
+              FAN PORTAL
+            </button>
+
+            {/* Admin Portal button */}
+            <button
+              onClick={() => setViewMode('admin')}
+              className="hidden md:inline-flex border border-red-500/30 bg-red-500/5 hover:bg-red-500/10 text-red-400 px-3 py-1.5 rounded text-[10px] font-bold tracking-widest transition-all active:scale-95 shadow-md shadow-red-500/5"
+            >
+              ADMIN PORTAL
+            </button>
+
+            {/* Login button */}
+            <button
+              onClick={() => setViewMode('portal')}
+              className="hidden lg:inline-flex text-[10px] font-medium tracking-widest text-neutral-300 hover:text-white transition-colors"
+            >
+              LOGIN
+            </button>
+
+            {/* Register button */}
+            <button
+              onClick={() => setViewMode('portal')}
+              className="hidden lg:inline-flex bg-gold-500 hover:bg-gold-400 text-neutral-950 px-4 py-1.5 rounded text-[10px] font-bold tracking-widest transition-all active:scale-95 shadow shadow-gold-500/15"
+            >
+              REGISTER
+            </button>
+
+            {/* Hamburger Menu Toggler */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="flex lg:hidden p-2 text-neutral-400 hover:text-white transition-colors rounded border border-neutral-900 bg-neutral-950 active:scale-95"
+              aria-label="Toggle Navigation Menu"
+            >
+              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Dropdown Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden w-full border-t border-neutral-900 bg-[#050505]/98 backdrop-blur-md overflow-hidden"
+            >
+              <div className="px-4 py-5 space-y-4 max-h-[75vh] overflow-y-auto">
+                <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest block mb-1">
+                  Navigation Directory
+                </span>
+                <nav className="flex flex-col gap-1">
+                  {[
+                    'HOME',
+                    'ABOUT',
+                    'JOURNAL',
+                    'MEDIA',
+                    'COMMUNITY',
+                    'EXPERIENCES',
+                    'MEMBERSHIP',
+                    'EVENTS',
+                    'SHOP',
+                    'CHARITY',
+                    'FAQ',
+                  ].map((link) => (
+                    <button
+                      key={link}
+                      onClick={() => handleNavClick(link)}
+                      className={`w-full text-left px-4 py-3 text-[11px] font-semibold tracking-widest transition-colors rounded min-h-[44px] flex items-center ${
+                        activeNav === link
+                          ? 'text-gold-500 bg-gold-500/10 border border-gold-500/20'
+                          : 'text-neutral-400 hover:text-white hover:bg-neutral-900/40 border border-transparent'
+                      }`}
+                    >
+                      {link}
+                    </button>
+                  ))}
+                </nav>
+
+                <div className="pt-4 border-t border-neutral-900 flex flex-col gap-2.5">
+                  <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest block">
+                    Sanctuary Bridges
+                  </span>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => {
+                        setViewMode('portal');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full text-center border border-gold-500/30 bg-gold-500/5 hover:bg-gold-500/10 text-gold-500 py-3 rounded text-[10px] font-bold tracking-widest transition-all uppercase min-h-[44px]"
+                    >
+                      FAN PORTAL
+                    </button>
+                    <button
+                      onClick={() => {
+                        setViewMode('admin');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full text-center border border-red-500/30 bg-red-500/5 hover:bg-red-500/10 text-red-400 py-3 rounded text-[10px] font-bold tracking-widest transition-all uppercase min-h-[44px]"
+                    >
+                      ADMIN PORTAL
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Subtle global scroll progress indicator */}
+        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-neutral-900/40 pointer-events-none z-50 overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-amber-600 via-gold-500 to-amber-500 transition-all duration-75"
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </div>
+      </header>
+
+      {/* 2. Hero Section */}
+      {activeNav === 'HOME' && (
+        <section className="relative overflow-hidden bg-[#050505] py-16 md:py-24 border-b border-neutral-900/60">
+          {/* Elegant Architectural Tech-Arts Grid Background */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c0c0c_1px,transparent_1px),linear-gradient(to_bottom,#0c0c0c_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] pointer-events-none" />
+          
+          {/* Glowing Ambient Spotlights */}
+          <div className="absolute top-12 left-10 h-72 w-72 rounded-full bg-gold-500/5 blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-12 right-20 h-96 w-96 rounded-full bg-amber-500/3 blur-[140px] pointer-events-none" />
+
+          {/* Simulated Slow Moving Spotlight Beam */}
+          <div className="absolute -top-40 left-1/3 w-[500px] h-[600px] bg-gradient-to-b from-gold-500/3 via-transparent to-transparent -rotate-12 blur-3xl pointer-events-none" />
+
+          <div className="mx-auto max-w-7xl px-4 md:px-6 relative z-10">
+            <motion.div 
+              variants={heroContainerVariants}
+              initial="hidden"
+              animate="visible"
+              className="grid gap-12 lg:grid-cols-12 items-center"
+            >
+              
+              {/* Left: Interactive Slide Visualizer */}
+              <motion.div variants={heroScaleVariants} className="lg:col-span-4 relative group flex flex-col items-center">
+                <div className="relative aspect-[3/4] w-full max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
+                  {/* Visual filter transitions on slide change */}
+                  <motion.div
+                    key={currentSlideIdx}
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.6 }}
+                    className="h-full w-full relative"
+                  >
+                    {/* Premium Shimmer Skeleton Loader (Only visible while image is loading) */}
+                    {!loadedImages[activeSlide.image] && (
+                      <div className="absolute inset-0 bg-neutral-950 flex flex-col items-center justify-center z-10">
+                        <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-900/40 to-neutral-950 animate-pulse" />
+                        <div className="w-8 h-8 rounded-full border border-gold-500/10 flex items-center justify-center animate-spin">
+                          <div className="w-5 h-5 rounded-full border-t border-gold-500/40" />
+                        </div>
+                      </div>
+                    )}
+                    <img
+                      src={activeSlide.image}
+                      alt="Gillian Anderson Portrait"
+                      referrerPolicy="no-referrer"
+                      loading="eager"
+                      // @ts-ignore
+                      fetchpriority="high"
+                      onLoad={() => handleImageLoad(activeSlide.image)}
+                      className={`h-full w-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:scale-[1.02] transition-all duration-700 ${
+                        loadedImages[activeSlide.image] ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-105 blur-md'
+                      }`}
+                    />
+                    {/* Subtle Warm Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent z-10" />
+                  </motion.div>
+
+                  {/* Vertical Navigation Slide Counts */}
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 font-mono text-[9px] text-neutral-500 z-10">
+                    <span className="text-gold-500 font-bold text-xs">{activeSlide.number}</span>
+                    <div className="h-10 w-[1px] bg-neutral-800" />
+                    <span className="font-semibold">05</span>
+                  </div>
+
+                  {/* Left/Right Slider Controls */}
+                  <div className="absolute bottom-5 right-5 flex gap-1.5 z-10">
+                    <button
+                      onClick={() => {
+                        handlePrevSlide();
+                        setIsPlayingSlide(false); // Pause on manual action
+                      }}
+                      className="p-2 rounded-full border border-neutral-800/80 bg-black/80 text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors"
+                      aria-label="Previous slide"
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleNextSlide();
+                        setIsPlayingSlide(false); // Pause on manual action
+                      }}
+                      className="p-2 rounded-full border border-neutral-800/80 bg-black/80 text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors"
+                      aria-label="Next slide"
+                    >
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+
+                  {/* Smooth progress bar under slide image */}
+                  <div className="absolute bottom-0 left-0 w-full h-[3px] bg-neutral-900/60 z-20">
+                    <motion.div
+                      key={currentSlideIdx}
+                      initial={{ width: '0%' }}
+                      animate={isPlayingSlide ? { width: '100%' } : { width: '0%' }}
+                      transition={{ duration: 6, ease: 'linear' }}
+                      className="h-full bg-gradient-to-r from-gold-500 to-amber-400 shadow-[0_0_8px_#d4a359]"
+                    />
+                  </div>
+                </div>
+
+                {/* Dots Indicator & Play/Pause below image card */}
+                <div className="flex items-center gap-2 mt-4">
+                  {HERO_SLIDES.map((slide, idx) => (
+                    <button
+                      key={slide.id}
+                      onClick={() => {
+                        setCurrentSlideIdx(idx);
+                        setIsPlayingSlide(false);
+                      }}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        currentSlideIdx === idx
+                          ? 'w-6 bg-gold-500'
+                          : 'w-2 bg-neutral-850 hover:bg-neutral-700'
+                      }`}
+                      aria-label={`Go to slide ${idx + 1}`}
+                    />
+                  ))}
+                  <div className="w-[1px] h-3 bg-neutral-800 mx-1" />
+                  <button
+                    onClick={() => setIsPlayingSlide(!isPlayingSlide)}
+                    className="p-1 rounded text-neutral-500 hover:text-gold-500 transition-colors"
+                    title={isPlayingSlide ? "Pause Autoplay" : "Resume Autoplay"}
+                  >
+                    {isPlayingSlide ? (
+                      <Pause className="h-3 w-3" />
+                    ) : (
+                      <Play className="h-3 w-3 fill-current" />
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+
+              {/* Center: Hero Welcome and Quotes */}
+              <div className="lg:col-span-5 text-center lg:text-left space-y-7">
+                <motion.div variants={heroItemVariants} className="space-y-2">
+                  <div className="flex items-center gap-2 justify-center lg:justify-start">
+                    <span className="h-[1px] w-5 bg-gold-500/40" />
+                    <span className="text-[10px] font-mono tracking-[0.3em] text-gold-500 uppercase font-bold">
+                      THE ARCHIVE SANCTUARY
+                    </span>
+                    <span className="h-[1px] w-5 bg-gold-500/40" />
+                  </div>
+                  {userName ? (
+                    <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-white to-neutral-400 leading-[1.1] uppercase">
+                      Welcome back, <br className="hidden lg:block" />
+                      <span className="text-white hover:text-gold-500 transition-colors duration-500">{userName}</span>
+                    </h1>
+                  ) : (
+                    <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
+                      GILLIAN <br className="hidden lg:block" />
+                      <span className="text-white hover:text-gold-500 transition-colors duration-500">ANDERSON</span>
+                    </h1>
+                  )}
+                </motion.div>
+
+                {/* Slider Quote Container */}
+                <motion.div variants={heroItemVariants} className="min-h-[110px] flex flex-col justify-center">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={currentSlideIdx}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }}
+                      transition={{ duration: 0.4 }}
+                      className="space-y-4"
+                    >
+                      <p className="font-serif italic text-base md:text-lg text-neutral-300 leading-relaxed max-w-md">
+                        "{activeSlide.quote}"
+                      </p>
+                      <div className="flex items-center gap-2 justify-center lg:justify-start">
+                        <div className="h-[1px] w-5 bg-gold-500/50" />
+                        <span className="font-serif text-xs font-semibold tracking-wider text-gold-500 italic">
+                          {activeSlide.author}
+                        </span>
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
+                </motion.div>
+
+                {/* Primary Buttons */}
+                <motion.div variants={heroItemVariants} className="flex flex-wrap items-center gap-3.5 justify-center lg:justify-start pt-1">
+                  <button
+                    onClick={() => handleNavClick('MEMBERSHIP')}
+                    className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold px-6 py-3 rounded-lg text-xs tracking-widest transition-all hover:shadow-[0_0_20px_rgba(212,163,89,0.3)] active:scale-95 shadow-lg shadow-gold-500/10"
+                  >
+                    JOIN THE COMMUNITY
+                  </button>
+                  <button
+                    onClick={() => {
+                      const videoItem = MEDIA_ITEMS.find((m) => m.id === 'media-bts') || MEDIA_ITEMS[0];
+                      setSelectedMedia(videoItem);
+                    }}
+                    className="border border-neutral-800 hover:border-gold-500/60 bg-neutral-950 hover:bg-gold-500/5 text-gold-500 hover:text-white font-semibold px-5 py-3 rounded-lg text-xs tracking-widest transition-all active:scale-95 flex items-center gap-2"
+                  >
+                    <Play className="h-3.5 w-3.5 fill-gold-500 hover:fill-white" />
+                    WATCH MESSAGE
+                  </button>
+                </motion.div>
+
+                {/* Achievements Bento Badge */}
+                <motion.div variants={heroItemVariants} className="grid grid-cols-3 gap-3 max-w-md pt-2">
+                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
+                    <span className="font-serif text-base sm:text-lg font-bold text-gold-500 tracking-tight flex items-center gap-1">
+                      30+
+                      <Compass className="h-3 w-3 text-gold-500/60 group-hover:rotate-45 transition-transform" />
+                    </span>
+                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Years on Stage & Screen</span>
+                  </div>
+                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
+                    <span className="font-serif text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-1">
+                      2x
+                      <Award className="h-3 w-3 text-amber-500/60 group-hover:scale-110 transition-transform animate-pulse" />
+                    </span>
+                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Emmys & Golden Globes</span>
+                  </div>
+                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
+                    <span className="font-serif text-base sm:text-lg font-bold text-gold-500 tracking-tight flex items-center gap-1">
+                      100%
+                      <Sparkles className="h-3 w-3 text-gold-500/60 group-hover:scale-110 transition-transform" />
+                    </span>
+                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Empowering Advocacy</span>
+                  </div>
+                </motion.div>
+
+                {/* Social Proof fans banner */}
+                <motion.div variants={heroItemVariants} className="flex items-center gap-3 pt-4 justify-center lg:justify-start border-t border-neutral-900 max-w-sm">
+                  <div className="flex -space-x-2">
+                    {[1, 2, 3, 4].map((num) => (
+                      <div
+                        key={num}
+                        className="h-7 w-7 rounded-full border border-neutral-950 bg-neutral-900 flex items-center justify-center text-[9px] font-mono font-bold text-neutral-300 overflow-hidden shadow-inner"
+                      >
+                        {['AM', 'JW', 'ND', 'KR'][num - 1]}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
+                      Join 1.2M+ Official Fans
+                    </span>
+                    <span className="text-[9px] font-mono text-gold-500/80 font-bold">
+                      Worldwide Community
+                    </span>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Right: Monthly Video Box */}
+              <motion.div variants={heroScaleVariants} className="lg:col-span-3">
+                <div className="rounded-2xl border border-neutral-900/80 bg-neutral-950/80 p-5 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-neutral-800 transition-all">
+                  <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-widest pb-2 border-b border-neutral-900">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-gold-500"></span>
+                    </span>
+                    <span>MONTHLY ARCHIVE VIDEO</span>
+                  </div>
+
+                  {/* Video Image Container */}
+                  <div className="relative aspect-video rounded-xl overflow-hidden border border-neutral-900 bg-neutral-900 group">
+                    <img
+                      src="/src/assets/images/gillian_theatre_rehearsal_1783349680324.jpg"
+                      alt="Monthly Video Message Thumbnail"
+                      referrerPolicy="no-referrer"
+                      className="h-full w-full object-cover brightness-75 group-hover:scale-105 transition-transform duration-700"
+                    />
+                    {/* Backdrop Overlay */}
+                    <div className="absolute inset-0 bg-black/20" />
+                    
+                    {/* Floating Play Button */}
+                    <button
+                      onClick={() => {
+                        const videoItem = MEDIA_ITEMS.find((m) => m.id === 'media-bts') || MEDIA_ITEMS[0];
+                        setSelectedMedia(videoItem);
+                      }}
+                      className="absolute inset-0 flex items-center justify-center"
+                      aria-label="Play video"
+                    >
+                      <div className="p-3.5 rounded-full bg-gold-500 text-neutral-950 transition-transform group-hover:scale-110 shadow-lg shadow-gold-500/20 active:scale-90">
+                        <Play className="h-5 w-5 fill-neutral-950" />
+                      </div>
+                    </button>
+                  </div>
+
+                  <div className="space-y-1 text-left">
+                    <h3 className="text-xs font-semibold text-white tracking-wider uppercase">
+                      A message to you all
+                    </h3>
+                    <p className="text-[9px] font-mono text-neutral-500 tracking-widest">
+                      ARCHIVE PREVIEW
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      const videoItem = MEDIA_ITEMS.find((m) => m.id === 'media-bts') || MEDIA_ITEMS[0];
+                      setSelectedMedia(videoItem);
+                    }}
+                    className="w-full text-center border border-neutral-800 hover:border-gold-500/50 hover:bg-gold-500/5 text-[10px] font-mono text-neutral-400 hover:text-gold-500 font-semibold py-2.5 rounded-lg transition-colors"
+                  >
+                    WATCH NOW
+                  </button>
+                </div>
+              </motion.div>
+
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* Main Single-Scroll / Subpage Router Container */}
+      <main className="min-h-screen">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeNav}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+          >
+            {activeNav === 'HOME' && (
+              <div className="space-y-0">
+                {/* About Section */}
+                <ScrollReveal>
+                  <AboutSection />
+                </ScrollReveal>
+
+                {/* Six Community Pillars Navigation Cards */}
+                <ScrollReveal>
+                  <section className="py-20 bg-[#050505] border-t border-neutral-900/60 relative overflow-hidden">
+                    {/* Subtle aesthetic lines */}
+                    <div className="absolute top-0 left-10 w-[1px] h-full bg-neutral-900/30 pointer-events-none" />
+                    <div className="absolute top-0 right-10 w-[1px] h-full bg-neutral-900/30 pointer-events-none" />
+
+                    <div className="mx-auto max-w-7xl px-4 md:px-6 space-y-16 relative z-10">
+                      <div className="text-center space-y-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[9px] font-mono tracking-widest uppercase font-bold">
+                          <Star className="h-3 w-3 animate-pulse" />
+                          THE CO-OPERATIVE SANCTUARY
+                        </div>
+                        <h2 className="font-serif text-3xl md:text-5xl font-black text-white uppercase tracking-tight">
+                          Community <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-500 to-amber-300">Pillars</span>
+                        </h2>
+                        <div className="h-[1px] w-20 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto" />
+                        <p className="text-xs text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed">
+                          Enter our designated portals. Click any interactive architectural pillar below to explore, collaborate, and access official logs.
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5 text-left">
+                        {/* Experiences Card */}
+                        <button
+                          onClick={() => handleNavClick('EXPERIENCES')}
+                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
+                        >
+                          {/* Rich Background Visual */}
+                          <div className="absolute inset-0 z-0 overflow-hidden">
+                            <img
+                              src="/src/assets/images/pillar_experiences_1784103582190.jpg"
+                              alt="Experiences Background"
+                              referrerPolicy="no-referrer"
+                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
+                          </div>
+
+                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                            01
+                          </div>
+                          <div className="space-y-4 relative z-10">
+                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-850 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
+                              <Star className="h-4 w-4" />
+                            </span>
+                            <div className="space-y-1">
+                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
+                                EXPERIENCES
+                              </h3>
+                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
+                                Apply for exclusive once-in-a-lifetime events & custom sessions.
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
+                            LAUNCH DIRECTORY <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                          </span>
+                        </button>
+
+                        {/* Membership Card */}
+                        <button
+                          onClick={() => handleNavClick('MEMBERSHIP')}
+                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
+                        >
+                          {/* Rich Background Visual */}
+                          <div className="absolute inset-0 z-0 overflow-hidden">
+                            <img
+                              src="/src/assets/images/pillar_membership_1784103595657.jpg"
+                              alt="Membership Background"
+                              referrerPolicy="no-referrer"
+                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
+                          </div>
+
+                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                            02
+                          </div>
+                          <div className="space-y-4 relative z-10">
+                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-850 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
+                              <Crown className="h-4 w-4" />
+                            </span>
+                            <div className="space-y-1">
+                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
+                                MEMBERSHIP
+                              </h3>
+                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
+                                Become an official co-op member & view customized cards.
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
+                            TIERS & CARD <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                          </span>
+                        </button>
+
+                        {/* Events Card */}
+                        <button
+                          onClick={() => handleNavClick('EVENTS')}
+                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
+                        >
+                          {/* Rich Background Visual */}
+                          <div className="absolute inset-0 z-0 overflow-hidden">
+                            <img
+                              src="/src/assets/images/pillar_events_1784103610855.jpg"
+                              alt="Events Background"
+                              referrerPolicy="no-referrer"
+                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
+                          </div>
+
+                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                            03
+                          </div>
+                          <div className="space-y-4 relative z-10">
+                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-850 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
+                              <Calendar className="h-4 w-4" />
+                            </span>
+                            <div className="space-y-1">
+                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
+                                EVENTS
+                              </h3>
+                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
+                                Attend private live Q&As & commemorative anniversaries.
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
+                            CONCLAVES <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                          </span>
+                        </button>
+
+                        {/* Ask Gillian Card (Modal) */}
+                        <button
+                          onClick={() => setIsAskGillianOpen(true)}
+                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
+                        >
+                          {/* Rich Background Visual */}
+                          <div className="absolute inset-0 z-0 overflow-hidden">
+                            <img
+                              src="/src/assets/images/pillar_ask_gillian_1784103625430.jpg"
+                              alt="Ask Gillian Background"
+                              referrerPolicy="no-referrer"
+                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
+                          </div>
+
+                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                            04
+                          </div>
+                          <div className="space-y-4 relative z-10">
+                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-850 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
+                              <MessageSquare className="h-4 w-4" />
+                            </span>
+                            <div className="space-y-1">
+                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
+                                ASK GILLIAN
+                              </h3>
+                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
+                                Ask Gillian anything & get wise philosophical answers.
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
+                            LAUNCH CHAT <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                          </span>
+                        </button>
+
+                        {/* Shop Card */}
+                        <button
+                          onClick={() => handleNavClick('SHOP')}
+                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
+                        >
+                          {/* Rich Background Visual */}
+                          <div className="absolute inset-0 z-0 overflow-hidden">
+                            <img
+                              src="/src/assets/images/pillar_shop_1784103639052.jpg"
+                              alt="Shop Background"
+                              referrerPolicy="no-referrer"
+                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
+                          </div>
+
+                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                            05
+                          </div>
+                          <div className="space-y-4 relative z-10">
+                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-850 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
+                              <ShoppingBag className="h-4 w-4" />
+                            </span>
+                            <div className="space-y-1">
+                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
+                                SHOP
+                              </h3>
+                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
+                                Purchase premium customized hoodies, tees & official memorabilia.
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
+                            EXPORIUM <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                          </span>
+                        </button>
+
+                        {/* Charity Card */}
+                        <button
+                          onClick={() => handleNavClick('CHARITY')}
+                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
+                        >
+                          {/* Rich Background Visual */}
+                          <div className="absolute inset-0 z-0 overflow-hidden">
+                            <img
+                              src="/src/assets/images/pillar_charity_1784103654464.jpg"
+                              alt="Charity Background"
+                              referrerPolicy="no-referrer"
+                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
+                          </div>
+
+                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                            06
+                          </div>
+                          <div className="space-y-4 relative z-10">
+                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-800 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
+                              <Heart className="h-4 w-4" />
+                            </span>
+                            <div className="space-y-1">
+                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
+                                CHARITY
+                              </h3>
+                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
+                                Support global children's pediatric clinics & NF research.
+                              </p>
+                            </div>
+                          </div>
+                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
+                            KINDNESS ACTS <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+                </ScrollReveal>
+
+                {/* Journal Section */}
+                <ScrollReveal>
+                  <JournalSection />
+                </ScrollReveal>
+
+                {/* Media Section */}
+                <ScrollReveal>
+                  <MediaSection />
+                </ScrollReveal>
+
+                {/* Community Section */}
+                <ScrollReveal>
+                  <CommunitySection />
+                </ScrollReveal>
+
+                {/* FAQ Section */}
+                <ScrollReveal>
+                  <FAQSection />
+                </ScrollReveal>
+
+                {/* Fast interactive portal prompt to finish landing */}
+                <ScrollReveal>
+                  <section className="py-20 bg-neutral-950/20 border-t border-neutral-900/60">
+                    <div className="mx-auto max-w-4xl px-4 text-center space-y-6">
+                      <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white uppercase tracking-tight">
+                        Be Excellent To <span className="text-gold-500">Each Other</span>
+                      </h3>
+                      <p className="text-xs text-neutral-400 max-w-lg mx-auto leading-relaxed">
+                        Access our interactive custom portals to chat, write custom blogs, share high-definition photographs, and review opportunities.
+                      </p>
+                      <button
+                        onClick={() => setViewMode('portal')}
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
+                      >
+                        ENTER DIGITAL FAN PORTAL
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </section>
+                </ScrollReveal>
+              </div>
+            )}
+
+            {activeNav === 'ABOUT' && <AboutSection />}
+            {activeNav === 'JOURNAL' && <JournalSection />}
+            {activeNav === 'MEDIA' && <MediaSection />}
+            {activeNav === 'COMMUNITY' && <CommunitySection />}
+            {activeNav === 'EXPERIENCES' && <ExperiencesSection />}
+            {activeNav === 'MEMBERSHIP' && <MembershipSection />}
+            {activeNav === 'EVENTS' && (
+              <div className="py-8">
+                <EventsSection />
+              </div>
+            )}
+            {activeNav === 'SHOP' && <ShopSection />}
+            {activeNav === 'CHARITY' && <CharitySection />}
+            {activeNav === 'FAQ' && <FAQSection />}
+          </motion.div>
+        </AnimatePresence>
+      </main>
+
+      {/* 6. Footer (Stay Connected, email subscribe, socials) */}
+      <footer className="border-t border-neutral-900 bg-[#030303] py-12">
+        <div className="mx-auto max-w-7xl px-4 md:px-6">
+          <div className="grid gap-8 md:grid-cols-12 items-center">
+            
+            {/* Left Column: Footer Info (4 Cols) */}
+            <div className="md:col-span-4 text-center md:text-left space-y-2">
+              <h4 className="text-xs font-bold tracking-widest text-white uppercase">
+                STAY CONNECTED
+              </h4>
+              <p className="text-[11px] leading-relaxed text-neutral-400 max-w-xs mx-auto md:mx-0">
+                Get the latest updates, news, and exclusive content. No spam, only genuine messages.
+              </p>
+            </div>
+
+            {/* Center Column: Subscription Form (5 Cols) */}
+            <div className="md:col-span-5">
+              {!subscribed ? (
+                <div className="max-w-md mx-auto md:mx-0 space-y-1.5">
+                  <form noValidate onSubmit={handleSubscribeSubmit} className="flex gap-2">
+                    <input
+                      type="email"
+                      placeholder="Enter your email address"
+                      value={subscribeEmail}
+                      onChange={(e) => handleEmailChange(e.target.value)}
+                      className={`flex-1 bg-neutral-950 border text-xs text-white px-4 py-2 rounded outline-none transition-colors ${
+                        subscribeError 
+                          ? 'border-red-500/50 focus:border-red-500' 
+                          : 'border-neutral-900 focus:border-gold-500/40'
+                      }`}
+                    />
+                    <button
+                      type="submit"
+                      disabled={!!subscribeError}
+                      className="bg-gold-500 hover:bg-gold-400 disabled:opacity-50 disabled:cursor-not-allowed text-neutral-950 font-bold px-5 py-2 rounded text-[10px] tracking-wider transition-all active:scale-95 shrink-0"
+                    >
+                      SUBSCRIBE
+                    </button>
+                  </form>
+                  <AnimatePresence>
+                    {subscribeError && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        className="text-[10px] text-red-500 font-mono text-left pl-1"
+                      >
+                        {subscribeError}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-neutral-950 border border-neutral-900/60 px-4 py-2.5 rounded flex items-center gap-2.5 max-w-md mx-auto md:mx-0 text-gold-500 text-xs font-serif italic"
+                >
+                  <Check className="h-4 w-4 text-gold-500 shrink-0" />
+                  <span>"Wonderful! You are now part of the journey. Stay curious and seek the truth."</span>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Right Column: Social Links (3 Cols) */}
+            <div className="md:col-span-3 text-center md:text-right space-y-3">
+              <span className="text-[9px] font-mono text-neutral-500 tracking-widest uppercase block">
+                FOLLOW GILLIAN
+              </span>
+              <div className="flex justify-center md:justify-end items-center gap-3">
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-1.5 rounded bg-neutral-950 border border-neutral-900/80 text-neutral-400 hover:text-gold-500 hover:border-gold-500/40 transition-colors"
+                  aria-label="Instagram link"
+                >
+                  <Instagram className="h-4 w-4" />
+                </a>
+                <a
+                  href="https://spotify.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-1.5 rounded bg-neutral-950 border border-neutral-900/80 text-neutral-400 hover:text-gold-500 hover:border-gold-500/40 transition-colors"
+                  aria-label="Spotify / Music link"
+                >
+                  <Music className="h-4 w-4" />
+                </a>
+                <a
+                  href="https://youtube.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-1.5 rounded bg-neutral-950 border border-neutral-900/80 text-neutral-400 hover:text-gold-500 hover:border-gold-500/40 transition-colors"
+                  aria-label="Youtube link"
+                >
+                  <Youtube className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Copyright lines */}
+          <div className="border-t border-neutral-900/60 pt-6 mt-8 flex flex-col sm:flex-row justify-between items-center text-[10px] font-mono text-neutral-500 gap-2">
+            <span>© 2026 GILLIAN ANDERSON OFFICIAL. ALL RIGHTS RESERVED.</span>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-gold-500 transition-colors uppercase">
+                Privacy Policy
+              </button>
+              <span>•</span>
+              <button onClick={() => setIsTermsOpen(true)} className="hover:text-gold-500 transition-colors uppercase">
+                Terms of Service
+              </button>
+              <span>•</span>
+              <button onClick={() => setIsDisclosuresOpen(true)} className="hover:text-gold-500 transition-colors uppercase">
+                Charity Disclosures
+              </button>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* --- ALL INTERACTIVE MODALS INJECTED HERE --- */}
+      <AskGillianModal isOpen={isAskGillianOpen} onClose={() => setIsAskGillianOpen(false)} />
+
+      <ShopModal isOpen={isShopOpen} onClose={() => setIsShopOpen(false)} />
+
+      <CharityModal isOpen={isCharityOpen} onClose={() => setIsCharityOpen(false)} />
+
+      <ExperienceModal isOpen={isExperienceOpen} onClose={() => setIsExperienceOpen(false)} />
+
+      <MembershipModal isOpen={isMembershipOpen} onClose={() => setIsMembershipOpen(false)} />
+
+      <TermsOfServiceModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
+      <PrivacyPolicyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
+      <CharityDisclosuresModal isOpen={isDisclosuresOpen} onClose={() => setIsDisclosuresOpen(false)} />
+
+      {isEventsOpen && (
+        <Modal
+          isOpen={isEventsOpen}
+          onClose={() => setIsEventsOpen(false)}
+          title="Exclusive Events & Conclaves"
+          maxWidth="max-w-4xl"
+        >
+          <div className="p-1">
+            <EventsSection />
+          </div>
+        </Modal>
+      )}
+
+      {/* Dynamic media simulation video player */}
+      {selectedMedia && (
+        <VideoPlayerModal
+          isOpen={!!selectedMedia}
+          onClose={() => setSelectedMedia(null)}
+          mediaItem={selectedMedia}
+        />
+      )}
+
+      {/* Mobile Bottom (Down) Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-neutral-900 bg-[#050505]/95 backdrop-blur-md px-4 py-2.5 flex items-center justify-around shadow-2xl shadow-black/80 pb-safe">
+        {/* Home Button */}
+        <button
+          onClick={() => {
+            setViewMode('landing');
+            handleNavClick('HOME');
+          }}
+          className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
+            viewMode === 'landing' && activeNav === 'HOME'
+              ? 'text-gold-500 scale-105'
+              : 'text-neutral-400 hover:text-white'
+          }`}
+        >
+          <Home className="h-4.5 w-4.5" />
+          <span className="text-[9px] font-mono tracking-widest uppercase">Home</span>
+        </button>
+
+        {/* Journal Button */}
+        <button
+          onClick={() => {
+            setViewMode('landing');
+            handleNavClick('JOURNAL');
+          }}
+          className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
+            viewMode === 'landing' && activeNav === 'JOURNAL'
+              ? 'text-gold-500 scale-105'
+              : 'text-neutral-400 hover:text-white'
+          }`}
+        >
+          <BookOpen className="h-4.5 w-4.5" />
+          <span className="text-[9px] font-mono tracking-widest uppercase">Journal</span>
+        </button>
+
+        {/* Fan Portal Button */}
+        <button
+          onClick={() => setViewMode('portal')}
+          className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
+            viewMode === 'portal'
+              ? 'text-gold-500 scale-105'
+              : 'text-neutral-400 hover:text-white'
+          }`}
+        >
+          <Sparkles className="h-4.5 w-4.5" />
+          <span className="text-[9px] font-mono tracking-widest uppercase">Portal</span>
+        </button>
+
+        {/* Shop Button */}
+        <button
+          onClick={() => {
+            setViewMode('landing');
+            handleNavClick('SHOP');
+          }}
+          className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
+            viewMode === 'landing' && activeNav === 'SHOP'
+              ? 'text-gold-500 scale-105'
+              : 'text-neutral-400 hover:text-white'
+          }`}
+        >
+          <ShoppingBag className="h-4.5 w-4.5" />
+          <span className="text-[9px] font-mono tracking-widest uppercase">Shop</span>
+        </button>
+
+        {/* More/Menu Button */}
+        <button
+          onClick={() => {
+            setViewMode('landing');
+            setMobileMenuOpen(!mobileMenuOpen);
+            if (!mobileMenuOpen) {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
+          className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
+            mobileMenuOpen && viewMode === 'landing'
+              ? 'text-gold-500 scale-105'
+              : 'text-neutral-400 hover:text-white'
+          }`}
+        >
+          {mobileMenuOpen && viewMode === 'landing' ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
+          <span className="text-[9px] font-mono tracking-widest uppercase">More</span>
+        </button>
+      </div>
+    </div>
+  );
+}

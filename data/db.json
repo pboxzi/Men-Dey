@@ -1,0 +1,430 @@
+{
+  "subscribers": [
+    "maria.garcia@gmail.com",
+    "emma.wilson@gmail.com",
+    "james.carter@gmail.com"
+  ],
+  "memberships": [
+    {
+      "id": "MEM-APP-001",
+      "name": "Maria Garcia",
+      "email": "maria@example.com",
+      "status": "Pending",
+      "appliedOn": "May 15, 2024",
+      "tier": "Gold"
+    },
+    {
+      "id": "MEM-APP-002",
+      "name": "James Carter",
+      "email": "james@example.com",
+      "status": "Pending",
+      "appliedOn": "May 16, 2024",
+      "tier": "Gold"
+    }
+  ],
+  "requests": [
+    {
+      "id": "GA-REQ-000145",
+      "type": "Meet & Greet",
+      "member": "John Smith",
+      "memberAvatar": "JS",
+      "status": "In Discussion",
+      "updated": "20 min ago",
+      "preferredDate": "July 10-15, 2024",
+      "location": "Los Angeles, USA",
+      "attendees": "2 People",
+      "whatsappNumber": "+1 (555) 123-4567",
+      "submittedOn": "May 15, 2024, 10:30 AM",
+      "lastUpdated": "May 20, 2024, 04:15 PM",
+      "sincerity": "I have been supporting youth mentoring for five years, inspired directly by Gillian's compassionate advocacy. Meeting her would inspire our mentoring teams endlessly."
+    },
+    {
+      "id": "GA-REQ-000144",
+      "type": "Birthday Greeting",
+      "member": "Maria Garcia",
+      "memberAvatar": "MG",
+      "status": "Under Review",
+      "updated": "1 hour ago",
+      "preferredDate": "August 04, 2024",
+      "location": "Virtual / Pre-recorded",
+      "attendees": "1 Person",
+      "whatsappNumber": "+1 (555) 987-6543",
+      "submittedOn": "May 14, 2024, 09:15 AM",
+      "lastUpdated": "May 15, 2024, 11:00 AM",
+      "sincerity": "Maria is turning 30 and is a major X-Files and stage play fan."
+    },
+    {
+      "id": "GA-REQ-000143",
+      "type": "Video Message",
+      "member": "David Lee",
+      "memberAvatar": "DL",
+      "status": "Offer Made",
+      "updated": "2 hours ago",
+      "preferredDate": "Immediate",
+      "location": "Email Delivery",
+      "attendees": "1 Person",
+      "whatsappNumber": "+1 (555) 456-7890",
+      "submittedOn": "May 12, 2024, 02:30 PM",
+      "lastUpdated": "May 13, 2024, 03:00 PM",
+      "sincerity": "A dynamic shoutout for David's film study graduation."
+    },
+    {
+      "id": "GA-REQ-000142",
+      "type": "Interview Request",
+      "member": "Sophie Martin",
+      "memberAvatar": "SM",
+      "status": "Payment Requested",
+      "updated": "3 hours ago",
+      "preferredDate": "September 12, 2024",
+      "location": "Paris, France",
+      "attendees": "3 People",
+      "whatsappNumber": "+33 6 1234 5678",
+      "submittedOn": "May 10, 2024, 11:30 AM",
+      "lastUpdated": "May 11, 2024, 01:00 PM",
+      "sincerity": "Interview regarding the philosophy of film."
+    },
+    {
+      "id": "GA-REQ-000141",
+      "type": "Business Inquiry",
+      "member": "Alex Johnson",
+      "memberAvatar": "AJ",
+      "status": "Submitted",
+      "updated": "4 hours ago",
+      "preferredDate": "Not specified",
+      "location": "London, UK",
+      "attendees": "5 People",
+      "whatsappNumber": "+44 20 7946 0958",
+      "submittedOn": "May 08, 2024, 08:30 AM",
+      "lastUpdated": "May 08, 2024, 08:30 AM",
+      "sincerity": "Inquiry about potential stage adaptation partnership."
+    }
+  ],
+  "orders": [
+    {
+      "id": "GA-SHP-000285",
+      "member": "Emma Wilson",
+      "memberAvatar": "EW",
+      "item": "Signed Script Copy",
+      "status": "Payment Requested",
+      "updated": "30 min ago",
+      "price": "150.00"
+    },
+    {
+      "id": "GA-SHP-000284",
+      "member": "James Carter",
+      "memberAvatar": "JC",
+      "item": "Nostalgia Retro Tee",
+      "status": "Confirmed",
+      "updated": "1 hour ago",
+      "price": "35.00"
+    },
+    {
+      "id": "GA-SHP-000283",
+      "member": "Olivia Brown",
+      "memberAvatar": "OB",
+      "item": "Signature Hoodie",
+      "status": "Preparing",
+      "updated": "2 hours ago",
+      "price": "75.00"
+    },
+    {
+      "id": "GA-SHP-000282",
+      "member": "Daniel Kim",
+      "memberAvatar": "DK",
+      "item": "We Manifesto Book",
+      "status": "Shipped",
+      "updated": "5 hours ago",
+      "price": "49.00"
+    },
+    {
+      "id": "GA-SHP-000281",
+      "member": "Liam Taylor",
+      "memberAvatar": "LT",
+      "item": "We Manifesto Cap",
+      "status": "Delivered",
+      "updated": "1 day ago",
+      "price": "35.00"
+    }
+  ],
+  "posts": [
+    {
+      "id": "highlight-1",
+      "username": "ScullySkeptic",
+      "handle": "@ScullySkeptic",
+      "avatarText": "SS",
+      "image": "/src/assets/images/iceland_landscape_1782919139830.jpg",
+      "content": "Took this scenic shot during my trip. It had that moody, mysterious X-Files atmosphere. Breathtaking and peaceful. 🌲🛸",
+      "likes": 342,
+      "replies": 24,
+      "liked": false,
+      "comments": [
+        {
+          "id": "c1",
+          "username": "DanaFan",
+          "avatarText": "DF",
+          "content": "Absolutely beautiful. Reminds me of the Oregon woods in the pilot!",
+          "timestamp": "2 hours ago",
+          "replies": [
+            {
+              "id": "c1-r1",
+              "username": "XFilesTraveler",
+              "avatarText": "XT",
+              "content": "You must check out Vancouver! The filming locations are unreal.",
+              "timestamp": "1 hour ago"
+            },
+            {
+              "id": "c1-r2",
+              "username": "DanaFan",
+              "avatarText": "DF",
+              "content": "Adding it to my travel plans immediately!",
+              "timestamp": "45 mins ago"
+            }
+          ]
+        },
+        {
+          "id": "c2",
+          "username": "GillianInspired",
+          "avatarText": "GI",
+          "content": "The lighting and fog are beautiful. Great composition!",
+          "timestamp": "1 hour ago",
+          "replies": []
+        }
+      ]
+    },
+    {
+      "id": "highlight-2",
+      "username": "ArtByMonica",
+      "handle": "@ArtByMonica",
+      "avatarText": "AM",
+      "image": "/src/assets/images/gillian_pencil_sketch_1783350359030.jpg",
+      "content": "Gillian inspires me every single day. Here is my latest portrait drawing of her. 🎨 Graphite and charcoal on textured paper. Hope you like it!",
+      "likes": 521,
+      "replies": 33,
+      "liked": false,
+      "comments": [
+        {
+          "id": "c3",
+          "username": "SketchMaster",
+          "avatarText": "SM",
+          "content": "The shading is incredible. You captured her elegant and intelligent look perfectly.",
+          "timestamp": "5 hours ago",
+          "replies": [
+            {
+              "id": "c3-r1",
+              "username": "ArtByMonica",
+              "avatarText": "AM",
+              "content": "Thank you! The hair took almost 4 hours alone.",
+              "timestamp": "3 hours ago"
+            }
+          ]
+        },
+        {
+          "id": "c4",
+          "username": "ScullyIsCool",
+          "avatarText": "SC",
+          "content": "This is breathtaking! Outstanding drawing of Gillian.",
+          "timestamp": "4 hours ago",
+          "replies": []
+        }
+      ]
+    },
+    {
+      "id": "highlight-3",
+      "username": "StageDoorDreamer",
+      "handle": "@StageDoorDreamer",
+      "avatarText": "SD",
+      "image": "/src/assets/images/gillian_theatre_rehearsal_1783349680324.jpg",
+      "content": "A quick photo from the theater production set. Breathtaking to see how the stage magic is built layer by layer! 🎭🎬",
+      "likes": 298,
+      "replies": 18,
+      "liked": false,
+      "comments": [
+        {
+          "id": "c5",
+          "username": "TheaterGeek",
+          "avatarText": "TG",
+          "content": "You got to see the stage design?! That is absolutely excellent.",
+          "timestamp": "1 day ago",
+          "replies": [
+            {
+              "id": "c5-r1",
+              "username": "StageDoorDreamer",
+              "avatarText": "SD",
+              "content": "Yes, it was a dream come true. The theater crew is extremely skilled.",
+              "timestamp": "12 hours ago"
+            }
+          ]
+        },
+        {
+          "id": "c6",
+          "username": "GraceAlways",
+          "avatarText": "GA",
+          "content": "So happy for you! Thanks for sharing this backstage view.",
+          "timestamp": "18 hours ago",
+          "replies": []
+        }
+      ]
+    }
+  ],
+  "discussions": {
+    "New Zealand": [
+      {
+        "id": "nz1",
+        "author": "KiwiSeeker",
+        "text": "Rewatching the entire X-Files series tonight in Auckland. Absolute classics.",
+        "time": "10 hours ago",
+        "replies": []
+      }
+    ],
+    "Japan": [
+      {
+        "id": "jp1",
+        "author": "TokyoSaito",
+        "text": "Gillian has such a deep appreciation for classical theater and independent cinema.",
+        "time": "1 day ago",
+        "replies": [
+          {
+            "id": "jp1-r1",
+            "author": "Thespian_47",
+            "text": "Yes, her devotion to the craft of acting is highly admired here!",
+            "time": "18 hours ago"
+          }
+        ]
+      }
+    ],
+    "Germany": [
+      {
+        "id": "de1",
+        "author": "Berlin_Bridges",
+        "text": "Organizing a local youth mentoring seminar in Munich next month to support transition advocacy.",
+        "time": "2 days ago",
+        "replies": []
+      }
+    ],
+    "Brazil": [
+      {
+        "id": "br1",
+        "author": "Rio_Scully",
+        "text": "Gillian Anderson has the warmest heart. Infinite love from Rio de Janeiro!",
+        "time": "3 days ago",
+        "replies": []
+      }
+    ],
+    "France": [
+      {
+        "id": "fr1",
+        "author": "ParisianSkeptic",
+        "text": "Her elegance and wit during theater panel conferences here in Paris is legendary.",
+        "time": "1 day ago",
+        "replies": []
+      }
+    ],
+    "India": [
+      {
+        "id": "in1",
+        "author": "Rajesh_Kumar",
+        "text": "The kindness philosophy is universal. Namaste from Delhi community!",
+        "time": "2 days ago",
+        "replies": []
+      }
+    ],
+    "Mexico": [
+      {
+        "id": "mx1",
+        "author": "Gomez_Scully",
+        "text": "Be compassionate to each other! Greeting from Mexico City fans!",
+        "time": "4 days ago",
+        "replies": []
+      }
+    ],
+    "South Africa": [
+      {
+        "id": "za1",
+        "author": "CapeTown_Rebel",
+        "text": "Love to see the youth mentoring transition focus. Absolute queen.",
+        "time": "5 days ago",
+        "replies": []
+      }
+    ],
+    "South Korea": [
+      {
+        "id": "kr1",
+        "author": "Seoul_Scully",
+        "text": "Amazing to see Korean fans uniting for youth mentorship charity drives!",
+        "time": "2 days ago",
+        "replies": []
+      }
+    ],
+    "Italy": [
+      {
+        "id": "it1",
+        "author": "Rome_Thespian",
+        "text": "Gillian's presence at the theater stages here is always a joy.",
+        "time": "3 days ago",
+        "replies": []
+      }
+    ],
+    "Spain": [
+      {
+        "id": "es1",
+        "author": "Madrid_Scully",
+        "text": "West End play adaptations touring Spain would be a dream come true!",
+        "time": "4 days ago",
+        "replies": []
+      }
+    ],
+    "Argentina": [
+      {
+        "id": "ar1",
+        "author": "Diego_P",
+        "text": "She represents the ultimate elegant standard. Big support from Buenos Aires!",
+        "time": "2 days ago",
+        "replies": []
+      }
+    ],
+    "Philippines": [
+      {
+        "id": "ph1",
+        "author": "Pinoy_Empowered",
+        "text": "You are empowered! Everyday reminder to keep being compassionate.",
+        "time": "3 days ago",
+        "replies": []
+      }
+    ],
+    "Singapore": [
+      {
+        "id": "sg1",
+        "author": "Merlion_Scully",
+        "text": "The official communication bridge works so fast. Thank you Sarah/management!",
+        "time": "12 hours ago",
+        "replies": []
+      }
+    ]
+  },
+  "proposalChats": {
+    "GA-REQ-000145": [
+      {
+        "id": "p_m1",
+        "sender": "management",
+        "text": "Hello John, we are looking at Saturday afternoon around 3 PM at the Beverly Hills venue. Will that suit your charity team?",
+        "timestamp": "May 21, 12:00 PM"
+      },
+      {
+        "id": "p_u1",
+        "sender": "user",
+        "text": "Yes, that is perfect! We will bring our support validation documents.",
+        "timestamp": "May 21, 01:30 PM"
+      }
+    ]
+  },
+  "journalComments": {
+    "journal-1": [
+      {
+        "id": "jc-1",
+        "author": "ThespianHeart",
+        "text": "Scully is what guided me to pursue my science degrees! Gillian, you inspire millions of us daily.",
+        "time": "3 hours ago"
+      }
+    ]
+  }
+}

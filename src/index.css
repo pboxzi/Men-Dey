@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cinzel", Georgia, serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-gold-50: var(--gold-50, #faf6ef);
+  --color-gold-100: var(--gold-100, #f3e9d8);
+  --color-gold-200: var(--gold-200, #e7d2b2);
+  --color-gold-300: var(--gold-300, #d6b484);
+  --color-gold-400: var(--gold-400, #c5975d);
+  --color-gold-500: var(--gold-500, #dfba89);
+  --color-gold-600: var(--gold-600, #c5a880);
+  --color-gold-700: var(--gold-700, #9e815b);
+  --color-gold-800: var(--gold-800, #7c6446);
+  --color-gold-900: var(--gold-900, #554430);
+
+  --animate-swing: swing 1.5s ease-in-out infinite;
+
+  @keyframes swing {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(15deg); }
+    40% { transform: rotate(-10deg); }
+    60% { transform: rotate(5deg); }
+    80% { transform: rotate(-5deg); }
+  }
+}
+
+body {
+  background-color: #050505;
+  color: #f5f5f5;
+  font-family: var(--font-sans);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0d0d;
+}
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-500, #dfba89);
+}
+

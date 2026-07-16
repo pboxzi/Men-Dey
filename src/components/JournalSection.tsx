@@ -32,6 +32,11 @@ export default function JournalSection() {
     'journal-1': 342,
     'journal-2': 512,
     'journal-3': 889,
+    'journal-4': 1247,
+    'journal-5': 876,
+    'journal-6': 2103,
+    'journal-7': 654,
+    'journal-8': 3421,
   });
 
   const [activeCategory, setActiveCategory] = useState<string>('ALL');

@@ -26,6 +26,7 @@ export default function MediaSection() {
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<any>(null);
   const [embedError, setEmbedError] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(true);
 
   // Video States
   const [selectedVideo, setSelectedVideo] = useState<MediaItem>(FALLBACK_VIDEOS[0]);
@@ -79,16 +80,18 @@ export default function MediaSection() {
 
     (window as any).onYouTubeIframeAPIReady = () => {
       if (playerContainerRef.current && selectedVideo.youtubeId) {
+        setVideoLoading(true);
         playerRef.current = new (window as any).YT.Player(playerContainerRef.current, {
           videoId: selectedVideo.youtubeId,
           playerVars: { controls: 1, autoplay: 0 },
           events: {
             onError: (e: any) => {
+              setVideoLoading(false);
               if (e.data === 101 || e.data === 150) {
                 setEmbedError(true);
               }
             },
-            onReady: () => setEmbedError(false),
+            onReady: () => { setEmbedError(false); setVideoLoading(false); },
           }
         });
       }
@@ -104,6 +107,7 @@ export default function MediaSection() {
   useEffect(() => {
     if (!selectedVideo.youtubeId) return;
     setEmbedError(false);
+    setVideoLoading(true);
 
     if (playerRef.current && playerRef.current.loadVideoById) {
       playerRef.current.cueVideoById(selectedVideo.youtubeId);
@@ -113,11 +117,12 @@ export default function MediaSection() {
         playerVars: { controls: 1, autoplay: 0 },
         events: {
           onError: (e: any) => {
+            setVideoLoading(false);
             if (e.data === 101 || e.data === 150) {
               setEmbedError(true);
             }
           },
-          onReady: () => setEmbedError(false),
+          onReady: () => { setEmbedError(false); setVideoLoading(false); },
         }
       });
     }
@@ -266,6 +271,22 @@ export default function MediaSection() {
           </p>
         </div>
 
+        {/* Stats Bar */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
+          {[
+            { icon: Film, value: videos.length, label: 'Videos', color: 'text-gold-500' },
+            { icon: Image, value: photos.length, label: 'Photos', color: 'text-amber-400' },
+            { icon: Heart, value: (Object.values(videoLikes) as number[]).reduce((a: number, b: number) => a + b, 0) + (Object.values(photoLikes) as number[]).reduce((a: number, b: number) => a + b, 0), label: 'Total Likes', color: 'text-red-400' },
+            { icon: Tv, value: activeTab === 'videos' ? videoCategories.length - 1 : photoCategories.length - 1, label: 'Categories', color: 'text-emerald-400' },
+          ].map((stat) => (
+            <div key={stat.label} className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-4 text-center space-y-1.5 hover:border-neutral-800 transition-colors">
+              <stat.icon className={`h-4 w-4 ${stat.color} mx-auto`} />
+              <span className={`block text-xl font-bold ${stat.color}`}>{stat.value}</span>
+              <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+
         {/* Section Tab Bar Switcher */}
         <div className="flex justify-center">
           <div className="inline-flex bg-neutral-950 p-1.5 rounded-xl border border-neutral-900 shadow-2xl">
@@ -306,32 +327,79 @@ export default function MediaSection() {
             >
               {/* Left Column: YouTube Player */}
               <div className="lg:col-span-8 space-y-5">
-                <div className="relative aspect-video rounded-xl border border-neutral-900 overflow-hidden shadow-2xl bg-black">
-                  {embedError ? (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-900/95 gap-4 p-6">
-                      <p className="text-xs font-mono text-neutral-400 text-center">
-                        This video cannot be embedded due to the uploader's restrictions
-                      </p>
-                      <a
-                        href={`https://www.youtube.com/watch?v=${selectedVideo.youtubeId}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono font-bold transition-colors"
-                      >
-                        Watch on YouTube
-                      </a>
-                    </div>
-                  ) : selectedVideo.youtubeId ? (
-                    <div ref={playerContainerRef} className="w-full h-full" />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/40 text-neutral-500 text-xs font-mono">
-                      No video source
-                    </div>
-                  )}
+                <div className="relative rounded-xl overflow-hidden shadow-2xl bg-black ring-1 ring-gold-500/20">
+                  {/* NOW PLAYING indicator */}
+                  <div className="absolute top-3 left-3 z-10 flex items-center gap-2 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1.5">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
+                    <span className="text-[9px] font-mono text-white/80 uppercase tracking-widest font-semibold">NOW PLAYING</span>
+                  </div>
+                  <div className="aspect-video relative">
+                    {/* Thumbnail backdrop — always visible behind the player */}
+                    {selectedVideo.thumbnail && (
+                      <img
+                        src={selectedVideo.thumbnail}
+                        alt=""
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoLoading ? 'opacity-100' : 'opacity-0'}`}
+                      />
+                    )}
+                    {embedError ? (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-900/95 gap-4 p-6">
+                        <p className="text-xs font-mono text-neutral-400 text-center">
+                          This video cannot be embedded due to the uploader's restrictions
+                        </p>
+                        <a
+                          href={`https://www.youtube.com/watch?v=${selectedVideo.youtubeId}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono font-bold transition-colors"
+                        >
+                          Watch on YouTube
+                        </a>
+                      </div>
+                    ) : selectedVideo.youtubeId ? (
+                      <>
+                        <div ref={playerContainerRef} className="w-full h-full relative z-10" />
+                        {/* Loading overlay */}
+                        {videoLoading && (
+                          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40">
+                            <div className="flex flex-col items-center gap-3">
+                              <div className="w-12 h-12 rounded-full border-2 border-gold-500/30 border-t-gold-500 animate-spin" />
+                              <span className="text-[10px] font-mono text-gold-500 uppercase tracking-widest">Loading video...</span>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/40 text-neutral-500 text-xs font-mono">
+                        No video source
+                      </div>
+                    )}
+                  </div>
                 </div>
 
+                {/* Subtitle Bar */}
+                {selectedVideo.subtitles && selectedVideo.subtitles.length > 0 && (
+                  <div className="bg-neutral-950/80 border border-neutral-900 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-4 bg-gold-500 rounded-full" />
+                      <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">SUBTITLES</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedVideo.subtitles.map((sub, i) => (
+                        <span key={i} className="px-2.5 py-1 rounded bg-neutral-900/80 border border-neutral-800 text-[10px] font-mono text-neutral-300">
+                          {sub}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Video Info Card */}
-                <div className="bg-neutral-950/40 border border-neutral-900 p-6 rounded-xl space-y-4 text-left">
+                <div className="bg-neutral-950/40 border border-neutral-900 p-6 rounded-xl space-y-4 text-left relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-500 via-amber-400 to-gold-500" />
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-mono text-gold-500 uppercase tracking-wider font-semibold">
@@ -386,9 +454,14 @@ export default function MediaSection() {
               {/* Right Column: Video Selection Sidebar */}
               <div className="lg:col-span-4 space-y-4 flex flex-col h-full">
                 <div className="bg-neutral-950 border border-neutral-900 p-4 rounded-xl space-y-3 text-left">
-                  <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400 uppercase tracking-wider">
-                    <Filter className="h-3.5 w-3.5 text-gold-500" />
-                    <span>Filter ({filteredVideos.length})</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400 uppercase tracking-wider">
+                      <Filter className="h-3.5 w-3.5 text-gold-500" />
+                      <span>Filter</span>
+                    </div>
+                    <span className="text-[9px] font-mono text-gold-500 bg-gold-500/10 border border-gold-500/20 px-2 py-0.5 rounded-full">
+                      {filteredVideos.length} videos
+                    </span>
                   </div>
                   <div className="relative">
                     <Search className="absolute left-3 top-2.5 h-4 w-4 text-neutral-600" />
@@ -401,19 +474,22 @@ export default function MediaSection() {
                     />
                   </div>
                   <div className="flex flex-wrap gap-1.5 pt-1 max-h-[120px] overflow-y-auto custom-scrollbar">
-                    {videoCategories.map((cat) => (
-                      <button
-                        key={cat}
-                        onClick={() => setVideoCategory(cat)}
-                        className={`px-2 py-1 rounded text-[9px] font-mono uppercase border transition-all ${
-                          videoCategory === cat
-                            ? 'bg-gold-500/10 border-gold-500 text-gold-500 font-bold'
-                            : 'bg-neutral-900 border-neutral-800/80 text-neutral-400 hover:text-white'
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
+                    {videoCategories.map((cat) => {
+                      const count = cat === 'All' ? videos.length : videos.filter(v => v.category === cat).length;
+                      return (
+                        <button
+                          key={cat}
+                          onClick={() => setVideoCategory(cat)}
+                          className={`px-2 py-1 rounded text-[9px] font-mono uppercase border transition-all ${
+                            videoCategory === cat
+                              ? 'bg-gold-500/10 border-gold-500 text-gold-500 font-bold'
+                              : 'bg-neutral-900 border-neutral-800/80 text-neutral-400 hover:text-white'
+                          }`}
+                        >
+                          {cat} ({count})
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -429,14 +505,28 @@ export default function MediaSection() {
                         <button
                           key={item.id}
                           onClick={() => setSelectedVideo(item)}
-                          className={`w-full p-3.5 rounded-xl border text-left transition-all flex items-center gap-3.5 group cursor-pointer ${
+                          className={`w-full p-3 rounded-xl border text-left transition-all flex items-center gap-3 group cursor-pointer ${
                             isCurrent
                               ? 'bg-gold-500/5 border-gold-500/40 shadow-lg'
                               : 'bg-neutral-950/30 border-neutral-900 hover:border-neutral-800 hover:bg-neutral-950/80'
                           }`}
                         >
-                          <div className="h-9 w-9 rounded bg-neutral-900 border border-neutral-800/80 flex items-center justify-center shrink-0">
-                            <Play className={`h-3.5 w-3.5 transition-colors ${isCurrent ? 'text-gold-500 fill-gold-500/20' : 'text-neutral-500 group-hover:text-gold-500'}`} />
+                          {/* Thumbnail */}
+                          <div className="h-14 w-20 rounded-lg overflow-hidden border border-neutral-800/80 shrink-0 bg-neutral-900 relative">
+                            {item.thumbnail ? (
+                              <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className={`w-full h-full flex items-center justify-center ${isCurrent ? 'bg-gold-500/10' : 'bg-neutral-900'}`}>
+                                <Play className={`h-4 w-4 transition-colors ${isCurrent ? 'text-gold-500 fill-gold-500/20' : 'text-neutral-600 group-hover:text-gold-500'}`} />
+                              </div>
+                            )}
+                            {isCurrent && (
+                              <div className="absolute inset-0 bg-gold-500/10 flex items-center justify-center">
+                                <div className="w-6 h-6 rounded-full bg-gold-500/90 flex items-center justify-center">
+                                  <Play className="h-3 w-3 text-neutral-950 fill-neutral-950" />
+                                </div>
+                              </div>
+                            )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
@@ -447,7 +537,7 @@ export default function MediaSection() {
                                 {item.duration}
                               </span>
                             </div>
-                            <h4 className={`text-xs font-bold truncate mt-0.5 ${isCurrent ? 'text-gold-500' : 'text-white'}`}>
+                            <h4 className={`text-[11px] font-bold truncate mt-0.5 ${isCurrent ? 'text-gold-500' : 'text-white'}`}>
                               {item.title}
                             </h4>
                           </div>
@@ -511,19 +601,22 @@ export default function MediaSection() {
               </div>
 
               <div className="hidden md:flex flex-wrap gap-2 justify-center pb-2">
-                {photoCategories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setPhotoCategory(cat)}
-                    className={`px-3 py-1.5 rounded-full text-[10px] font-mono uppercase border tracking-wider transition-all ${
-                      photoCategory === cat
-                        ? 'bg-gold-500 border-gold-500 text-neutral-950 font-bold shadow-lg shadow-gold-500/10'
-                        : 'bg-neutral-950/60 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+                {photoCategories.map((cat) => {
+                  const count = cat === 'All' ? photos.length : photos.filter(p => p.category === cat).length;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setPhotoCategory(cat)}
+                      className={`px-3 py-1.5 rounded-full text-[10px] font-mono uppercase border tracking-wider transition-all ${
+                        photoCategory === cat
+                          ? 'bg-gold-500 border-gold-500 text-neutral-950 font-bold shadow-lg shadow-gold-500/10'
+                          : 'bg-neutral-950/60 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
+                      }`}
+                    >
+                      {cat} ({count})
+                    </button>
+                  );
+                })}
               </div>
 
               {filteredPhotos.length === 0 ? (
@@ -541,16 +634,19 @@ export default function MediaSection() {
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 auto-rows-[180px] gap-4">
                   {filteredPhotos.map((photo, index) => {
                     const isLiked = hasLikedPhoto[photo.id];
                     const count = photoLikes[photo.id] !== undefined ? photoLikes[photo.id] : photo.likes;
+                    const isLarge = index % 5 === 0 || index % 5 === 4;
                     return (
                       <motion.div
                         key={photo.id}
                         layoutId={`photo-card-${photo.id}`}
                         onClick={() => setLightboxIndex(index)}
-                        className="group relative aspect-[4/5] bg-neutral-950 rounded-xl border border-neutral-900 overflow-hidden cursor-pointer hover:border-gold-500/40 shadow-lg hover:shadow-2xl hover:shadow-black/60 transition-all flex flex-col justify-end"
+                        className={`group relative bg-neutral-950 rounded-xl border border-neutral-900 overflow-hidden cursor-pointer hover:border-gold-500/40 shadow-lg hover:shadow-2xl hover:shadow-black/60 transition-all flex flex-col justify-end ${
+                          isLarge ? 'sm:col-span-2 sm:row-span-2' : ''
+                        }`}
                         whileHover={{ y: -4 }}
                       >
                         <div className="absolute inset-0 z-0 overflow-hidden bg-neutral-900">
@@ -559,17 +655,26 @@ export default function MediaSection() {
                             alt={photo.title}
                             referrerPolicy="no-referrer"
                             loading="lazy"
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/5 opacity-80 z-1" />
+                          {/* Cinematic hover overlay */}
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-500 z-[2] flex items-center justify-center">
+                            <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
+                              <div className="w-12 h-12 rounded-full bg-gold-500/90 flex items-center justify-center">
+                                <Image className="h-5 w-5 text-neutral-950" />
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="px-2 py-0.5 rounded bg-black/80 backdrop-blur-sm text-[8px] font-mono text-gold-500 border border-neutral-900">
+                        {/* Category badge - slides in on hover */}
+                        <div className="absolute top-3 left-3 z-10 opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                          <span className="px-2.5 py-1 rounded bg-black/80 backdrop-blur-sm text-[8px] font-mono text-gold-500 border border-gold-500/20">
                             {photo.category}
                           </span>
                         </div>
                         <div className="relative z-10 p-3 space-y-1 bg-gradient-to-t from-black/95 to-transparent text-left">
-                          <h4 className="text-[11px] font-bold text-white tracking-wide truncate group-hover:text-gold-500 transition-colors">
+                          <h4 className={`font-bold text-white tracking-wide truncate group-hover:text-gold-500 transition-colors ${isLarge ? 'text-sm' : 'text-[11px]'}`}>
                             {photo.title.split(' (Archive')[0]}
                           </h4>
                           <div className="flex items-center justify-between">
@@ -698,6 +803,33 @@ export default function MediaSection() {
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
+            </div>
+
+            {/* Filmstrip Thumbnail Navigation */}
+            <div className="w-full max-w-4xl mx-auto px-12 pb-2" onClick={(e) => e.stopPropagation()}>
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide py-2 justify-center">
+                {filteredPhotos.slice(Math.max(0, lightboxIndex - 3), Math.min(filteredPhotos.length, lightboxIndex + 4)).map((photo, i) => {
+                  const actualIndex = Math.max(0, lightboxIndex - 3) + i;
+                  const isActive = actualIndex === lightboxIndex;
+                  return (
+                    <button
+                      key={photo.id}
+                      onClick={() => setLightboxIndex(actualIndex)}
+                      className={`shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all ${
+                        isActive
+                          ? 'border-gold-500 ring-2 ring-gold-500/30 scale-110'
+                          : 'border-neutral-700 opacity-50 hover:opacity-80 hover:border-neutral-500'
+                      }`}
+                    >
+                      <img
+                        src={photo.url}
+                        alt={photo.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div

@@ -256,6 +256,7 @@ export default function App() {
 
   // Search Toggle (Simulated)
   const [searchOpen, setSearchOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleNextSlide = () => {
@@ -372,12 +373,12 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-20 lg:pb-0 overflow-x-hidden">
+    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-20 lg:pb-0">
       {/* 1. Header (Navbar) */}
       <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6">
+        <div className="mx-auto flex max-w-[1440px] items-center px-4 py-3 md:px-6 gap-4">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2 group" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
+          <a href="#" className="flex items-center gap-2 group shrink-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
             <span className="font-serif text-lg font-bold tracking-widest text-white transition-colors group-hover:text-gold-500">
               GA
             </span>
@@ -392,8 +393,8 @@ export default function App() {
             </div>
           </a>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+          {/* Desktop Navigation — scrollable */}
+          <nav className="hidden lg:flex items-center gap-0.5 flex-1 overflow-x-auto scrollbar-hide min-w-0">
             {[
               'HOME',
               'ABOUT',
@@ -410,7 +411,7 @@ export default function App() {
               <button
                 key={link}
                 onClick={() => handleNavClick(link)}
-                className={`px-3 py-1.5 text-[10px] font-medium tracking-widest transition-colors rounded ${
+                className={`px-2.5 py-1.5 text-[10px] font-medium tracking-widest transition-colors rounded whitespace-nowrap shrink-0 ${
                   activeNav === link
                     ? 'text-gold-500 font-semibold bg-gold-500/10 border border-gold-500/30'
                     : 'text-neutral-400 hover:text-white hover:bg-neutral-900/40 border border-transparent'
@@ -422,7 +423,7 @@ export default function App() {
           </nav>
 
           {/* Right Header Actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Search toggler */}
             <div className="relative">
               <button
@@ -455,37 +456,85 @@ export default function App() {
             {/* Notification Bell */}
             <NotificationBell />
 
-            {/* Fan Portal button */}
-            <button
-              onClick={() => navigateTo('portal')}
-              className="hidden sm:inline-flex border border-gold-500/30 bg-gold-500/5 hover:bg-gold-500/10 text-gold-500 px-3 py-1.5 rounded text-[10px] font-bold tracking-widest transition-all active:scale-95 shadow-md shadow-gold-500/5"
-            >
-              FAN PORTAL
-            </button>
-
-            {/* Admin Portal button */}
-            <button
-              onClick={() => navigateTo('admin')}
-              className="hidden md:inline-flex border border-red-500/30 bg-red-500/5 hover:bg-red-500/10 text-red-400 px-3 py-1.5 rounded text-[10px] font-bold tracking-widest transition-all active:scale-95 shadow-md shadow-red-500/5"
-            >
-              ADMIN PORTAL
-            </button>
-
-            {/* Login button */}
-            <button
-              onClick={() => navigateTo('portal')}
-              className="hidden lg:inline-flex text-[10px] font-medium tracking-widest text-neutral-300 hover:text-white transition-colors"
-            >
-              LOGIN
-            </button>
-
-            {/* Register button */}
-            <button
-              onClick={() => navigateTo('portal')}
-              className="hidden lg:inline-flex bg-gold-500 hover:bg-gold-400 text-neutral-950 px-4 py-1.5 rounded text-[10px] font-bold tracking-widest transition-all active:scale-95 shadow shadow-gold-500/15"
-            >
-              REGISTER
-            </button>
+            {/* Profile Menu */}
+            <div className="relative">
+              <button
+                onClick={() => { setProfileOpen(!profileOpen); setSearchOpen(false); }}
+                className="flex items-center gap-1.5 p-1.5 rounded-full border border-neutral-800 hover:border-gold-500/40 bg-neutral-900/50 hover:bg-neutral-900 transition-all active:scale-95"
+                aria-label="Profile menu"
+              >
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-600/10 flex items-center justify-center">
+                  <User className="h-3.5 w-3.5 text-gold-500" />
+                </div>
+              </button>
+              <AnimatePresence>
+                {profileOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-2 w-52 bg-[#0a0a0a] border border-neutral-800 rounded-lg shadow-2xl shadow-black/60 z-50 overflow-hidden"
+                    >
+                      <div className="p-2">
+                        <button
+                          onClick={() => { navigateTo('portal'); setProfileOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left hover:bg-gold-500/10 transition-colors group"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center group-hover:border-gold-500/40 transition-colors">
+                            <Star className="h-3.5 w-3.5 text-gold-500" />
+                          </div>
+                          <div>
+                            <p className="text-[11px] font-semibold text-neutral-200 tracking-wide">Fan Portal</p>
+                            <p className="text-[9px] text-neutral-500 tracking-wide">Your sanctuary</p>
+                          </div>
+                        </button>
+                        <button
+                          onClick={() => { navigateTo('admin'); setProfileOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left hover:bg-red-500/10 transition-colors group"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center group-hover:border-red-500/40 transition-colors">
+                            <Award className="h-3.5 w-3.5 text-red-400" />
+                          </div>
+                          <div>
+                            <p className="text-[11px] font-semibold text-neutral-200 tracking-wide">Admin Portal</p>
+                            <p className="text-[9px] text-neutral-500 tracking-wide">Manage content</p>
+                          </div>
+                        </button>
+                      </div>
+                      <div className="border-t border-neutral-800 p-2">
+                        <button
+                          onClick={() => { navigateTo('portal'); setProfileOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left hover:bg-neutral-900 transition-colors group"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center group-hover:border-neutral-600 transition-colors">
+                            <User className="h-3.5 w-3.5 text-neutral-400" />
+                          </div>
+                          <div>
+                            <p className="text-[11px] font-semibold text-neutral-200 tracking-wide">Login</p>
+                            <p className="text-[9px] text-neutral-500 tracking-wide">Welcome back</p>
+                          </div>
+                        </button>
+                        <button
+                          onClick={() => { navigateTo('portal'); setProfileOpen(false); }}
+                          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left hover:bg-gold-500/10 transition-colors group"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center group-hover:border-gold-500/40 transition-colors">
+                            <Sparkles className="h-3.5 w-3.5 text-gold-500" />
+                          </div>
+                          <div>
+                            <p className="text-[11px] font-semibold text-neutral-200 tracking-wide">Register</p>
+                            <p className="text-[9px] text-neutral-500 tracking-wide">Join the community</p>
+                          </div>
+                        </button>
+                      </div>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Hamburger Menu Toggler */}
             <button
@@ -542,26 +591,36 @@ export default function App() {
 
                 <div className="pt-4 border-t border-neutral-900 flex flex-col gap-2.5">
                   <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest block">
-                    Sanctuary Bridges
+                    Account
                   </span>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="flex flex-col gap-1">
                     <button
-                      onClick={() => {
-                        navigateTo('portal');
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full text-center border border-gold-500/30 bg-gold-500/5 hover:bg-gold-500/10 text-gold-500 py-3 rounded text-[10px] font-bold tracking-widest transition-all uppercase min-h-[44px]"
+                      onClick={() => { navigateTo('portal'); setMobileMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded border border-gold-500/20 bg-gold-500/5 hover:bg-gold-500/10 text-left min-h-[44px] transition-colors"
                     >
-                      FAN PORTAL
+                      <Star className="h-3.5 w-3.5 text-gold-500 shrink-0" />
+                      <span className="text-[11px] font-semibold tracking-widest text-gold-500">FAN PORTAL</span>
                     </button>
                     <button
-                      onClick={() => {
-                        navigateTo('admin');
-                        setMobileMenuOpen(false);
-                      }}
-                      className="w-full text-center border border-red-500/30 bg-red-500/5 hover:bg-red-500/10 text-red-400 py-3 rounded text-[10px] font-bold tracking-widest transition-all uppercase min-h-[44px]"
+                      onClick={() => { navigateTo('admin'); setMobileMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 text-left min-h-[44px] transition-colors"
                     >
-                      ADMIN PORTAL
+                      <Award className="h-3.5 w-3.5 text-red-400 shrink-0" />
+                      <span className="text-[11px] font-semibold tracking-widest text-red-400">ADMIN PORTAL</span>
+                    </button>
+                    <button
+                      onClick={() => { navigateTo('portal'); setMobileMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded border border-neutral-800 bg-neutral-900/50 hover:bg-neutral-900 text-left min-h-[44px] transition-colors"
+                    >
+                      <User className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
+                      <span className="text-[11px] font-semibold tracking-widest text-neutral-300">LOGIN</span>
+                    </button>
+                    <button
+                      onClick={() => { navigateTo('portal'); setMobileMenuOpen(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded bg-gold-500 hover:bg-gold-400 text-left min-h-[44px] transition-colors"
+                    >
+                      <Sparkles className="h-3.5 w-3.5 text-neutral-950 shrink-0" />
+                      <span className="text-[11px] font-bold tracking-widest text-neutral-950">REGISTER</span>
                     </button>
                   </div>
                 </div>

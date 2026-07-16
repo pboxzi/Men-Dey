@@ -192,10 +192,10 @@ export default function AboutSection() {
                     {/* Philosophical Stat overlay */}
                     <div className="absolute bottom-4 left-4 right-4 bg-neutral-950/90 border border-neutral-900 p-3.5 rounded-lg">
                       <p className="font-serif italic text-xs text-neutral-300">
-                        "The ones who support us are the ones who allow us to shine. Compassion and sisterhood are our true compass."
+                        "I've always been drawn to characters who are unapologetically themselves — complex, flawed, and absolutely refusing to shrink."
                       </p>
                       <span className="block mt-1.5 font-mono text-[9px] text-gold-500 text-right">
-                        — GILLIAN ON EQUALITY & EMPATHY
+                        — GILLIAN ANDERSON, SMITHSONIAN 2018
                       </span>
                     </div>
                   </div>
@@ -204,18 +204,22 @@ export default function AboutSection() {
                 {/* Content */}
                 <div className="lg:col-span-7 space-y-6 text-left">
                   <div className="space-y-2">
-                    <span className="text-[10px] font-mono text-gold-500 tracking-wider">01 // THE TRANSCENDENT PATH</span>
+                    <span className="text-[10px] font-mono text-gold-500 tracking-wider">01 // LIFE & LEGACY</span>
                     <h3 className="font-serif text-2xl md:text-3xl font-bold text-white">
-                      Intelligent Grace & Feminist Fire
+                      Three Decades of Defiance & Depth
                     </h3>
                   </div>
 
                   <p className="text-xs text-neutral-400 leading-relaxed font-sans">
-                    Born in Chicago and raised between London, England and Grand Rapids, Michigan, Gillian Anderson's childhood was defined by a rich tapestry of cultural shifts. After channeling her youthful rebellion into a profound passion for the theater, she quickly rose to international fame, defining some of the most intellectual and powerful female characters in modern television history.
+                    Born August 9, 1968 in Chicago, Gillian Anderson spent her childhood shuttling between London, where she attended colloquiums and developed an early love of theatre, and Grand Rapids, Michigan. At 18 she enrolled at Cornell University, then trained at the National Theatre of Great Britain's drama program — one of the youngest Americans ever accepted.
                   </p>
 
                   <p className="text-xs text-neutral-400 leading-relaxed font-sans">
-                    Behind her award-winning portrayals lies an inspiring story of personal resilience and unwavering advocacy. Standing up early on for equal pay, raising her children while working exhausting hours on set, and championing the voices of vulnerable youth and women globally, Gillian Anderson exemplifies a standard of elegant strength, extreme curiosity, and deep empathy.
+                    In 1992, at just 24, she was cast as FBI Special Agent Dana Scully. Over nine seasons and two feature films, "The Scully Effect" documented a measurable, real-world surge in women pursuing STEM careers — a cultural shift the 2018 Geena Davis Institute confirmed was directly tied to her portrayal. She won the Primetime Emmy for Outstanding Lead Actress in 1997.
+                  </p>
+
+                  <p className="text-xs text-neutral-400 leading-relaxed font-sans">
+                    Post-X-Files, Gillian built one of the most versatile careers in television: Stella Gibson in <em>The Fall</em>, Dr. Jean Milburn in <em>Sex Education</em>, Margaret Thatcher in <em>The Crown</em> (winning both an Emmy and Golden Globe in 2021), and Clarice Starling in <em>Hannibal</em>. On stage, her Blanche DuBois in <em>A Streetcar Named Desire</em> earned an Olivier Award nomination and was called "the performance of the decade" by <em>The Guardian</em>.
                   </p>
 
                   {/* Highlight quotes card */}
@@ -223,44 +227,44 @@ export default function AboutSection() {
                     <div className="border border-neutral-900 bg-neutral-950/60 p-4 rounded-lg space-y-1.5">
                       <div className="flex items-center gap-2 text-gold-500">
                         <Trophy className="h-4 w-4" />
-                        <span className="text-[10px] font-mono tracking-wider font-bold">ON INDEPENDENCE</span>
+                        <span className="text-[10px] font-mono tracking-wider font-bold">ON EQUAL PAY</span>
                       </div>
                       <p className="text-[11px] text-neutral-300 font-sans italic">
-                        "Be unapologetic about who you are, what you desire, and how you choose to live your life."
+                        "I was offered half my co-star's salary for the X-Files reboot. I refused. It was shocking, but I stood my ground because it was the right thing to do."
                       </p>
                       <span className="block text-[8px] font-mono text-neutral-500">
-                        — Stella Gibson's Philosophy
+                        — The Guardian, 2016
                       </span>
                     </div>
 
                     <div className="border border-neutral-900 bg-neutral-950/60 p-4 rounded-lg space-y-1.5">
                       <div className="flex items-center gap-2 text-gold-500">
                         <Coffee className="h-4 w-4" />
-                        <span className="text-[10px] font-mono tracking-wider font-bold">ON CURIOSITY</span>
+                        <span className="text-[10px] font-mono tracking-wider font-bold">ON THE SCULLY EFFECT</span>
                       </div>
                       <p className="text-[11px] text-neutral-300 font-sans italic">
-                        "The truth is out there, but so is the courage to look for it. Always keep seeking."
+                        "Hearing women tell me they became scientists or doctors because of Scully is the most meaningful thing I've ever been part of."
                       </p>
                       <span className="block text-[8px] font-mono text-neutral-500">
-                        — Personal Outlook on Search
+                        — Smithsonian Magazine, 2018
                       </span>
                     </div>
                   </div>
 
                   <div className="pt-4 border-t border-neutral-900 flex items-center gap-6">
                     <div>
-                      <span className="block text-xl font-bold text-white">1986</span>
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Theater Debut</span>
+                      <span className="block text-xl font-bold text-white">1993</span>
+                      <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">X-Files Debut</span>
                     </div>
                     <div className="h-8 w-[1px] bg-neutral-900" />
                     <div>
-                      <span className="block text-xl font-bold text-gold-500">120+</span>
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Awards & Noms</span>
+                      <span className="block text-xl font-bold text-gold-500">2</span>
+                      <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Emmy Awards</span>
                     </div>
                     <div className="h-8 w-[1px] bg-neutral-900" />
                     <div>
-                      <span className="block text-xl font-bold text-white">100%</span>
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Empowering Advocacy</span>
+                      <span className="block text-xl font-bold text-white">80+</span>
+                      <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Screen Credits</span>
                     </div>
                   </div>
                 </div>
@@ -283,7 +287,7 @@ export default function AboutSection() {
                     The Cinema of Transcendence
                   </h3>
                   <p className="text-xs text-neutral-400">
-                    Gillian Anderson redefined female authority and complexity across four decades. Select a role below to explore.
+                    From Scully to Thatcher, Gillian Anderson has redefined female authority across four decades and twelve iconic roles. Select a role below to explore.
                   </p>
                 </div>
 
@@ -388,36 +392,36 @@ export default function AboutSection() {
                   <div className="space-y-2">
                     <span className="text-[10px] font-mono text-gold-500 tracking-wider">03 // ACTIVE HUMANITARIAN CHANGE</span>
                     <h3 className="font-serif text-2xl md:text-3xl font-bold text-white uppercase">
-                      SAYes Mentoring & Philanthropy
+                      SAYes Mentoring & Global Advocacy
                     </h3>
                   </div>
 
                   <p className="text-xs text-neutral-400 leading-relaxed font-sans">
-                    Gillian Anderson is a passionate co-founder and active patron of <strong>SAYes Mentoring</strong>, an organization in South Africa that provides supportive transition-to-adulthood mentoring programs for youth leaving care homes. Rather than simply lending her name, she actively guides strategies to empower marginalized youngsters.
+                    In 2011, Gillian co-founded <strong>SAYes Mentoring</strong> in Cape Town, South Africa — an organization that matches young people leaving state care with trained adult mentors for structured 18-month programs. Since its founding, SAYes has mentored over 1,000 youth, helping them transition to independent adult lives with education, employment, and life skills.
                   </p>
 
                   <p className="text-xs text-neutral-400 leading-relaxed font-sans">
-                    Her philanthropy stretches globally: she is an advocate for the <strong>Children's Tumor Foundation</strong> (supporting Neurofibromatosis research, a cause dedicated to her late brother Aaron), a major spokesperson for <strong>PETA</strong>, and a champion of feminist initiatives worldwide.
+                    Her advocacy extends globally. She is a longtime patron of the <strong>Children's Tumor Foundation</strong> (NF research, inspired by her late brother Aaron), a <strong>UN Women HeForShe</strong> champion, an active supporter of <strong>Climate Revolution</strong>, and a vocal advocate for Afghan women's education rights. In 2016, she testified before the <strong>United States Congress</strong> to advocate for federal NF research funding.
                   </p>
 
                   {/* Highlights of Humanitarian work */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
                     <div className="border border-neutral-900 bg-[#0c0c0c] p-3 rounded-lg text-center space-y-1">
-                      <span className="font-mono text-xs font-extrabold text-white">SAYes</span>
-                      <span className="block text-[8px] font-mono text-neutral-500 uppercase">Youth Mentorship in SA</span>
+                      <span className="font-mono text-xs font-extrabold text-white">SAYes MENTORING</span>
+                      <span className="block text-[8px] font-mono text-neutral-500 uppercase">1,000+ Youth Mentored Since 2011</span>
                     </div>
                     <div className="border border-neutral-900 bg-[#0c0c0c] p-3 rounded-lg text-center space-y-1">
                       <span className="font-mono text-xs font-extrabold text-gold-500">CTF PATRON</span>
-                      <span className="block text-[8px] font-mono text-neutral-500 uppercase">Neurofibromatosis Advocacy</span>
+                      <span className="block text-[8px] font-mono text-neutral-500 uppercase">NF Research — Testified Before Congress</span>
                     </div>
                     <div className="border border-neutral-900 bg-[#0c0c0c] p-3 rounded-lg text-center space-y-1">
-                      <span className="font-mono text-xs font-extrabold text-white">GENDER EQUITY</span>
-                      <span className="block text-[8px] font-mono text-neutral-500 uppercase">Equal Pay Champion</span>
+                      <span className="font-mono text-xs font-extrabold text-white">UN WOMEN</span>
+                      <span className="block text-[8px] font-mono text-neutral-500 uppercase">HeForShe Gender Equality Champion</span>
                     </div>
                   </div>
 
                   <div className="pt-4 border-t border-neutral-900 flex items-center justify-between text-[10px] font-mono text-neutral-500">
-                    <span>CO-FOUNDED BY GILLIAN ANDERSON</span>
+                    <span>CO-FOUNDED BY GILLIAN ANDERSON — CAPE TOWN, SA</span>
                     <a 
                       href="https://sayesmentoring.org" 
                       target="_blank" 
@@ -446,9 +450,9 @@ export default function AboutSection() {
                     </div>
 
                     <div className="absolute bottom-4 left-4 right-4 text-left">
-                      <span className="text-[10px] font-mono text-gold-500 uppercase tracking-widest font-bold">The SAYes Motto:</span>
+                      <span className="text-[10px] font-mono text-gold-500 uppercase tracking-widest font-bold">The SAYes Mission:</span>
                       <p className="font-serif italic text-sm text-white mt-1">
-                        "Connecting young minds with positive guidance to shape tomorrow's leaders."
+                        "Matching young people leaving care with trained mentors to build independent, fulfilling lives."
                       </p>
                     </div>
                   </div>
@@ -552,32 +556,40 @@ export default function AboutSection() {
                   </div>
 
                   <p className="text-xs text-neutral-400 leading-relaxed font-sans">
-                    Beyond performance art, Gillian Anderson is an accomplished author. In 2017, she co-authored <strong>We: A Manifesto for Women Everywhere</strong> along with Jennifer Nadel. The book is an incredibly transparent, vulnerable guide detailing nine essential principles—such as honesty, compassion, and peace—designed to support women in moving past self-sabotage into collective healing.
+                    Gillian is an accomplished author with a diverse body of work. In 2017, she co-authored <strong>We: A Manifesto for Women Everywhere</strong> with Jennifer Nadel — a vulnerable, practical guide outlining nine essential principles (honesty, compassion, peace) designed to support women in moving from self-sabotage into collective healing.
                   </p>
 
                   <p className="text-xs text-neutral-400 leading-relaxed font-sans">
-                    Gillian has also written science-fiction (co-authoring the <i>EarthEnd Saga</i> trilogy) and recently edited <strong>Want</strong>, a groundbreaking collection of anonymous letters written by women from around the globe mapping out the intricate, unfiltered landscapes of modern female desire.
+                    She co-wrote the <em>EarthEnd Saga</em> trilogy with Jeff Rovin: <em>A Vision of Fire</em> (2013), <em>A Dream of Ice</em> (2015), and <em>The Sound of Seas</em> (2016) — a science-fiction series exploring interplanetary threats and human resilience. In 2024, she curated <strong>Want</strong>, a groundbreaking collection of anonymous letters from women worldwide mapping the unfiltered landscapes of modern female desire.
                   </p>
 
                   {/* Publications track record */}
                   <div className="border border-neutral-900 bg-neutral-950/60 p-4 rounded-xl space-y-3">
                     <div className="flex items-center gap-2 border-b border-neutral-900 pb-1.5">
                       <Calendar className="h-4 w-4 text-gold-500" />
-                      <span className="text-[10px] font-mono font-bold tracking-wider text-white uppercase">LITERARY PORTFOLIO EXCERPTS</span>
+                      <span className="text-[10px] font-mono font-bold tracking-wider text-white uppercase">LITERARY PORTFOLIO</span>
                     </div>
                     
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-neutral-300 font-sans">1. We: A Manifesto</span>
-                        <span className="font-mono text-[9px] text-gold-500 font-semibold">Self-compassion & sisterhood guide</span>
+                        <span className="text-neutral-300 font-sans">1. We: A Manifesto for Women (2017)</span>
+                        <span className="font-mono text-[9px] text-gold-500 font-semibold">Co-authored with Jennifer Nadel</span>
                       </div>
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-neutral-300 font-sans">2. EarthEnd Trilogy</span>
-                        <span className="font-mono text-[9px] text-neutral-400">Sci-Fi mystery novels with Jeff Rovin</span>
+                        <span className="text-neutral-300 font-sans">2. A Vision of Fire (2013)</span>
+                        <span className="font-mono text-[9px] text-neutral-400">EarthEnd Saga Book 1 with Jeff Rovin</span>
                       </div>
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-neutral-300 font-sans">3. Want Anthology</span>
-                        <span className="font-mono text-[9px] text-neutral-400">Curated compilation of women's true voices (2024)</span>
+                        <span className="text-neutral-300 font-sans">3. A Dream of Ice (2015)</span>
+                        <span className="font-mono text-[9px] text-neutral-400">EarthEnd Saga Book 2</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-neutral-300 font-sans">4. The Sound of Seas (2016)</span>
+                        <span className="font-mono text-[9px] text-neutral-400">EarthEnd Saga Book 3</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-neutral-300 font-sans">5. Want (2024)</span>
+                        <span className="font-mono text-[9px] text-gold-500 font-semibold">Curated anonymous letters on female desire</span>
                       </div>
                     </div>
                   </div>

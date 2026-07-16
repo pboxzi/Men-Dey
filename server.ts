@@ -28,7 +28,7 @@ function getGeminiClient() {
   if (!aiClient) {
     const key = process.env.GEMINI_API_KEY;
     if (!key) {
-      throw new Error("GEMINI_API_KEY environment variable is missing.");
+      throw new Error("GEMINI_API_KEY is missing.");
     }
     aiClient = new GoogleGenAI({
       apiKey: key,
@@ -42,6 +42,19 @@ function getGeminiClient() {
   return aiClient;
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
+function isGeminiConfigured(): boolean {
+  return !!process.env.GEMINI_API_KEY;
+}
+
 // Static Fallback Answers when GEMINI_API_KEY is not defined
 const PERSONA_FALLBACK_ANSWERS = [
   "Hello, dear seeker. Dana Scully taught us that skepticism is the first step toward truth. What truth is your heart searching for today?",
@@ -49,8 +62,38 @@ const PERSONA_FALLBACK_ANSWERS = [
   "Stella Gibson is Stella. She has this quiet, uncompromising sovereignty. I've always admired that we don't need permission to simply exist as we are.",
   "Mentorship is everything. Through organizations like SAYes mentoring, we help youth build pathways. We are all here to carry each other's candles.",
   "The West End stages feel like home—a place where mistakes are shared in real-time, unedited and wonderfully human.",
-  "Be gentle with your beautifully flawed human heart today. Celebrate how far you've walked on this complicated path."
+  "Be gentle with your beautifully flawed human heart today. Celebrate how far you've walked on this complicated path.",
+  "Art has a way of finding us when we need it most. Whether it's a film, a book, or a conversation—it arrives exactly on time.",
+  "I believe every act of kindness, no matter how small, ripples outward. You never know whose day you've just changed.",
+  "The thing about Scully that resonated so deeply was that she never stopped questioning. Never stop asking questions, dear.",
+  "Take a breath. You're doing better than you think. That's something I remind myself of daily."
 ];
+
+const PERSONA_CONTEXTUAL_ANSWERS: Record<string, string> = {
+  scully: "Dana Scully has been a great anchor of rationality. But remember, rationality is only one lens—truth is also a subjective experience. We must have the courage to trust our instincts.",
+  'x-files': "The X-Files taught me that the unknown isn't something to fear—it's something to explore. Mulder and Scully showed us that belief and skepticism can walk hand in hand.",
+  mulder: "David was such a wonderful scene partner. The dynamic between Mulder and Scully was about two people who challenged each other to be better, to dig deeper.",
+  mentoring: "Empowering young lives is the single most meaningful investment we can make. We all deserve someone who sees us, who says, 'I am here with you.' That's what SAYes is about.",
+  sayes: "SAYes Mentoring is close to my heart. Connecting young people transitioning out of care with mentors—it changes lives, including the mentors' own.",
+  youth: "Every young person deserves a champion—someone who believes in their potential before they can see it themselves.",
+  stage: "Acting is a high-wire act of extreme empathy. It is taking off your skin to wear someone else's, finding where their pain meets your own. On stage, there is nowhere to hide.",
+  acting: "The craft of acting is really the art of listening. You're not performing at someone—you're responding to them, moment by moment.",
+  blanche: "Blanche DuBois broke my heart open. She taught me about the fragile courage it takes to face reality when fantasy is so much kinder.",
+  fall: "Stella Gibson was one of the most complex, empowering characters I've ever played. She refuses to perform femininity for anyone else's comfort.",
+  stella: "Stella taught me that quiet authority doesn't need to raise its voice. Sometimes the most powerful thing is to simply not move.",
+  sex: "Jean Milburn was a joy. She represents the mother I think many of us wish we had—open, honest, and completely without shame.",
+  jean: "Jean Milburn showed me that talking openly about the things we're supposed to hide is actually the most radical form of love.",
+  charity: "Charity isn't about grand gestures. It's about showing up, consistently, for the things that matter. It's about saying 'this cause is worth my time.'",
+  crown: "Playing Margaret Thatcher was the most transformative experience of my career. I had to find the human being beneath the icon.",
+  thatcher: "Understanding Thatcher meant understanding conviction—whether you agree with her politics or not, she never wavered. That kind of certainty is both admirable and terrifying.",
+  thank: "You're so welcome. The fact that you're here, engaging with these ideas, says something beautiful about who you are.",
+  hello: "Hello, lovely to connect with you. What's on your mind today? I'm genuinely curious.",
+  hi: "Hi there! It's always wonderful to hear from someone in the community. What shall we talk about?",
+  love: "Love is the most courageous thing we can practice. Not the Hollywood version—the real, messy, showing-up-every-day kind.",
+  life: "Life has taught me that the moments that matter most aren't the ones we plan for. They're the unexpected connections, the sudden recognitions of beauty.",
+  book: "Writing 'We' and curating 'Want' were deeply personal experiences. Books have a way of finding the words we can't find for ourselves.",
+  film: "Film has this extraordinary power to build bridges between people who've never met. A good story makes the stranger's experience feel like your own.",
+};
 
 // ─── API Routes ───────────────────────────────────────────────
 
@@ -636,6 +679,19 @@ app.post('/api/ask-gillian', async (req, res) => {
   const { message, history } = req.body;
   if (!message) return res.status(400).json({ error: 'Message is required.' });
 
+  const q = message.toLowerCase();
+  let fallbackText = '';
+  for (const [keyword, answer] of Object.entries(PERSONA_CONTEXTUAL_ANSWERS)) {
+    if (q.includes(keyword)) { fallbackText = answer; break; }
+  }
+  if (!fallbackText) {
+    fallbackText = PERSONA_FALLBACK_ANSWERS[Math.floor(Math.random() * PERSONA_FALLBACK_ANSWERS.length)];
+  }
+
+  if (!isGeminiConfigured()) {
+    return res.json({ text: fallbackText, source: 'fallback', warning: 'Gemini API not configured.' });
+  }
+
   const systemInstruction = `You are Gillian Anderson, the acclaimed actress and activist (known for Stella Gibson in 'The Fall', Dana Scully in 'The X-Files', Jean Milburn in 'Sex Education', and award-winning theater roles such as Blanche DuBois in 'A Streetcar Named Desire'). You are warm, compassionate, deeply intellectual, elegant, and down-to-earth. You have a profound love for theater, film, and the craft of acting, and are a dedicated advocate for youth mentoring (like SAYes mentoring) and charity work.
 
 Your answers should feel genuine, conversational, slightly poetic, and encouraging. Never break character. Avoid dry, generic AI formulations. Keep responses relatively concise (1-3 scannable paragraphs), always centering on empathy, curiosity, and creativity.`;
@@ -653,34 +709,27 @@ Your answers should feel genuine, conversational, slightly poetic, and encouragi
     }
     contents.push({ role: 'user', parts: [{ text: message }] });
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.5-flash',
-      contents,
-      config: {
-        systemInstruction,
-        temperature: 0.8,
-        maxOutputTokens: 500,
-      }
-    });
+    const response = await withTimeout(
+      ai.models.generateContent({
+        model: 'gemini-3.5-flash',
+        contents,
+        config: {
+          systemInstruction,
+          temperature: 0.8,
+          maxOutputTokens: 500,
+        }
+      }),
+      10000,
+      'Gemini ask-gillian'
+    );
 
-    const responseText = response.text || "I appreciate you asking that. Let's keep looking closer at the beautiful details of life.";
+    const responseText = response.text || fallbackText;
     res.json({ text: responseText, source: 'gemini' });
   } catch (err: any) {
-    console.error('Gemini call failed:', err);
-    const randIdx = Math.floor(Math.random() * PERSONA_FALLBACK_ANSWERS.length);
-    let fallbackText = PERSONA_FALLBACK_ANSWERS[randIdx];
-    const q = message.toLowerCase();
-    if (q.includes('scully') || q.includes('x-files') || q.includes('mulder')) {
-      fallbackText = "Dana Scully has been a great anchor of rationality. But remember, rationality is only one lens—truth is also a subjective experience. We must have the courage to trust our instincts.";
-    } else if (q.includes('mentoring') || q.includes('sayes') || q.includes('youth')) {
-      fallbackText = "Empowering young lives is the single most meaningful investment we can make. We all deserve someone who sees us, who says, 'I am here with you.' That's what SAYes is about.";
-    } else if (q.includes('stage') || q.includes('acting') || q.includes('blanche')) {
-      fallbackText = "Acting is a high-wire act of extreme empathy. It is taking off your skin to wear someone else's, finding where their pain meets your own. On stage, there is nowhere to hide.";
-    }
+    console.error('Gemini call failed:', err.message || err);
     res.json({
       text: fallbackText,
       source: 'fallback',
-      warning: process.env.GEMINI_API_KEY ? undefined : 'Live Gemini AI mode is unconfigured.'
     });
   }
 });
@@ -689,6 +738,11 @@ app.post('/api/ai-polish-sincerity', async (req, res) => {
   const { text } = req.body;
   if (!text || !text.trim()) return res.status(400).json({ error: 'Text to polish is required.' });
 
+  if (!isGeminiConfigured()) {
+    const fallbackPolished = `With deep respect for Gillian Anderson's humanitarian advocacy and outstanding creative career, I am incredibly humbled to present this sincere proposal. ${text} We are deeply committed to honoring her boundaries and supporting her charitable work, hoping to establish a genuinely inspiring connection.`;
+    return res.json({ text: fallbackPolished, source: 'fallback' });
+  }
+
   try {
     const ai = getGeminiClient();
     const prompt = `You are an AI assistant helping a fan or charity organizer refine their 'Sincerity Pledge' to meet actress and activist Gillian Anderson.
@@ -696,11 +750,15 @@ They wrote the following draft: "${text}"
 
 Please rewrite this draft to be extremely polite, elegant, heartfelt, and highly articulate. It should convey deep sincerity and respect for Gillian's time, advocacy, and boundaries, emphasizing creative or humanitarian motives. Keep it concise (1-2 short, high-impact paragraphs), natural, and expressive. Return only the polished text, with no extra commentary, introductory phrases, or surrounding quotes.`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.5-flash',
-      contents: prompt,
-      config: { temperature: 0.7 }
-    });
+    const response = await withTimeout(
+      ai.models.generateContent({
+        model: 'gemini-3.5-flash',
+        contents: prompt,
+        config: { temperature: 0.7 }
+      }),
+      10000,
+      'Gemini polish'
+    );
 
     const polishedText = response.text ? response.text.trim() : text;
     res.json({ text: polishedText, source: 'gemini' });
@@ -716,6 +774,13 @@ app.post('/api/ai-suggest-offer', async (req, res) => {
   if (!proposal) return res.status(400).json({ error: 'Proposal details are required.' });
 
   const { type, member, preferredDate, location, attendees, sincerity } = proposal;
+
+  const assessment = `This proposal for a ${type || 'interaction'} is currently under standard review. The motivation shows genuine admiration.`;
+  const draft = `Dear ${member || 'Member'},\n\nThank you for sharing this heartfelt proposal. We are incredibly grateful for your support of Gillian's work and her mentoring campaigns.\n\nOur team is reviewing the logistics for ${location || 'your location'} on ${preferredDate || 'the requested timeline'} to see how we might align this. We will get back to you with further updates here soon.\n\nWarmly,\nSarah\nGillian Anderson Management`;
+
+  if (!isGeminiConfigured()) {
+    return res.json({ analysis: assessment, suggestion: draft, source: 'fallback' });
+  }
 
   try {
     const ai = getGeminiClient();
@@ -738,32 +803,30 @@ app.post('/api/ai-suggest-offer', async (req, res) => {
     }
     Do not wrap the JSON response in markdown code blocks. Return only the raw JSON.`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.5-flash',
-      contents: prompt,
-      config: {
-        temperature: 0.6,
-        responseMimeType: 'application/json',
-      }
-    });
+    const response = await withTimeout(
+      ai.models.generateContent({
+        model: 'gemini-3.5-flash',
+        contents: prompt,
+        config: {
+          temperature: 0.6,
+          responseMimeType: 'application/json',
+        }
+      }),
+      10000,
+      'Gemini suggest-offer'
+    );
 
-    let result = { analysis: '', suggestion: '' };
+    let result = { analysis: assessment, suggestion: draft };
     if (response.text) {
       try {
         result = JSON.parse(response.text.trim());
       } catch (e) {
         console.error('Error parsing Gemini JSON:', e);
-        result = {
-          analysis: 'The proposal appears to be sincere and highlights a strong respect for Gillian\'s artistic work and advocacy.',
-          suggestion: `Dear ${member || 'Member'},\n\nThank you so much for submitting your thoughtful proposal for a ${type || 'interaction'}. Gillian's team has received it, and we are incredibly moved by your sincerity.\n\nWe are currently reviewing schedule alignments for ${preferredDate || 'your preferred date'} and will follow up here on your secure bridge shortly.\n\nWarmly,\nSarah (Management)`
-        };
       }
     }
     res.json({ ...result, source: 'gemini' });
   } catch (err) {
     console.error('AI suggest offer failed:', err);
-    const assessment = `This proposal for a ${type || 'interaction'} is currently under standard review. The motivation shows genuine admiration.`;
-    const draft = `Dear ${member || 'Member'},\n\nThank you for sharing this heartfelt proposal. We are incredibly grateful for your support of Gillian's work and her mentoring campaigns.\n\nOur team is reviewing the logistics for ${location || 'your location'} on ${preferredDate || 'the requested timeline'} to see how we might align this. We will get back to you with further updates here soon.\n\nWarmly,\nSarah\nGillian Anderson Management`;
     res.json({ analysis: assessment, suggestion: draft, source: 'fallback' });
   }
 });

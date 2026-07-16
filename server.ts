@@ -982,7 +982,21 @@ app.get('/api/content', async (_req, res) => {
       charityCauses: causesRes.data,
       charityPartners: partnersRes.data,
       membershipTiers: tiersRes.data,
-      experiences: expRes.data,
+      experiences: (expRes.data || []).map((e: any) => ({
+        id: e.id,
+        title: e.title,
+        category: e.category || 'Meet & Greet',
+        tier: e.tier || 'Gold',
+        duration: e.duration,
+        location: e.location,
+        price: e.price || 'Complimentary',
+        spots: e.spots || 10,
+        spotsTaken: e.spots_taken || 0,
+        description: e.description,
+        details: e.details || [],
+        image: e.image || '',
+        popular: e.popular || false,
+      })),
       filmsData: filmsRes.data,
       literaryWorks: litRes.data,
       kindnessLog: kindnessRes.data,
@@ -1189,10 +1203,112 @@ app.post('/api/admin/comm-logs', async (req, res) => {
   res.json({ success: true, log: data });
 });
 
+// ─── Experience Booking Flow ────────────────────────────────
+
+// Helper to map DB row to ExperienceBooking
+function mapBooking(r: any) {
+  return {
+    id: r.id,
+    experienceId: r.experience_id || '',
+    experienceTitle: r.experience_title,
+    fullName: r.full_name || '',
+    email: r.email || '',
+    phone: r.phone || '',
+    country: r.country || '',
+    city: r.city || '',
+    preferredDate: r.preferred_date || '',
+    preferredTime: r.preferred_time || '',
+    participants: r.participants || 1,
+    specialRequests: r.special_requests || '',
+    communicationMethod: r.communication_method || 'email',
+    story: r.story || '',
+    status: r.status || 'pending',
+    statusText: r.status_text || 'Pending',
+    confirmedDate: r.confirmed_date || '',
+    confirmedTime: r.confirmed_time || '',
+    confirmedLocation: r.confirmed_location || '',
+    adminNotes: r.admin_notes || '',
+    submittedDate: r.submitted_date || '',
+  };
+}
+
+// Admin: get all bookings
 app.get('/api/admin/experience-requests', async (_req, res) => {
   const { data, error } = await supabase.from('experience_requests').select('*').order('created_at', { ascending: false });
   if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+  res.json((data || []).map(mapBooking));
+});
+
+// Admin: update booking status/details
+app.post('/api/admin/experience-requests/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status, statusText, confirmedDate, confirmedTime, confirmedLocation, adminNotes } = req.body;
+  const updateData: any = {};
+  if (status !== undefined) updateData.status = status;
+  if (statusText !== undefined) updateData.status_text = statusText;
+  if (confirmedDate !== undefined) updateData.confirmed_date = confirmedDate;
+  if (confirmedTime !== undefined) updateData.confirmed_time = confirmedTime;
+  if (confirmedLocation !== undefined) updateData.confirmed_location = confirmedLocation;
+  if (adminNotes !== undefined) updateData.admin_notes = adminNotes;
+
+  try {
+    const { data, error } = await supabase.from('experience_requests').update(updateData).eq('id', id).select('*').single();
+    if (error) throw error;
+    res.json({ success: true, booking: mapBooking(data) });
+  } catch (err) {
+    console.error('Booking update error:', err);
+    res.status(500).json({ error: 'Failed to update booking.' });
+  }
+});
+
+// Public: submit a full booking
+app.post('/api/experience-requests', async (req, res) => {
+  const {
+    experienceId, experienceTitle, fullName, email, phone, country, city,
+    preferredDate, preferredTime, participants, specialRequests,
+    communicationMethod, story,
+  } = req.body;
+
+  if (!experienceId || !fullName || !email) {
+    return res.status(400).json({ error: 'Experience ID, full name, and email are required.' });
+  }
+
+  const id = `exp-req-${Date.now()}`;
+  const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  try {
+    const { data, error } = await supabase.from('experience_requests').insert({
+      id,
+      experience_title: experienceTitle || 'Unknown Experience',
+      full_name: fullName,
+      email,
+      phone: phone || '',
+      country: country || '',
+      city: city || '',
+      preferred_date: preferredDate || '',
+      preferred_time: preferredTime || '',
+      participants: participants || 1,
+      special_requests: specialRequests || '',
+      communication_method: communicationMethod || 'email',
+      story: story || '',
+      status: 'pending',
+      status_text: 'Pending',
+      submitted_date: dateStr,
+      member_name: fullName,
+      member_avatar: fullName.substring(0, 2).toUpperCase(),
+    }).select('*').single();
+    if (error) throw error;
+    res.json({ success: true, booking: mapBooking(data) });
+  } catch (err) {
+    console.error('Booking error:', err);
+    res.status(500).json({ error: 'Failed to submit booking.' });
+  }
+});
+
+// Public: get all bookings
+app.get('/api/experience-requests', async (_req, res) => {
+  const { data, error } = await supabase.from('experience_requests').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json((data || []).map(mapBooking));
 });
 
 app.get('/api/donations', async (_req, res) => {

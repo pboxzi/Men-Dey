@@ -1,151 +1,147 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Experience, ExperienceBooking } from '../types';
+import BookingModal from './BookingModal';
 import {
   Sparkles,
   Award,
-  Calendar,
-  Send,
   CheckCircle,
-  FileText,
   Clock,
   ShieldCheck,
+  Users,
+  MapPin,
+  Timer,
+  Star,
+  X,
   ChevronRight,
-  UserCheck,
-  Info
+  Heart,
+  Palette,
+  Compass,
+  BookOpen,
+  Camera,
+  Eye,
+  Ticket,
+  UserCheck
 } from 'lucide-react';
 
-interface Experience {
-  id: string;
-  title: string;
-  duration: string;
-  location: string;
-  intensity: string;
-  capacity: string;
-  description: string;
-  details: string[];
-}
+const CATEGORIES = [
+  { id: 'ALL', label: 'ALL', icon: Sparkles },
+  { id: 'Meet & Greet', label: 'MEET & GREET', icon: Users },
+  { id: 'Creative', label: 'CREATIVE', icon: Palette },
+  { id: 'Philanthropy', label: 'PHILANTHROPY', icon: Heart },
+  { id: 'Adventure', label: 'ADVENTURE', icon: Compass },
+  { id: 'Literary', label: 'LITERARY', icon: BookOpen },
+  { id: 'Behind-the-Scenes', label: 'BEHIND-THE-SCENES', icon: Camera },
+];
+
+const TIER_COLORS: Record<string, string> = {
+  Gold: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+  Platinum: 'bg-slate-300/10 text-slate-300 border-slate-400/20',
+  Diamond: 'bg-cyan-400/10 text-cyan-300 border-cyan-400/20',
+};
+
+const CATEGORY_COLORS: Record<string, string> = {
+  'Meet & Greet': 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+  Creative: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  Philanthropy: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  Adventure: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+  Literary: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  'Behind-the-Scenes': 'bg-teal-500/10 text-teal-400 border-teal-500/20',
+};
 
 export default function ExperiencesSection() {
-  const [selectedExperience, setSelectedExperience] = useState<string>('exp-1');
-  const [submittedRequests, setSubmittedRequests] = useState<any[]>([
-    {
-      id: 'req-initial-1',
-      experienceTitle: 'West End Stage: Private Acting Masterclass',
-      story: 'I have been studying dramatic theater for over ten years and have always dreamed of learning character posture and physical presence from Gillian Anderson.',
-      status: 'reviewing',
-      statusText: 'Under Artistic Review',
-      date: 'May 10, 2024',
-    },
-    {
-      id: 'req-initial-2',
-      experienceTitle: 'SAYes Mentoring: Cape Town Retreat',
-      story: 'Looking to launch a youth transition shelter in my city. Cooperating and getting advice from Gillian and the SAYes team in South Africa would complete this vision.',
-      status: 'approved',
-      statusText: 'Scheduling Consultation',
-      date: 'April 22, 2024',
-    }
-  ]);
+  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [activeCategory, setActiveCategory] = useState('ALL');
+  const [selectedExp, setSelectedExp] = useState<Experience | null>(null);
+  const [showDetail, setShowDetail] = useState(false);
+  const [showBooking, setShowBooking] = useState(false);
+  const [activeTab, setActiveTab] = useState<'browse' | 'bookings'>('browse');
+  const [bookings, setBookings] = useState<ExperienceBooking[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [story, setStory] = useState('');
-  const [proof, setProof] = useState('');
-  const [reqSuccess, setReqSuccess] = useState(false);
-
-  const experiences: Experience[] = [
-    {
-      id: 'exp-1',
-      title: 'West End Stage: Private Acting Masterclass',
-      duration: '2 Days',
-      location: 'London, UK',
-      intensity: 'High Intensity',
-      capacity: '2 Fans per session',
-      description: 'Train with actual West End directors and Gillian Anderson. Learn character posture, vocal projection, emotional depth, and rehearse an intense scene together on stage.',
-      details: [
-        'Vocal projection & cadence training',
-        'Physical presence & emotional breathing mechanics',
-        'Intimate character table reading',
-        'Professional video of your staged dialogue'
-      ]
-    },
-    {
-      id: 'exp-2',
-      title: 'The X-Files: Sci-Fi Forensic Hunt',
-      duration: '3 Days',
-      location: 'Vancouver, BC',
-      intensity: 'Medium Intensity',
-      capacity: '3 Fans per session',
-      description: 'Join a mock forensic investigative team in the Pacific Northwest woods. Analyze scientific anomalies and practice skeptic forensic investigations guided by Agent Scully\'s analytical principles.',
-      details: [
-        'Mock crime scene investigation & evidence gathering',
-        'Skeptical scientific methodology seminar',
-        'Rain-soaked night tracking exercises',
-        'Commemorative FBI-styled badge and field file'
-      ]
-    },
-    {
-      id: 'exp-3',
-      title: 'SAYes Mentoring: Cape Town Retreat',
-      duration: '5 Days',
-      location: 'Cape Town, SA',
-      intensity: 'Low Intensity',
-      capacity: '2 Fans per session',
-      description: 'Join Gillian Anderson and the executive team of SAYes in South Africa. Participate in mentoring workshops, meet care transitioning youth, and attend their private annual fundraiser gala.',
-      details: [
-        'Mentorship certification & training workshop',
-        'Co-designing youth transition pathways',
-        'Round-table dinner with Gillian and SAYes directors',
-        'VIP access to the Cape Town Gala'
-      ]
-    },
-    {
-      id: 'exp-4',
-      title: 'We Manifesto: Cozy Literary Dialogue',
-      duration: '1 Day',
-      location: 'London, UK',
-      intensity: 'Low Intensity',
-      capacity: '4 Fans per session',
-      description: 'Sit down with Gillian Anderson and co-author Jennifer Nadel in a cozy private London library. Read excerpts, discuss the nine principles of self-worth, and explore women\'s advocacy.',
-      details: [
-        'Private book circle reading & discussion',
-        'Guided self-compassion exercises',
-        'Afternoon tea and personal Q&A',
-        'Signed deluxe edition of the "We" Manifesto'
-      ]
-    }
-  ];
-
-  const handleRequestSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!story || !selectedExperience) return;
-
-    const currentExp = experiences.find((e) => e.id === selectedExperience);
-    if (!currentExp) return;
-
-    const newReq = {
-      id: `req-${Date.now()}`,
-      experienceTitle: currentExp.title,
-      story: story.trim(),
-      status: 'pending',
-      statusText: 'Team Read / Queueing',
-      date: 'Just now'
+  // Fetch experiences from API on mount
+  React.useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [contentRes, bookingsRes] = await Promise.all([
+          fetch('/api/content'),
+          fetch('/api/experience-requests'),
+        ]);
+        if (contentRes.ok) {
+          const data = await contentRes.json();
+          setExperiences(data.experiences || []);
+        }
+        if (bookingsRes.ok) {
+          const data = await bookingsRes.json();
+          setBookings(data || []);
+        }
+      } catch (err) {
+        console.error('Failed to load experiences:', err);
+      } finally {
+        setLoading(false);
+      }
     };
+    loadData();
+  }, []);
 
-    setSubmittedRequests([newReq, ...submittedRequests]);
-    setStory('');
-    setProof('');
-    setReqSuccess(true);
+  const filteredExperiences = useMemo(() => {
+    if (activeCategory === 'ALL') return experiences;
+    return experiences.filter(e => e.category === activeCategory);
+  }, [experiences, activeCategory]);
 
-    setTimeout(() => {
-      setReqSuccess(false);
-    }, 4000);
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = { ALL: experiences.length };
+    experiences.forEach(e => {
+      counts[e.category] = (counts[e.category] || 0) + 1;
+    });
+    return counts;
+  }, [experiences]);
+
+  const stats = useMemo(() => ({
+    total: experiences.length,
+    popular: experiences.filter(e => e.popular).length,
+    available: experiences.reduce((sum, e) => sum + (e.spots - e.spotsTaken), 0),
+    categories: new Set(experiences.map(e => e.category)).size,
+  }), [experiences]);
+
+  const openDetail = (exp: Experience) => {
+    setSelectedExp(exp);
+    setShowDetail(true);
   };
 
-  const activeExpObj = experiences.find((e) => e.id === selectedExperience) || experiences[0];
+  const openBooking = (exp: Experience) => {
+    setSelectedExp(exp);
+    setShowDetail(false);
+    setShowBooking(true);
+  };
+
+  const handleBookingSuccess = (booking: ExperienceBooking) => {
+    setBookings(prev => [booking, ...prev]);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'text-emerald-500';
+      case 'completed': return 'text-blue-500';
+      case 'cancelled': return 'text-red-400';
+      default: return 'text-amber-500';
+    }
+  };
+
+  const getStatusDot = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-emerald-500';
+      case 'completed': return 'bg-blue-500';
+      case 'cancelled': return 'bg-red-400';
+      default: return 'bg-amber-500';
+    }
+  };
 
   return (
     <section id="experiences-page" className="bg-[#050505] py-20 px-4 md:px-6 relative min-h-[900px]">
       <div className="absolute right-10 top-1/3 h-96 w-96 rounded-full bg-gold-500/5 blur-[120px] pointer-events-none" />
 
-      <div className="mx-auto max-w-6xl space-y-12">
+      <div className="mx-auto max-w-7xl space-y-10">
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[10px] font-mono tracking-widest uppercase">
@@ -156,83 +152,329 @@ export default function ExperiencesSection() {
             Exalted <span className="text-gold-500">Experiences</span>
           </h2>
           <p className="text-xs md:text-sm text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed">
-            Gillian believes in deep, authentic human experiences. Submit your request for an immersive, fully funded journey aligning with dramatic theater, scientific skepticism, mentorship, or literary discussion.
+            Choose from 40+ curated experiences across meet-and-greets, creative workshops, philanthropy, adventure, literary events, and behind-the-scenes access.
           </p>
         </div>
 
-        {/* Dynamic Experiences Bento Grid */}
-        <div className="grid gap-8 lg:grid-cols-12 items-start">
-          {/* Experiences Cards Selection Sidebar - 5 Cols */}
-          <div className="lg:col-span-5 space-y-4 text-left">
-            <h3 className="font-serif text-sm tracking-widest text-neutral-400 uppercase font-bold border-b border-neutral-900 pb-3">
-              SELECT EXPERIENCE PRESET
-            </h3>
+        {/* Stats Bar */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
+          {[
+            { icon: Ticket, value: stats.total, label: 'Experiences', color: 'text-gold-500' },
+            { icon: Star, value: stats.popular, label: 'Popular', color: 'text-amber-400' },
+            { icon: Users, value: stats.available, label: 'Spots Open', color: 'text-emerald-400' },
+            { icon: Compass, value: stats.categories, label: 'Categories', color: 'text-cyan-400' },
+          ].map((stat) => (
+            <div key={stat.label} className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-4 text-center space-y-1.5 hover:border-neutral-800 transition-colors">
+              <stat.icon className={`h-4 w-4 ${stat.color} mx-auto`} />
+              <span className={`block text-xl font-bold ${stat.color}`}>{stat.value}</span>
+              <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
+            </div>
+          ))}
+        </div>
 
-            <div className="grid gap-3">
-              {experiences.map((exp) => {
-                const isSelected = exp.id === selectedExperience;
+        {/* Tab Switch: Browse / My Bookings */}
+        <div className="flex justify-center">
+          <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-xl p-1">
+            {[
+              { id: 'browse' as const, label: 'Browse Experiences', icon: Sparkles },
+              { id: 'bookings' as const, label: `My Bookings (${bookings.length})`, icon: Ticket },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-5 py-2 rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-gold-500 text-neutral-950 font-bold'
+                    : 'text-neutral-500 hover:text-white'
+                }`}
+              >
+                <tab.icon className="h-3.5 w-3.5" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {activeTab === 'browse' ? (
+          <>
+            {/* Category Filter Tabs */}
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {CATEGORIES.map((cat) => {
+                const IconComp = cat.icon;
+                const count = categoryCounts[cat.id] || 0;
                 return (
                   <button
-                    key={exp.id}
-                    onClick={() => setSelectedExperience(exp.id)}
-                    className={`p-4 rounded-xl border text-left transition-all flex flex-col justify-between group cursor-pointer ${
-                      isSelected
-                        ? 'bg-gold-500/5 border-gold-500/40 shadow-lg'
-                        : 'bg-neutral-950/30 border-neutral-900 hover:border-neutral-800 hover:bg-neutral-950/80'
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-mono tracking-wider uppercase border transition-all ${
+                      activeCategory === cat.id
+                        ? 'bg-gold-500 border-gold-400 text-neutral-950 font-bold'
+                        : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
                     }`}
                   >
-                    <div className="flex justify-between items-start gap-3">
-                      <h4 className={`text-sm font-bold tracking-wide ${isSelected ? 'text-gold-500' : 'text-white group-hover:text-gold-500'}`}>
-                        {exp.title}
-                      </h4>
-                      <span className="text-[8px] font-mono border border-neutral-800 px-1.5 py-0.5 rounded bg-neutral-900 text-neutral-400 uppercase shrink-0">
-                        {exp.intensity}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-neutral-400 leading-relaxed mt-1.5 line-clamp-2">
-                      {exp.description}
-                    </p>
-                    <div className="flex items-center gap-3 text-[9px] font-mono text-neutral-500 mt-3 pt-2.5 border-t border-neutral-900/60">
-                      <span>LOCATION: {exp.location}</span>
-                      <span>•</span>
-                      <span>DURATION: {exp.duration}</span>
-                    </div>
+                    <IconComp className="h-3 w-3" />
+                    {cat.label}
+                    <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[8px] ${
+                      activeCategory === cat.id ? 'bg-neutral-950/20 text-neutral-950' : 'bg-neutral-900 text-neutral-500'
+                    }`}>
+                      {count}
+                    </span>
                   </button>
                 );
               })}
             </div>
-          </div>
 
-          {/* Active Experience Specification - 7 Cols */}
-          <div className="lg:col-span-7 space-y-6 text-left">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeExpObj.id}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
-                className="bg-neutral-950/40 border border-neutral-900 rounded-xl p-6 shadow-xl space-y-6"
-              >
-                {/* Visual Title */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-[10px] font-mono text-gold-500">
-                    <span>SEATS: {activeExpObj.capacity}</span>
-                    <span>•</span>
-                    <span>INTENSITY: {activeExpObj.intensity}</span>
+            {/* Experience Cards Grid */}
+            {loading ? (
+              <div className="text-center py-20">
+                <div className="h-8 w-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-xs text-neutral-500 mt-4 font-mono">Loading experiences...</p>
+              </div>
+            ) : filteredExperiences.length > 0 ? (
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredExperiences.map((exp) => {
+                  const spotsLeft = exp.spots - exp.spotsTaken;
+                  const isFull = spotsLeft <= 0;
+                  return (
+                    <motion.div
+                      key={exp.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="group bg-neutral-950/40 border border-neutral-900 rounded-xl overflow-hidden hover:border-gold-500/20 transition-all duration-300 hover:shadow-[0_0_20px_-5px_rgba(212,175,55,0.08)] flex flex-col"
+                    >
+                      {/* Card Header */}
+                      <div className="p-5 space-y-3 flex-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex flex-wrap gap-1.5">
+                            <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${TIER_COLORS[exp.tier] || TIER_COLORS.Gold}`}>
+                              {exp.tier}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || ''}`}>
+                              {exp.category}
+                            </span>
+                          </div>
+                          {exp.popular && (
+                            <span className="flex items-center gap-1 text-[8px] font-mono text-gold-500 bg-gold-500/10 px-1.5 py-0.5 rounded border border-gold-500/20 shrink-0">
+                              <Star className="h-2.5 w-2.5 fill-gold-500" />
+                              POPULAR
+                            </span>
+                          )}
+                        </div>
+
+                        <h3 className="font-serif text-sm font-bold text-white tracking-wide leading-snug">
+                          {exp.title}
+                        </h3>
+
+                        <p className="text-[11px] text-neutral-400 leading-relaxed line-clamp-3">
+                          {exp.description}
+                        </p>
+
+                        <div className="flex flex-wrap items-center gap-3 text-[9px] font-mono text-neutral-500 pt-2 border-t border-neutral-900/60">
+                          <span className="flex items-center gap-1">
+                            <MapPin className="h-2.5 w-2.5" />
+                            {exp.location}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Timer className="h-2.5 w-2.5" />
+                            {exp.duration}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Users className="h-2.5 w-2.5" />
+                            {spotsLeft} spot{spotsLeft !== 1 ? 's' : ''} left
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Card Footer */}
+                      <div className="px-5 pb-5 flex items-center justify-between">
+                        <span className="text-[10px] font-mono text-neutral-500">
+                          {exp.price === 'Complimentary' ? (
+                            <span className="text-emerald-400">Complimentary</span>
+                          ) : (
+                            exp.price
+                          )}
+                        </span>
+                        <button
+                          onClick={() => openDetail(exp)}
+                          disabled={isFull}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-mono tracking-wider uppercase transition-all ${
+                            isFull
+                              ? 'bg-neutral-900 text-neutral-600 cursor-not-allowed'
+                              : 'bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold'
+                          }`}
+                        >
+                          {isFull ? 'Full' : 'View & Book'}
+                          {!isFull && <ChevronRight className="h-3 w-3" />}
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-20 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10 space-y-3">
+                <div className="h-12 w-12 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto">
+                  <Sparkles className="h-5 w-5 text-neutral-600" />
+                </div>
+                <p className="text-sm text-neutral-500">No experiences in this category yet.</p>
+                <p className="text-[10px] text-neutral-600 font-mono">Check back soon or browse all categories.</p>
+              </div>
+            )}
+          </>
+        ) : (
+          /* ─── My Bookings Tab ──────────────────────────── */
+          <div className="space-y-4">
+            {bookings.length > 0 ? (
+              bookings.map((booking) => (
+                <div
+                  key={booking.id}
+                  className="p-5 rounded-xl border border-neutral-900 bg-neutral-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-neutral-800 transition-all"
+                >
+                  <div className="space-y-1.5 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-bold text-white tracking-wide">{booking.experienceTitle}</span>
+                      <span className="text-[8px] font-mono bg-neutral-900 border border-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded">
+                        {new Date(booking.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 text-[10px] text-neutral-400">
+                      <span>{booking.fullName}</span>
+                      <span className="text-neutral-700">|</span>
+                      <span>{booking.communicationMethod === 'whatsapp' ? 'WhatsApp' : 'Email'}</span>
+                    </div>
+                    {booking.specialRequests && (
+                      <p className="text-[11px] text-neutral-500 italic line-clamp-1 max-w-xl">
+                        "{booking.specialRequests}"
+                      </p>
+                    )}
+                    {booking.confirmedDate && (
+                      <div className="flex items-center gap-2 text-[10px] text-emerald-500 font-mono">
+                        <CheckCircle className="h-3 w-3" />
+                        Confirmed: {booking.confirmedDate} at {booking.confirmedTime} — {booking.confirmedLocation}
+                      </div>
+                    )}
                   </div>
-                  <h3 className="font-serif text-2xl font-extrabold text-white tracking-wide uppercase">
-                    {activeExpObj.title}
-                  </h3>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="relative flex h-2 w-2">
+                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${getStatusDot(booking.status)}`} />
+                      <span className={`relative inline-flex rounded-full h-2 w-2 ${getStatusDot(booking.status)}`} />
+                    </span>
+                    <span className={`text-[10px] font-mono font-bold tracking-wider uppercase ${getStatusColor(booking.status)}`}>
+                      {booking.status}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-20 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10 space-y-3">
+                <div className="h-12 w-12 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto">
+                  <Ticket className="h-5 w-5 text-neutral-600" />
+                </div>
+                <p className="text-sm text-neutral-500">No bookings yet.</p>
+                <p className="text-[10px] text-neutral-600 font-mono">Browse experiences and submit your first booking request.</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ─── Detail Modal ──────────────────────────────── */}
+      <AnimatePresence>
+        {showDetail && selectedExp && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowDetail(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-[#0a0a0a] border border-neutral-900 rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="p-6 border-b border-neutral-900 space-y-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap gap-1.5">
+                      <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${TIER_COLORS[selectedExp.tier] || TIER_COLORS.Gold}`}>
+                        {selectedExp.tier}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[selectedExp.category] || ''}`}>
+                        {selectedExp.category}
+                      </span>
+                      {selectedExp.popular && (
+                        <span className="flex items-center gap-1 text-[8px] font-mono text-gold-500 bg-gold-500/10 px-1.5 py-0.5 rounded border border-gold-500/20">
+                          <Star className="h-2.5 w-2.5 fill-gold-500" />
+                          POPULAR
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="font-serif text-xl font-extrabold text-white tracking-wide uppercase">
+                      {selectedExp.title}
+                    </h3>
+                  </div>
+                  <button
+                    onClick={() => setShowDetail(false)}
+                    className="p-2 rounded-lg bg-neutral-900 text-neutral-400 hover:text-white transition-colors shrink-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                 </div>
 
-                {/* Extended Details list */}
-                <div className="space-y-3 pt-3 border-t border-neutral-900/60">
+                <div className="flex flex-wrap items-center gap-4 text-[10px] font-mono text-neutral-400">
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3 text-gold-500" />
+                    {selectedExp.location}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Timer className="h-3 w-3 text-gold-500" />
+                    {selectedExp.duration}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Users className="h-3 w-3 text-gold-500" />
+                    {selectedExp.spots - selectedExp.spotsTaken} of {selectedExp.spots} spots open
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Ticket className="h-3 w-3 text-gold-500" />
+                    {selectedExp.price === 'Complimentary' ? (
+                      <span className="text-emerald-400">Complimentary</span>
+                    ) : selectedExp.price}
+                  </span>
+                </div>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 space-y-6">
+                <p className="text-xs text-neutral-300 leading-relaxed font-sans">
+                  {selectedExp.description}
+                </p>
+
+                {/* Spots Progress */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[9px] font-mono text-neutral-500">
+                    <span>SPOTS FILLED</span>
+                    <span>{selectedExp.spotsTaken}/{selectedExp.spots}</span>
+                  </div>
+                  <div className="h-1.5 bg-neutral-900 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-gold-500 to-amber-400 rounded-full transition-all"
+                      style={{ width: `${(selectedExp.spotsTaken / selectedExp.spots) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Details List */}
+                <div className="space-y-3">
                   <h4 className="text-[10px] font-mono text-neutral-400 tracking-wider uppercase font-semibold">
-                    INCLUDED EXPERIENTIAL MODULES:
+                    INCLUDED IN THIS EXPERIENCE:
                   </h4>
                   <ul className="space-y-2">
-                    {activeExpObj.details.map((detail, idx) => (
+                    {selectedExp.details.map((detail, idx) => (
                       <li key={idx} className="flex items-start gap-2.5 text-xs text-neutral-300">
                         <CheckCircle className="h-4 w-4 text-gold-500 shrink-0 mt-0.5" />
                         <span>{detail}</span>
@@ -241,118 +483,35 @@ export default function ExperiencesSection() {
                   </ul>
                 </div>
 
-                {/* Submitting form */}
-                <div className="pt-6 border-t border-neutral-900/60 space-y-4">
-                  <h4 className="font-serif text-sm font-bold text-white flex items-center gap-2">
-                    <FileText className="h-4.5 w-4.5 text-gold-500" />
-                    SUBMIT STORY & APPLICATION
-                  </h4>
-
-                  {reqSuccess && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="bg-gold-500/10 border border-gold-500/30 p-3.5 rounded-lg flex items-center gap-2 text-xs text-gold-500 font-serif italic"
-                    >
-                      <ShieldCheck className="h-4.5 w-4.5 text-gold-500 shrink-0" />
-                      <span>"Application received! Selection coordinators will review your files shortly."</span>
-                    </motion.div>
-                  )}
-
-                  <form onSubmit={handleRequestSubmit} className="space-y-4 text-xs">
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">
-                        WHY IS THIS EXPERIENTIAL REVERIE SIGNIFICANT TO YOUR JOURNEY? *
-                      </label>
-                      <textarea
-                        required
-                        rows={4}
-                        placeholder="Explain your alignment, your current aspirations, or how receiving this experience would empower your story. Be genuine..."
-                        value={story}
-                        onChange={(e) => setStory(e.target.value)}
-                        className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-white outline-none focus:border-gold-500/40 resize-none leading-relaxed"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">
-                        SUPPORTING PROOF / SOCIAL DETAILS (URL OR TEXT)
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Link to portfolio, training records, or professional socials..."
-                        value={proof}
-                        onChange={(e) => setProof(e.target.value)}
-                        className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-white outline-none focus:border-gold-500/40"
-                      />
-                    </div>
-
-                    <div className="p-3 bg-neutral-900/40 rounded-lg border border-neutral-900/60 flex items-start gap-2.5 text-[10px] text-neutral-400 leading-relaxed font-mono">
-                      <Info className="h-4 w-4 text-gold-500 shrink-0" />
-                      <span>Note: Gillian personally funds chosen experiences including travel, accommodation, and safety insurance. Applications are reviewed quarterly.</span>
-                    </div>
-
+                {/* Book Experience Button */}
+                {selectedExp.spots - selectedExp.spotsTaken > 0 && (
+                  <div className="pt-6 border-t border-neutral-900/60">
                     <button
-                      type="submit"
-                      className="w-full bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 rounded-lg tracking-widest uppercase transition-all flex items-center justify-center gap-1.5"
+                      onClick={() => openBooking(selectedExp)}
+                      className="w-full bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-3 rounded-lg tracking-widest uppercase transition-all flex items-center justify-center gap-2"
                     >
-                      <Send className="h-3.5 w-3.5" />
-                      SUBMIT REQUEST FILE
+                      <Ticket className="h-4 w-4" />
+                      BOOK THIS EXPERIENCE
                     </button>
-                  </form>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Live Tracking Dashboard */}
-        <div className="bg-neutral-950/40 border border-neutral-900 rounded-xl p-6 text-left space-y-5 shadow-xl">
-          <div className="flex items-center gap-2 border-b border-neutral-900 pb-3 justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4.5 w-4.5 text-gold-500" />
-              <h3 className="font-serif text-sm tracking-widest text-white uppercase font-bold">
-                YOUR APPLICATION TIMELINE
-              </h3>
-            </div>
-            <span className="text-[9px] font-mono text-neutral-500 uppercase">
-              REPORTS REFRESHED DAILY
-            </span>
-          </div>
-
-          <div className="space-y-4">
-            {submittedRequests.map((req) => (
-              <div
-                key={req.id}
-                className="p-4 rounded-xl border border-neutral-900 bg-neutral-950/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all hover:border-neutral-800"
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-white tracking-wide">{req.experienceTitle}</span>
-                    <span className="text-[8px] font-mono bg-neutral-900 border border-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded uppercase">
-                      {req.date}
-                    </span>
+                    <p className="text-[9px] text-neutral-600 font-mono text-center mt-2">
+                      Applications reviewed within 24-48 hours
+                    </p>
                   </div>
-                  <p className="text-[11px] text-neutral-400 italic line-clamp-1 max-w-xl">
-                    "{req.story}"
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="relative flex h-2 w-2">
-                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${req.status === 'approved' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-                    <span className={`relative inline-flex rounded-full h-2 w-2 ${req.status === 'approved' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                  </span>
-                  <span className={`text-[10px] font-mono font-bold tracking-wider uppercase ${req.status === 'approved' ? 'text-emerald-500' : 'text-amber-500'}`}>
-                    {req.statusText}
-                  </span>
-                </div>
+                )}
               </div>
-            ))}
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      </div>
+      {/* ─── Booking Modal ──────────────────────────────── */}
+      {showBooking && selectedExp && (
+        <BookingModal
+          experience={selectedExp}
+          onClose={() => setShowBooking(false)}
+          onSuccess={handleBookingSuccess}
+        />
+      )}
     </section>
   );
 }

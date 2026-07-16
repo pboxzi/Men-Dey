@@ -185,3 +185,55 @@ export interface CommentRow {
   parent_comment_id: string | null;
   created_at: string;
 }
+
+export interface Experience {
+  id: string;
+  title: string;
+  category: string;
+  tier: string;
+  duration: string;
+  location: string;
+  price: string;
+  spots: number;
+  spotsTaken: number;
+  description: string;
+  details: string[];
+  image: string;
+  popular: boolean;
+}
+
+export interface ExperienceRequest {
+  id: string;
+  experienceId: string;
+  experienceTitle: string;
+  memberName: string;
+  memberAvatar: string;
+  story: string;
+  status: string;
+  statusText: string;
+  submittedDate: string;
+}
+
+export interface ExperienceBooking {
+  id: string;
+  experienceId: string;
+  experienceTitle: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  country: string;
+  city: string;
+  preferredDate: string;
+  preferredTime: string;
+  participants: number;
+  specialRequests: string;
+  communicationMethod: 'whatsapp' | 'email';
+  story: string;
+  status: 'pending' | 'active' | 'completed' | 'cancelled';
+  statusText: string;
+  confirmedDate: string;
+  confirmedTime: string;
+  confirmedLocation: string;
+  adminNotes: string;
+  submittedDate: string;
+}

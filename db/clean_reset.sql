@@ -1,8 +1,26 @@
 -- ============================================
--- Gillian Anderson Portal — Unified Schema
+-- CLEAN RESET — Drop conflicting tables, then recreate
 -- ============================================
 
--- Helper: auto-update updated_at column
+-- Drop existing tables that conflict with our schema
+DROP TABLE IF EXISTS journal_comments CASCADE;
+DROP TABLE IF EXISTS proposal_chats CASCADE;
+DROP TABLE IF EXISTS discussion_replies CASCADE;
+DROP TABLE IF EXISTS discussions CASCADE;
+DROP TABLE IF EXISTS comments CASCADE;
+DROP TABLE IF EXISTS posts CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS memberships CASCADE;
+DROP TABLE IF EXISTS requests CASCADE;
+DROP TABLE IF EXISTS subscribers CASCADE;
+DROP TABLE IF EXISTS photos CASCADE;
+DROP TABLE IF EXISTS videos CASCADE;
+DROP TABLE IF EXISTS categories CASCADE;
+
+-- ============================================
+-- Now create all tables fresh
+-- ============================================
+
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -11,17 +29,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- ============================================
--- Media (videos, photos, categories)
--- ============================================
-
-CREATE TABLE IF NOT EXISTS categories (
+-- Categories
+CREATE TABLE categories (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS videos (
+-- Videos
+CREATE TABLE videos (
   id TEXT PRIMARY KEY,
   title TEXT NOT NULL,
   category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
@@ -33,7 +49,8 @@ CREATE TABLE IF NOT EXISTS videos (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS photos (
+-- Photos
+CREATE TABLE photos (
   id TEXT PRIMARY KEY,
   title TEXT NOT NULL,
   category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
@@ -47,31 +64,25 @@ CREATE TABLE IF NOT EXISTS photos (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_videos_category_id ON videos(category_id);
-CREATE INDEX IF NOT EXISTS idx_videos_sort_order ON videos(sort_order);
-CREATE INDEX IF NOT EXISTS idx_photos_category_id ON photos(category_id);
-CREATE INDEX IF NOT EXISTS idx_photos_sort_order ON photos(sort_order);
+CREATE INDEX idx_videos_category_id ON videos(category_id);
+CREATE INDEX idx_videos_sort_order ON videos(sort_order);
+CREATE INDEX idx_photos_category_id ON photos(category_id);
+CREATE INDEX idx_photos_sort_order ON photos(sort_order);
 
 CREATE TRIGGER trg_videos_updated_at BEFORE UPDATE ON videos
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER trg_photos_updated_at BEFORE UPDATE ON photos
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- ============================================
 -- Subscribers
--- ============================================
-
-CREATE TABLE IF NOT EXISTS subscribers (
+CREATE TABLE subscribers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT NOT NULL UNIQUE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ============================================
 -- Requests
--- ============================================
-
-CREATE TABLE IF NOT EXISTS requests (
+CREATE TABLE requests (
   id TEXT PRIMARY KEY,
   type TEXT NOT NULL,
   member TEXT NOT NULL,
@@ -89,11 +100,8 @@ CREATE TABLE IF NOT EXISTS requests (
 CREATE TRIGGER trg_requests_updated_at BEFORE UPDATE ON requests
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- ============================================
 -- Memberships
--- ============================================
-
-CREATE TABLE IF NOT EXISTS memberships (
+CREATE TABLE memberships (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL,
@@ -106,11 +114,8 @@ CREATE TABLE IF NOT EXISTS memberships (
 CREATE TRIGGER trg_memberships_updated_at BEFORE UPDATE ON memberships
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- ============================================
 -- Orders
--- ============================================
-
-CREATE TABLE IF NOT EXISTS orders (
+CREATE TABLE orders (
   id TEXT PRIMARY KEY,
   member TEXT NOT NULL,
   member_avatar TEXT NOT NULL DEFAULT '',
@@ -124,11 +129,8 @@ CREATE TABLE IF NOT EXISTS orders (
 CREATE TRIGGER trg_orders_updated_at BEFORE UPDATE ON orders
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- ============================================
--- Posts & Comments
--- ============================================
-
-CREATE TABLE IF NOT EXISTS posts (
+-- Posts
+CREATE TABLE posts (
   id TEXT PRIMARY KEY,
   username TEXT NOT NULL,
   handle TEXT NOT NULL DEFAULT '',
@@ -145,7 +147,8 @@ CREATE TABLE IF NOT EXISTS posts (
 CREATE TRIGGER trg_posts_updated_at BEFORE UPDATE ON posts
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TABLE IF NOT EXISTS comments (
+-- Comments
+CREATE TABLE comments (
   id TEXT PRIMARY KEY,
   post_id TEXT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
   username TEXT NOT NULL,
@@ -155,14 +158,11 @@ CREATE TABLE IF NOT EXISTS comments (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
-CREATE INDEX IF NOT EXISTS idx_comments_parent_id ON comments(parent_comment_id);
+CREATE INDEX idx_comments_post_id ON comments(post_id);
+CREATE INDEX idx_comments_parent_id ON comments(parent_comment_id);
 
--- ============================================
--- Discussions & Replies
--- ============================================
-
-CREATE TABLE IF NOT EXISTS discussions (
+-- Discussions
+CREATE TABLE discussions (
   id TEXT PRIMARY KEY,
   country TEXT NOT NULL,
   author TEXT NOT NULL,
@@ -170,9 +170,10 @@ CREATE TABLE IF NOT EXISTS discussions (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_discussions_country ON discussions(country);
+CREATE INDEX idx_discussions_country ON discussions(country);
 
-CREATE TABLE IF NOT EXISTS discussion_replies (
+-- Discussion Replies
+CREATE TABLE discussion_replies (
   id TEXT PRIMARY KEY,
   discussion_id TEXT NOT NULL REFERENCES discussions(id) ON DELETE CASCADE,
   author TEXT NOT NULL,
@@ -180,13 +181,10 @@ CREATE TABLE IF NOT EXISTS discussion_replies (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_discussion_replies_discussion_id ON discussion_replies(discussion_id);
+CREATE INDEX idx_discussion_replies_discussion_id ON discussion_replies(discussion_id);
 
--- ============================================
--- Proposal Chats (request ↔ management)
--- ============================================
-
-CREATE TABLE IF NOT EXISTS proposal_chats (
+-- Proposal Chats
+CREATE TABLE proposal_chats (
   id TEXT PRIMARY KEY,
   request_id TEXT NOT NULL REFERENCES requests(id) ON DELETE CASCADE,
   sender TEXT NOT NULL CHECK (sender IN ('management', 'user', 'system')),
@@ -194,13 +192,10 @@ CREATE TABLE IF NOT EXISTS proposal_chats (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_proposal_chats_request_id ON proposal_chats(request_id);
+CREATE INDEX idx_proposal_chats_request_id ON proposal_chats(request_id);
 
--- ============================================
 -- Journal Comments
--- ============================================
-
-CREATE TABLE IF NOT EXISTS journal_comments (
+CREATE TABLE journal_comments (
   id TEXT PRIMARY KEY,
   journal_id TEXT NOT NULL,
   author TEXT NOT NULL,
@@ -208,7 +203,7 @@ CREATE TABLE IF NOT EXISTS journal_comments (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX IF NOT EXISTS idx_journal_comments_journal_id ON journal_comments(journal_id);
+CREATE INDEX idx_journal_comments_journal_id ON journal_comments(journal_id);
 
 -- ============================================
 -- RLS Policies

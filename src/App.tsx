@@ -309,6 +309,19 @@ export default function App() {
     else if (mode === 'admin') window.location.hash = '#ADMIN';
   };
 
+  // New structured navigation for the Portal and Admin sections
+  const handleSectionNavigation = (section: 'portal' | 'admin', category?: string, item?: string) => {
+    if (section === 'portal') {
+      window.location.hash = '#PORTAL';
+    } else if (section === 'admin') {
+      window.location.hash = '#ADMIN';
+      // Dispatch a custom event to set admin navigation if needed
+      window.dispatchEvent(new CustomEvent('adminNavigation', {
+        detail: { category, item }
+      }));
+    }
+  };
+
   const activeSlide = HERO_SLIDES[currentSlideIdx];
 
   // Hero entry animation variants with elegant spring stiffness and stagger

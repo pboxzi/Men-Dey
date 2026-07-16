@@ -100,3 +100,87 @@ export interface CharityItem {
   description: string;
   focus: string;
 }
+
+export interface Subscriber {
+  id: string;
+  email: string;
+  created_at: string;
+}
+
+export interface Request {
+  id: string;
+  type: string;
+  member: string;
+  member_avatar: string;
+  status: 'In Discussion' | 'Submitted' | 'Under Review' | 'Offer Made' | 'Payment Requested' | 'Confirmed' | 'Completed';
+  preferred_date: string;
+  location: string;
+  attendees: string;
+  whatsapp_number: string;
+  sincerity: string;
+  submitted_on: string;
+  updated_at: string;
+}
+
+export interface Membership {
+  id: string;
+  name: string;
+  email: string;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  tier: 'Gold' | 'Platinum';
+  applied_on: string;
+  updated_at: string;
+}
+
+export interface Order {
+  id: string;
+  member: string;
+  member_avatar: string;
+  item: string;
+  status: 'Payment Requested' | 'Confirmed' | 'Preparing' | 'Shipped' | 'Delivered';
+  price: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DiscussionPost {
+  id: string;
+  country: string;
+  author: string;
+  text: string;
+  created_at: string;
+}
+
+export interface DiscussionReply {
+  id: string;
+  discussion_id: string;
+  author: string;
+  text: string;
+  created_at: string;
+}
+
+export interface ProposalMessage {
+  id: string;
+  request_id: string;
+  sender: 'management' | 'user' | 'system';
+  text: string;
+  created_at: string;
+}
+
+export interface JournalComment {
+  id: string;
+  journal_id: string;
+  author: string;
+  text: string;
+  created_at: string;
+}
+
+export interface CommentRow {
+  id: string;
+  post_id: string;
+  username: string;
+  avatar_text: string;
+  content: string;
+  parent_comment_id: string | null;
+  created_at: string;
+}

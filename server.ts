@@ -4,406 +4,23 @@
  */
 
 import express from 'express';
-import fs from 'fs';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
-import pg from 'pg';
+import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const pgPool = new pg.Pool({
-  user: process.env.PGUSER || 'postgres',
-  password: process.env.PGPASSWORD || 'postgres',
-  host: process.env.PGHOST || 'localhost',
-  port: parseInt(process.env.PGPORT || '5432'),
-  database: process.env.PGDATABASE || 'gillian_portal',
-});
+const supabase = createClient(
+  process.env.SUPABASE_URL || 'https://wmhndjdxvxtozeyesvsy.supabase.co',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || ''
+);
 
 const app = express();
 app.use(express.json());
 
 const PORT = 3000;
-const DB_PATH = path.join(process.cwd(), 'data', 'db.json');
-
-// Helper to load database
-function readDB() {
-  try {
-    if (fs.existsSync(DB_PATH)) {
-      const data = fs.readFileSync(DB_PATH, 'utf-8');
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.error('Error reading database file, using fallback seed.', error);
-  }
-  return seedAndGet();
-}
-
-// Helper to save database
-function writeDB(data: any) {
-  try {
-    const dataDir = path.dirname(DB_PATH);
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
-    }
-    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (error) {
-    console.error('Error writing to database file.', error);
-  }
-}
-
-// Initialize and return default seed data if no db.json exists
-function seedAndGet() {
-  const seedData = {
-    subscribers: [
-      "maria.garcia@gmail.com",
-      "emma.wilson@gmail.com",
-      "james.carter@gmail.com"
-    ],
-    memberships: [
-      { id: 'MEM-APP-001', name: 'Maria Garcia', email: 'maria@example.com', status: 'Pending', appliedOn: 'May 15, 2024', tier: 'Gold' },
-      { id: 'MEM-APP-002', name: 'James Carter', email: 'james@example.com', status: 'Pending', appliedOn: 'May 16, 2024', tier: 'Gold' }
-    ],
-    requests: [
-      {
-        id: 'GA-REQ-000145',
-        type: 'Meet & Greet',
-        member: 'John Smith',
-        memberAvatar: 'JS',
-        status: 'In Discussion',
-        updated: '20 min ago',
-        preferredDate: 'July 10-15, 2024',
-        location: 'Los Angeles, USA',
-        attendees: '2 People',
-        whatsappNumber: '+1 (555) 123-4567',
-        submittedOn: 'May 15, 2024, 10:30 AM',
-        lastUpdated: 'May 20, 2024, 04:15 PM',
-        sincerity: "I have been supporting youth mentoring for five years, inspired directly by Gillian's compassionate advocacy. Meeting her would inspire our mentoring teams endlessly."
-      },
-      {
-        id: 'GA-REQ-000144',
-        type: 'Birthday Greeting',
-        member: 'Maria Garcia',
-        memberAvatar: 'MG',
-        status: 'Under Review',
-        updated: '1 hour ago',
-        preferredDate: 'August 04, 2024',
-        location: 'Virtual / Pre-recorded',
-        attendees: '1 Person',
-        whatsappNumber: '+1 (555) 987-6543',
-        submittedOn: 'May 14, 2024, 09:15 AM',
-        lastUpdated: 'May 15, 2024, 11:00 AM',
-        sincerity: "Maria is turning 30 and is a major X-Files and stage play fan."
-      },
-      {
-        id: 'GA-REQ-000143',
-        type: 'Video Message',
-        member: 'David Lee',
-        memberAvatar: 'DL',
-        status: 'Offer Made',
-        updated: '2 hours ago',
-        preferredDate: 'Immediate',
-        location: 'Email Delivery',
-        attendees: '1 Person',
-        whatsappNumber: '+1 (555) 456-7890',
-        submittedOn: 'May 12, 2024, 02:30 PM',
-        lastUpdated: 'May 13, 2024, 03:00 PM',
-        sincerity: "A dynamic shoutout for David's film study graduation."
-      },
-      {
-        id: 'GA-REQ-000142',
-        type: 'Interview Request',
-        member: 'Sophie Martin',
-        memberAvatar: 'SM',
-        status: 'Payment Requested',
-        updated: '3 hours ago',
-        preferredDate: 'September 12, 2024',
-        location: 'Paris, France',
-        attendees: '3 People',
-        whatsappNumber: '+33 6 1234 5678',
-        submittedOn: 'May 10, 2024, 11:30 AM',
-        lastUpdated: 'May 11, 2024, 01:00 PM',
-        sincerity: "Interview regarding the philosophy of film."
-      },
-      {
-        id: 'GA-REQ-000141',
-        type: 'Business Inquiry',
-        member: 'Alex Johnson',
-        memberAvatar: 'AJ',
-        status: 'Submitted',
-        updated: '4 hours ago',
-        preferredDate: 'Not specified',
-        location: 'London, UK',
-        attendees: '5 People',
-        whatsappNumber: '+44 20 7946 0958',
-        submittedOn: 'May 08, 2024, 08:30 AM',
-        lastUpdated: 'May 08, 2024, 08:30 AM',
-        sincerity: "Inquiry about potential stage adaptation partnership."
-      }
-    ],
-    orders: [
-      { id: 'GA-SHP-000285', member: 'Emma Wilson', memberAvatar: 'EW', item: 'Signed Script Copy', status: 'Payment Requested', updated: '30 min ago', price: '150.00' },
-      { id: 'GA-SHP-000284', member: 'James Carter', memberAvatar: 'JC', item: 'Nostalgia Retro Tee', status: 'Confirmed', updated: '1 hour ago', price: '35.00' },
-      { id: 'GA-SHP-000283', member: 'Olivia Brown', memberAvatar: 'OB', item: 'Signature Hoodie', status: 'Preparing', updated: '2 hours ago', price: '75.00' },
-      { id: 'GA-SHP-000282', member: 'Daniel Kim', memberAvatar: 'DK', item: 'We Manifesto Book', status: 'Shipped', updated: '5 hours ago', price: '49.00' },
-      { id: 'GA-SHP-000281', member: 'Liam Taylor', memberAvatar: 'LT', item: 'We Manifesto Cap', status: 'Delivered', updated: '1 day ago', price: '35.00' }
-    ],
-    posts: [
-      {
-        id: 'highlight-1',
-        username: 'ScullySkeptic',
-        handle: '@ScullySkeptic',
-        avatarText: 'SS',
-        image: "/src/assets/images/iceland_landscape_1782919139830.jpg",
-        content: "Took this scenic shot during my trip. It had that moody, mysterious X-Files atmosphere. Breathtaking and peaceful. 🌲🛸",
-        likes: 342,
-        replies: 24,
-        liked: false,
-        comments: [
-          {
-            id: 'c1',
-            username: 'DanaFan',
-            avatarText: 'DF',
-            content: 'Absolutely beautiful. Reminds me of the Oregon woods in the pilot!',
-            timestamp: '2 hours ago',
-            replies: [
-              { id: 'c1-r1', username: 'XFilesTraveler', avatarText: 'XT', content: 'You must check out Vancouver! The filming locations are unreal.', timestamp: '1 hour ago' },
-              { id: 'c1-r2', username: 'DanaFan', avatarText: 'DF', content: 'Adding it to my travel plans immediately!', timestamp: '45 mins ago' }
-            ]
-          },
-          {
-            id: 'c2',
-            username: 'GillianInspired',
-            avatarText: 'GI',
-            content: 'The lighting and fog are beautiful. Great composition!',
-            timestamp: '1 hour ago',
-            replies: []
-          }
-        ]
-      },
-      {
-        id: 'highlight-2',
-        username: 'ArtByMonica',
-        handle: '@ArtByMonica',
-        avatarText: 'AM',
-        image: "/src/assets/images/gillian_pencil_sketch_1783350359030.jpg",
-        content: "Gillian inspires me every single day. Here is my latest portrait drawing of her. 🎨 Graphite and charcoal on textured paper. Hope you like it!",
-        likes: 521,
-        replies: 33,
-        liked: false,
-        comments: [
-          {
-            id: 'c3',
-            username: 'SketchMaster',
-            avatarText: 'SM',
-            content: 'The shading is incredible. You captured her elegant and intelligent look perfectly.',
-            timestamp: '5 hours ago',
-            replies: [
-              { id: 'c3-r1', username: 'ArtByMonica', avatarText: 'AM', content: 'Thank you! The hair took almost 4 hours alone.', timestamp: '3 hours ago' }
-            ]
-          },
-          {
-            id: 'c4',
-            username: 'ScullyIsCool',
-            avatarText: 'SC',
-            content: 'This is breathtaking! Outstanding drawing of Gillian.',
-            timestamp: '4 hours ago',
-            replies: []
-          }
-        ]
-      },
-      {
-        id: 'highlight-3',
-        username: 'StageDoorDreamer',
-        handle: '@StageDoorDreamer',
-        avatarText: 'SD',
-        image: "/src/assets/images/gillian_theatre_rehearsal_1783349680324.jpg",
-        content: "A quick photo from the theater production set. Breathtaking to see how the stage magic is built layer by layer! 🎭🎬",
-        likes: 298,
-        replies: 18,
-        liked: false,
-        comments: [
-          {
-            id: 'c5',
-            username: 'TheaterGeek',
-            avatarText: 'TG',
-            content: 'You got to see the stage design?! That is absolutely excellent.',
-            timestamp: '1 day ago',
-            replies: [
-              { id: 'c5-r1', username: 'StageDoorDreamer', avatarText: 'SD', content: 'Yes, it was a dream come true. The theater crew is extremely skilled.', timestamp: '12 hours ago' }
-            ]
-          },
-          {
-            id: 'c6',
-            username: 'GraceAlways',
-            avatarText: 'GA',
-            content: 'So happy for you! Thanks for sharing this backstage view.',
-            timestamp: '18 hours ago',
-            replies: []
-          }
-        ]
-      }
-    ],
-    discussions: {
-      'New Zealand': [
-        {
-          id: 'nz1',
-          author: 'KiwiSeeker',
-          text: 'Rewatching the entire X-Files series tonight in Auckland. Absolute classics.',
-          time: '10 hours ago',
-          replies: []
-        }
-      ],
-      Japan: [
-        {
-          id: 'jp1',
-          author: 'TokyoSaito',
-          text: 'Gillian has such a deep appreciation for classical theater and independent cinema.',
-          time: '1 day ago',
-          replies: [
-            { id: 'jp1-r1', author: 'Thespian_47', text: 'Yes, her devotion to the craft of acting is highly admired here!', time: '18 hours ago' }
-          ]
-        }
-      ],
-      Germany: [
-        {
-          id: 'de1',
-          author: 'Berlin_Bridges',
-          text: 'Organizing a local youth mentoring seminar in Munich next month to support transition advocacy.',
-          time: '2 days ago',
-          replies: []
-        }
-      ],
-      Brazil: [
-        {
-          id: 'br1',
-          author: 'Rio_Scully',
-          text: 'Gillian Anderson has the warmest heart. Infinite love from Rio de Janeiro!',
-          time: '3 days ago',
-          replies: []
-        }
-      ],
-      France: [
-        {
-          id: 'fr1',
-          author: 'ParisianSkeptic',
-          text: 'Her elegance and wit during theater panel conferences here in Paris is legendary.',
-          time: '1 day ago',
-          replies: []
-        }
-      ],
-      India: [
-        {
-          id: 'in1',
-          author: 'Rajesh_Kumar',
-          text: 'The kindness philosophy is universal. Namaste from Delhi community!',
-          time: '2 days ago',
-          replies: []
-        }
-      ],
-      Mexico: [
-        {
-          id: 'mx1',
-          author: 'Gomez_Scully',
-          text: 'Be compassionate to each other! Greeting from Mexico City fans!',
-          time: '4 days ago',
-          replies: []
-        }
-      ],
-      'South Africa': [
-        {
-          id: 'za1',
-          author: 'CapeTown_Rebel',
-          text: 'Love to see the youth mentoring transition focus. Absolute queen.',
-          time: '5 days ago',
-          replies: []
-        }
-      ],
-      'South Korea': [
-        {
-          id: 'kr1',
-          author: 'Seoul_Scully',
-          text: 'Amazing to see Korean fans uniting for youth mentorship charity drives!',
-          time: '2 days ago',
-          replies: []
-        }
-      ],
-      Italy: [
-        {
-          id: 'it1',
-          author: 'Rome_Thespian',
-          text: "Gillian's presence at the theater stages here is always a joy.",
-          time: '3 days ago',
-          replies: []
-        }
-      ],
-      Spain: [
-        {
-          id: 'es1',
-          author: 'Madrid_Scully',
-          text: 'West End play adaptations touring Spain would be a dream come true!',
-          time: '4 days ago',
-          replies: []
-        }
-      ],
-      Argentina: [
-        {
-          id: 'ar1',
-          author: 'Diego_P',
-          text: 'She represents the ultimate elegant standard. Big support from Buenos Aires!',
-          time: '2 days ago',
-          replies: []
-        }
-      ],
-      Philippines: [
-        {
-          id: 'ph1',
-          author: 'Pinoy_Empowered',
-          text: "You are empowered! Everyday reminder to keep being compassionate.",
-          time: '3 days ago',
-          replies: []
-        }
-      ],
-      Singapore: [
-        {
-          id: 'sg1',
-          author: 'Merlion_Scully',
-          text: 'The official communication bridge works so fast. Thank you Sarah/management!',
-          time: '12 hours ago',
-          replies: []
-        }
-      ]
-    },
-    proposalChats: {
-      'GA-REQ-000145': [
-        { id: 'p_m1', sender: 'management', text: "Hello John, we are looking at Saturday afternoon around 3 PM at the Beverly Hills venue. Will that suit your charity team?", timestamp: 'May 21, 12:00 PM' },
-        { id: 'p_u1', sender: 'user', text: "Yes, that is perfect! We will bring our support validation documents.", timestamp: 'May 21, 01:30 PM' }
-      ]
-    },
-    journalComments: {
-      'journal-1': [
-        { id: 'jc-1', author: 'ThespianHeart', text: 'Scully is what guided me to pursue my science degrees! Gillian, you inspire millions of us daily.', time: '3 hours ago' }
-      ]
-    }
-  };
-
-  writeDB(seedData);
-  return seedData;
-}
-
-// Initial seeding checks
-initializeDatabase();
-
-function initializeDatabase() {
-  const dataDir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
-  if (!fs.existsSync(DB_PATH)) {
-    seedAndGet();
-  }
-}
 
 // Lazy loaded Gemini API integration
 let aiClient: GoogleGenAI | null = null;
@@ -435,424 +52,596 @@ const PERSONA_FALLBACK_ANSWERS = [
   "Be gentle with your beautifully flawed human heart today. Celebrate how far you've walked on this complicated path."
 ];
 
-// API Routes
+// ─── API Routes ───────────────────────────────────────────────
 
-// 1. Get database state
-app.get('/api/state', (req, res) => {
-  const data = readDB();
-  res.json(data);
+// 1. Get full database state
+app.get('/api/state', async (_req, res) => {
+  try {
+    const [
+      subscribersRes,
+      membershipsRes,
+      requestsRes,
+      ordersRes,
+      postsRes,
+      discussionsRes,
+      discussionRepliesRes,
+      proposalChatsRes,
+      journalCommentsRes,
+      commentsRes,
+    ] = await Promise.all([
+      supabase.from('subscribers').select('email').order('created_at'),
+      supabase.from('memberships').select('*').order('created_at', { ascending: false }),
+      supabase.from('requests').select('*').order('created_at', { ascending: false }),
+      supabase.from('orders').select('*').order('created_at', { ascending: false }),
+      supabase.from('posts').select('*').order('created_at', { ascending: false }),
+      supabase.from('discussions').select('*').order('created_at', { ascending: false }),
+      supabase.from('discussion_replies').select('*').order('created_at'),
+      supabase.from('proposal_chats').select('*').order('created_at'),
+      supabase.from('journal_comments').select('*').order('created_at', { ascending: false }),
+      supabase.from('comments').select('*').order('created_at'),
+    ]);
+
+    if (subscribersRes.error) throw subscribersRes.error;
+    if (membershipsRes.error) throw membershipsRes.error;
+    if (requestsRes.error) throw requestsRes.error;
+    if (ordersRes.error) throw ordersRes.error;
+    if (postsRes.error) throw postsRes.error;
+    if (discussionsRes.error) throw discussionsRes.error;
+    if (discussionRepliesRes.error) throw discussionRepliesRes.error;
+    if (proposalChatsRes.error) throw proposalChatsRes.error;
+    if (journalCommentsRes.error) throw journalCommentsRes.error;
+    if (commentsRes.error) throw commentsRes.error;
+
+    const memberships = (membershipsRes.data || []).map((r: any) => ({
+      id: r.id, name: r.name, email: r.email, status: r.status,
+      tier: r.tier, appliedOn: r.applied_on
+    }));
+
+    const requests = (requestsRes.data || []).map((r: any) => ({
+      id: r.id, type: r.type, member: r.member, memberAvatar: r.member_avatar,
+      status: r.status, preferredDate: r.preferred_date, location: r.location,
+      attendees: r.attendees, whatsappNumber: r.whatsapp_number,
+      sincerity: r.sincerity, submittedOn: r.submitted_on
+    }));
+
+    const orders = (ordersRes.data || []).map((r: any) => ({
+      id: r.id, member: r.member, memberAvatar: r.member_avatar,
+      item: r.item, status: r.status, price: r.price
+    }));
+
+    const posts = (postsRes.data || []).map((post: any) => {
+      const postComments = (commentsRes.data || [])
+        .filter((c: any) => c.post_id === post.id && !c.parent_comment_id)
+        .map((c: any) => ({
+          id: c.id,
+          username: c.username,
+          avatarText: c.avatar_text,
+          content: c.content,
+          timestamp: c.created_at,
+          replies: (commentsRes.data || [])
+            .filter((r: any) => r.parent_comment_id === c.id)
+            .map((r: any) => ({
+              id: r.id,
+              username: r.username,
+              avatarText: r.avatar_text,
+              content: r.content,
+              timestamp: r.created_at,
+            })),
+        }));
+      return {
+        id: post.id,
+        username: post.username,
+        handle: post.handle,
+        avatarText: post.avatar_text,
+        image: post.image,
+        content: post.content,
+        likes: post.likes,
+        replies: post.replies_count,
+        liked: post.liked,
+        comments: postComments,
+      };
+    });
+
+    const discussionsMap: Record<string, any[]> = {};
+    for (const disc of (discussionsRes.data || [])) {
+      if (!discussionsMap[disc.country]) discussionsMap[disc.country] = [];
+      discussionsMap[disc.country].push({
+        id: disc.id,
+        author: disc.author,
+        text: disc.text,
+        time: disc.created_at,
+        replies: (discussionRepliesRes.data || [])
+          .filter((r: any) => r.discussion_id === disc.id)
+          .map((r: any) => ({ id: r.id, author: r.author, text: r.text, time: r.created_at })),
+      });
+    }
+
+    const proposalChatsMap: Record<string, any[]> = {};
+    for (const msg of (proposalChatsRes.data || [])) {
+      if (!proposalChatsMap[msg.request_id]) proposalChatsMap[msg.request_id] = [];
+      proposalChatsMap[msg.request_id].push({
+        id: msg.id,
+        sender: msg.sender,
+        text: msg.text,
+        timestamp: msg.created_at,
+      });
+    }
+
+    const journalCommentsMap: Record<string, any[]> = {};
+    for (const jc of (journalCommentsRes.data || [])) {
+      if (!journalCommentsMap[jc.journal_id]) journalCommentsMap[jc.journal_id] = [];
+      journalCommentsMap[jc.journal_id].push({
+        id: jc.id,
+        author: jc.author,
+        text: jc.text,
+        time: jc.created_at,
+      });
+    }
+
+    res.json({
+      subscribers: (subscribersRes.data || []).map((s: any) => s.email),
+      memberships,
+      requests,
+      orders,
+      posts,
+      discussions: discussionsMap,
+      proposalChats: proposalChatsMap,
+      journalComments: journalCommentsMap,
+    });
+  } catch (err) {
+    console.error('Error fetching state:', err);
+    res.status(500).json({ error: 'Failed to fetch database state' });
+  }
 });
 
-// 2. Add email to newsletter subscribers
-app.post('/api/newsletter', (req, res) => {
+// 2. Newsletter subscription
+app.post('/api/newsletter', async (req, res) => {
   const { email } = req.body;
   if (!email || !email.includes('@')) {
     return res.status(400).json({ error: 'Please enter a valid email address.' });
   }
-  const data = readDB();
-  if (!data.subscribers.includes(email)) {
-    data.subscribers.push(email);
-    writeDB(data);
+  try {
+    const { error } = await supabase
+      .from('subscribers')
+      .insert({ email })
+      .select()
+      .single();
+    if (error && error.code !== '23505') throw error;
+    res.json({ success: true, message: 'Successfully subscribed to the newsletter!' });
+  } catch (err) {
+    console.error('Newsletter error:', err);
+    res.status(500).json({ error: 'Failed to subscribe.' });
   }
-  res.json({ success: true, message: 'Successfully subscribed to the newsletter!' });
 });
 
-// 3. Post a request (Meet & Greet, Video Message, etc.)
-app.post('/api/requests', (req, res) => {
-  const requestPayload = req.body;
-  const data = readDB();
-
-  const id = requestPayload.id || `GA-REQ-${Math.floor(100000 + Math.random() * 900000)}`;
+// 3. Post a request
+app.post('/api/requests', async (req, res) => {
+  const p = req.body;
+  const id = p.id || `GA-REQ-${Math.floor(100000 + Math.random() * 900000)}`;
   const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const isNew = !p.id;
 
-  const isNew = !requestPayload.id;
+  try {
+    if (isNew) {
+      const { error: insertErr } = await supabase.from('requests').insert({
+        id,
+        type: p.type || 'Meet & Greet',
+        member: p.member || 'Anonymous Member',
+        member_avatar: p.memberAvatar || (p.member ? p.member.substring(0, 2).toUpperCase() : 'AM'),
+        status: 'Submitted',
+        preferred_date: p.preferredDate || 'Not specified',
+        location: p.location || 'Virtual',
+        attendees: p.attendees || '1 Person',
+        whatsapp_number: p.whatsappNumber || '',
+        sincerity: p.sincerity || 'N/A',
+        submitted_on: `${dateStr}, ${timeStr}`,
+      });
+      if (insertErr) throw insertErr;
 
-  const requestItem = {
-    id,
-    type: requestPayload.type || 'Meet & Greet',
-    member: requestPayload.member || 'Anonymous Member',
-    memberAvatar: requestPayload.memberAvatar || (requestPayload.member ? requestPayload.member.substring(0, 2).toUpperCase() : 'AM'),
-    status: requestPayload.status || 'Submitted',
-    updated: 'Just now',
-    preferredDate: requestPayload.preferredDate || 'Not specified',
-    location: requestPayload.location || 'Virtual',
-    attendees: requestPayload.attendees || '1 Person',
-    whatsappNumber: requestPayload.whatsappNumber || '',
-    submittedOn: isNew ? `${dateStr}, ${timeStr}` : (requestPayload.submittedOn || `${dateStr}, ${timeStr}`),
-    lastUpdated: `${dateStr}, ${timeStr}`,
-    sincerity: requestPayload.sincerity || 'N/A'
-  };
-
-  if (isNew) {
-    data.requests.unshift(requestItem);
-    data.proposalChats[id] = [
-      {
+      await supabase.from('proposal_chats').insert({
         id: `sys-${Date.now()}`,
+        request_id: id,
         sender: 'system',
-        text: `Your ${requestItem.type} request has been safely received by Gillian's management. We will review your inquiry and connect with you shortly.`,
-        timestamp: `${dateStr}, ${timeStr}`
-      }
-    ];
-  } else {
-    data.requests = data.requests.map((r: any) => r.id === id ? requestItem : r);
-  }
+        text: `Your ${p.type || 'Meet & Greet'} request has been safely received by Gillian's management. We will review your inquiry and connect with you shortly.`,
+      });
+    } else {
+      const { error: updateErr } = await supabase
+        .from('requests')
+        .update({
+          type: p.type,
+          member: p.member,
+          member_avatar: p.memberAvatar,
+          status: p.status,
+          preferred_date: p.preferredDate,
+          location: p.location,
+          attendees: p.attendees,
+          whatsapp_number: p.whatsappNumber,
+          sincerity: p.sincerity,
+        })
+        .eq('id', id);
+      if (updateErr) throw updateErr;
+    }
 
-  writeDB(data);
-  res.json({ success: true, request: requestItem });
+    const { data, error: fetchErr } = await supabase
+      .from('requests')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (fetchErr) throw fetchErr;
+
+    res.json({
+      success: true,
+      request: {
+        id: data.id, type: data.type, member: data.member,
+        memberAvatar: data.member_avatar, status: data.status,
+        preferredDate: data.preferred_date, location: data.location,
+        attendees: data.attendees, whatsappNumber: data.whatsapp_number,
+        sincerity: data.sincerity, submittedOn: data.submitted_on,
+      },
+    });
+  } catch (err) {
+    console.error('Request error:', err);
+    res.status(500).json({ error: 'Failed to process request.' });
+  }
 });
 
 // 4. Update request status
-app.post('/api/requests/:id/status', (req, res) => {
+app.post('/api/requests/:id/status', async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-  if (!status) {
-    return res.status(400).json({ error: 'Status is required.' });
+  if (!status) return res.status(400).json({ error: 'Status is required.' });
+
+  try {
+    const { data, error } = await supabase
+      .from('requests')
+      .update({ status })
+      .eq('id', id)
+      .select('*')
+      .single();
+    if (error) throw error;
+    if (!data) return res.status(404).json({ error: 'Request not found.' });
+
+    await supabase.from('proposal_chats').insert({
+      id: `sys-status-${Date.now()}`,
+      request_id: id,
+      sender: 'system',
+      text: `MANAGEMENT UPDATE: Proposal tracking state transitioned to [${status.toUpperCase()}]`,
+    });
+
+    res.json({
+      success: true,
+      request: {
+        id: data.id, type: data.type, member: data.member,
+        memberAvatar: data.member_avatar, status: data.status,
+        preferredDate: data.preferred_date, location: data.location,
+        attendees: data.attendees, whatsappNumber: data.whatsapp_number,
+        sincerity: data.sincerity, submittedOn: data.submitted_on,
+      },
+    });
+  } catch (err) {
+    console.error('Status update error:', err);
+    res.status(500).json({ error: 'Failed to update status.' });
   }
-
-  const data = readDB();
-  const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-  let updatedReq = null;
-  data.requests = data.requests.map((r: any) => {
-    // Check with direct matching or normalized IDs (e.g. KR-REQ vs GA-REQ prefix variations)
-    const normalizedId = id.toUpperCase().replace('KR-', '').replace('GA-', '');
-    const rIdNormalized = r.id.toUpperCase().replace('KR-', '').replace('GA-', '');
-    if (r.id === id || rIdNormalized === normalizedId) {
-      updatedReq = { ...r, status, updated: 'Just now', lastUpdated: `${dateStr}, ${timeStr}` };
-      return updatedReq;
-    }
-    return r;
-  });
-
-  if (!updatedReq) {
-    return res.status(404).json({ error: 'Request not found.' });
-  }
-
-  // Push system message
-  const chatKey = Object.keys(data.proposalChats).find(k => k.toUpperCase().replace('KR-', '').replace('GA-', '') === id.toUpperCase().replace('KR-', '').replace('GA-', '')) || id;
-  if (!data.proposalChats[chatKey]) {
-    data.proposalChats[chatKey] = [];
-  }
-  data.proposalChats[chatKey].push({
-    id: `sys-status-${Date.now()}`,
-    sender: 'system',
-    text: `MANAGEMENT UPDATE: Proposal tracking state transitioned to [${status.toUpperCase()}]`,
-    timestamp: `${dateStr}, ${timeStr}`
-  });
-
-  writeDB(data);
-  res.json({ success: true, request: updatedReq });
 });
 
-// Update a chat message
-app.post('/api/requests/:id/chat', (req, res) => {
+// 5. Chat message on a request
+app.post('/api/requests/:id/chat', async (req, res) => {
   const { id } = req.params;
   const { sender, text } = req.body;
-  if (!text) {
-    return res.status(400).json({ error: 'Message content cannot be empty.' });
+  if (!text) return res.status(400).json({ error: 'Message content cannot be empty.' });
+
+  try {
+    const { data, error } = await supabase
+      .from('proposal_chats')
+      .insert({
+        id: `msg-${Date.now()}`,
+        request_id: id,
+        sender: sender || 'user',
+        text,
+      })
+      .select('*')
+      .single();
+    if (error) throw error;
+
+    await supabase.from('requests').update({ updated_at: new Date().toISOString() }).eq('id', id);
+
+    res.json({
+      success: true,
+      message: {
+        id: data.id, requestId: data.request_id,
+        sender: data.sender, text: data.text, timestamp: data.created_at,
+      },
+    });
+  } catch (err) {
+    console.error('Chat error:', err);
+    res.status(500).json({ error: 'Failed to send message.' });
   }
-
-  const data = readDB();
-  if (!data.proposalChats[id]) {
-    data.proposalChats[id] = [];
-  }
-
-  const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-  const newMessage = {
-    id: `msg-${Date.now()}`,
-    sender: sender || 'user',
-    text,
-    timestamp: `${dateStr}, ${timeStr}`
-  };
-
-  data.proposalChats[id].push(newMessage);
-  
-  // Touch request updated timestamp
-  data.requests = data.requests.map((r: any) => {
-    if (r.id === id) {
-      return { ...r, updated: 'Just now', lastUpdated: `${dateStr}, ${timeStr}` };
-    }
-    return r;
-  });
-
-  writeDB(data);
-  res.json({ success: true, message: newMessage });
 });
 
-// 5. Post an order from the shop
-app.post('/api/orders', (req, res) => {
-  const orderPayload = req.body;
-  const data = readDB();
-
+// 6. Post an order
+app.post('/api/orders', async (req, res) => {
+  const p = req.body;
   const id = `GA-SHP-${Math.floor(100000 + Math.random() * 900000)}`;
-  const orderItem = {
-    id,
-    member: orderPayload.member || 'John Smith',
-    memberAvatar: orderPayload.member ? orderPayload.member.substring(0, 2).toUpperCase() : 'JS',
-    item: orderPayload.item || 'Signature Merchandise',
-    status: 'Confirmed',
-    updated: 'Just now',
-    price: orderPayload.price || '45.00'
-  };
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .insert({
+        id,
+        member: p.member || 'John Smith',
+        member_avatar: p.member ? p.member.substring(0, 2).toUpperCase() : 'JS',
+        item: p.item || 'Signature Merchandise',
+        status: 'Confirmed',
+        price: p.price || '45.00',
+      })
+      .select('*')
+      .single();
+    if (error) throw error;
 
-  data.orders.unshift(orderItem);
-  writeDB(data);
-  res.json({ success: true, order: orderItem });
-});
-
-// 6. Community posts / Highlights operations
-app.post('/api/posts', (req, res) => {
-  const { username, handle, avatarText, content, image, category } = req.body;
-  if (!content) {
-    return res.status(400).json({ error: 'Post content is required.' });
+    res.json({
+      success: true,
+      order: {
+        id: data.id, member: data.member, memberAvatar: data.member_avatar,
+        item: data.item, status: data.status, price: data.price,
+      },
+    });
+  } catch (err) {
+    console.error('Order error:', err);
+    res.status(500).json({ error: 'Failed to create order.' });
   }
-
-  const data = readDB();
-  const newPost = {
-    id: `highlight-${Date.now()}`,
-    username: username || 'GillianFan',
-    handle: handle || '@GillianFan',
-    avatarText: avatarText || (username ? username.substring(0, 2).toUpperCase() : 'GF'),
-    image: image || "/src/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg",
-    content,
-    likes: 0,
-    replies: 0,
-    liked: false,
-    comments: []
-  };
-
-  data.posts.unshift(newPost);
-  writeDB(data);
-  res.json({ success: true, post: newPost });
 });
 
-app.post('/api/posts/:id/like', (req, res) => {
+// 7. Community posts
+app.post('/api/posts', async (req, res) => {
+  const { username, handle, avatarText, content, image } = req.body;
+  if (!content) return res.status(400).json({ error: 'Post content is required.' });
+
+  const id = `highlight-${Date.now()}`;
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .insert({
+        id,
+        username: username || 'GillianFan',
+        handle: handle || '@GillianFan',
+        avatar_text: avatarText || (username ? username.substring(0, 2).toUpperCase() : 'GF'),
+        image: image || '/src/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg',
+        content,
+        likes: 0,
+        replies_count: 0,
+        liked: false,
+      })
+      .select('*')
+      .single();
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      post: {
+        id: data.id, username: data.username, handle: data.handle,
+        avatarText: data.avatar_text, image: data.image, content: data.content,
+        likes: data.likes, replies: data.replies_count, liked: data.liked,
+        comments: [],
+      },
+    });
+  } catch (err) {
+    console.error('Post error:', err);
+    res.status(500).json({ error: 'Failed to create post.' });
+  }
+});
+
+// 8. Toggle like
+app.post('/api/posts/:id/like', async (req, res) => {
   const { id } = req.params;
-  const data = readDB();
-  data.posts = data.posts.map((post: any) => {
-    if (post.id === id) {
-      const liked = !post.liked;
-      return {
-        ...post,
-        liked,
-        likes: liked ? post.likes + 1 : post.likes - 1
-      };
-    }
-    return post;
-  });
-  writeDB(data);
-  res.json({ success: true });
+  try {
+    const { data: post, error: fetchErr } = await supabase
+      .from('posts')
+      .select('liked, likes')
+      .eq('id', id)
+      .single();
+    if (fetchErr) throw fetchErr;
+
+    const newLiked = !post.liked;
+    const newLikes = newLiked ? post.likes + 1 : post.likes - 1;
+
+    const { error } = await supabase
+      .from('posts')
+      .update({ liked: newLiked, likes: newLikes })
+      .eq('id', id);
+    if (error) throw error;
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Like error:', err);
+    res.status(500).json({ error: 'Failed to toggle like.' });
+  }
 });
 
-app.post('/api/posts/:id/comment', (req, res) => {
+// 9. Comment on a post
+app.post('/api/posts/:id/comment', async (req, res) => {
   const { id } = req.params;
   const { username, avatarText, content } = req.body;
-  if (!content) {
-    return res.status(400).json({ error: 'Comment content is required.' });
-  }
+  if (!content) return res.status(400).json({ error: 'Comment content is required.' });
 
-  const data = readDB();
   const commentId = `c-${Date.now()}`;
-  const newComment = {
-    id: commentId,
-    username: username || 'KindExplorer',
-    avatarText: avatarText || (username ? username.substring(0, 2).toUpperCase() : 'KE'),
-    content,
-    timestamp: 'Just now',
-    replies: []
-  };
+  try {
+    const { error } = await supabase.from('comments').insert({
+      id: commentId,
+      post_id: id,
+      username: username || 'KindExplorer',
+      avatar_text: avatarText || (username ? username.substring(0, 2).toUpperCase() : 'KE'),
+      content,
+    });
+    if (error) throw error;
 
-  data.posts = data.posts.map((post: any) => {
-    if (post.id === id) {
-      return {
-        ...post,
-        replies: post.replies + 1,
-        comments: [...(post.comments || []), newComment]
-      };
+    const { data: post } = await supabase.from('posts').select('replies_count').eq('id', id).single();
+    if (post) {
+      await supabase.from('posts').update({ replies_count: post.replies_count + 1 }).eq('id', id);
     }
-    return post;
-  });
 
-  writeDB(data);
-  res.json({ success: true, comment: newComment });
+    res.json({
+      success: true,
+      comment: {
+        id: commentId,
+        username: username || 'KindExplorer',
+        avatarText: avatarText || (username ? username.substring(0, 2).toUpperCase() : 'KE'),
+        content, timestamp: 'Just now', replies: [],
+      },
+    });
+  } catch (err) {
+    console.error('Comment error:', err);
+    res.status(500).json({ error: 'Failed to add comment.' });
+  }
 });
 
-app.post('/api/posts/:id/comment/:commentId/reply', (req, res) => {
+// 10. Reply to a comment
+app.post('/api/posts/:id/comment/:commentId/reply', async (req, res) => {
   const { id, commentId } = req.params;
   const { username, avatarText, content } = req.body;
-  if (!content) {
-    return res.status(400).json({ error: 'Reply content is required.' });
-  }
+  if (!content) return res.status(400).json({ error: 'Reply content is required.' });
 
-  const data = readDB();
-  const replyItem = {
-    id: `r-${Date.now()}`,
-    username: username || 'KindExplorer',
-    avatarText: avatarText || (username ? username.substring(0, 2).toUpperCase() : 'KE'),
-    content,
-    timestamp: 'Just now'
-  };
+  const replyId = `r-${Date.now()}`;
+  try {
+    const { error } = await supabase.from('comments').insert({
+      id: replyId,
+      post_id: id,
+      username: username || 'KindExplorer',
+      avatar_text: avatarText || (username ? username.substring(0, 2).toUpperCase() : 'KE'),
+      content,
+      parent_comment_id: commentId,
+    });
+    if (error) throw error;
 
-  data.posts = data.posts.map((post: any) => {
-    if (post.id === id) {
-      const updatedComments = post.comments.map((comment: any) => {
-        if (comment.id === commentId) {
-          return {
-            ...comment,
-            replies: [...(comment.replies || []), replyItem]
-          };
-        }
-        return comment;
-      });
-      return {
-        ...post,
-        replies: post.replies + 1,
-        comments: updatedComments
-      };
+    const { data: post } = await supabase.from('posts').select('replies_count').eq('id', id).single();
+    if (post) {
+      await supabase.from('posts').update({ replies_count: post.replies_count + 1 }).eq('id', id);
     }
-    return post;
-  });
 
-  writeDB(data);
-  res.json({ success: true, reply: replyItem });
+    res.json({
+      success: true,
+      reply: {
+        id: replyId,
+        username: username || 'KindExplorer',
+        avatarText: avatarText || (username ? username.substring(0, 2).toUpperCase() : 'KE'),
+        content, timestamp: 'Just now',
+      },
+    });
+  } catch (err) {
+    console.error('Reply error:', err);
+    res.status(500).json({ error: 'Failed to add reply.' });
+  }
 });
 
-// 7. Discussion boards
-app.post('/api/discussions/:country', (req, res) => {
+// 11. Discussion boards
+app.post('/api/discussions/:country', async (req, res) => {
   const { country } = req.params;
   const { author, text } = req.body;
-  if (!text) {
-    return res.status(400).json({ error: 'Post text is required.' });
-  }
+  if (!text) return res.status(400).json({ error: 'Post text is required.' });
 
-  const data = readDB();
-  if (!data.discussions[country]) {
-    data.discussions[country] = [];
-  }
-
-  const newPost = {
-    id: `post-${Date.now()}`,
-    author: author || 'GlobalCitizen',
-    text,
-    time: 'Just now',
-    replies: []
-  };
-
-  data.discussions[country].unshift(newPost);
-  writeDB(data);
-  res.json({ success: true, post: newPost });
-});
-
-app.post('/api/discussions/:country/:postId/reply', (req, res) => {
-  const { country, postId } = req.params;
-  const { author, text } = req.body;
-  if (!text) {
-    return res.status(400).json({ error: 'Reply text is required.' });
-  }
-
-  const data = readDB();
-  const replyItem = {
-    id: `rep-${Date.now()}`,
-    author: author || 'GlobalCitizen',
-    text,
-    time: 'Just now'
-  };
-
-  if (data.discussions[country]) {
-    data.discussions[country] = data.discussions[country].map((p: any) => {
-      if (p.id === postId) {
-        return {
-          ...p,
-          replies: [...(p.replies || []), replyItem]
-        };
-      }
-      return p;
+  const id = `post-${Date.now()}`;
+  try {
+    const { error } = await supabase.from('discussions').insert({
+      id, country, author: author || 'GlobalCitizen', text,
     });
+    if (error) throw error;
+    res.json({ success: true, post: { id, author: author || 'GlobalCitizen', text, time: 'Just now', replies: [] } });
+  } catch (err) {
+    console.error('Discussion error:', err);
+    res.status(500).json({ error: 'Failed to create discussion post.' });
   }
-
-  writeDB(data);
-  res.json({ success: true, reply: replyItem });
 });
 
-// 8. Membership application submissions
-app.post('/api/memberships', (req, res) => {
-  const { name, email, tier } = req.body;
-  if (!name || !email) {
-    return res.status(400).json({ error: 'Name and email are required fields.' });
-  }
+app.post('/api/discussions/:country/:postId/reply', async (req, res) => {
+  const { postId } = req.params;
+  const { author, text } = req.body;
+  if (!text) return res.status(400).json({ error: 'Reply text is required.' });
 
-  const data = readDB();
+  const id = `rep-${Date.now()}`;
+  try {
+    const { error } = await supabase.from('discussion_replies').insert({
+      id, discussion_id: postId, author: author || 'GlobalCitizen', text,
+    });
+    if (error) throw error;
+    res.json({ success: true, reply: { id, author: author || 'GlobalCitizen', text, time: 'Just now' } });
+  } catch (err) {
+    console.error('Discussion reply error:', err);
+    res.status(500).json({ error: 'Failed to add reply.' });
+  }
+});
+
+// 12. Membership applications
+app.post('/api/memberships', async (req, res) => {
+  const { name, email, tier } = req.body;
+  if (!name || !email) return res.status(400).json({ error: 'Name and email are required fields.' });
+
   const id = `MEM-APP-${Math.floor(100 + Math.random() * 900)}`;
   const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  try {
+    const { data, error } = await supabase
+      .from('memberships')
+      .insert({
+        id, name, email, status: 'Pending', tier: tier || 'Gold', applied_on: dateStr,
+      })
+      .select('*')
+      .single();
+    if (error) throw error;
 
-  const appItem = {
-    id,
-    name,
-    email,
-    status: 'Pending',
-    appliedOn: dateStr,
-    tier: tier || 'Gold'
-  };
-
-  data.memberships.unshift(appItem);
-  writeDB(data);
-  res.json({ success: true, application: appItem });
+    res.json({
+      success: true,
+      application: {
+        id: data.id, name: data.name, email: data.email,
+        status: data.status, tier: data.tier, appliedOn: data.applied_on,
+      },
+    });
+  } catch (err) {
+    console.error('Membership error:', err);
+    res.status(500).json({ error: 'Failed to submit application.' });
+  }
 });
 
-app.post('/api/memberships/:id/status', (req, res) => {
+app.post('/api/memberships/:id/status', async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
-
-  const data = readDB();
-  data.memberships = data.memberships.map((m: any) => m.id === id ? { ...m, status } : m);
-  writeDB(data);
-  res.json({ success: true });
+  try {
+    const { error } = await supabase.from('memberships').update({ status }).eq('id', id);
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Membership status error:', err);
+    res.status(500).json({ error: 'Failed to update status.' });
+  }
 });
 
-// 9. Journal comments
-app.post('/api/journal/comment', (req, res) => {
+// 13. Journal comments
+app.post('/api/journal/comment', async (req, res) => {
   const { journalId, author, text } = req.body;
-  if (!journalId || !text) {
-    return res.status(400).json({ error: 'Journal ID and text are required.' });
+  if (!journalId || !text) return res.status(400).json({ error: 'Journal ID and text are required.' });
+
+  const id = `jc-${Date.now()}`;
+  try {
+    const { error } = await supabase.from('journal_comments').insert({
+      id, journal_id: journalId, author: author || 'ThoughtfulReader', text,
+    });
+    if (error) throw error;
+    res.json({ success: true, comment: { id, author: author || 'ThoughtfulReader', text, time: 'Just now' } });
+  } catch (err) {
+    console.error('Journal comment error:', err);
+    res.status(500).json({ error: 'Failed to add comment.' });
   }
-
-  const data = readDB();
-  if (!data.journalComments[journalId]) {
-    data.journalComments[journalId] = [];
-  }
-
-  const newComment = {
-    id: `jc-${Date.now()}`,
-    author: author || 'ThoughtfulReader',
-    text,
-    time: 'Just now'
-  };
-
-  data.journalComments[journalId].unshift(newComment);
-  writeDB(data);
-  res.json({ success: true, comment: newComment });
 });
 
-// 10. Gemini-Powered Chat with Gillian's AI Persona
+// ─── Gemini AI Endpoints (unchanged) ─────────────────────────
+
 app.post('/api/ask-gillian', async (req, res) => {
   const { message, history } = req.body;
-  if (!message) {
-    return res.status(400).json({ error: 'Message is required.' });
-  }
+  if (!message) return res.status(400).json({ error: 'Message is required.' });
 
-  // Format system prompt and context
-  const systemInstruction = `You are Gillian Anderson, the acclaimed actress and activist (known for Stella Gibson in 'The Fall', Dana Scully in 'The X-Files', Jean Milburn in 'Sex Education', and award-winning theater roles such as Blanche DuBois in 'A Streetcar Named Desire'). You are warm, compassionate, deeply intellectual, elegant, and down-to-earth. You have a profound love for theater, film, and the craft of acting, and are a dedicated advocate for youth mentoring (like SAYes mentoring) and charity work. 
+  const systemInstruction = `You are Gillian Anderson, the acclaimed actress and activist (known for Stella Gibson in 'The Fall', Dana Scully in 'The X-Files', Jean Milburn in 'Sex Education', and award-winning theater roles such as Blanche DuBois in 'A Streetcar Named Desire'). You are warm, compassionate, deeply intellectual, elegant, and down-to-earth. You have a profound love for theater, film, and the craft of acting, and are a dedicated advocate for youth mentoring (like SAYes mentoring) and charity work.
 
 Your answers should feel genuine, conversational, slightly poetic, and encouraging. Never break character. Avoid dry, generic AI formulations. Keep responses relatively concise (1-3 scannable paragraphs), always centering on empathy, curiosity, and creativity.`;
 
   try {
     const ai = getGeminiClient();
-    
-    // Map past history to correct content formatting for @google/genai
     const contents = [];
     if (history && Array.isArray(history)) {
       for (const h of history) {
@@ -862,16 +651,13 @@ Your answers should feel genuine, conversational, slightly poetic, and encouragi
         });
       }
     }
-    contents.push({
-      role: 'user',
-      parts: [{ text: message }]
-    });
+    contents.push({ role: 'user', parts: [{ text: message }] });
 
     const response = await ai.models.generateContent({
       model: 'gemini-3.5-flash',
-      contents: contents,
+      contents,
       config: {
-        systemInstruction: systemInstruction,
+        systemInstruction,
         temperature: 0.8,
         maxOutputTokens: 500,
       }
@@ -880,12 +666,9 @@ Your answers should feel genuine, conversational, slightly poetic, and encouragi
     const responseText = response.text || "I appreciate you asking that. Let's keep looking closer at the beautiful details of life.";
     res.json({ text: responseText, source: 'gemini' });
   } catch (err: any) {
-    console.error('Gemini call failed or is unconfigured:', err);
-    // Provide a smart, elegant fallback that matches the requested persona
+    console.error('Gemini call failed:', err);
     const randIdx = Math.floor(Math.random() * PERSONA_FALLBACK_ANSWERS.length);
     let fallbackText = PERSONA_FALLBACK_ANSWERS[randIdx];
-    
-    // Customize fallback depending on query keywords
     const q = message.toLowerCase();
     if (q.includes('scully') || q.includes('x-files') || q.includes('mulder')) {
       fallbackText = "Dana Scully has been a great anchor of rationality. But remember, rationality is only one lens—truth is also a subjective experience. We must have the courage to trust our instincts.";
@@ -894,21 +677,17 @@ Your answers should feel genuine, conversational, slightly poetic, and encouragi
     } else if (q.includes('stage') || q.includes('acting') || q.includes('blanche')) {
       fallbackText = "Acting is a high-wire act of extreme empathy. It is taking off your skin to wear someone else's, finding where their pain meets your own. On stage, there is nowhere to hide.";
     }
-
-    res.json({ 
-      text: fallbackText, 
-      source: 'fallback', 
-      warning: process.env.GEMINI_API_KEY ? undefined : 'Live Gemini AI mode is unconfigured. Set GEMINI_API_KEY in Secrets to activate the live model.' 
+    res.json({
+      text: fallbackText,
+      source: 'fallback',
+      warning: process.env.GEMINI_API_KEY ? undefined : 'Live Gemini AI mode is unconfigured.'
     });
   }
 });
 
-// 11. Gemini-Powered Sincerity Polish
 app.post('/api/ai-polish-sincerity', async (req, res) => {
   const { text } = req.body;
-  if (!text || !text.trim()) {
-    return res.status(400).json({ error: 'Text to polish is required.' });
-  }
+  if (!text || !text.trim()) return res.status(400).json({ error: 'Text to polish is required.' });
 
   try {
     const ai = getGeminiClient();
@@ -920,27 +699,21 @@ Please rewrite this draft to be extremely polite, elegant, heartfelt, and highly
     const response = await ai.models.generateContent({
       model: 'gemini-3.5-flash',
       contents: prompt,
-      config: {
-        temperature: 0.7,
-      }
+      config: { temperature: 0.7 }
     });
 
     const polishedText = response.text ? response.text.trim() : text;
     res.json({ text: polishedText, source: 'gemini' });
   } catch (err) {
-    console.error('Sincerity polish failed, applying static refined fallback:', err);
-    // Graceful fallback refinement
+    console.error('Sincerity polish failed:', err);
     const fallbackPolished = `With deep respect for Gillian Anderson's humanitarian advocacy and outstanding creative career, I am incredibly humbled to present this sincere proposal. ${text} We are deeply committed to honoring her boundaries and supporting her charitable work, hoping to establish a genuinely inspiring connection.`;
     res.json({ text: fallbackPolished, source: 'fallback' });
   }
 });
 
-// 12. Gemini-Powered Management Suggestion and Analysis
 app.post('/api/ai-suggest-offer', async (req, res) => {
   const { proposal } = req.body;
-  if (!proposal) {
-    return res.status(400).json({ error: 'Proposal details are required.' });
-  }
+  if (!proposal) return res.status(400).json({ error: 'Proposal details are required.' });
 
   const { type, member, preferredDate, location, attendees, sincerity } = proposal;
 
@@ -955,15 +728,15 @@ app.post('/api/ai-suggest-offer', async (req, res) => {
     Sincerity/Motivation: ${sincerity || 'Not specified'}
 
     Please provide two things in a structured JSON format:
-    1. 'analysis': A concise, professional assessment (1-2 sentences) of the proposal's sincerity and logistic feasibility. Evaluates whether it seems humanitarian, charity-aligned, or deeply respectful of Gillian's schedule and boundaries.
-    2. 'suggestion': A beautifully drafted, warm yet professional response from Sarah (Management) that can be sent to the member on their chat bridge. If it is a viable request, express warmth, state that we are looking into schedule alignments, and outline clear next steps (like coordinating details or reviewing voluntary charity contributions). If it needs refinement, politely ask for clarification.
+    1. 'analysis': A concise, professional assessment (1-2 sentences) of the proposal's sincerity and logistic feasibility.
+    2. 'suggestion': A beautifully drafted, warm yet professional response from Sarah (Management).
 
     Return the output as a valid JSON object matching this schema:
     {
       "analysis": "A concise assessment string.",
       "suggestion": "The suggested reply text."
     }
-    Do not wrap the JSON response in markdown code blocks like \`\`\`json. Return only the raw JSON.`;
+    Do not wrap the JSON response in markdown code blocks. Return only the raw JSON.`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-3.5-flash',
@@ -979,37 +752,32 @@ app.post('/api/ai-suggest-offer', async (req, res) => {
       try {
         result = JSON.parse(response.text.trim());
       } catch (e) {
-        console.error('Error parsing JSON from Gemini response:', e);
+        console.error('Error parsing Gemini JSON:', e);
         result = {
           analysis: 'The proposal appears to be sincere and highlights a strong respect for Gillian\'s artistic work and advocacy.',
-          suggestion: `Dear ${member || 'Member'},\n\nThank you so much for submitting your thoughtful proposal for a ${type || 'interaction'}. Gillian\'s team has received it, and we are incredibly moved by your sincerity.\n\nWe are currently reviewing schedule alignments for ${preferredDate || 'your preferred date'} and will follow up here on your secure bridge shortly.\n\nWarmly,\nSarah (Management)`
+          suggestion: `Dear ${member || 'Member'},\n\nThank you so much for submitting your thoughtful proposal for a ${type || 'interaction'}. Gillian's team has received it, and we are incredibly moved by your sincerity.\n\nWe are currently reviewing schedule alignments for ${preferredDate || 'your preferred date'} and will follow up here on your secure bridge shortly.\n\nWarmly,\nSarah (Management)`
         };
       }
     }
     res.json({ ...result, source: 'gemini' });
   } catch (err) {
-    console.error('AI suggest offer failed, using static fallback:', err);
-    // High quality static fallback response based on request type
+    console.error('AI suggest offer failed:', err);
     const assessment = `This proposal for a ${type || 'interaction'} is currently under standard review. The motivation shows genuine admiration.`;
-    const draft = `Dear ${member || 'Member'},\n\nThank you for sharing this heartfelt proposal. We are incredibly grateful for your support of Gillian\'s work and her mentoring campaigns.\n\nOur team is reviewing the logistics for ${location || 'your location'} on ${preferredDate || 'the requested timeline'} to see how we might align this. We will get back to you with further updates here soon.\n\nWarmly,\nSarah\nGillian Anderson Management`;
-
-    res.json({
-      analysis: assessment,
-      suggestion: draft,
-      source: 'fallback'
-    });
+    const draft = `Dear ${member || 'Member'},\n\nThank you for sharing this heartfelt proposal. We are incredibly grateful for your support of Gillian's work and her mentoring campaigns.\n\nOur team is reviewing the logistics for ${location || 'your location'} on ${preferredDate || 'the requested timeline'} to see how we might align this. We will get back to you with further updates here soon.\n\nWarmly,\nSarah\nGillian Anderson Management`;
+    res.json({ analysis: assessment, suggestion: draft, source: 'fallback' });
   }
 });
 
-// Media API routes (PostgreSQL-backed)
+// ─── Media API routes (Supabase) ───────────────────────────
+
 app.get('/api/videos', async (_req, res) => {
   try {
-    const result = await pgPool.query(`
-      SELECT v.id, v.title, c.name as category, v.duration, v.youtube_id as "youtubeId", v.subtitles
-      FROM videos v JOIN categories c ON v.category_id = c.id
-      ORDER BY v.sort_order
-    `);
-    res.json(result.rows);
+    const { data, error } = await supabase
+      .from('videos')
+      .select('id, title, duration, youtube_id:youtubeId, subtitles, sort_order, categories(name:category)')
+      .order('sort_order');
+    if (error) throw error;
+    res.json(data);
   } catch (err) {
     console.error('Error fetching videos:', err);
     res.status(500).json({ error: 'Failed to fetch videos' });
@@ -1018,19 +786,20 @@ app.get('/api/videos', async (_req, res) => {
 
 app.get('/api/photos', async (_req, res) => {
   try {
-    const result = await pgPool.query(`
-      SELECT p.id, p.title, c.name as category, p.url, p.description, p.likes, p.width, p.height
-      FROM photos p JOIN categories c ON p.category_id = c.id
-      ORDER BY p.sort_order
-    `);
-    res.json(result.rows);
+    const { data, error } = await supabase
+      .from('photos')
+      .select('id, title, url, description, likes, width, height, sort_order, categories(name:category)')
+      .order('sort_order');
+    if (error) throw error;
+    res.json(data);
   } catch (err) {
     console.error('Error fetching photos:', err);
     res.status(500).json({ error: 'Failed to fetch photos' });
   }
 });
 
-// Configure Vite middleware or production static files
+// ─── Server Start ─────────────────────────────────────────────
+
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({

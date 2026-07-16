@@ -9,6 +9,7 @@ function formatDate(dateStr: string): string {
   if (isNaN(d.getTime())) return 'N/A';
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
+
 import {
   Sparkles,
   Award,
@@ -39,11 +40,13 @@ const CATEGORIES = [
   { id: 'Behind-the-Scenes', label: 'BEHIND-THE-SCENES', icon: Camera },
 ];
 
-const TIER_COLORS: Record<string, string> = {
-  Gold: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  Platinum: 'bg-slate-300/10 text-slate-300 border-slate-400/20',
-  Diamond: 'bg-cyan-400/10 text-cyan-300 border-cyan-400/20',
+const TIER_MAP: Record<string, { name: string; short: string; color: string; icon: typeof Palette }> = {
+  Gold: { name: 'Forensic Analyst', short: 'SCULLY', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', icon: Palette },
+  Platinum: { name: 'Lead Detective', short: 'GIBSON', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: Compass },
+  Diamond: { name: 'Advocate', short: 'MILBURN', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20', icon: Heart },
 };
+
+const TIER_ORDER = ['Gold', 'Platinum', 'Diamond'];
 
 const CATEGORY_COLORS: Record<string, string> = {
   'Meet & Greet': 'bg-pink-500/10 text-pink-400 border-pink-500/20',
@@ -64,7 +67,6 @@ export default function ExperiencesSection() {
   const [loading, setLoading] = useState(true);
   const [pendingBookingId, setPendingBookingId] = useState<string | null>(null);
 
-  // Fetch experiences from API + restore booking state from URL on mount
   React.useEffect(() => {
     const loadData = async () => {
       try {
@@ -88,13 +90,11 @@ export default function ExperiencesSection() {
     };
     loadData();
 
-    // Restore booking from URL hash: #EXPERIENCES/BOOK/experience-id
     const hash = window.location.hash.replace('#', '').toUpperCase();
     if (hash.startsWith('EXPERIENCES/BOOK/')) {
       const expId = hash.split('/')[2];
       if (expId) {
         setShowBooking(true);
-        // selectedExp will be set once experiences load via the effect below
         setPendingBookingId(expId);
       }
     }
@@ -113,6 +113,14 @@ export default function ExperiencesSection() {
     return counts;
   }, [experiences]);
 
+  const tierCounts = useMemo(() => {
+    const counts: Record<string, number> = { Gold: 0, Platinum: 0, Diamond: 0 };
+    experiences.forEach(e => {
+      if (counts[e.tier] !== undefined) counts[e.tier]++;
+    });
+    return counts;
+  }, [experiences]);
+
   const stats = useMemo(() => ({
     total: experiences.length,
     popular: experiences.filter(e => e.popular).length,
@@ -120,7 +128,6 @@ export default function ExperiencesSection() {
     categories: new Set(experiences.map(e => e.category)).size,
   }), [experiences]);
 
-  // Resolve pending booking from URL hash once experiences are loaded
   React.useEffect(() => {
     if (pendingBookingId && experiences.length > 0) {
       const exp = experiences.find(e => e.id === pendingBookingId);
@@ -179,19 +186,49 @@ export default function ExperiencesSection() {
           </p>
         </div>
 
-        {/* Stats Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
+        {/* Stats Bar - now includes Membership Tier counts */}
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-3 max-w-5xl mx-auto">
           {[
             { icon: Ticket, value: stats.total, label: 'Experiences', color: 'text-gold-500' },
             { icon: Star, value: stats.popular, label: 'Popular', color: 'text-amber-400' },
             { icon: Users, value: stats.available, label: 'Spots Open', color: 'text-emerald-400' },
-            { icon: Compass, value: stats.categories, label: 'Categories', color: 'text-cyan-400' },
+            { icon: Palette, value: tierCounts.Gold, label: 'SCULLY Tier', color: 'text-emerald-400' },
+            { icon: Compass, value: tierCounts.Platinum, label: 'GIBSON Tier', color: 'text-amber-400' },
+            { icon: Heart, value: tierCounts.Diamond, label: 'MILBURN Tier', color: 'text-blue-400' },
           ].map((stat) => (
             <div key={stat.label} className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-4 text-center space-y-1.5 hover:border-neutral-800 transition-colors">
               <stat.icon className={`h-4 w-4 ${stat.color} mx-auto`} />
               <span className={`block text-xl font-bold ${stat.color}`}>{stat.value}</span>
               <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
             </div>
+          ))}
+        </div>
+
+        {/* Membership Tier Filter Tabs */}
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {[
+            { id: 'ALL', label: 'ALL', icon: Sparkles, count: stats.total },
+            { id: 'Gold', label: 'SCULLY', icon: Palette, count: tierCounts.Gold, color: 'text-emerald-400 border-emerald-500/30' },
+            { id: 'Platinum', label: 'GIBSON', icon: Compass, count: tierCounts.Platinum, color: 'text-amber-400 border-amber-500/30' },
+            { id: 'Diamond', label: 'MILBURN', icon: Heart, count: tierCounts.Diamond, color: 'text-blue-400 border-blue-500/30' },
+          ].map((tier) => (
+            <button
+              key={tier.id}
+              onClick={() => setActiveCategory(tier.id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-mono tracking-wider uppercase border transition-all ${
+                activeCategory === tier.id
+                  ? `bg-${tier.color.includes('emerald') ? 'emerald' : tier.color.includes('amber') ? 'amber' : 'blue'}-500 border-${tier.color.includes('emerald') ? 'emerald' : tier.color.includes('amber') ? 'amber' : 'blue'}-400 text-neutral-950 font-bold`
+                  : `bg-neutral-950 border-neutral-900 ${tier.color} hover:text-white hover:border-${tier.color.includes('emerald') ? 'emerald' : tier.color.includes('amber') ? 'amber' : 'blue'}-400`
+              }`}
+            >
+              <tier.icon className="h-3 w-3" />
+              {tier.label}
+              <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[8px] ${
+                activeCategory === tier.id ? 'bg-neutral-950/20 text-neutral-950' : 'bg-neutral-900 text-neutral-500'
+              }`}>
+                {tier.count}
+              </span>
+            </button>
           ))}
         </div>
 
@@ -227,33 +264,6 @@ export default function ExperiencesSection() {
           />
         ) : activeTab === 'browse' ? (
           <>
-            {/* Category Filter Tabs */}
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {CATEGORIES.map((cat) => {
-                const IconComp = cat.icon;
-                const count = categoryCounts[cat.id] || 0;
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => setActiveCategory(cat.id)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-mono tracking-wider uppercase border transition-all ${
-                      activeCategory === cat.id
-                        ? 'bg-gold-500 border-gold-400 text-neutral-950 font-bold'
-                        : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
-                    }`}
-                  >
-                    <IconComp className="h-3 w-3" />
-                    {cat.label}
-                    <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[8px] ${
-                      activeCategory === cat.id ? 'bg-neutral-950/20 text-neutral-950' : 'bg-neutral-900 text-neutral-500'
-                    }`}>
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
             {/* Experience Cards Grid */}
             {loading ? (
               <div className="text-center py-20">
@@ -265,6 +275,7 @@ export default function ExperiencesSection() {
                 {filteredExperiences.map((exp) => {
                   const spotsLeft = exp.spots - exp.spotsTaken;
                   const isFull = spotsLeft <= 0;
+                  const tierInfo = TIER_MAP[exp.tier] || TIER_MAP.Gold;
                   return (
                     <motion.div
                       key={exp.id}
@@ -277,8 +288,8 @@ export default function ExperiencesSection() {
                       <div className="p-5 space-y-3 flex-1">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex flex-wrap gap-1.5">
-                            <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${TIER_COLORS[exp.tier] || TIER_COLORS.Gold}`}>
-                              {exp.tier}
+                            <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${tierInfo.color}`}>
+                              {tierInfo.short}
                             </span>
                             <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || ''}`}>
                               {exp.category}
@@ -347,8 +358,8 @@ export default function ExperiencesSection() {
                 <div className="h-12 w-12 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto">
                   <Sparkles className="h-5 w-5 text-neutral-600" />
                 </div>
-                <p className="text-sm text-neutral-500">No experiences in this category yet.</p>
-                <p className="text-[10px] text-neutral-600 font-mono">Check back soon or browse all categories.</p>
+                <p className="text-sm text-neutral-500">No experiences in this tier yet.</p>
+                <p className="text-[10px] text-neutral-600 font-mono">Check back soon or browse all tiers.</p>
               </div>
             )}
           </>

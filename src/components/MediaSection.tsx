@@ -106,11 +106,11 @@ export default function MediaSection() {
     setEmbedError(false);
 
     if (playerRef.current && playerRef.current.loadVideoById) {
-      playerRef.current.loadVideoById(selectedVideo.youtubeId);
+      playerRef.current.cueVideoById(selectedVideo.youtubeId);
     } else if ((window as any).YT && (window as any).YT.Player && playerContainerRef.current) {
       playerRef.current = new (window as any).YT.Player(playerContainerRef.current, {
         videoId: selectedVideo.youtubeId,
-        playerVars: { controls: 1, autoplay: 1 },
+        playerVars: { controls: 1, autoplay: 0 },
         events: {
           onError: (e: any) => {
             if (e.data === 101 || e.data === 150) {

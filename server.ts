@@ -862,6 +862,16 @@ app.get('/api/portal/notifications', async (_req, res) => {
   res.json(data);
 });
 
+app.post('/api/portal/notifications', async (req, res) => {
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ error: 'Text required' });
+  const { data, error } = await supabase.from('fan_notifications').insert({
+    id: `n-${Date.now()}`, text, unread: true,
+  }).select('*').single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true, notification: data });
+});
+
 app.post('/api/portal/notifications/:id/read', async (req, res) => {
   const { error } = await supabase.from('fan_notifications').update({ unread: false }).eq('id', req.params.id);
   if (error) return res.status(500).json({ error: error.message });
@@ -872,6 +882,16 @@ app.get('/api/portal/badges', async (_req, res) => {
   const { data, error } = await supabase.from('user_badges').select('*').order('created_at');
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
+});
+
+app.post('/api/portal/badges', async (req, res) => {
+  const { title, description, icon } = req.body;
+  if (!title) return res.status(400).json({ error: 'Title required' });
+  const { data, error } = await supabase.from('user_badges').insert({
+    id: `b-${Date.now()}`, title, description: description || '', icon: icon || '🏅',
+  }).select('*').single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true, badge: data });
 });
 
 app.get('/api/portal/journey', async (_req, res) => {

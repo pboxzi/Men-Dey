@@ -275,12 +275,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [profileContact, setProfileContact] = useState('+1 (555) 123-4567');
 
   // Dynamic Event registrations
-  const [portalEvents, setPortalEvents] = useState<EventItem[]>([
-    { id: 'ev1', title: 'SAYes Mentoring Cape Town Summit', type: 'Youth Mentoring', date: 'July 12, 2024 - 08:00 AM', location: 'Cape Town, South Africa', registered: false },
-    { id: 'ev2', title: 'West End Theatre Backstage Masterclass', type: 'Studio Experience', date: 'August 19, 2024 - 02:00 PM', location: 'London, UK', registered: false },
-    { id: 'ev3', title: 'SAYes Annual Charity Gala Dinner', type: 'Charity Dinner', date: 'London, UK - September 15, 2024', location: 'London, UK', registered: false },
-    { id: 'ev4', title: 'Global Virtual Q&A & Compassion Circle', type: 'Virtual Panel', date: 'Weekly on Thursdays - 18:00 UTC', location: 'Direct Portal Video', registered: true, ticketRef: 'GA-TKT-582914' }
-  ]);
+  const [portalEvents, setPortalEvents] = useState<EventItem[]>([]);
+
+  useEffect(() => {
+    fetch('/api/portal/events').then(r => r.ok ? r.json() : []).then(setPortalEvents).catch(() => {});
+  }, []);
 
   // Community State
   const [activeCountryClub, setActiveCountryClub] = useState<string>('Global');
@@ -492,10 +491,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [replyInputs, setReplyInputs] = useState<{ [postId: string]: string }>({});
 
   // Fan Creativity Board
-  const [creations, setCreations] = useState<FanArtItem[]>([
-    { id: 'c1', title: 'Agent Scully Vector Portrait', category: 'Fan Art', author: 'LA_Artist', description: 'A custom vector portrait inspired by the X-Files and sci-fi themes.', likes: 24 },
-    { id: 'c2', title: 'My Journey Supporting Youth Mentoring', category: 'Fan Story', author: 'John Smith', description: 'How Gillian\'s charity inspired me to start a mentoring team in my city.', likes: 118, hasLiked: true }
-  ]);
+  const [creations, setCreations] = useState<FanArtItem[]>([]);
+
+  useEffect(() => {
+    fetch('/api/portal/creations').then(r => r.ok ? r.json() : []).then(setCreations).catch(() => {});
+  }, []);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadTitle, setUploadTitle] = useState('');
   const [uploadCategory, setUploadCategory] = useState<'Fan Art' | 'Fan Story' | 'Fan Video' | 'Photography'>('Fan Art');
@@ -510,64 +510,24 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     }
   }, [backendOrders]);
 
-  // Messages with Sarah (Management)
-  const [chatMessages, setChatMessages] = useState([
-    { id: 'm1', sender: 'management', text: "Hello John, this is Sarah from Gillian's official representation team. We have received your Meet & Greet proposal. Gillian is very touched by your youth mentoring support story.", timestamp: 'May 18, 11:05 AM' },
-    { id: 'm2', sender: 'user', text: "Hi Sarah! Thank you so much for reaching out. It is an absolute dream of mine. I have been supporting youth mentorship for five years, inspired directly by Gillian's quiet benevolence.", timestamp: 'May 18, 01:14 PM' },
-    { id: 'm3', sender: 'management', text: "That is wonderful to hear, John. We are currently mapping out some private slots around her charity summit schedule in July. Could you confirm if you will be in London during the entire second week of July?", timestamp: 'May 20, 04:10 PM' },
-    { id: 'm4', sender: 'user', text: "Yes, absolutely! I can arrange my travel to match any day or time that works best for Gillian. I will also be attending the charity screening.", timestamp: 'May 20, 04:18 PM' }
-  ]);
-  const [newMessage, setNewMessage] = useState('');
-
-  // Notifications State
-  const [notifications, setNotifications] = useState([
-    { id: 'n1', text: 'Sarah (Management) updated your request status to In Discussion.', time: 'May 20, 2024', unread: true },
-    { id: 'n2', text: 'You received 500 bonus loyalty points for upgrading to Gold Member.', time: 'May 15, 2024', unread: false },
-    { id: 'n3', text: 'Your monthly video message from Gillian is available to stream.', time: 'May 10, 2024', unread: false }
-  ]);
+  // Messages State for 3 active channels
 
   // Loyalty & Rewards State
   const [loyaltyPoints, setLoyaltyPoints] = useState(4500);
   const rank = getLoyaltyRank(loyaltyPoints);
   const progressPercent = Math.min(100, Math.max(0, ((loyaltyPoints - rank.min) / (rank.max - rank.min)) * 100));
-  const [badges, setBadges] = useState([
-    { id: 'b1', title: 'Verified Fan Badge', desc: 'Securely registered email on platform', date: 'May 10, 2024', icon: '🛡️' },
-    { id: 'b2', title: 'Kindness Advocate', desc: 'Shared direct cancer support story', date: 'May 11, 2024', icon: '❤️' },
-    { id: 'b3', title: 'Gold Tier Status', desc: 'Active Ambassador access verified', date: 'May 15, 2024', icon: '👑' },
-    { id: 'b4', title: 'Early Supporter', desc: 'Participated in launch week bridge', date: 'May 10, 2024', icon: '🌟' }
-  ]);
+  const [badges, setBadges] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/portal/badges').then(r => r.ok ? r.json() : []).then(setBadges).catch(() => {});
+  }, []);
 
   // Kindness log & Journey timeline State
-  const [journeyLog, setJourneyLog] = useState([
-    {
-      id: 'j4',
-      title: 'Submitted First Proposal: Meet & Greet',
-      date: 'May 15, 2024',
-      description: 'Your request for a private meeting with Gillian Anderson was submitted.',
-      color: 'bg-green-500'
-    },
-    {
-      id: 'j3',
-      title: 'Upgraded to Gold Ambassador',
-      date: 'May 15, 2024',
-      description: "Dues verified, direct youth transition mentoring funding confirmed.",
-      color: 'bg-green-500'
-    },
-    {
-      id: 'j2',
-      title: 'Verified Security Access Key',
-      date: 'May 10, 2024',
-      description: 'Encrypted sanctuary clearance token successfully generated and assigned.',
-      color: 'bg-green-500'
-    },
-    {
-      id: 'j1',
-      title: 'Joined Official Platform',
-      date: 'May 10, 2024',
-      description: 'Connection successfully authorized and profile verified.',
-      color: 'bg-green-500'
-    }
-  ]);
+  const [journeyLog, setJourneyLog] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/portal/journey').then(r => r.ok ? r.json() : []).then(setJourneyLog).catch(() => {});
+  }, []);
 
   const [newKindnessTitle, setNewKindnessTitle] = useState('');
   const [newKindnessDesc, setNewKindnessDesc] = useState('');
@@ -598,24 +558,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   // Community Comments & Topics
   const [activeTopicFilter, setActiveTopicFilter] = useState<'#All' | '#XFiles' | '#TheFall' | '#SexEducation' | '#FanArt'>('#All');
-  const [postComments, setPostComments] = useState<{ [postId: string]: { author: string; text: string; time: string; avatar: string }[] }>({
-    'c1': [
-      { author: 'Scully_Seeker', text: 'This vector art is jaw-dropping! Truly represents the Agent Scully vibe.', time: '1 hour ago', avatar: '🔬' }
-    ],
-    'c2': [
-      { author: 'BeCompassionate', text: 'Thank you for sharing your story. Gillian\'s benevolence has a huge ripple effect.', time: '3 hours ago', avatar: '📚' }
-    ]
-  });
   const [newCommentText, setNewCommentText] = useState<{ [postId: string]: string }>({});
-
-  // Reactions for creations
-  const [postReactions, setPostReactions] = useState<{ [postId: string]: { [emoji: string]: number } }>({
-    'c1': { '🔬': 12, '🕯️': 4, '📚': 2, '👽': 6 },
-    'c2': { '❤️': 35, '🔬': 10, '👽': 3 }
-  });
 
   // Messages State for 3 active channels
   const [currentChannel, setCurrentChannel] = useState<'management' | 'events' | 'vault'>('management');
+  const [newMessage, setNewMessage] = useState('');
   const [channelMessages, setChannelMessages] = useState<{
     management: { id: string; sender: 'management' | 'user'; text: string; timestamp: string }[];
     events: { id: string; sender: 'management' | 'user'; text: string; timestamp: string }[];
@@ -643,12 +590,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   // Live Virtual Event Stage State
   const [activeEventStageId, setActiveEventStageId] = useState<string | null>(null);
-  const [eventChat, setEventChat] = useState<{ id: string; author: string; text: string; avatar: string }[]>([
-    { id: 'ec1', author: 'Scully_Runner', text: 'This session is mind-blowing! Gillian is so humble.', avatar: '🔬' },
-    { id: 'ec2', author: 'ScullyFan', text: 'The philosophy of compassion is everything!', avatar: '🕯️' },
-    { id: 'ec3', author: 'LondonGuy', text: 'The London West End performance was unbelievable!', avatar: '📚' },
-    { id: 'ec4', author: 'SAYesMentor', text: 'The mentoring models look incredible in real life.', avatar: '🕵️‍♀️' }
-  ]);
   const [eventClaps, setEventClaps] = useState(145);
   const [userEventMessage, setUserEventMessage] = useState('');
 
@@ -666,6 +607,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   // Step-by-step Request Wizard tabs
   const [requestWizardStep, setRequestWizardStep] = useState(1);
+
+  // Notifications State
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/portal/notifications').then(r => r.ok ? r.json() : []).then(setNotifications).catch(() => {});
+  }, []);
 
   // Helper helper to generate dynamic portal notifications
   const pushNotification = (text: string) => {
@@ -907,22 +855,21 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     showToast('Reply added to thread!', 'success');
   };
 
-  const handleLikeCreation = (id: string) => {
+  const handleLikeCreation = async (id: string) => {
     setCreations((prev) =>
       prev.map((c) => {
         if (c.id === id) {
-          return {
-            ...c,
-            likes: c.hasLiked ? c.likes - 1 : c.likes + 1,
-            hasLiked: !c.hasLiked
-          };
+          return { ...c, likes: c.hasLiked ? c.likes - 1 : c.likes + 1, hasLiked: !c.hasLiked };
         }
         return c;
       })
     );
+    try {
+      await fetch(`/api/portal/creations/${id}/like`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    } catch {}
   };
 
-  const handleUploadCreation = (e: React.FormEvent) => {
+  const handleUploadCreation = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!uploadTitle.trim() || !uploadDesc.trim()) return;
 
@@ -935,10 +882,28 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       likes: 0
     };
 
-    setCreations((prev) => [newC, ...prev]);
+    try {
+      const res = await fetch('/api/portal/creations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newC.title, category: newC.category, description: newC.description, author: newC.author })
+      });
+      if (res.ok) {
+        const created = await res.json();
+        setCreations((prev) => [{ ...newC, id: String(created.id) }, ...prev]);
+      } else {
+        setCreations((prev) => [newC, ...prev]);
+      }
+    } catch {
+      setCreations((prev) => [newC, ...prev]);
+    }
+
     setShowUploadModal(false);
     setUploadTitle('');
     setUploadDesc('');
+    addJourneyMilestone('Uploaded Creation', `Shared "${newC.title}" on the creativity board`, 'bg-purple-500');
+    pushNotification('Your creation has been shared with the community!');
+    showToast('Creation uploaded successfully!', 'success');
   };
 
   const handlePortalSubmitRequest = async (e: React.FormEvent) => {
@@ -1197,23 +1162,24 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     setActiveTab('My Requests');
   };
 
-  const handleRegisterEvent = (id: string) => {
-    const randomNum = Math.floor(100000 + Math.random() * 900000);
+  const handleRegisterEvent = async (id: string) => {
+    try {
+      await fetch(`/api/portal/events/${id}/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    } catch {}
     setPortalEvents((prev) =>
       prev.map((e) => {
         if (e.id === id) {
-          return {
-            ...e,
-            registered: true,
-            ticketRef: `KR-TKT-${randomNum}`
-          };
+          return { ...e, registered: true, ticketRef: `KR-TKT-${Math.floor(100000 + Math.random() * 900000)}` };
         }
         return e;
       })
     );
+    addJourneyMilestone('Registered for Event', `Registered for event ID: ${id}`, 'bg-blue-500');
+    pushNotification('Event registration confirmed! Check your ticket ref.');
+    showToast('Event registered successfully!', 'success');
   };
 
-  const handleAddKindnessAct = (e: React.FormEvent) => {
+  const handleAddKindnessAct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newKindnessTitle.trim()) return;
     const newLog = {
@@ -1226,7 +1192,15 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     setJourneyLog(prev => [newLog, ...prev]);
     setNewKindnessTitle('');
     setNewKindnessDesc('');
+    pushNotification('Your act of kindness has been logged to your sanctuary timeline!');
     showToast('Your act of kindness has been logged to your sanctuary timeline!', 'success');
+    try {
+      await fetch('/api/portal/journey', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newLog.title, description: newLog.description, color: newLog.color })
+      });
+    } catch {}
   };
 
   const redeemableItems = [
@@ -1235,7 +1209,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     { id: 'r3', title: 'Exclusive Video Message Clip', cost: 2000, icon: '🎬', desc: 'A downloadable personal audio/video file of Gillian.' }
   ];
 
-  const handleRedeemReward = (item: typeof redeemableItems[0]) => {
+  const handleRedeemReward = async (item: typeof redeemableItems[0]) => {
     if (loyaltyPoints < item.cost) {
       showToast('Insufficient loyalty points for this redemption.', 'error');
       return;
@@ -1277,6 +1251,24 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     ]);
 
     showToast(`Successfully redeemed: ${item.title}!`, 'success');
+
+    try {
+      await fetch('/api/portal/badges', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newBadge.title, description: newBadge.desc, icon: newBadge.icon })
+      });
+      await fetch('/api/portal/journey', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: journeyMilestone.title, description: journeyMilestone.description, color: journeyMilestone.color })
+      });
+      await fetch('/api/portal/notifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: `Successfully redeemed loyalty reward: ${item.title}. Check your unlocked badges!` })
+      });
+    } catch {}
   };
 
   const storeItems = [
@@ -3388,7 +3380,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-4 flex flex-col h-[450px]">
                   <div className="flex-1 overflow-y-auto space-y-4 pr-1 mb-4 text-xs">
-                    {chatMessages.map((msg) => (
+                    {channelMessages.management.map((msg) => (
                       <div key={msg.id} className={`flex gap-3 text-left ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                         <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[9px] ${
                           msg.sender === 'user' ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-950 border-gold-800/35 text-gold-500'

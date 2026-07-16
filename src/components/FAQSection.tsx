@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useGlobalState } from '../utils/StateContext';
 import {
   HelpCircle,
   Search,
@@ -16,10 +17,10 @@ interface FAQItem {
   id: string;
   question: string;
   answer: string;
-  category: 'advocacy' | 'career' | 'community' | 'g-spot';
+  category: string;
 }
 
-const FAQ_DATA: FAQItem[] = [
+const FAQ_DATA_FALLBACK: FAQItem[] = [
   {
     id: 'faq-sayes',
     question: "What is SA-YES and how does Gillian support it?",
@@ -59,6 +60,8 @@ const FAQ_DATA: FAQItem[] = [
 ];
 
 export default function FAQSection() {
+  const { content } = useGlobalState();
+  const FAQ_DATA = content.faqEntries.length > 0 ? content.faqEntries : FAQ_DATA_FALLBACK;
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<'all' | 'advocacy' | 'career' | 'community' | 'g-spot'>('all');
   const [expandedId, setExpandedId] = useState<string | null>('faq-sayes'); // Default first expanded

@@ -93,8 +93,27 @@ export interface PortalNotification {
   type: 'reply' | 'update' | 'alert';
 }
 
+export interface ContentState {
+  heroSlides: any[];
+  journalEntries: any[];
+  upcomingEvents: any[];
+  shopProducts: any[];
+  faqEntries: any[];
+  charityCauses: any[];
+  charityPartners: any[];
+  membershipTiers: any[];
+  experiences: any[];
+  filmsData: any[];
+  literaryWorks: any[];
+  kindnessLog: any[];
+  quizQuestions: any[];
+  sitePillars: any[];
+  requestTypes: any[];
+}
+
 interface StateContextType {
   loading: boolean;
+  content: ContentState;
   requests: RequestDetail[];
   orders: ShopOrder[];
   posts: CommunityHighlight[];
@@ -130,6 +149,12 @@ const StateContext = createContext<StateContextType | undefined>(undefined);
 
 export function StateProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState<ContentState>({
+    heroSlides: [], journalEntries: [], upcomingEvents: [], shopProducts: [],
+    faqEntries: [], charityCauses: [], charityPartners: [], membershipTiers: [],
+    experiences: [], filmsData: [], literaryWorks: [], kindnessLog: [],
+    quizQuestions: [], sitePillars: [], requestTypes: [],
+  });
   const [requests, setRequests] = useState<RequestDetail[]>([]);
   const [orders, setOrders] = useState<ShopOrder[]>([]);
   const [posts, setPosts] = useState<CommunityHighlight[]>([]);
@@ -199,9 +224,12 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   // Initial Fetch from backend state
   const fetchState = async () => {
     try {
-      const response = await fetch('/api/state');
-      if (response.ok) {
-        const data = await response.json();
+      const [stateRes, contentRes] = await Promise.all([
+        fetch('/api/state'),
+        fetch('/api/content'),
+      ]);
+      if (stateRes.ok) {
+        const data = await stateRes.json();
         setRequests(data.requests || []);
         setOrders(data.orders || []);
         setPosts(data.posts || []);
@@ -209,6 +237,26 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         setJournalComments(data.journalComments || {});
         setSubscribers(data.subscribers || []);
         setProposalChats(data.proposalChats || {});
+      }
+      if (contentRes.ok) {
+        const data = await contentRes.json();
+        setContent({
+          heroSlides: data.heroSlides || [],
+          journalEntries: data.journalEntries || [],
+          upcomingEvents: data.upcomingEvents || [],
+          shopProducts: data.shopProducts || [],
+          faqEntries: data.faqEntries || [],
+          charityCauses: data.charityCauses || [],
+          charityPartners: data.charityPartners || [],
+          membershipTiers: data.membershipTiers || [],
+          experiences: data.experiences || [],
+          filmsData: data.filmsData || [],
+          literaryWorks: data.literaryWorks || [],
+          kindnessLog: data.kindnessLog || [],
+          quizQuestions: data.quizQuestions || [],
+          sitePillars: data.sitePillars || [],
+          requestTypes: data.requestTypes || [],
+        });
       }
     } catch (error) {
       console.error('Failed to fetch full backend state.', error);
@@ -440,6 +488,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     <StateContext.Provider
       value={{
         loading,
+        content,
         requests,
         orders,
         posts,

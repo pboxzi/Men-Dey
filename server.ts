@@ -798,6 +798,235 @@ app.get('/api/photos', async (_req, res) => {
   }
 });
 
+// ─── Content API routes (all static/CMS data) ──────────────
+
+app.get('/api/content', async (_req, res) => {
+  try {
+    const [
+      heroRes, journalRes, eventsRes, shopRes, faqRes,
+      causesRes, partnersRes, tiersRes, expRes, filmsRes,
+      litRes, kindnessRes, quizRes, pillarsRes, typesRes,
+    ] = await Promise.all([
+      supabase.from('hero_slides').select('*').order('sort_order'),
+      supabase.from('journal_entries').select('*').order('created_at', { ascending: false }),
+      supabase.from('upcoming_events').select('*'),
+      supabase.from('shop_products').select('*'),
+      supabase.from('faq_entries').select('*').order('sort_order'),
+      supabase.from('charity_causes').select('*'),
+      supabase.from('charity_partners').select('*'),
+      supabase.from('membership_tiers').select('*').order('sort_order'),
+      supabase.from('experiences').select('*'),
+      supabase.from('films_data').select('*').order('sort_order'),
+      supabase.from('literary_works').select('*').order('sort_order'),
+      supabase.from('kindness_log').select('*').order('sort_order'),
+      supabase.from('quiz_questions').select('*'),
+      supabase.from('site_pillars').select('*').order('sort_order'),
+      supabase.from('request_types').select('*').order('sort_order'),
+    ]);
+
+    const check = (r: any, name: string) => { if (r.error) throw new Error(`${name}: ${r.error.message}`); };
+    [heroRes, journalRes, eventsRes, shopRes, faqRes,
+     causesRes, partnersRes, tiersRes, expRes, filmsRes,
+     litRes, kindnessRes, quizRes, pillarsRes, typesRes].forEach((r, i) =>
+      check(r, ['hero','journal','events','shop','faq','causes','partners','tiers','exp','films','lit','kindness','quiz','pillars','types'][i])
+    );
+
+    res.json({
+      heroSlides: heroRes.data,
+      journalEntries: journalRes.data,
+      upcomingEvents: eventsRes.data,
+      shopProducts: shopRes.data,
+      faqEntries: faqRes.data,
+      charityCauses: causesRes.data,
+      charityPartners: partnersRes.data,
+      membershipTiers: tiersRes.data,
+      experiences: expRes.data,
+      filmsData: filmsRes.data,
+      literaryWorks: litRes.data,
+      kindnessLog: kindnessRes.data,
+      quizQuestions: quizRes.data,
+      sitePillars: pillarsRes.data,
+      requestTypes: typesRes.data,
+    });
+  } catch (err) {
+    console.error('Error fetching content:', err);
+    res.status(500).json({ error: 'Failed to fetch content' });
+  }
+});
+
+// ─── Fan Portal dynamic data ────────────────────────────────
+
+app.get('/api/portal/notifications', async (_req, res) => {
+  const { data, error } = await supabase.from('fan_notifications').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/api/portal/notifications/:id/read', async (req, res) => {
+  const { error } = await supabase.from('fan_notifications').update({ unread: false }).eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true });
+});
+
+app.get('/api/portal/badges', async (_req, res) => {
+  const { data, error } = await supabase.from('user_badges').select('*').order('created_at');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.get('/api/portal/journey', async (_req, res) => {
+  const { data, error } = await supabase.from('journey_log').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/api/portal/journey', async (req, res) => {
+  const { title, description } = req.body;
+  if (!title) return res.status(400).json({ error: 'Title required' });
+  const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const { data, error } = await supabase.from('journey_log').insert({
+    id: `j-${Date.now()}`, title, log_date: dateStr, description: description || '', color: 'bg-green-500',
+  }).select('*').single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true, entry: data });
+});
+
+app.get('/api/portal/events', async (_req, res) => {
+  const { data, error } = await supabase.from('portal_events').select('*').order('created_at');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/api/portal/events/:id/register', async (req, res) => {
+  const ticketRef = `GA-TKT-${Math.floor(100000 + Math.random() * 900000)}`;
+  const { data, error } = await supabase.from('portal_events')
+    .update({ registered: true, ticket_ref: ticketRef })
+    .eq('id', req.params.id)
+    .select('*').single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true, event: data });
+});
+
+app.get('/api/portal/creations', async (_req, res) => {
+  const { data, error } = await supabase.from('fan_creations').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/api/portal/creations', async (req, res) => {
+  const { title, category, author, description } = req.body;
+  if (!title || !author) return res.status(400).json({ error: 'Title and author required' });
+  const { data, error } = await supabase.from('fan_creations').insert({
+    id: `fc-${Date.now()}`, title, category: category || 'Fan Art', author, description: description || '', likes: 0,
+  }).select('*').single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true, creation: data });
+});
+
+app.post('/api/portal/creations/:id/like', async (req, res) => {
+  const { data: c } = await supabase.from('fan_creations').select('likes,has_liked').eq('id', req.params.id).single();
+  if (!c) return res.status(404).json({ error: 'Not found' });
+  const { error } = await supabase.from('fan_creations')
+    .update({ likes: c.has_liked ? c.likes - 1 : c.likes + 1, has_liked: !c.has_liked })
+    .eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true });
+});
+
+app.get('/api/portal/creations/:id/comments', async (req, res) => {
+  const { data, error } = await supabase.from('fan_creation_comments').select('*').eq('creation_id', req.params.id).order('created_at');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/api/portal/creations/:id/comments', async (req, res) => {
+  const { author, text, avatar } = req.body;
+  if (!text) return res.status(400).json({ error: 'Text required' });
+  const { data, error } = await supabase.from('fan_creation_comments').insert({
+    id: `fcc-${Date.now()}`, creation_id: req.params.id, author: author || 'Anonymous', text, avatar: avatar || '📚',
+  }).select('*').single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true, comment: data });
+});
+
+app.get('/api/portal/creations/:id/reactions', async (req, res) => {
+  const { data, error } = await supabase.from('fan_creation_reactions').select('*').eq('creation_id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/api/portal/creations/:id/reactions', async (req, res) => {
+  const { emoji } = req.body;
+  if (!emoji) return res.status(400).json({ error: 'Emoji required' });
+  const { data: existing } = await supabase.from('fan_creation_reactions')
+    .select('*').eq('creation_id', req.params.id).eq('emoji', emoji).single();
+  if (existing) {
+    await supabase.from('fan_creation_reactions').update({ count: existing.count + 1 }).eq('id', existing.id);
+  } else {
+    await supabase.from('fan_creation_reactions').insert({ creation_id: req.params.id, emoji, count: 1 });
+  }
+  res.json({ success: true });
+});
+
+app.get('/api/portal/channels/:channel', async (req, res) => {
+  const { data, error } = await supabase.from('channel_messages')
+    .select('*').eq('channel', req.params.channel).order('created_at');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/api/portal/channels/:channel', async (req, res) => {
+  const { sender, text } = req.body;
+  if (!text) return res.status(400).json({ error: 'Text required' });
+  const { data, error } = await supabase.from('channel_messages').insert({
+    id: `cm-${Date.now()}`, channel: req.params.channel, sender: sender || 'user', text,
+  }).select('*').single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true, message: data });
+});
+
+// ─── Admin dynamic data ─────────────────────────────────────
+
+app.get('/api/admin/notifications', async (_req, res) => {
+  const { data, error } = await supabase.from('admin_notifications').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.get('/api/admin/events', async (_req, res) => {
+  const { data, error } = await supabase.from('admin_events').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.get('/api/admin/comm-logs', async (_req, res) => {
+  const { data, error } = await supabase.from('communication_logs').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.get('/api/admin/experience-requests', async (_req, res) => {
+  const { data, error } = await supabase.from('experience_requests').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.get('/api/donations', async (_req, res) => {
+  const { data, error } = await supabase.from('donations').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/api/donations', async (req, res) => {
+  const { name, amount, message } = req.body;
+  if (!name || !amount) return res.status(400).json({ error: 'Name and amount required' });
+  const { data, error } = await supabase.from('donations').insert({
+    name, amount, message: message || '',
+  }).select('*').single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true, donation: data });
+});
+
 // ─── Server Start ─────────────────────────────────────────────
 
 async function startServer() {

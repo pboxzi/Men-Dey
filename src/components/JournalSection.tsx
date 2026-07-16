@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { JOURNAL_ENTRIES } from '../data';
 import { JournalEntry } from '../types';
 import { useGlobalState } from '../utils/StateContext';
 import {
@@ -26,7 +25,8 @@ interface JournalComment {
 }
 
 export default function JournalSection() {
-  const { journalComments: comments, addJournalComment } = useGlobalState();
+  const { journalComments: comments, addJournalComment, content } = useGlobalState();
+  const JOURNAL_ENTRIES = content.journalEntries.length > 0 ? content.journalEntries : [];
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [claps, setClaps] = useState<{ [id: string]: number }>({
     'journal-1': 342,

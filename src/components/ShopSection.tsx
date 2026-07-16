@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useGlobalState } from '../utils/StateContext';
 import {
   ShoppingBag,
   ShoppingCart,
@@ -27,6 +28,7 @@ interface Product {
 }
 
 export default function ShopSection() {
+  const { content } = useGlobalState();
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
   const [cart, setCart] = useState<{ product: Product; qty: number }[]>([]);
   const [coupon, setCoupon] = useState<string>('');
@@ -42,7 +44,10 @@ export default function ShopSection() {
   const [customerZip, setCustomerZip] = useState('');
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
 
-  const products: Product[] = [];
+  const products: Product[] = content.shopProducts.map((p: any) => ({
+    id: p.id, name: p.name, category: p.category, price: Number(p.price),
+    rating: Number(p.rating), image: p.image_placeholder || '', description: p.description, stock: p.stock,
+  }));
 
   const categories = ['ALL', 'APPAREL', 'COLLECTIBLES'];
 

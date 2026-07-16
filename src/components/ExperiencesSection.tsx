@@ -30,6 +30,8 @@ import {
   UserCheck
 } from 'lucide-react';
 
+const TIER_ORDER = ['Gold', 'Platinum', 'Diamond'] as const;
+
 const CATEGORIES = [
   { id: 'ALL', label: 'ALL', icon: Sparkles },
   { id: 'Meet & Greet', label: 'MEET & GREET', icon: Users },
@@ -45,8 +47,6 @@ const TIER_MAP: Record<string, { name: string; short: string; color: string; ico
   Platinum: { name: 'Lead Detective', short: 'GIBSON', color: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: Compass },
   Diamond: { name: 'Advocate', short: 'MILBURN', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20', icon: Heart },
 };
-
-const TIER_ORDER = ['Gold', 'Platinum', 'Diamond'];
 
 const CATEGORY_COLORS: Record<string, string> = {
   'Meet & Greet': 'bg-pink-500/10 text-pink-400 border-pink-500/20',
@@ -102,6 +102,10 @@ export default function ExperiencesSection() {
 
   const filteredExperiences = useMemo(() => {
     if (activeCategory === 'ALL') return experiences;
+    // Filter by tier if tier filter selected, otherwise by category
+    if (TIER_ORDER.includes(activeCategory)) {
+      return experiences.filter(e => e.tier === activeCategory);
+    }
     return experiences.filter(e => e.category === activeCategory);
   }, [experiences, activeCategory]);
 

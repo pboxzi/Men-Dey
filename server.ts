@@ -70,8 +70,8 @@ app.get('/api/state', async (_req, res) => {
       commentsRes,
     ] = await Promise.all([
       supabase.from('subscribers').select('email').order('created_at'),
-      supabase.from('memberships').select('*').order('created_at', { ascending: false }),
-      supabase.from('requests').select('*').order('created_at', { ascending: false }),
+      supabase.from('memberships').select('*').order('updated_at', { ascending: false }),
+      supabase.from('requests').select('*').order('updated_at', { ascending: false }),
       supabase.from('orders').select('*').order('created_at', { ascending: false }),
       supabase.from('posts').select('*').order('created_at', { ascending: false }),
       supabase.from('discussions').select('*').order('created_at', { ascending: false }),
@@ -774,10 +774,20 @@ app.get('/api/videos', async (_req, res) => {
   try {
     const { data, error } = await supabase
       .from('videos')
-      .select('id, title, duration, youtube_id:youtubeId, subtitles, sort_order, categories(name:category)')
+      .select('id, title, duration, youtube_id, subtitles, sort_order, categories(name)')
       .order('sort_order');
     if (error) throw error;
-    res.json(data);
+    const mapped = (data || []).map((v: any) => ({
+      id: v.id,
+      title: v.title,
+      category: v.categories?.name || 'Uncategorized',
+      duration: v.duration,
+      youtubeId: v.youtube_id,
+      subtitles: v.subtitles || [],
+      sort_order: v.sort_order,
+      videoPlaceholderText: v.title,
+    }));
+    res.json(mapped);
   } catch (err) {
     console.error('Error fetching videos:', err);
     res.status(500).json({ error: 'Failed to fetch videos' });
@@ -788,10 +798,21 @@ app.get('/api/photos', async (_req, res) => {
   try {
     const { data, error } = await supabase
       .from('photos')
-      .select('id, title, url, description, likes, width, height, sort_order, categories(name:category)')
+      .select('id, title, url, description, likes, width, height, sort_order, categories(name)')
       .order('sort_order');
     if (error) throw error;
-    res.json(data);
+    const mapped = (data || []).map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      category: p.categories?.name || 'Uncategorized',
+      url: p.url,
+      description: p.description,
+      likes: p.likes || 0,
+      width: p.width,
+      height: p.height,
+      sort_order: p.sort_order,
+    }));
+    res.json(mapped);
   } catch (err) {
     console.error('Error fetching photos:', err);
     res.status(500).json({ error: 'Failed to fetch photos' });

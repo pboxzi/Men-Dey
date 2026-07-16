@@ -2,12 +2,17 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Experience, ExperienceBooking } from '../types';
 import BookingModal from './BookingModal';
+
+function formatDate(dateStr: string): string {
+  if (!dateStr) return 'N/A';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return 'N/A';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
 import {
   Sparkles,
   Award,
   CheckCircle,
-  Clock,
-  ShieldCheck,
   Users,
   MapPin,
   Timer,
@@ -53,7 +58,6 @@ export default function ExperiencesSection() {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [selectedExp, setSelectedExp] = useState<Experience | null>(null);
-  const [showDetail, setShowDetail] = useState(false);
   const [showBooking, setShowBooking] = useState(false);
   const [activeTab, setActiveTab] = useState<'browse' | 'bookings'>('browse');
   const [bookings, setBookings] = useState<ExperienceBooking[]>([]);
@@ -104,14 +108,8 @@ export default function ExperiencesSection() {
     categories: new Set(experiences.map(e => e.category)).size,
   }), [experiences]);
 
-  const openDetail = (exp: Experience) => {
-    setSelectedExp(exp);
-    setShowDetail(true);
-  };
-
   const openBooking = (exp: Experience) => {
     setSelectedExp(exp);
-    setShowDetail(false);
     setShowBooking(true);
   };
 
@@ -181,9 +179,9 @@ export default function ExperiencesSection() {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => { setActiveTab(tab.id); setShowBooking(false); setSelectedExp(null); }}
                 className={`flex items-center gap-2 px-5 py-2 rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all ${
-                  activeTab === tab.id
+                  activeTab === tab.id && !showBooking
                     ? 'bg-gold-500 text-neutral-950 font-bold'
                     : 'text-neutral-500 hover:text-white'
                 }`}
@@ -195,7 +193,14 @@ export default function ExperiencesSection() {
           </div>
         </div>
 
-        {activeTab === 'browse' ? (
+        {/* ─── Booking Page (full-page inline) ─────────────── */}
+        {showBooking && selectedExp ? (
+          <BookingModal
+            experience={selectedExp}
+            onClose={() => { setShowBooking(false); setSelectedExp(null); }}
+            onSuccess={handleBookingSuccess}
+          />
+        ) : activeTab === 'browse' ? (
           <>
             {/* Category Filter Tabs */}
             <div className="flex flex-wrap items-center justify-center gap-2">
@@ -296,7 +301,7 @@ export default function ExperiencesSection() {
                           )}
                         </span>
                         <button
-                          onClick={() => openDetail(exp)}
+                          onClick={() => openBooking(exp)}
                           disabled={isFull}
                           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-mono tracking-wider uppercase transition-all ${
                             isFull
@@ -304,7 +309,7 @@ export default function ExperiencesSection() {
                               : 'bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold'
                           }`}
                         >
-                          {isFull ? 'Full' : 'View & Book'}
+                          {isFull ? 'Full' : 'Book Now'}
                           {!isFull && <ChevronRight className="h-3 w-3" />}
                         </button>
                       </div>
@@ -335,7 +340,7 @@ export default function ExperiencesSection() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs font-bold text-white tracking-wide">{booking.experienceTitle}</span>
                       <span className="text-[8px] font-mono bg-neutral-900 border border-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded">
-                        {new Date(booking.createdAt).toLocaleDateString()}
+                        {formatDate(booking.createdAt)}
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-[10px] text-neutral-400">
@@ -378,140 +383,6 @@ export default function ExperiencesSection() {
           </div>
         )}
       </div>
-
-      {/* ─── Detail Modal ──────────────────────────────── */}
-      <AnimatePresence>
-        {showDetail && selectedExp && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-            onClick={() => setShowDetail(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-[#0a0a0a] border border-neutral-900 rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div className="p-6 border-b border-neutral-900 space-y-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap gap-1.5">
-                      <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${TIER_COLORS[selectedExp.tier] || TIER_COLORS.Gold}`}>
-                        {selectedExp.tier}
-                      </span>
-                      <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[selectedExp.category] || ''}`}>
-                        {selectedExp.category}
-                      </span>
-                      {selectedExp.popular && (
-                        <span className="flex items-center gap-1 text-[8px] font-mono text-gold-500 bg-gold-500/10 px-1.5 py-0.5 rounded border border-gold-500/20">
-                          <Star className="h-2.5 w-2.5 fill-gold-500" />
-                          POPULAR
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="font-serif text-xl font-extrabold text-white tracking-wide uppercase">
-                      {selectedExp.title}
-                    </h3>
-                  </div>
-                  <button
-                    onClick={() => setShowDetail(false)}
-                    className="p-2 rounded-lg bg-neutral-900 text-neutral-400 hover:text-white transition-colors shrink-0"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-4 text-[10px] font-mono text-neutral-400">
-                  <span className="flex items-center gap-1.5">
-                    <MapPin className="h-3 w-3 text-gold-500" />
-                    {selectedExp.location}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Timer className="h-3 w-3 text-gold-500" />
-                    {selectedExp.duration}
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Users className="h-3 w-3 text-gold-500" />
-                    {selectedExp.spots - selectedExp.spotsTaken} of {selectedExp.spots} spots open
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Ticket className="h-3 w-3 text-gold-500" />
-                    {selectedExp.price === 'Complimentary' ? (
-                      <span className="text-emerald-400">Complimentary</span>
-                    ) : selectedExp.price}
-                  </span>
-                </div>
-              </div>
-
-              {/* Modal Body */}
-              <div className="p-6 space-y-6">
-                <p className="text-xs text-neutral-300 leading-relaxed font-sans">
-                  {selectedExp.description}
-                </p>
-
-                {/* Spots Progress */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-[9px] font-mono text-neutral-500">
-                    <span>SPOTS FILLED</span>
-                    <span>{selectedExp.spotsTaken}/{selectedExp.spots}</span>
-                  </div>
-                  <div className="h-1.5 bg-neutral-900 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-gold-500 to-amber-400 rounded-full transition-all"
-                      style={{ width: `${(selectedExp.spotsTaken / selectedExp.spots) * 100}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Details List */}
-                <div className="space-y-3">
-                  <h4 className="text-[10px] font-mono text-neutral-400 tracking-wider uppercase font-semibold">
-                    INCLUDED IN THIS EXPERIENCE:
-                  </h4>
-                  <ul className="space-y-2">
-                    {selectedExp.details.map((detail, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 text-xs text-neutral-300">
-                        <CheckCircle className="h-4 w-4 text-gold-500 shrink-0 mt-0.5" />
-                        <span>{detail}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Book Experience Button */}
-                {selectedExp.spots - selectedExp.spotsTaken > 0 && (
-                  <div className="pt-6 border-t border-neutral-900/60">
-                    <button
-                      onClick={() => openBooking(selectedExp)}
-                      className="w-full bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-3 rounded-lg tracking-widest uppercase transition-all flex items-center justify-center gap-2"
-                    >
-                      <Ticket className="h-4 w-4" />
-                      BOOK THIS EXPERIENCE
-                    </button>
-                    <p className="text-[9px] text-neutral-600 font-mono text-center mt-2">
-                      Applications reviewed within 24-48 hours
-                    </p>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ─── Booking Modal ──────────────────────────────── */}
-      {showBooking && selectedExp && (
-        <BookingModal
-          experience={selectedExp}
-          onClose={() => setShowBooking(false)}
-          onSuccess={handleBookingSuccess}
-        />
-      )}
     </section>
   );
 }

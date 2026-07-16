@@ -1229,6 +1229,7 @@ function mapBooking(r: any) {
     confirmedLocation: r.confirmed_location || '',
     adminNotes: r.admin_notes || '',
     submittedDate: r.submitted_date || '',
+    createdAt: r.created_at || '',
   };
 }
 

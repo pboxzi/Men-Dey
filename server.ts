@@ -181,6 +181,7 @@ app.get('/api/state', async (_req, res) => {
         likes: post.likes,
         replies: post.replies_count,
         liked: post.liked,
+        category: post.category || 'FAN ART',
         comments: postComments,
       };
     });
@@ -434,26 +435,82 @@ app.post('/api/orders', async (req, res) => {
   }
 });
 
+// 7a. Get all community posts (lightweight, no other tables)
+app.get('/api/posts', async (_req, res) => {
+  try {
+    const [postsRes, commentsRes] = await Promise.all([
+      supabase.from('posts').select('*').order('created_at', { ascending: false }),
+      supabase.from('comments').select('*').order('created_at'),
+    ]);
+
+    if (postsRes.error) throw postsRes.error;
+    if (commentsRes.error) throw commentsRes.error;
+
+    const posts = (postsRes.data || []).map((post: any) => {
+      const postComments = (commentsRes.data || [])
+        .filter((c: any) => c.post_id === post.id && !c.parent_comment_id)
+        .map((c: any) => ({
+          id: c.id,
+          username: c.username,
+          avatarText: c.avatar_text,
+          content: c.content,
+          timestamp: c.created_at,
+          replies: (commentsRes.data || [])
+            .filter((r: any) => r.parent_comment_id === c.id)
+            .map((r: any) => ({
+              id: r.id,
+              username: r.username,
+              avatarText: r.avatar_text,
+              content: r.content,
+              timestamp: r.created_at,
+            })),
+        }));
+      return {
+        id: post.id,
+        username: post.username,
+        handle: post.handle,
+        avatarText: post.avatar_text,
+        image: post.image,
+        content: post.content,
+        likes: post.likes,
+        replies: post.replies_count,
+        liked: post.liked,
+        category: post.category || 'FAN ART',
+        comments: postComments,
+      };
+    });
+
+    res.json(posts);
+  } catch (err) {
+    console.error('Error fetching posts:', err);
+    res.status(500).json({ error: 'Failed to fetch posts' });
+  }
+});
+
 // 7. Community posts
 app.post('/api/posts', async (req, res) => {
-  const { username, handle, avatarText, content, image } = req.body;
+  const { username, handle, avatarText, content, image, category } = req.body;
   if (!content) return res.status(400).json({ error: 'Post content is required.' });
 
   const id = `highlight-${Date.now()}`;
   try {
+    const insertData: any = {
+      id,
+      username: username || 'GillianFan',
+      handle: handle || '@GillianFan',
+      avatar_text: avatarText || (username ? username.substring(0, 2).toUpperCase() : 'GF'),
+      image: image || '/src/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg',
+      content,
+      likes: 0,
+      replies_count: 0,
+      liked: false,
+    };
+    // Only include category if column exists (added via migration)
+    if (category) insertData.category = category;
+
     const { data, error } = await supabase
       .from('posts')
-      .insert({
-        id,
-        username: username || 'GillianFan',
-        handle: handle || '@GillianFan',
-        avatar_text: avatarText || (username ? username.substring(0, 2).toUpperCase() : 'GF'),
-        image: image || '/src/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg',
-        content,
-        likes: 0,
-        replies_count: 0,
-        liked: false,
-      })
+      .insert(insertData)
       .select('*')
       .single();
     if (error) throw error;
@@ -464,6 +521,7 @@ app.post('/api/posts', async (req, res) => {
         id: data.id, username: data.username, handle: data.handle,
         avatarText: data.avatar_text, image: data.image, content: data.content,
         likes: data.likes, replies: data.replies_count, liked: data.liked,
+        category: data.category || 'FAN ART',
         comments: [],
       },
     });

@@ -120,6 +120,7 @@ export const INITIAL_COMMUNITY_HIGHLIGHTS: CommunityHighlight[] = [
     likes: 342,
     replies: 24,
     liked: false,
+    category: 'FAN ART',
     comments: [
       {
         id: 'c1',
@@ -152,6 +153,7 @@ export const INITIAL_COMMUNITY_HIGHLIGHTS: CommunityHighlight[] = [
     likes: 521,
     replies: 33,
     liked: false,
+    category: 'FAN ART',
     comments: [
       {
         id: 'c3',
@@ -183,6 +185,7 @@ export const INITIAL_COMMUNITY_HIGHLIGHTS: CommunityHighlight[] = [
     likes: 298,
     replies: 18,
     liked: false,
+    category: 'ENCOUNTERS',
     comments: [
       {
         id: 'c5',

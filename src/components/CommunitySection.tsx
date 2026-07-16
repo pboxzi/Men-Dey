@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CommunityHighlight } from '../types';
 import { useGlobalState } from '../utils/StateContext';
@@ -13,7 +13,14 @@ import {
   FileText,
   Trash2,
   Sparkles,
-  Award
+  Award,
+  Clock,
+  TrendingUp,
+  MessageCircle,
+  Palette,
+  Mail,
+  Compass,
+  Star
 } from 'lucide-react';
 
 export default function CommunitySection() {
@@ -134,7 +141,7 @@ export default function CommunitySection() {
     const imageToUse = postImage || fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
 
     try {
-      await addPost(postContent, imageToUse, uploaderName, cleanHandle);
+      await addPost(postContent, imageToUse, uploaderName, cleanHandle, postCategory);
       // Show success banner
       setUploadSuccess(true);
 
@@ -152,28 +159,57 @@ export default function CommunitySection() {
     }
   };
 
-  const categories = ['ALL', 'FAN ART', 'LETTERS', 'ENCOUNTERS'];
+  const categories = [
+    { id: 'ALL', label: 'ALL', icon: Users },
+    { id: 'FAN ART', label: 'FAN ART', icon: Palette },
+    { id: 'LETTERS', label: 'LETTERS', icon: Mail },
+    { id: 'ENCOUNTERS', label: 'ENCOUNTERS', icon: Compass },
+  ];
 
-  const filteredHighlights = highlights.filter((hl) => {
-    // Basic categorizing by looking up content/category triggers
-    const contentLower = hl.content.toLowerCase();
-    let computedCategory = 'FAN ART';
-    if (contentLower.includes('letter') || contentLower.includes('dear') || contentLower.includes('write')) {
-      computedCategory = 'LETTERS';
-    } else if (contentLower.includes('saw him') || contentLower.includes('met') || contentLower.includes('encounter')) {
-      computedCategory = 'ENCOUNTERS';
-    }
+  const [activeSort, setActiveSort] = useState<'latest' | 'liked' | 'discussed'>('latest');
 
-    const matchesCategory =
-      activeCategory === 'ALL' || computedCategory === activeCategory;
+  const getRelativeTime = (timestamp?: string) => {
+    if (!timestamp) return 'Just now';
+    const now = Date.now();
+    const then = new Date(timestamp).getTime();
+    const diffMs = now - then;
+    const mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    if (days < 30) return `${days}d ago`;
+    return `${Math.floor(days / 30)}mo ago`;
+  };
 
-    const matchesSearch =
-      hl.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      hl.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      hl.handle.toLowerCase().includes(searchQuery.toLowerCase());
+  const communityStats = useMemo(() => ({
+    posts: highlights.length,
+    comments: highlights.reduce((sum, h) => sum + (h.comments?.length || 0), 0),
+    likes: highlights.reduce((sum, h) => sum + h.likes, 0),
+    contributors: new Set(highlights.map(h => h.username)).size,
+  }), [highlights]);
 
-    return matchesCategory && matchesSearch;
-  });
+  const filteredHighlights = useMemo(() => {
+    const filtered = highlights.filter((hl) => {
+      const postCategory = hl.category || 'FAN ART';
+      const matchesCategory =
+        activeCategory === 'ALL' || postCategory === activeCategory;
+
+      const matchesSearch =
+        hl.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        hl.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        hl.handle.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesCategory && matchesSearch;
+    });
+
+    return [...filtered].sort((a, b) => {
+      if (activeSort === 'liked') return b.likes - a.likes;
+      if (activeSort === 'discussed') return (b.comments?.length || 0) - (a.comments?.length || 0);
+      return 0; // latest = default Supabase order (created_at DESC)
+    });
+  }, [highlights, activeCategory, searchQuery, activeSort]);
 
   return (
     <section id="community-page" className="bg-[#050505] py-20 px-4 md:px-6 relative min-h-[900px]">
@@ -192,6 +228,22 @@ export default function CommunitySection() {
           <p className="text-xs md:text-sm text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed">
             A space dedicated entirely to collective stories, beautiful fan art, private letters of appreciation, and heartwarming encounters with Gillian.
           </p>
+        </div>
+
+        {/* Stats Bar */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
+          {[
+            { icon: FileText, value: communityStats.posts, label: 'Posts', color: 'text-gold-500' },
+            { icon: MessageCircle, value: communityStats.comments, label: 'Comments', color: 'text-emerald-400' },
+            { icon: Heart, value: communityStats.likes, label: 'Likes', color: 'text-red-400' },
+            { icon: Users, value: communityStats.contributors, label: 'Contributors', color: 'text-amber-400' },
+          ].map((stat) => (
+            <div key={stat.label} className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-4 text-center space-y-1.5 hover:border-neutral-800 transition-colors">
+              <stat.icon className={`h-4 w-4 ${stat.color} mx-auto`} />
+              <span className={`block text-xl font-bold ${stat.color}`}>{stat.value}</span>
+              <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
+            </div>
+          ))}
         </div>
 
         {/* Content Columns: Left (Post Form), Right (Social Feed) */}
@@ -252,15 +304,27 @@ export default function CommunitySection() {
                   <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">
                     POST CATEGORY
                   </label>
-                  <select
-                    value={postCategory}
-                    onChange={(e) => setPostCategory(e.target.value)}
-                    className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none focus:border-gold-500/40"
-                  >
-                    <option value="Fan Art">Fan Art</option>
-                    <option value="Letters">Letters to Gillian</option>
-                    <option value="Encounters">Encounters / Stories</option>
-                  </select>
+                  <div className="flex gap-2">
+                    {[
+                      { id: 'FAN ART', label: 'Art', icon: Palette },
+                      { id: 'LETTERS', label: 'Letter', icon: Mail },
+                      { id: 'ENCOUNTERS', label: 'Story', icon: Compass },
+                    ].map((cat) => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setPostCategory(cat.id)}
+                        className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-[9px] font-mono tracking-wider uppercase border transition-all ${
+                          postCategory === cat.id
+                            ? 'bg-gold-500 border-gold-400 text-neutral-950 font-bold scale-[1.02]'
+                            : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700'
+                        }`}
+                      >
+                        <cat.icon className="h-3 w-3" />
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Story/Message Content */}
@@ -271,11 +335,17 @@ export default function CommunitySection() {
                   <textarea
                     required
                     rows={4}
+                    maxLength={500}
                     placeholder="Describe your encounters, draw comparison, or write notes of inspiration..."
                     value={postContent}
                     onChange={(e) => setPostContent(e.target.value)}
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3.5 py-2 text-white outline-none focus:border-gold-500/40 resize-none leading-relaxed"
                   />
+                  <div className="flex justify-end">
+                    <span className={`text-[9px] font-mono ${postContent.length > 450 ? 'text-red-400' : 'text-neutral-600'}`}>
+                      {postContent.length}/500
+                    </span>
+                  </div>
                 </div>
 
                 {/* Drag & Drop File Upload Panel */}
@@ -345,29 +415,55 @@ export default function CommunitySection() {
             {/* Feed Filters */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-neutral-900 pb-4">
               <div className="flex flex-wrap gap-2">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
-                    className={`px-3.5 py-1.5 rounded-lg text-[9px] font-mono tracking-wider uppercase border transition-all ${
-                      activeCategory === cat
-                        ? 'bg-gold-500 border-gold-400 text-neutral-950 font-bold'
-                        : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+                {categories.map((cat) => {
+                  const IconComp = cat.icon;
+                  const count = cat.id === 'ALL' ? highlights.length : highlights.filter(h => (h.category || 'FAN ART') === cat.id).length;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setActiveCategory(cat.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-mono tracking-wider uppercase border transition-all ${
+                        activeCategory === cat.id
+                          ? 'bg-gold-500 border-gold-400 text-neutral-950 font-bold'
+                          : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
+                      }`}
+                    >
+                      <IconComp className="h-3 w-3" />
+                      {cat.label}
+                      <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[8px] ${
+                        activeCategory === cat.id ? 'bg-neutral-950/20 text-neutral-950' : 'bg-neutral-900 text-neutral-500'
+                      }`}>
+                        {count}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
 
-              <div className="relative w-full sm:w-60">
-                <input
-                  type="text"
-                  placeholder="Filter feed..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-neutral-950 text-xs border border-neutral-900 rounded-lg px-3 py-1.5 text-white outline-none focus:border-gold-500/50"
-                />
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-lg p-0.5">
+                  {[
+                    { id: 'latest' as const, label: 'Latest', icon: Clock },
+                    { id: 'liked' as const, label: 'Most Liked', icon: TrendingUp },
+                    { id: 'discussed' as const, label: 'Most Discussed', icon: MessageCircle },
+                  ].map((sort) => (
+                    <button
+                      key={sort.id}
+                      onClick={() => setActiveSort(sort.id)}
+                      className={`flex items-center gap-1 px-2 py-1 rounded text-[8px] font-mono uppercase tracking-wider transition-all ${
+                        activeSort === sort.id
+                          ? 'bg-neutral-900 text-gold-500'
+                          : 'text-neutral-500 hover:text-white'
+                      }`}
+                    >
+                      <sort.icon className="h-2.5 w-2.5" />
+                      {sort.label}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[9px] font-mono text-neutral-600">
+                  {filteredHighlights.length} post{filteredHighlights.length !== 1 ? 's' : ''}
+                </span>
               </div>
             </div>
 
@@ -377,16 +473,38 @@ export default function CommunitySection() {
                 filteredHighlights.map((hl) => (
                   <div
                     key={hl.id}
-                    className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4 transition-all hover:border-neutral-800 text-left"
+                    className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4 transition-all duration-300 hover:border-gold-500/20 hover:shadow-[0_0_20px_-5px_rgba(212,175,55,0.08)] text-left"
                   >
                     {/* Creator Header */}
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-xs font-mono font-medium text-gold-500 shrink-0">
-                        {hl.avatarText}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-xs font-mono font-medium text-gold-500 shrink-0">
+                          {hl.avatarText}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xs font-semibold text-white tracking-wide flex items-center gap-1.5">
+                            {hl.username}
+                            {hl.likes >= 5 && (
+                              <span title="Verified Contributor" className="text-gold-500">
+                                <Star className="h-3 w-3 fill-gold-500" />
+                              </span>
+                            )}
+                          </span>
+                          <span className="text-[10px] font-mono text-neutral-500">{hl.handle}</span>
+                        </div>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-xs font-semibold text-white tracking-wide">{hl.username}</span>
-                        <span className="text-[10px] font-mono text-neutral-500">{hl.handle}</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider ${
+                          (hl.category || 'FAN ART') === 'FAN ART' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                          (hl.category || 'FAN ART') === 'LETTERS' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                          'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                        }`}>
+                          {hl.category || 'FAN ART'}
+                        </span>
+                        <span className="text-[9px] font-mono text-neutral-600 flex items-center gap-1">
+                          <Clock className="h-2.5 w-2.5" />
+                          {getRelativeTime((hl as any).created_at)}
+                        </span>
                       </div>
                     </div>
 
@@ -568,8 +686,12 @@ export default function CommunitySection() {
                   </div>
                 ))
               ) : (
-                <div className="text-center py-20 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10">
-                  <p className="text-sm text-neutral-500 font-sans">No kindred contributions match your filters.</p>
+                <div className="text-center py-20 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10 space-y-3">
+                  <div className="h-12 w-12 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto">
+                    <MessageSquare className="h-5 w-5 text-neutral-600" />
+                  </div>
+                  <p className="text-sm text-neutral-500 font-sans">No posts match your filters.</p>
+                  <p className="text-[10px] text-neutral-600 font-mono">Be the first to share a story in this category.</p>
                 </div>
               )}
             </div>

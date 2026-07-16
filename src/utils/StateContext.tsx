@@ -59,6 +59,7 @@ export interface CommunityHighlight {
   likes: number;
   replies: number;
   liked: boolean;
+  category: string;
   comments: PostComment[];
 }
 
@@ -128,7 +129,7 @@ interface StateContextType {
   updateRequestStatus: (requestId: string, status: RequestDetail['status']) => Promise<RequestDetail>;
   addRequestChatMessage: (requestId: string, sender: 'user' | 'management' | 'system', text: string) => Promise<any>;
   addOrder: (item: string, price: string, userDisplayName: string) => Promise<ShopOrder>;
-  addPost: (content: string, image: string | null, username: string, handle: string) => Promise<CommunityHighlight>;
+  addPost: (content: string, image: string | null, username: string, handle: string, category: string) => Promise<CommunityHighlight>;
   likePost: (id: string) => Promise<void>;
   commentPost: (postId: string, content: string, username: string) => Promise<PostComment>;
   replyComment: (postId: string, commentId: string, content: string, username: string) => Promise<CommentReply>;
@@ -331,7 +332,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     return result.order;
   };
 
-  const addPost = async (content: string, image: string | null, username: string, handle: string) => {
+  const addPost = async (content: string, image: string | null, username: string, handle: string, category: string = 'FAN ART') => {
     const response = await fetch('/api/posts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -339,7 +340,8 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         content,
         image,
         username,
-        handle
+        handle,
+        category,
       })
     });
     if (!response.ok) throw new Error('Failed to share community post');

@@ -81,6 +81,7 @@ export interface CommunityHighlight {
   likes: number;
   replies: number;
   liked: boolean;
+  category: string;
   comments: Comment[];
 }
 

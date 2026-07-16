@@ -115,7 +115,9 @@ export default function App() {
     if (hash === 'PORTAL') return { vm: 'portal' as const, nav: 'HOME' };
     if (hash === 'ADMIN') return { vm: 'admin' as const, nav: 'HOME' };
     const sections = ['HOME','ABOUT','JOURNAL','MEDIA','COMMUNITY','EXPERIENCES','MEMBERSHIP','EVENTS','SHOP','CHARITY','FAQ'];
-    if (sections.includes(hash)) return { vm: 'landing' as const, nav: hash };
+    // Match exact section names or sub-routes like EXPERIENCES/BOOK/123
+    const baseSection = hash.split('/')[0];
+    if (sections.includes(baseSection)) return { vm: 'landing' as const, nav: baseSection };
     return { vm: 'landing' as const, nav: 'HOME' };
   };
 

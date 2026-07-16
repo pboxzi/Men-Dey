@@ -62,8 +62,9 @@ export default function ExperiencesSection() {
   const [activeTab, setActiveTab] = useState<'browse' | 'bookings'>('browse');
   const [bookings, setBookings] = useState<ExperienceBooking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pendingBookingId, setPendingBookingId] = useState<string | null>(null);
 
-  // Fetch experiences from API on mount
+  // Fetch experiences from API + restore booking state from URL on mount
   React.useEffect(() => {
     const loadData = async () => {
       try {
@@ -86,6 +87,17 @@ export default function ExperiencesSection() {
       }
     };
     loadData();
+
+    // Restore booking from URL hash: #EXPERIENCES/BOOK/experience-id
+    const hash = window.location.hash.replace('#', '');
+    if (hash.startsWith('EXPERIENCES/BOOK/')) {
+      const expId = hash.split('/')[2];
+      if (expId) {
+        setShowBooking(true);
+        // selectedExp will be set once experiences load via the effect below
+        setPendingBookingId(expId);
+      }
+    }
   }, []);
 
   const filteredExperiences = useMemo(() => {
@@ -108,13 +120,26 @@ export default function ExperiencesSection() {
     categories: new Set(experiences.map(e => e.category)).size,
   }), [experiences]);
 
+  // Resolve pending booking from URL hash once experiences are loaded
+  React.useEffect(() => {
+    if (pendingBookingId && experiences.length > 0) {
+      const exp = experiences.find(e => e.id === pendingBookingId);
+      if (exp) {
+        setSelectedExp(exp);
+        setPendingBookingId(null);
+      }
+    }
+  }, [pendingBookingId, experiences]);
+
   const openBooking = (exp: Experience) => {
     setSelectedExp(exp);
     setShowBooking(true);
+    window.location.hash = `#EXPERIENCES/BOOK/${exp.id}`;
   };
 
   const handleBookingSuccess = (booking: ExperienceBooking) => {
     setBookings(prev => [booking, ...prev]);
+    window.location.hash = '#EXPERIENCES';
   };
 
   const getStatusColor = (status: string) => {
@@ -179,7 +204,7 @@ export default function ExperiencesSection() {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => { setActiveTab(tab.id); setShowBooking(false); setSelectedExp(null); }}
+                onClick={() => { setActiveTab(tab.id); setShowBooking(false); setSelectedExp(null); window.location.hash = '#EXPERIENCES'; }}
                 className={`flex items-center gap-2 px-5 py-2 rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all ${
                   activeTab === tab.id && !showBooking
                     ? 'bg-gold-500 text-neutral-950 font-bold'
@@ -197,7 +222,7 @@ export default function ExperiencesSection() {
         {showBooking && selectedExp ? (
           <BookingModal
             experience={selectedExp}
-            onClose={() => { setShowBooking(false); setSelectedExp(null); }}
+            onClose={() => { setShowBooking(false); setSelectedExp(null); window.location.hash = '#EXPERIENCES'; }}
             onSuccess={handleBookingSuccess}
           />
         ) : activeTab === 'browse' ? (

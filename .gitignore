@@ -1,8 +1,33 @@
-node_modules/
-build/
-dist/
-coverage/
+node_modules
 .DS_Store
 *.log
-.env*
+.env*.local
 !.env.example
+.env
+
+# Supabase
+.*.supabase
+tmp/
+
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.coverage
+.nyc_output
+junit.xml
+
+# cypress
+*.crt
+node_modules

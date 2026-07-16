@@ -8,9 +8,18 @@ import fs from 'fs';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
+import pg from 'pg';
 import dotenv from 'dotenv';
 
 dotenv.config();
+
+const pgPool = new pg.Pool({
+  user: process.env.PGUSER || 'postgres',
+  password: process.env.PGPASSWORD || 'postgres',
+  host: process.env.PGHOST || 'localhost',
+  port: parseInt(process.env.PGPORT || '5432'),
+  database: process.env.PGDATABASE || 'gillian_portal',
+});
 
 const app = express();
 app.use(express.json());
@@ -989,6 +998,35 @@ app.post('/api/ai-suggest-offer', async (req, res) => {
       suggestion: draft,
       source: 'fallback'
     });
+  }
+});
+
+// Media API routes (PostgreSQL-backed)
+app.get('/api/videos', async (_req, res) => {
+  try {
+    const result = await pgPool.query(`
+      SELECT v.id, v.title, c.name as category, v.duration, v.youtube_id as "youtubeId", v.subtitles
+      FROM videos v JOIN categories c ON v.category_id = c.id
+      ORDER BY v.sort_order
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching videos:', err);
+    res.status(500).json({ error: 'Failed to fetch videos' });
+  }
+});
+
+app.get('/api/photos', async (_req, res) => {
+  try {
+    const result = await pgPool.query(`
+      SELECT p.id, p.title, c.name as category, p.url, p.description, p.likes, p.width, p.height
+      FROM photos p JOIN categories c ON p.category_id = c.id
+      ORDER BY p.sort_order
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching photos:', err);
+    res.status(500).json({ error: 'Failed to fetch photos' });
   }
 });
 

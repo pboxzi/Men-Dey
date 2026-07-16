@@ -110,8 +110,17 @@ export default function App() {
     return () => window.removeEventListener('storage', handleThemeChange);
   }, []);
 
+  const resolveHash = () => {
+    const hash = window.location.hash.replace('#', '').toUpperCase();
+    if (hash === 'PORTAL') return { vm: 'portal' as const, nav: 'HOME' };
+    if (hash === 'ADMIN') return { vm: 'admin' as const, nav: 'HOME' };
+    const sections = ['HOME','ABOUT','JOURNAL','MEDIA','COMMUNITY','EXPERIENCES','MEMBERSHIP','EVENTS','SHOP','CHARITY','FAQ'];
+    if (sections.includes(hash)) return { vm: 'landing' as const, nav: hash };
+    return { vm: 'landing' as const, nav: 'HOME' };
+  };
+
   // View Mode: 'landing', 'portal' or 'admin'
-  const [viewMode, setViewMode] = useState<'landing' | 'portal' | 'admin'>('landing');
+  const [viewMode, setViewMode] = useState<'landing' | 'portal' | 'admin'>(resolveHash().vm);
 
   // User Authentication & Profile States (Landing Page level)
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -137,7 +146,18 @@ export default function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Navigation active link (for scrolling highlight)
-  const [activeNav, setActiveNav] = useState('HOME');
+  const [activeNav, setActiveNav] = useState(resolveHash().nav);
+
+  // Sync state with URL hash changes (browser back/forward)
+  useEffect(() => {
+    const onHashChange = () => {
+      const resolved = resolveHash();
+      setViewMode(resolved.vm);
+      setActiveNav(resolved.nav);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
 
   // Scroll progress indicator state for long-form content navigation
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -279,7 +299,14 @@ export default function App() {
   const handleNavClick = (link: string) => {
     setActiveNav(link);
     setMobileMenuOpen(false);
+    window.location.hash = `#${link}`;
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateTo = (mode: 'landing' | 'portal' | 'admin', nav?: string) => {
+    if (mode === 'landing') window.location.hash = `#${nav || 'HOME'}`;
+    else if (mode === 'portal') window.location.hash = '#PORTAL';
+    else if (mode === 'admin') window.location.hash = '#ADMIN';
   };
 
   const activeSlide = HERO_SLIDES[currentSlideIdx];
@@ -324,11 +351,11 @@ export default function App() {
   };
 
   if (viewMode === 'portal') {
-    return <FanPortal onBackToHome={() => setViewMode('landing')} />;
+    return <FanPortal onBackToHome={() => navigateTo('landing')} />;
   }
 
   if (viewMode === 'admin') {
-    return <AdminPortal onBackToHome={() => setViewMode('landing')} />;
+    return <AdminPortal onBackToHome={() => navigateTo('landing')} />;
   }
 
   return (
@@ -417,7 +444,7 @@ export default function App() {
 
             {/* Fan Portal button */}
             <button
-              onClick={() => setViewMode('portal')}
+              onClick={() => navigateTo('portal')}
               className="hidden sm:inline-flex border border-gold-500/30 bg-gold-500/5 hover:bg-gold-500/10 text-gold-500 px-3 py-1.5 rounded text-[10px] font-bold tracking-widest transition-all active:scale-95 shadow-md shadow-gold-500/5"
             >
               FAN PORTAL
@@ -425,7 +452,7 @@ export default function App() {
 
             {/* Admin Portal button */}
             <button
-              onClick={() => setViewMode('admin')}
+              onClick={() => navigateTo('admin')}
               className="hidden md:inline-flex border border-red-500/30 bg-red-500/5 hover:bg-red-500/10 text-red-400 px-3 py-1.5 rounded text-[10px] font-bold tracking-widest transition-all active:scale-95 shadow-md shadow-red-500/5"
             >
               ADMIN PORTAL
@@ -433,7 +460,7 @@ export default function App() {
 
             {/* Login button */}
             <button
-              onClick={() => setViewMode('portal')}
+              onClick={() => navigateTo('portal')}
               className="hidden lg:inline-flex text-[10px] font-medium tracking-widest text-neutral-300 hover:text-white transition-colors"
             >
               LOGIN
@@ -441,7 +468,7 @@ export default function App() {
 
             {/* Register button */}
             <button
-              onClick={() => setViewMode('portal')}
+              onClick={() => navigateTo('portal')}
               className="hidden lg:inline-flex bg-gold-500 hover:bg-gold-400 text-neutral-950 px-4 py-1.5 rounded text-[10px] font-bold tracking-widest transition-all active:scale-95 shadow shadow-gold-500/15"
             >
               REGISTER
@@ -507,7 +534,7 @@ export default function App() {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => {
-                        setViewMode('portal');
+                        navigateTo('portal');
                         setMobileMenuOpen(false);
                       }}
                       className="w-full text-center border border-gold-500/30 bg-gold-500/5 hover:bg-gold-500/10 text-gold-500 py-3 rounded text-[10px] font-bold tracking-widest transition-all uppercase min-h-[44px]"
@@ -516,7 +543,7 @@ export default function App() {
                     </button>
                     <button
                       onClick={() => {
-                        setViewMode('admin');
+                        navigateTo('admin');
                         setMobileMenuOpen(false);
                       }}
                       className="w-full text-center border border-red-500/30 bg-red-500/5 hover:bg-red-500/10 text-red-400 py-3 rounded text-[10px] font-bold tracking-widest transition-all uppercase min-h-[44px]"
@@ -1146,7 +1173,7 @@ export default function App() {
                         Access our interactive custom portals to chat, write custom blogs, share high-definition photographs, and review opportunities.
                       </p>
                       <button
-                        onClick={() => setViewMode('portal')}
+                        onClick={() => navigateTo('portal')}
                         className="inline-flex items-center gap-2 px-6 py-3 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
                       >
                         ENTER DIGITAL FAN PORTAL
@@ -1340,8 +1367,7 @@ export default function App() {
         {/* Home Button */}
         <button
           onClick={() => {
-            setViewMode('landing');
-            handleNavClick('HOME');
+            navigateTo('landing', 'HOME');
           }}
           className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
             viewMode === 'landing' && activeNav === 'HOME'
@@ -1356,8 +1382,7 @@ export default function App() {
         {/* Journal Button */}
         <button
           onClick={() => {
-            setViewMode('landing');
-            handleNavClick('JOURNAL');
+            navigateTo('landing', 'JOURNAL');
           }}
           className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
             viewMode === 'landing' && activeNav === 'JOURNAL'
@@ -1371,7 +1396,7 @@ export default function App() {
 
         {/* Fan Portal Button */}
         <button
-          onClick={() => setViewMode('portal')}
+          onClick={() => navigateTo('portal')}
           className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
             viewMode === 'portal'
               ? 'text-gold-500 scale-105'
@@ -1385,8 +1410,7 @@ export default function App() {
         {/* Shop Button */}
         <button
           onClick={() => {
-            setViewMode('landing');
-            handleNavClick('SHOP');
+            navigateTo('landing', 'SHOP');
           }}
           className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
             viewMode === 'landing' && activeNav === 'SHOP'
@@ -1401,7 +1425,7 @@ export default function App() {
         {/* More/Menu Button */}
         <button
           onClick={() => {
-            setViewMode('landing');
+            navigateTo('landing');
             setMobileMenuOpen(!mobileMenuOpen);
             if (!mobileMenuOpen) {
               window.scrollTo({ top: 0, behavior: 'smooth' });

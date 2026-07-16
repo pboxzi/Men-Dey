@@ -8,7 +8,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Interviews",
     duration: "11:42",
     videoPlaceholderText: "WIRED Autocomplete Reel",
-    youtubeId: "N7r8L8j47_M",
+    youtubeId: "u66sTWpxswM",
     subtitles: [
       "Does Gillian Anderson have a British accent? Yes, I am bidialectal!",
       "I grew up in both London and Grand Rapids, Michigan.",
@@ -23,7 +23,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Public Appearances",
     duration: "08:15",
     videoPlaceholderText: "Jimmy Kimmel Live segment",
-    youtubeId: "pSre-zTfIao",
+    youtubeId: "ezypNGtH6Cw",
     subtitles: [
       "Welcome back to the show. We are here with the incredible Gillian Anderson!",
       "I hear your new Netflix series 'Scoop' is causing quite a stir in the UK.",
@@ -38,7 +38,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Public Appearances",
     duration: "07:54",
     videoPlaceholderText: "Tonight Show segment",
-    youtubeId: "M97_Xo7D7vQ",
+    youtubeId: "7AvRuvPaumw",
     subtitles: [
       "My next guest is an Emmy and Golden Globe-winning actress!",
       "Jimmy, it's so wonderful to be back in New York.",
@@ -53,7 +53,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "The Crown",
     duration: "09:30",
     videoPlaceholderText: "Late Show with Stephen Colbert",
-    youtubeId: "6G53uI4N9oI",
+    youtubeId: "9WwTqrxncxY",
     subtitles: [
       "Let's talk about the hair. The Thatcher hair is iconic.",
       "It took about two hours every single day to get that helmet of hair perfect.",
@@ -68,7 +68,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Sex Education",
     duration: "02:44",
     videoPlaceholderText: "Netflix Official Trailer",
-    youtubeId: "XatGjWIsjRE",
+    youtubeId: "TJjMJmYLMWs",
     subtitles: [
       "Welcome to Cavendish Sixth Form College, our brand new start.",
       "Jean Milburn is back and dealing with a brand new baby!",
@@ -83,7 +83,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "The Crown",
     duration: "06:12",
     videoPlaceholderText: "The Crown compilation clip",
-    youtubeId: "xG7Tf3U_Zc8",
+    youtubeId: "VvvC8wpuo2k",
     subtitles: [
       "Your Majesty, I think we understand each other perfectly.",
       "I have no intention of changing my cabinet or my direction.",
@@ -98,7 +98,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "The X-Files",
     duration: "02:10",
     videoPlaceholderText: "FOX Classic Trailer",
-    youtubeId: "dfO18gU5gBc",
+    youtubeId: "RXDWfUbLE-E",
     subtitles: [
       "My name is Fox Mulder. I believe in things they want us to forget.",
       "I'm Dana Scully, I've been assigned to write a scientific analysis of your work.",
@@ -113,7 +113,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Charity & Speeches",
     duration: "05:15",
     videoPlaceholderText: "SAYes Mentoring",
-    youtubeId: "A_Z1O8yW9Yg",
+    youtubeId: "_UnefqDLgwg",
     subtitles: [
       "Mentoring is about showing up and providing a stable, loving presence.",
       "For kids in residential care, turning 18 is a terrifying milestone.",
@@ -128,7 +128,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Interviews",
     duration: "14:50",
     videoPlaceholderText: "Actors Guild Interview",
-    youtubeId: "y94wH_L36o8",
+    youtubeId: "aTTPea6gHh4",
     subtitles: [
       "Helen, you've played queens, detectives, and everything in between.",
       "And Gillian, your career has been incredibly bold and versatile.",
@@ -143,7 +143,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Public Appearances",
     duration: "06:30",
     videoPlaceholderText: "Elle Song Association",
-    youtubeId: "S6vK8J-7o7I",
+    youtubeId: "b1ltnIguJ9Q",
     subtitles: [
       "Welcome to Elle! Today I have 15 seconds to associate a word with a song.",
       "The first word is 'TRUTH'... Oh, 'I Want to Believe' isn't a song, is it?",
@@ -158,7 +158,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Interviews",
     duration: "18:22",
     videoPlaceholderText: "Variety Actors on Actors",
-    youtubeId: "df_Z8G7mX7o",
+    youtubeId: "onxkqImZ48s",
     subtitles: [
       "Elisabeth, your work on The Handmaid's Tale is so physically demanding.",
       "Gillian, your Stella Gibson in The Fall is incredibly cool and controlled.",
@@ -173,7 +173,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Behind The Scenes",
     duration: "02:30",
     videoPlaceholderText: "Netflix Scoop Film",
-    youtubeId: "M_Xo7D7vQ_s",
+    youtubeId: "cZcHc3zEEoc",
     subtitles: [
       "An insider look at the BBC women who secured the scoop of the century.",
       "I play Emily Maitlis, who must prepare the interview of a lifetime.",
@@ -188,7 +188,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Interviews",
     duration: "03:15",
     videoPlaceholderText: "BBC The Fall",
-    youtubeId: "dfO18gU5gBc",
+    youtubeId: "eKWjuz0trgU",
     subtitles: [
       "Paul Spector is in custody, but the investigation is far from over.",
       "I'm Detective Superintendent Stella Gibson. I want the truth.",
@@ -203,7 +203,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Sex Education",
     duration: "05:40",
     videoPlaceholderText: "Jean Milburn compilation",
-    youtubeId: "v8m7E9v9Xe8",
+    youtubeId: "zmgYlYw7Uwk",
     subtitles: [
       "Otis, human sexuality is a beautiful, natural spectrum of expression!",
       "I did not read your diary, I simply analyzed its structural subtext.",
@@ -218,7 +218,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "The Crown",
     duration: "04:10",
     videoPlaceholderText: "Emmy Awards acceptance",
-    youtubeId: "_E9v9Xe7e8o",
+    youtubeId: "Prexc-GofB8",
     subtitles: [
       "And the Emmy goes to... Gillian Anderson in The Crown!",
       "Wow, thank you so much to the Television Academy.",
@@ -233,7 +233,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Public Appearances",
     duration: "07:20",
     videoPlaceholderText: "Harper's Bazaar segment",
-    youtubeId: "df8m8e8v9oX",
+    youtubeId: "Wbpd2K_mX8k",
     subtitles: [
       "Hi, I'm Gillian Anderson, and this is what's inside my vintage leather bag.",
       "First up is my classic daily planner—I still write everything down by hand.",
@@ -248,7 +248,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Theater Life",
     duration: "02:55",
     videoPlaceholderText: "Young Vic London Theatre",
-    youtubeId: "9_E9M7vXe9o",
+    youtubeId: "F7g_vNdfWgc",
     subtitles: [
       "I have always depended on the kindness of strangers.",
       "Gillian Anderson stars as the fragile, tragic Blanche DuBois.",
@@ -263,7 +263,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Theater Life",
     duration: "03:10",
     videoPlaceholderText: "National Theatre Live",
-    youtubeId: "df87m7vXe9Y",
+    youtubeId: "qCirS0MZEKA",
     subtitles: [
       "Fasten your seatbelts, it's going to be a bumpy night!",
       "Margo Channing is the queen of the theater, but Eve is waiting in the wings.",
@@ -278,7 +278,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "The X-Files",
     duration: "08:40",
     videoPlaceholderText: "Late Show Reunion Panel",
-    youtubeId: "X9m7vXe9Y8o",
+    youtubeId: "j7WG3mj8AC8",
     subtitles: [
       "We have the iconic duo here on our stage! Mulder and Scully!",
       "Stephen, it's like we never left that dark Vancouver forest.",
@@ -293,7 +293,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Public Appearances",
     duration: "05:12",
     videoPlaceholderText: "BBC Bake Off segment",
-    youtubeId: "f8m7E9Xe9Yo",
+    youtubeId: "h3iuIfNS1kM",
     subtitles: [
       "Welcome to the Bake Off tent! Today we are baking for charity.",
       "Gillian, your signature sponge cake looks a bit... lopsided?",
@@ -308,7 +308,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Behind The Scenes",
     duration: "04:45",
     videoPlaceholderText: "Want Audio Book excerpt",
-    youtubeId: "vXe9Yo8e8oE",
+    youtubeId: "xe7y0mzz4-0",
     subtitles: [
       "Reading from 'Want'—a collection of anonymous letters from women.",
       "They write about their deepest, unspoken desires and struggles.",
@@ -323,7 +323,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Interviews",
     duration: "15:20",
     videoPlaceholderText: "Guardian Live interview",
-    youtubeId: "d8m7E9Xe8Yo",
+    youtubeId: "yyB03ImgG_s",
     subtitles: [
       "We look back at three decades of outstanding, transformative acting.",
       "From a 24-year-old starting on X-Files to complex stage triumphs.",
@@ -338,7 +338,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Behind The Scenes",
     duration: "09:15",
     videoPlaceholderText: "G-Spot Podcast Episode",
-    youtubeId: "x9e9Yo7e8oX",
+    youtubeId: "tP5Tl04gv3g",
     subtitles: [
       "Welcome to the first episode of the G-Spot Podcast!",
       "We are breaking taboos, exploring wellness, and talking openly.",
@@ -353,7 +353,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "The X-Files",
     duration: "06:50",
     videoPlaceholderText: "X-Files Scully tribute",
-    youtubeId: "z9e9Yo8e8oA",
+    youtubeId: "faGLkWrTCp4",
     subtitles: [
       "Mulder, there is a perfectly logical, scientific explanation for this.",
       "I am performing an autopsy on a suspected toxic anomaly.",
@@ -368,7 +368,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "The Crown",
     duration: "05:35",
     videoPlaceholderText: "Behind the Scenes doc",
-    youtubeId: "a9e9Yo7e8oI",
+    youtubeId: "XKQOTwY7TRk",
     subtitles: [
       "We spent weeks working with posture coaches to get that slight lean.",
       "Her voice was pitched down and delivered with a specific emphasis.",
@@ -383,7 +383,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Charity & Speeches",
     duration: "06:10",
     videoPlaceholderText: "SAYes Gala Keynote",
-    youtubeId: "p9e9Yo8e8oY",
+    youtubeId: "JtDUZNfb9LQ",
     subtitles: [
       "Thank you all for being in this room tonight to support these young souls.",
       "A mentor is not a savior; they are a reliable lighthouse in a stormy harbor.",
@@ -398,7 +398,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Public Appearances",
     duration: "07:45",
     videoPlaceholderText: "ITV Jonathan Ross",
-    youtubeId: "s9e9Yo7e8oW",
+    youtubeId: "hIAd6kRLc2s",
     subtitles: [
       "Gillian! You've been voted one of the most elegant women in Britain.",
       "Jonathan, that is highly flattering, but I'm usually in sweatpants!",
@@ -413,7 +413,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "The X-Files",
     duration: "12:50",
     videoPlaceholderText: "SDCC Comic-Con Panel",
-    youtubeId: "k9e9Yo8e8oT",
+    youtubeId: "MtTGOjz_wn4",
     subtitles: [
       "A roaring crowd in Hall H for David Duchovny and Gillian Anderson!",
       "If there was another movie, would you guys suit up again?",
@@ -428,7 +428,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Sex Education",
     duration: "05:15",
     videoPlaceholderText: "Netflix Gag Reel",
-    youtubeId: "w9e9Yo8e8oN",
+    youtubeId: "xsZjc6npQfw",
     subtitles: [
       "Line! I've completely forgotten what a therapist is supposed to say.",
       "Gillian laughing hysterically as a prop window falls down.",
@@ -443,7 +443,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Behind The Scenes",
     duration: "02:20",
     videoPlaceholderText: "Movie Trailer",
-    youtubeId: "u9e9Yo7e8oK",
+    youtubeId: "orA0L3xZIKA",
     subtitles: [
       "Lily Bart is a beautiful woman navigating New York high society.",
       "A tragic, sweeping adaptation of Edith Wharton's famous novel.",
@@ -458,7 +458,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Behind The Scenes",
     duration: "04:30",
     videoPlaceholderText: "BBC Charles Dickens Series",
-    youtubeId: "m9e9Yo8e8oP",
+    youtubeId: "tzC18GMiatw",
     subtitles: [
       "Lady Dedlock hides a dark, scandalous secret in her past.",
       "Gillian Anderson stars in this magnificent BBC Dickens adaptation.",
@@ -473,7 +473,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
     category: "Interviews",
     duration: "08:15",
     videoPlaceholderText: "Book Launch Press",
-    youtubeId: "j9e9Yo8e8oQ",
+    youtubeId: "nyZ2kZuXP3Y",
     subtitles: [
       "The letters in 'Want' are incredibly diverse, funny, and tender.",
       "I wanted to create a modern-day counterpart to Nancy Friday's work.",
@@ -484,7 +484,7 @@ export const YOUTUBE_VIDEOS: MediaItem[] = [
   }
 ];
 
-// 100 Beautifully themed high-resolution photos of Gillian Anderson's universe using Unsplash images
+// 100 high-resolution real photos of Gillian Anderson from Wikimedia Commons & Flickr
 export const GALLERY_PHOTOS: PhotoItem[] = (() => {
   const photoCategories = [
     "The X-Files",
@@ -497,68 +497,114 @@ export const GALLERY_PHOTOS: PhotoItem[] = (() => {
     "Fan Art Tributes"
   ];
 
-  // Curated Unsplash IDs that match the moody, elegant, classical, and vintage vibe of Gillian Anderson's aesthetic
-  const unsplashIDs = {
-    "The X-Files": [
-      "1511497584788-876760111969", // Pine Forest
-      "1448375240586-882707db888b", // Deep foggy woods
-      "1475924156734-496f6cac6ec1", // Moody lake
-      "1509114397022-ed747cca3f65", // Dark forest spotlight
-      "1518709268805-4e9042af9f23", // Eerie glowing portal
-      "1501183007986-d0d080b147f9", // Retro tech workspace
-      "1486406146926-c627a92ad1ab", // Dark concrete skyscraper
-      "1534447677768-be436bb09401"  // Starry cosmic sky
-    ],
-    "Sex Education": [
-      "1513694203232-719a280e022f", // Cozy wooden interior
-      "1556911220-e15b29be8c8f", // Retro vintage kitchen
-      "1464822759023-fed622ff2c3b", // Lush green hills of Wales
-      "1544816155-12df9643f363", // Wildflowers garden
-      "1488590528505-98d2b5aba04b", // Cozy typewriter
-      "1505691938895-1758d7feb511", // Cozy bed and books
-      "1512820790803-83ca734da794"  // Library rows
-    ],
-    "The Crown": [
-      "1564507592333-c60657eea523", // Neo-classical mansion
-      "1513829096999-4978602297f7", // Retro broadcast mic
-      "1507679799987-c73779587ccf", // Aristocratic suit portrait
-      "1540555700478-4be289fbecef", // Vintage office setup
-      "1518005020951-eccb494ad742", // Luxury velvet drapes
-      "1505664194779-8beaceb93744"  // Antique wooden desk
-    ],
-    "Theater Life": [
-      "1503095391755-141a0bf64a3a", // Classical theatre stage
-      "1460881680858-30d872d5b530", // Retro auditorium seats
-      "1516307361142-be3112a9ebfa", // Bright dramatic spotlight
-      "1501281668745-f7f57925c3b4", // Live backstage wings
-      "1465847899084-d164df4dedc6"  // Dramatic red velvet
-    ],
-    "Photoshoots": [
-      "1509631179647-0177331693ae", // High fashion editorial pose
-      "1531746020798-e6953c6e8e04", // Moody monochrome portrait
-      "1494790108377-be9c29b29330", // Intimate studio headshot
-      "1508214751196-bcfd4ca60f91", // Autumn wool coat look
-      "1500648767791-00dcc994a43e"  // Warm dramatic lighting
-    ],
-    "Charity & Public": [
-      "1511671782779-c97d3d27a1d4", // Stage microphone close-up
-      "1492684223066-81342ee5ff30", // Gala awards red carpet lights
-      "1484755560695-a4c740285a15", // Studio radio broadcast setup
-      "1522071820081-009f0129c71c"  // Warm teamwork workshop
-    ],
-    "Candid Moments": [
-      "1517164850305-99a3e65bb47e", // Candid coffee mug in London
-      "1501504905252-473c47e087f8", // Writing in a vintage diary
-      "1513542789411-b6a5d4f31634", // Dog companion candid walk
-      "1485846234645-a62644f84728"  // Directing candid smile
-    ],
-    "Fan Art Tributes": [
-      "1513364776144-60967b0f800f", // Fine art watercolor studio
-      "1579783902614-a3fb3927b6a5", // Classic charcoal sketch canvas
-      "1457369804613-52c61a468e7d", // Textured pencil drawing sketch
-      "1580136579312-94651dfd596d"  // Colorful paint palettes
-    ]
-  };
+  // Real photos of Gillian Anderson sourced from Wikimedia Commons and Flickr
+  const REAL_PHOTO_URLS: string[] = [
+    // Wikimedia Commons (49 images)
+    "https://upload.wikimedia.org/wikipedia/commons/9/99/Gillian_Anderson_2011.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/7/79/Gillian_Anderson_2013_%28cropped%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/5/55/Gillian_Anderson_Berlinale_2017.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/7/7e/Gillian_Anderson_at_Fan_Expo_Denver_2026_02.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/9/9e/Gillian_Anderson_at_the_2015_Fan_Expo_Dallas.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/6/67/Gillian_Anderson_at_the_2017_Berlinale.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/e/e8/Gillian_Anderson_by_Gage_Skidmore.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/9/9b/Gillian_Anderson_giving_autographs_the_2015_Fan_Expo_Dallas.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/4/46/Gillian_Anderson_in_2013_%289347352920%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/8/81/Gillian_anderson_lk.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/7/78/Gillian_Anderson_%2820673354673%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/0/0b/Gillian_Anderson_%289344572755%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/e/ea/Gillian_Anderson_%289347587466%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/d/d0/Gillian_Anderson_2013.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/c/cf/Gillian_Anderson_Cannes_Film_Festival_2026_01.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/a/a5/Gillian_Anderson_at_Fan_Expo_Denver_2026_01.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/0/04/Gillian_anderson_lk-cropped.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/4/4a/Gillian-Anderson-Buskaid-London-2004.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/f/f4/Gillian_Anderson_Cannes_Film_Festival_2026_02.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/c/c6/Fan_Expo_2012_-_Gillian_Anderson_02_%287891578608%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/8/83/Fan_Expo_2012_-_Gillian_Anderson_03_%287891575660%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/4/40/Fan_Expo_2012_-_Gillian_Anderson_08_%287891577402%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/6/6a/Fan_Expo_2012_-_Gillian_Anderson_12_%287891588208%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/c/c6/Gillian_Anderson_%289344566953%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/4/42/Fan_Expo_2012_-_Gillian_Anderson_04_%287891578138%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/5/51/Fan_Expo_2012_-_Gillian_Anderson_05_%287891577806%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/1/1d/Fan_Expo_2012_-_Gillian_Anderson_06_%287891576942%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/d/d2/Fan_Expo_2012_-_Gillian_Anderson_07_%287891576472%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/2/2a/Fan_Expo_2012_-_Gillian_Anderson_11_%287891587300%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/d/de/Fan_Expo_2012_-_Gillian_Anderson_13_%287891587870%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/8/88/Fan_Expo_2012_-_Gillian_Anderson_14_%287891590138%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/4/4a/Fan_Expo_2012_-_Gillian_Anderson_15_%287891590624%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/2/20/Fan_Expo_2012_-_Gillian_Anderson_16_%287891593548%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/4/41/Fan_Expo_2012_-_Gillian_Anderson_17_%287891593952%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/4/41/Gillian_Anderson%2C_David_Duchovny_%26_Chris_Carter.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/3/3b/Gillian_Anderson_%26_David_Duchovny.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/d/d8/Gillian_Anderson_%26_David_Duchovny_%282%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/8/86/Gillian_Anderson_%26_David_Duchovny_%283%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/4/49/Gillian_Anderson_%26_David_Duchovny_%284%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/c/cd/Gillian_Anderson_%26_David_Duchovny_%285%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/5/55/Gillian_Anderson_%26_David_Duchovny_%289344552231%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/3/38/Gillian_Anderson_%26_David_Duchovny_%289344570889%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/7/7f/Gillian_Anderson_%26_David_Duchovny_%289347314770%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/0/00/Gillian_Anderson_%26_David_Duchovny_%289347322664%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/9/91/Gillian_Anderson_%26_David_Duchovny_%289347343714%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/5/50/Gillian_Anderson_%26_David_Duchovny_%28cropped%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/9/99/Gillian_Anderson_%289344529563%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/0/04/Gillian_Anderson_Comic-Con.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/5/5c/Gillian_Anderson_%289344568949%29.jpg",
+    // Flickr (54 images)
+    "https://live.staticflickr.com/65535/53530486999_8aa5915bda_b.jpg",
+    "https://live.staticflickr.com/65535/51169862508_d687f0262f_b.jpg",
+    "https://live.staticflickr.com/65535/50627690432_1a3def6509_b.jpg",
+    "https://live.staticflickr.com/65535/50626842893_2ffd433e0a_b.jpg",
+    "https://live.staticflickr.com/65535/50626842728_3f326a75a4_b.jpg",
+    "https://live.staticflickr.com/65535/50626842803_5786bf5e41_b.jpg",
+    "https://live.staticflickr.com/65535/50627594021_7e7e1a4e5b_b.jpg",
+    "https://live.staticflickr.com/65535/50388922003_d18b867cfa_b.jpg",
+    "https://live.staticflickr.com/8539/8618485961_2e01b3153d_b.jpg",
+    "https://live.staticflickr.com/8042/8059610686_2afc38feeb_b.jpg",
+    "https://live.staticflickr.com/5787/21723207749_f2b5258f29_b.jpg",
+    "https://live.staticflickr.com/65535/49438810467_566c326aa7_b.jpg",
+    "https://live.staticflickr.com/65535/49209238338_20da356072_b.jpg",
+    "https://live.staticflickr.com/5801/20522881894_55fea95a95_b.jpg",
+    "https://live.staticflickr.com/7419/16285066717_7354730e4e_b.jpg",
+    "https://live.staticflickr.com/4066/4255030991_8e796725c6_b.jpg",
+    "https://live.staticflickr.com/8467/29518287656_9a79d3cf81_b.jpg",
+    "https://live.staticflickr.com/3494/3944552352_a90c9a9aac_b.jpg",
+    "https://live.staticflickr.com/3447/3944551344_bab5002eff_b.jpg",
+    "https://live.staticflickr.com/2496/3944551810_25e44cf331_b.jpg",
+    "https://live.staticflickr.com/65535/52179990408_a10964f576_b.jpg",
+    "https://live.staticflickr.com/65535/52179984721_9023216619_b.jpg",
+    "https://live.staticflickr.com/65535/52180234169_c0810a026a_b.jpg",
+    "https://live.staticflickr.com/65535/52180234259_5a91ac34fa_b.jpg",
+    "https://live.staticflickr.com/65535/52180234184_f92f22ebe8_b.jpg",
+    "https://live.staticflickr.com/65535/52179990673_806181abb5_b.jpg",
+    "https://live.staticflickr.com/65535/52178960417_84dba16142_b.jpg",
+    "https://live.staticflickr.com/65535/52179990688_d085849b91_b.jpg",
+    "https://live.staticflickr.com/65535/52180471880_1d83519947_b.jpg",
+    "https://live.staticflickr.com/65535/52178960572_e4f4575366_b.jpg",
+    "https://live.staticflickr.com/65535/55171892948_9ecd2c5601_b.jpg",
+    "https://live.staticflickr.com/65535/55172119835_43320392ab_b.jpg",
+    "https://live.staticflickr.com/65535/55171731581_74570d12ea_b.jpg",
+    "https://live.staticflickr.com/65535/55171890508_e3756bde34_b.jpg",
+    "https://live.staticflickr.com/65535/55170830437_bf05166c34_b.jpg",
+    "https://live.staticflickr.com/65535/55172120480_fd7f61356c_b.jpg",
+    "https://live.staticflickr.com/8369/29107429646_9f23f3a752_b.jpg",
+    "https://live.staticflickr.com/8553/28853073720_7076904cc2_b.jpg",
+    "https://live.staticflickr.com/8075/28518497064_f89aeb7033_b.jpg",
+    "https://live.staticflickr.com/8557/29140407625_802af235f9_b.jpg",
+    "https://live.staticflickr.com/8144/7554623446_cd87370475_b.jpg",
+    "https://live.staticflickr.com/7273/7554621664_2e9cdc4c19_b.jpg",
+    "https://live.staticflickr.com/8158/7554622338_94dcf6a870_b.jpg",
+    "https://live.staticflickr.com/7113/7554624636_898552c726_b.jpg",
+    "https://live.staticflickr.com/8157/7554622940_c979cc024a_b.jpg",
+    "https://live.staticflickr.com/2942/15259132418_2b855f68eb_b.jpg",
+    "https://live.staticflickr.com/2946/15259136338_73400d8773_b.jpg",
+    "https://live.staticflickr.com/2950/15442561051_5b5462fac1_b.jpg",
+    "https://live.staticflickr.com/7121/7547669810_9b73297d6f_b.jpg",
+    "https://live.staticflickr.com/8008/7547674634_b3cc972d94_b.jpg",
+    "https://live.staticflickr.com/65535/48916150188_0b85a67ce6_b.jpg",
+    "https://live.staticflickr.com/65535/48916882417_727256ff8c_b.jpg",
+    "https://live.staticflickr.com/7005/6809580697_61fd02e0ab_b.jpg",
+    "https://live.staticflickr.com/65535/53058654566_39b61f3006_b.jpg"
+  ];
 
   const titleTemplates = {
     "The X-Files": [
@@ -686,10 +732,8 @@ export const GALLERY_PHOTOS: PhotoItem[] = (() => {
     const templates = titleTemplates[category as keyof typeof titleTemplates] || ["Gillian Anderson Candid"];
     const title = templates[(i - 1) % templates.length] + ` (Archive #${i})`;
     
-    // Choose Unsplash ID from corresponding category
-    const ids = unsplashIDs[category as keyof typeof unsplashIDs] || ["1509631179647-0177331693ae"];
-    const unsplashId = ids[(i - 1) % ids.length];
-    const url = `https://images.unsplash.com/photo-${unsplashId}?auto=format&fit=crop&w=600&q=80`;
+    // Cycle through real Gillian Anderson photos
+    const url = REAL_PHOTO_URLS[(i - 1) % REAL_PHOTO_URLS.length];
 
     // Descriptions based on category
     const descriptions = {

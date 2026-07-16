@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useGlobalState } from '../utils/StateContext';
 import {
   BookOpen,
   Film,
@@ -18,6 +19,7 @@ import {
 } from 'lucide-react';
 
 export default function AboutSection() {
+  const { content } = useGlobalState();
   const [activeTab, setActiveTab] = useState<'journey' | 'films' | 'humanitarian' | 'literary' | 'kindness' | 'quiz'>('journey');
 
   // Interactive Tab 2: Film Explorer state
@@ -36,150 +38,41 @@ export default function AboutSection() {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
 
-  // Film Explorer Data
-  const FILMS_DATA = [
-    {
-      title: "The X-Files Franchise",
-      role: "Special Agent Dana Scully",
-      year: "1993 - 2018",
-      tagline: "The truth is out there.",
-      revenue: "2 Emmy awards + 200+ episodes",
-      trivia: "Gillian's character Agent Dana Scully single-handedly inspired a massive, documented real-world increase of women pursuing degrees and careers in STEM fields—a phenomenon celebrated as 'The Scully Effect'. Gillian had to fight for equal pay multiple times on the show.",
-      icon: "👽",
-      stuntDetail: "Mastered medical jargon, skeptical analysis, trench coat running, and flashlight investigation in dark woods.",
-    },
-    {
-      title: "The Fall",
-      role: "Stella Gibson",
-      year: "2013 - 2016",
-      tagline: "That's why a woman is more suited to it.",
-      revenue: "Highly Acclaimed BBC Series",
-      trivia: "Gillian praised the role of Stella because she was unapologetically female, highly logical, comfortable with her power, and challenged double standards in policing and relationships. Gibson is considered one of TV's finest feminist icons.",
-      icon: "🕵️‍♀️",
-      stuntDetail: "Mastered quiet authority, intensive psychological interrogation, and cold, methodical analytical investigation.",
-    },
-    {
-      title: "Sex Education",
-      role: "Dr. Jean Milburn",
-      year: "2019 - 2023",
-      tagline: "It's about open, honest, judgment-free discussion.",
-      revenue: "Netflix International Phenomenon",
-      trivia: "Jean's character was beloved for her warm, open, and hilariously direct conversations on sexual health. Gillian co-designed the colorful and eccentric aesthetic of Jean's beautiful forest home.",
-      icon: "🍒",
-      stuntDetail: "Pioneered warm, open, comedic dialogue and authentic representation of complex motherhood.",
-    },
-    {
-      title: "The Crown",
-      role: "Margaret Thatcher",
-      year: "2020",
-      tagline: "I have no intention of changing.",
-      revenue: "Emmy & Golden Globe Winner",
-      trivia: "To capture Margaret Thatcher's distinct, raspy speaking style and posture, Gillian spent months working with vocal coaches and researching historical footage. She transformed her appearance entirely to portray 'The Iron Lady'.",
-      icon: "👑",
-      stuntDetail: "Mastered Thatcher's distinct cadence, rigid posture, and formidable political presence.",
-    },
-    {
-      title: "A Streetcar Named Desire",
-      role: "Blanche DuBois",
-      year: "2014 - 2016",
-      tagline: "I don't want realism. I want magic!",
-      revenue: "Olivier Award Nominated Stage Run",
-      trivia: "Gillian's intense, heartbreaking portrayal of Blanche DuBois on a rotating stage in London's Young Vic and Brooklyn's St. Ann's Warehouse was hailed as one of the defining theatrical performances of the decade.",
-      icon: "🎭",
-      stuntDetail: "Delivered exhausting, high-intensity 3-hour live performances with raw emotional vulnerability.",
-    }
-  ];
+  // Film Explorer Data (from DB)
+  const FILMS_DATA = (content.filmsData || []).map((f: any) => ({
+    title: f.title,
+    role: f.role,
+    year: f.year,
+    tagline: f.tagline,
+    revenue: f.revenue,
+    trivia: f.trivia,
+    icon: f.icon,
+    stuntDetail: f.stunt_detail,
+  }));
 
-  // Literary Works Audiobook List
-  const LITERARY_WORKS = [
-    { title: "We: A Manifesto for Women", duration: "3:45", vibe: "An inspiring guide to life, self-worth, and compassion" },
-    { title: "A Vision of Fire", duration: "4:12", vibe: "Thrilling science-fiction co-authored with Jeff Rovin" },
-    { title: "Want (Curated Letters)", duration: "5:10", vibe: "A brave, liberating exploration of female desire" },
-    { title: "The House of Mirth Excerpt", duration: "2:55", vibe: "Edith Wharton's classic audio narration" },
-  ];
+  // Literary Works Audiobook List (from DB)
+  const LITERARY_WORKS = (content.literaryWorks || []).map((w: any) => ({
+    title: w.title,
+    duration: w.duration,
+    vibe: w.vibe,
+  }));
 
-  // Kindness Acts Data
-  const KINDNESS_LOG = [
-    {
-      id: 1,
-      title: "Fought and Won Equal Pay Equity",
-      category: "stunts",
-      description: "Gillian found out she was offered half David Duchovny's salary for the X-Files reboot in 2016. She refused, fought for pay equity, and won equal compensation, using her platform to highlight the gender wage gap.",
-      quote: "It was a shock, given all the work I'd done in the past. But I stood my ground because it was the right thing to do."
-    },
-    {
-      id: 2,
-      title: "SAYes Youth Mentoring Co-Founder",
-      category: "charity",
-      description: "Gillian co-founded SAYes Mentoring in South Africa to match vulnerable, underrepresented youth transitioning out of care homes with positive adult mentors, preparing them for independent lives.",
-      quote: "Mentoring provides a vital bridge for youth who have grown up in care, giving them the support and skills they need to thrive."
-    },
-    {
-      id: 3,
-      title: "Advocating for Neurofibromatosis Research",
-      category: "charity",
-      description: "Gillian is an active, long-term patron of the Children's Tumor Foundation, testifying in front of the US Congress to advocate for federal funding for Neurofibromatosis research, a cause close to her heart.",
-      quote: "My brother Aaron's courage inspired me to use my voice. We must find a cure for NF and support these brave families."
-    },
-    {
-      id: 4,
-      title: "Empowering Women with 'We' Manifesto",
-      category: "fans",
-      description: "Gillian co-wrote the book 'We' to offer women a practical, empathetic roadmap for navigating mental health, self-compassion, and building meaningful supportive communities globally.",
-      quote: "We wanted to create a non-judgmental guide that says: you are not alone, and your vulnerability is actually your greatest power."
-    },
-    {
-      id: 5,
-      title: "Breaking Desire Taboos with 'Want'",
-      category: "fans",
-      description: "Gillian curated 'Want', a collection of anonymous letters from women around the world describing their private desires, creating a safe, liberating space to dismantle age-old taboos.",
-      quote: "By sharing our most intimate, hidden thoughts, we free ourselves and each other from shame and expectation."
-    },
-    {
-      id: 6,
-      title: "Warm and Generous Fan Engagement",
-      category: "fans",
-      description: "At comic cons and stage doors, Gillian is famous for dedicating extra hours to listen to fan stories, especially young women who chose scientific careers because of Dana Scully.",
-      quote: "Hearing women tell me they became scientists or doctors because of Scully is the most rewarding part of my career."
-    }
-  ];
+  // Kindness Acts Data (from DB)
+  const KINDNESS_LOG = (content.kindnessLog || []).map((k: any) => ({
+    id: k.id,
+    title: k.title,
+    category: k.category,
+    description: k.description,
+    quote: k.quote,
+  }));
 
-  // Quiz Questions Data
-  const QUIZ_QUESTIONS = [
-    {
-      question: "Which iconic character played by Gillian Anderson inspired a massive, real-world increase of women pursuing STEM careers?",
-      options: [
-        "Stella Gibson (The Fall)",
-        "Dr. Jean Milburn (Sex Education)",
-        "Special Agent Dana Scully (The X-Files)",
-        "Margaret Thatcher (The Crown)"
-      ],
-      correct: 2,
-      explanation: "Dana Scully's analytical, scientific character inspired what is widely documented as the 'Scully Effect', motivating a generation of women to study and work in STEM."
-    },
-    {
-      question: "Which charity did Gillian Anderson co-found to support vulnerable youth transitioning out of care?",
-      options: [
-        "SAYes Mentoring",
-        "The Scully STEM Foundation",
-        "PETA UK",
-        "The Children's Tumor Fund"
-      ],
-      correct: 0,
-      explanation: "Gillian co-founded SAYes Mentoring in South Africa, matching youth transitioning from care homes with supportive adult mentors."
-    },
-    {
-      question: "For her portrayal of Margaret Thatcher in 'The Crown', which prestigious awards did Gillian Anderson win?",
-      options: [
-        "An Emmy and a Golden Globe",
-        "A Tony and an Olivier",
-        "An Oscar and a BAFTA",
-        "All of the above"
-      ],
-      correct: 0,
-      explanation: "Gillian's brilliant and deeply researched portrayal of Margaret Thatcher won her both the Primetime Emmy Award and the Golden Globe Award."
-    }
-  ];
+  // Quiz Questions Data (from DB)
+  const QUIZ_QUESTIONS = (content.quizQuestions || []).map((q: any) => ({
+    question: q.question,
+    options: q.options,
+    correct: q.correct,
+    explanation: q.explanation,
+  }));
 
   const filteredKindness = kindnessFilter === 'all' 
     ? KINDNESS_LOG 

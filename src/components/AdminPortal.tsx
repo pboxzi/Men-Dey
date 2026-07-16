@@ -113,14 +113,16 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   // Search input
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Notifications State (bell alert count 12)
-  const [notificationCount, setNotificationCount] = useState(12);
-  const [notifications, setNotifications] = useState([
-    { id: '1', text: 'New Meet & Greet Request GA-REQ-000145 from John Smith', status: 'unread', time: '20 min ago' },
-    { id: '2', text: 'Membership Application from Maria Garcia pending review', status: 'unread', time: '1 hour ago' },
-    { id: '3', text: 'Payment verification needed for Order GA-SHP-000285', status: 'unread', time: '2 hours ago' },
-    { id: '4', text: 'Security guidelines update uploaded for Los Angeles Event', status: 'unread', time: '1 day ago' }
-  ]);
+  // Notifications State (fetched from DB)
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/admin/notifications').then(r => r.ok ? r.json() : []).then(data => {
+      setNotifications(data);
+      setNotificationCount(data.filter((n: any) => n.status === 'unread').length);
+    }).catch(() => {});
+  }, []);
 
   // Request state
   const {
@@ -208,56 +210,28 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
   const [selectedOrder, setSelectedOrder] = useState<ShopOrder | null>(null);
 
-  // Membership Applications (Alert "11 Applications")
-  const [memberships, setMemberships] = useState<MembershipApplication[]>([
-    { id: 'MEM-APP-001', name: 'Maria Garcia', email: 'maria@example.com', status: 'Pending', appliedOn: 'May 15, 2024', tier: 'Gold' },
-    { id: 'MEM-APP-002', name: 'James Carter', email: 'james@example.com', status: 'Pending', appliedOn: 'May 16, 2024', tier: 'Gold' },
-    { id: 'MEM-APP-003', name: 'Sophia Loren', email: 'sophia@example.com', status: 'Pending', appliedOn: 'May 17, 2024', tier: 'Platinum' },
-    { id: 'MEM-APP-004', name: 'Charles Xavier', email: 'charles@example.com', status: 'Pending', appliedOn: 'May 18, 2024', tier: 'Gold' },
-    { id: 'MEM-APP-005', name: 'Bruce Wayne', email: 'bruce@example.com', status: 'Pending', appliedOn: 'May 19, 2024', tier: 'Platinum' }
-  ]);
+  // Membership Applications (fetched from DB)
+  const [memberships, setMemberships] = useState<any[]>([]);
 
-  // Upcoming Events
-  const [events, setEvents] = useState([
-    { id: '1', day: '24', month: 'MAY', title: 'Live Q&A with Gillian', type: 'Virtual Event', registered: '2,450', location: 'Virtual', time: '10:00 AM PST' },
-    { id: '2', day: '28', month: 'MAY', title: 'The X-Files Nostalgia Panel', type: 'Los Angeles, USA', registered: '890', location: 'Los Angeles, USA', time: '06:00 PM PST' },
-    { id: '3', day: '02', month: 'JUN', title: 'Charity Gala Dinner', type: 'London, UK', registered: '320', location: 'London, UK', time: '07:30 PM GMT' },
-    { id: '4', day: '10', month: 'JUN', title: 'Fan Meet & Greet', type: 'New York, USA', registered: '150', location: 'New York, USA', time: '02:00 PM EST' }
-  ]);
+  useEffect(() => {
+    fetch('/api/state').then(r => r.ok ? r.json() : {}).then((data: any) => {
+      if (data.memberships) setMemberships(data.memberships);
+    }).catch(() => {});
+  }, []);
 
-  // Communication Log state
-  const [commLogs, setCommLogs] = useState<CommunicationLogItem[]>([
-    {
-      id: 'COM-000568',
-      requestId: 'GA-REQ-000145',
-      member: 'John Smith',
-      method: 'WhatsApp',
-      lastContact: '20 min ago',
-      by: 'Admin',
-      notes: 'Discussed details and availability.',
-      nextAction: 'Awaiting fan response'
-    },
-    {
-      id: 'COM-000567',
-      requestId: 'GA-REQ-000142',
-      member: 'Sophie Martin',
-      method: 'Email',
-      lastContact: '1 hour ago',
-      by: 'Admin',
-      notes: 'Sent interview guidelines.',
-      nextAction: 'Awaiting confirmation'
-    },
-    {
-      id: 'COM-000566',
-      requestId: 'GA-REQ-000139',
-      member: 'Michael Chen',
-      method: 'Telegram',
-      lastContact: '3 hours ago',
-      by: 'Admin',
-      notes: 'Shared payment instructions.',
-      nextAction: 'Awaiting payment receipt'
-    }
-  ]);
+  // Upcoming Events (fetched from DB)
+  const [events, setEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/admin/events').then(r => r.ok ? r.json() : []).then(setEvents).catch(() => {});
+  }, []);
+
+  // Communication Log state (fetched from DB)
+  const [commLogs, setCommLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/admin/comm-logs').then(r => r.ok ? r.json() : []).then(setCommLogs).catch(() => {});
+  }, []);
 
   // Modal forms
   const [showEventModal, setShowEventModal] = useState(false);
@@ -342,7 +316,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const [manualLogMethod, setManualLogMethod] = useState<'WhatsApp' | 'Email' | 'Telegram'>('WhatsApp');
   const [manualLogAction, setManualLogAction] = useState('');
 
-  const handleAddManualLog = (requestId: string) => {
+  const handleAddManualLog = async (requestId: string) => {
     const reqObj = requests.find(r => r.id === requestId);
     if (!reqObj || !manualLogNote.trim()) return;
 
@@ -361,10 +335,18 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     setManualLogNote('');
     setManualLogAction('');
     showToast('Communication log added successfully!', 'success');
+
+    try {
+      await fetch('/api/admin/comm-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ request_id: requestId, member: reqObj.member, method: manualLogMethod, notes: newLog.notes, next_action: newLog.nextAction })
+      });
+    } catch {};
   };
 
   // Handler for adding upcoming event
-  const handleAddEventSubmit = (e: React.FormEvent) => {
+  const handleAddEventSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!eventTitle.trim()) return;
 
@@ -386,6 +368,14 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     setEventTitle('');
     setEventLocation('');
     showToast(`Event "${eventTitle}" created successfully on the platform!`, 'success');
+
+    try {
+      await fetch('/api/admin/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newEv)
+      });
+    } catch {};
   };
 
   // Handler for sending announcement
@@ -412,8 +402,15 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   };
 
   // Handler for Membership Approval
-  const handleMembershipAction = (id: string, decision: 'Approved' | 'Rejected') => {
+  const handleMembershipAction = async (id: string, decision: 'Approved' | 'Rejected') => {
     setMemberships(prev => prev.map(m => m.id === id ? { ...m, status: decision } : m));
+    try {
+      await fetch(`/api/memberships/${id}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: decision })
+      });
+    } catch {}
     showToast(`Membership Application ${id} has been ${decision}!`, decision === 'Approved' ? 'success' : 'info');
   };
 

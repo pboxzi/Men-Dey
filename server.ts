@@ -1019,10 +1019,32 @@ app.get('/api/admin/events', async (_req, res) => {
   res.json(data);
 });
 
+app.post('/api/admin/events', async (req, res) => {
+  const { title, day, month, type, registered, location, time } = req.body;
+  if (!title) return res.status(400).json({ error: 'Title required' });
+  const { data, error } = await supabase.from('admin_events').insert({
+    id: `ae-${Date.now()}`, title, day: day || '', month: month || '', type: type || 'Virtual Event',
+    registered: registered || '0', location: location || 'Virtual', time: time || '',
+  }).select('*').single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true, event: data });
+});
+
 app.get('/api/admin/comm-logs', async (_req, res) => {
   const { data, error } = await supabase.from('communication_logs').select('*').order('created_at', { ascending: false });
   if (error) return res.status(500).json({ error: error.message });
   res.json(data);
+});
+
+app.post('/api/admin/comm-logs', async (req, res) => {
+  const { request_id, member, method, notes, next_action } = req.body;
+  if (!request_id || !notes) return res.status(400).json({ error: 'Request ID and notes required' });
+  const { data, error } = await supabase.from('communication_logs').insert({
+    id: `cl-${Date.now()}`, request_id, member: member || '', method: method || 'Email',
+    notes, next_action: next_action || '', by: 'Admin',
+  }).select('*').single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true, log: data });
 });
 
 app.get('/api/admin/experience-requests', async (_req, res) => {

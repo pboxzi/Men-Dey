@@ -2956,10 +2956,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   </button>
                 </div>
 
-                {/* Holographic digital membership card */}
+                {/* Current Membership Card */}
                 <div className="max-w-md mx-auto">
                   <div className="rounded-2xl border-2 border-gold-500 bg-gradient-to-b from-neutral-900 via-[#121216] to-[#08080a] p-6 shadow-2xl relative overflow-hidden space-y-6 aspect-[1.6/1]">
-                    {/* Holographic diagonal flare lines */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/[0.03] via-transparent to-amber-500/[0.05] pointer-events-none" />
                     <div className="absolute -inset-y-12 -inset-x-32 bg-gradient-to-r from-transparent via-gold-500/[0.02] to-transparent rotate-12 pointer-events-none animate-pulse" />
 
@@ -2983,10 +2982,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       </div>
                       <div>
                         <span className="text-[7px] font-mono text-neutral-500 uppercase block">LEVEL ACCESS</span>
-                        <span className="text-[10px] font-mono font-bold text-gold-500">GOLD AMBASSADOR</span>
+                        <span className="text-[10px] font-mono font-bold text-gold-500">{rank.name.toUpperCase()}</span>
                       </div>
                       <div className="flex justify-end items-center">
-                        {/* Mock mini secure QR */}
                         <div className="h-8 w-8 bg-white p-0.5 rounded shrink-0 flex flex-wrap gap-px overflow-hidden">
                           {Array.from({ length: 25 }).map((_, i) => (
                             <div key={i} className={`h-1 w-1 ${Math.random() > 0.5 ? 'bg-black' : 'bg-transparent'}`} />
@@ -2994,6 +2992,128 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                {/* Experience Tier Membership Levels */}
+                <div className="space-y-4">
+                  <h3 className="text-xs font-mono font-bold text-white uppercase tracking-widest pb-2 border-b border-neutral-900/40">
+                    Experience Access Tiers
+                  </h3>
+                  <p className="text-xs text-neutral-500 font-mono mb-4">
+                    Each membership tier unlocks exclusive experiences. Your current loyalty rank: <span className="text-gold-500 font-bold">{rank.name}</span>.
+                  </p>
+                  
+                  <div className="grid gap-4 md:grid-cols-3">
+                    {/* GOLD TIER */}
+                    <div className="relative rounded-xl border border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-neutral-950 p-5 space-y-3 hover:border-amber-500/50 transition-all">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-[7px] font-mono text-amber-500 uppercase tracking-widest block">TIER</span>
+                          <span className="text-lg font-bold text-amber-400 font-serif tracking-wider">GOLD</span>
+                        </div>
+                        <span className="text-2xl font-bold text-amber-500/30">★</span>
+                      </div>
+                      <div className="space-y-1.5">
+                        <span className="text-xs text-neutral-400">Access to Gold-tier experiences</span>
+                        <span className="text-[10px] text-green-500 font-mono">8+ Meet & Greets + Creative + Literary</span>
+                        <span className="text-[10px] text-neutral-500">Morning Coffee, Garden Party, Script Reading, Fan Convention</span>
+                      </div>
+                      <div className="flex items-center gap-2 pt-2 border-t border-neutral-900/40">
+                        <span className="text-xs font-bold text-amber-500">COMPLIMENTARY</span>
+                        <span className="text-[9px] font-mono text-neutral-500">Fan-funded spots available</span>
+                      </div>
+                      {(rank.min >= 0 && rank.min < 1500) && (
+                        <span className="text-[9px] font-mono text-green-500 flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" /> YOUR CURRENT TIER
+                        </span>
+                      )}
+                    </div>
+
+                    {/* PLATINUM TIER */}
+                    <div className="relative rounded-xl border border-slate-400/30 bg-gradient-to-b from-slate-900/20 to-neutral-950 p-5 space-y-3 hover:border-slate-400/50 transition-all">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-[7px] font-mono text-slate-400 uppercase tracking-widest block">TIER</span>
+                          <span className="text-lg font-bold text-slate-300 font-serif tracking-wider">PLATINUM</span>
+                        </div>
+                        <span className="text-2xl font-bold text-slate-400/30">★★</span>
+                      </div>
+                      <div className="space-y-1.5">
+                        <span className="text-xs text-neutral-400">All Gold + Platinum-tier experiences</span>
+                        <span className="text-[10px] text-blue-500 font-mono">6+ Acting Masterclasses + Philanthropy + Behind-the-Scenes</span>
+                        <span className="text-[10px] text-neutral-500">Backstage Pass, Acting Masterclass, SAYes Cape Town Retreat</span>
+                      </div>
+                      <div className="flex items-center gap-2 pt-2 border-t border-neutral-900/40">
+                        <span className="text-xs font-bold text-slate-400">COMPLIMENTARY</span>
+                        <span className="text-[9px] font-mono text-neutral-500">Limited exclusive spots</span>
+                      </div>
+                      {(rank.min >= 1500 && rank.min < 3500) && (
+                        <span className="text-[9px] font-mono text-green-500 flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" /> YOUR CURRENT TIER
+                        </span>
+                      )}
+                      {(rank.min < 1500) && (
+                        <button
+                          onClick={() => { setMType('platinum'); setShowPortalMembershipModal(true); }}
+                          className="w-full mt-2 bg-slate-900 hover:bg-slate-800 border border-slate-400/30 text-slate-300 font-bold py-1.5 px-3 rounded text-[9px] font-mono uppercase transition-all"
+                        >
+                          Upgrade to Platinum
+                        </button>
+                      )}
+                    </div>
+
+                    {/* DIAMOND TIER */}
+                    <div className="relative rounded-xl border border-purple-400/30 bg-gradient-to-b from-purple-950/20 to-neutral-950 p-5 space-y-3 hover:border-purple-400/50 transition-all ring-1 ring-purple-500/10">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-[7px] font-mono text-purple-400 uppercase tracking-widest block">TIER</span>
+                          <span className="text-lg font-bold text-purple-300 font-serif tracking-wider">DIAMOND</span>
+                        </div>
+                        <span className="text-2xl font-bold text-purple-400/30">★★★</span>
+                      </div>
+                      <div className="space-y-1.5">
+                        <span className="text-xs text-neutral-400">All Platinum + Diamond-tier experiences</span>
+                        <span className="text-[10px] text-purple-500 font-mono">4+ Private Audiences + VIP Gala + Birthday Celebration</span>
+                        <span className="text-[10px] text-neutral-500">Private Audience, VIP Gala, Birthday, Holiday Gathering</span>
+                      </div>
+                      <div className="flex items-center gap-2 pt-2 border-t border-neutral-900/40">
+                        <span className="text-xs font-bold text-purple-400">COMPLIMENTARY</span>
+                        <span className="text-[9px] font-mono text-neutral-500">Ultra-exclusive, 1-2 spots each</span>
+                      </div>
+                      {(rank.min >= 10000) && (
+                        <span className="text-[9px] font-mono text-green-500 flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" /> YOUR CURRENT TIER
+                        </span>
+                      )}
+                      {(rank.min < 10000) && (
+                        <button
+                          onClick={() => { setMType('diamond'); setShowPortalMembershipModal(true); }}
+                          className="w-full mt-2 bg-purple-950/20 hover:bg-purple-950/30 border border-purple-400/30 text-purple-300 font-bold py-1.5 px-3 rounded text-[9px] font-mono uppercase transition-all"
+                        >
+                          Upgrade to Diamond
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Loyalty Points Progress to Next Tier */}
+                <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono font-bold text-white uppercase tracking-widest">LOYALTY PROGRESS TO NEXT EXPERIENCE TIER</span>
+                    <span className="text-[9px] font-mono text-neutral-500">{Math.round(progressPercent)}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-neutral-900 rounded-full overflow-hidden border border-neutral-800/40">
+                    <div 
+                      className="h-full bg-gradient-to-r from-amber-500 via-slate-400 to-purple-400 rounded-full transition-all duration-500"
+                      style={{ width: `${progressPercent}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-[9px] font-mono text-neutral-500">
+                    <span>Gold (0 PTS)</span>
+                    <span>Platinum (1,500 PTS)</span>
+                    <span>Diamond (10,000 PTS)</span>
                   </div>
                 </div>
               </div>

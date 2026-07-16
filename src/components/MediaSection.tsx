@@ -81,7 +81,7 @@ export default function MediaSection() {
       if (playerContainerRef.current && selectedVideo.youtubeId) {
         playerRef.current = new (window as any).YT.Player(playerContainerRef.current, {
           videoId: selectedVideo.youtubeId,
-          playerVars: { controls: 1, autoplay: 1 },
+          playerVars: { controls: 1, autoplay: 0 },
           events: {
             onError: (e: any) => {
               if (e.data === 101 || e.data === 150) {

@@ -89,7 +89,7 @@ export default function ExperiencesSection() {
     loadData();
 
     // Restore booking from URL hash: #EXPERIENCES/BOOK/experience-id
-    const hash = window.location.hash.replace('#', '');
+    const hash = window.location.hash.replace('#', '').toUpperCase();
     if (hash.startsWith('EXPERIENCES/BOOK/')) {
       const expId = hash.split('/')[2];
       if (expId) {

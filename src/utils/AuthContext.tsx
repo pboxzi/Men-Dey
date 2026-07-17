@@ -1,0 +1,142 @@
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { supabase } from './supabase';
+import type { User, Session } from '@supabase/supabase-js';
+
+export interface Profile {
+  id: string;
+  name: string;
+  email: string;
+  country: string;
+  avatar_text: string;
+  role: 'user' | 'admin';
+  created_at: string;
+  updated_at: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  session: Session | null;
+  profile: Profile | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<{ error?: string }>;
+  signUp: (email: string, password: string, name: string) => Promise<{ error?: string; user?: User }>;
+  signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
+  updateProfile: (updates: Partial<Profile>) => Promise<{ error?: string }>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProfile = useCallback(async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    if (!error && data) {
+      setProfile(data as Profile);
+    }
+  }, []);
+
+  useEffect(() => {
+    const initialize = async () => {
+      const { data: { session: existingSession } } = await supabase.auth.getSession();
+      if (existingSession) {
+        setSession(existingSession);
+        setUser(existingSession.user);
+        await fetchProfile(existingSession.user.id);
+      }
+      setLoading(false);
+    };
+
+    initialize();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
+      if (newSession?.user) {
+        await fetchProfile(newSession.user.id);
+      } else {
+        setProfile(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [fetchProfile]);
+
+  const signIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { error: error.message };
+    return {};
+  };
+
+  const signUp = async (email: string, password: string, name: string) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name },
+        emailRedirectTo: undefined,
+      },
+    });
+    if (error) return { error: error.message };
+    if (!data.user) return { error: 'Registration failed. Please try again.' };
+    return { user: data.user };
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
+    setProfile(null);
+  };
+
+  const refreshProfile = async () => {
+    if (user) {
+      await fetchProfile(user.id);
+    }
+  };
+
+  const updateProfile = async (updates: Partial<Profile>) => {
+    if (!user) return { error: 'Not authenticated' };
+    const { error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', user.id);
+    if (error) return { error: error.message };
+    await fetchProfile(user.id);
+    return {};
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        profile,
+        loading,
+        signIn,
+        signUp,
+        signOut,
+        refreshProfile,
+        updateProfile,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}

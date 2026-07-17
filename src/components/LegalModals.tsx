@@ -5,7 +5,7 @@
 
 import React from 'react';
 import Modal from './Modal';
-import { Shield, Scale, Heart, Coins, Info, FileText, CheckCircle2 } from 'lucide-react';
+import { Shield, Scale, Coins, Info, FileText, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface LegalModalProps {
@@ -165,95 +165,4 @@ export function PrivacyPolicyModal({ isOpen, onClose }: LegalModalProps) {
   );
 }
 
-export function CharityDisclosuresModal({ isOpen, onClose }: LegalModalProps) {
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Charity Disclosures" maxWidth="max-w-3xl">
-      <div className="space-y-6 text-xs text-neutral-300 leading-relaxed text-left">
-        <div className="flex items-center gap-3 border-b border-neutral-900 pb-4">
-          <Heart className="h-5 w-5 text-gold-500 shrink-0" />
-          <div>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider font-serif">Humanitarian Disclosures</h4>
-            <p className="text-[10px] text-neutral-500 font-mono uppercase mt-0.5">Financial Transparency • Non-Profit Operations</p>
-          </div>
-        </div>
 
-        <section className="space-y-2">
-          <h5 className="font-mono text-[10px] text-gold-500 font-bold uppercase tracking-widest">Co-operative Solidarity Mission</h5>
-          <p>
-            The Gillian Anderson Fan Platform operates under a unified ethical co-op model. We are dedicated to translating online engagement and fan interactions into direct, measurable, and highly audit-compliant real-world resources for vulnerable youth and women's advocacy circles.
-          </p>
-        </section>
-
-        <section className="space-y-2">
-          <h5 className="font-mono text-[10px] text-gold-500 font-bold uppercase tracking-widest">1. Official Charity Partner Spotlight</h5>
-          <p>
-            We are proud to support and verify the following official non-governmental organisations (NGOs):
-          </p>
-          
-          <div className="grid gap-3 sm:grid-cols-2 mt-2">
-            <div className="p-3 rounded-lg border border-neutral-900 bg-neutral-900/30">
-              <span className="font-mono text-[9px] text-gold-500 font-bold uppercase tracking-wider block">SAYes Mentoring</span>
-              <p className="text-[11px] text-neutral-400 mt-1">
-                A registered non-profit organization focused on empowering youth in South Africa as they transition out of state care. Structured mentorship helps secure education, jobs, housing, and social well-being.
-              </p>
-              <div className="mt-2 text-[9px] font-mono text-neutral-500">
-                UK Registered Charity: 1124409<br />
-                South Africa NPO Registry: 073-455-NPO
-              </div>
-            </div>
-
-            <div className="p-3 rounded-lg border border-neutral-900 bg-neutral-900/30">
-              <span className="font-mono text-[9px] text-gold-500 font-bold uppercase tracking-wider block">We Manifesto Circles</span>
-              <p className="text-[11px] text-neutral-400 mt-1">
-                Sponsors regional counseling panels, high-impact reading material libraries, and psychological self-worth circles focusing on female leadership and youth empowerment.
-              </p>
-              <div className="mt-2 text-[9px] font-mono text-neutral-500">
-                Focus Areas: UK & South Africa youth clinics
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-2">
-          <h5 className="font-mono text-[10px] text-gold-500 font-bold uppercase tracking-widest">2. Direct Allocation of Funds</h5>
-          <p>
-            We operate with clear financial divisions. Every donation, store order checkout, and membership support contribution is strictly routed:
-          </p>
-
-          <div className="relative w-full rounded-xl border border-neutral-900 overflow-hidden bg-neutral-900/10">
-            <div className="grid grid-cols-1 sm:grid-cols-2 text-center border-b border-neutral-900 divide-y sm:divide-y-0 sm:divide-x divide-neutral-900">
-              <div className="p-4 bg-gold-500/5">
-                <span className="text-2xl font-bold font-mono text-gold-500 block">85%</span>
-                <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest block mt-1">Direct Cause Funding</span>
-                <p className="text-[10px] text-neutral-500 mt-1 leading-normal">
-                  Goes directly to paying mentor training materials, educational kits, mental wellness grants, and program resources.
-                </p>
-              </div>
-              <div className="p-4">
-                <span className="text-2xl font-bold font-mono text-neutral-400 block">15%</span>
-                <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest block mt-1">Co-op Infrastructure</span>
-                <p className="text-[10px] text-neutral-500 mt-1 leading-normal">
-                  Covers web server infrastructure, package storage/fulfillment, international custom coordinates, and basic support overhead.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-2">
-          <h5 className="font-mono text-[10px] text-gold-500 font-bold uppercase tracking-widest">3. Transparent Auditing</h5>
-          <p>
-            Every single donation and store checkout is processed under strict double-entry ledger verification. Financial statements, allocation details, and direct transfer slips are regularly cross-examined. Platform members can review high-level reports on total funds raised within the Portal's Dashboard tab.
-          </p>
-        </section>
-
-        <div className="pt-4 border-t border-neutral-900 flex justify-between items-center text-[10px] font-mono text-neutral-500">
-          <span>TRANSPARENT HUMANITARIAN STANDARD</span>
-          <span className="text-gold-500 font-bold flex items-center gap-1">
-            <CheckCircle2 className="h-3.5 w-3.5" /> VERIFIED CHARITY AUDIT
-          </span>
-        </div>
-      </div>
-    </Modal>
-  );
-}

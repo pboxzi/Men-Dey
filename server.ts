@@ -22,6 +22,73 @@ app.use(express.json());
 
 const PORT = 3000;
 
+// ─── Auth Middleware ──────────────────────────────────────────
+
+function getAuthToken(req: express.Request): string | null {
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith('Bearer ')) return null;
+  return header.slice(7);
+}
+
+async function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const token = getAuthToken(req);
+  if (!token) {
+    return res.status(401).json({ error: 'Authentication required.' });
+  }
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  if (error || !user) {
+    return res.status(401).json({ error: 'Invalid or expired token.' });
+  }
+  (req as any).user = user;
+  next();
+}
+
+async function requireAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
+  await requireAuth(req, res, async () => {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', (req as any).user.id)
+      .single();
+    if (!profile || profile.role !== 'admin') {
+      return res.status(403).json({ error: 'Admin access required.' });
+    }
+    next();
+  });
+}
+
+// ─── Auth Routes ──────────────────────────────────────────────
+
+app.get('/api/auth/me', requireAuth, async (req, res) => {
+  const user = (req as any).user;
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+  if (error) return res.status(500).json({ error: 'Failed to fetch profile.' });
+  res.json({ user, profile });
+});
+
+app.put('/api/auth/profile', requireAuth, async (req, res) => {
+  const user = (req as any).user;
+  const { name, country, avatar_text } = req.body;
+  const updates: any = {};
+  if (name !== undefined) updates.name = name;
+  if (country !== undefined) updates.country = country;
+  if (avatar_text !== undefined) updates.avatar_text = avatar_text;
+  updates.updated_at = new Date().toISOString();
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .update(updates)
+    .eq('id', user.id)
+    .select('*')
+    .single();
+  if (error) return res.status(500).json({ error: 'Failed to update profile.' });
+  res.json({ profile: data });
+});
+
 // Lazy loaded Gemini API integration
 let aiClient: GoogleGenAI | null = null;
 function getGeminiClient() {

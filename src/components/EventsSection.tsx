@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { UPCOMING_EVENTS } from '../data';
+import { useGlobalState } from '../utils/StateContext';
 import { UpcomingEvent } from '../types';
 import {
   Calendar,
@@ -16,7 +16,11 @@ import {
 } from 'lucide-react';
 
 export default function EventsSection() {
-  const [selectedEvent, setSelectedEvent] = useState<UpcomingEvent>(UPCOMING_EVENTS[0]);
+  const { content } = useGlobalState();
+  const events: UpcomingEvent[] = (content.upcomingEvents || []).map((e: any) => ({
+    id: e.id, day: e.day, month: e.month, title: e.title, location: e.location, time: e.time, description: e.description,
+  }));
+  const [selectedEvent, setSelectedEvent] = useState<UpcomingEvent | null>(events[0] || null);
   const [ticketQty, setTicketQty] = useState<number>(1);
   const [ticketType, setTicketType] = useState<string>('general');
   const [attendeeName, setAttendeeName] = useState<string>('');
@@ -94,11 +98,11 @@ export default function EventsSection() {
           <div className="text-center md:text-left space-y-1">
             <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-semibold block">NEXT BIG GATHERING</span>
             <h3 className="font-serif text-base font-bold text-white uppercase tracking-wide">
-              {UPCOMING_EVENTS[0].title}
+              {events[0]?.title || 'No upcoming events'}
             </h3>
             <p className="text-xs text-neutral-500 font-sans flex items-center justify-center md:justify-start gap-1">
               <MapPin className="h-3.5 w-3.5 text-neutral-600" />
-              {UPCOMING_EVENTS[0].location}
+              {events[0]?.location || ''}
             </p>
           </div>
 
@@ -132,8 +136,8 @@ export default function EventsSection() {
             </h3>
 
             <div className="grid gap-3">
-              {UPCOMING_EVENTS.map((evt) => {
-                const isSelected = evt.id === selectedEvent.id;
+              {events.map((evt) => {
+                const isSelected = selectedEvent?.id === evt.id;
                 return (
                   <button
                     key={evt.id}
@@ -168,6 +172,11 @@ export default function EventsSection() {
 
           {/* Right: Ticketing & Seating Panel - 7 Cols */}
           <div className="lg:col-span-7 space-y-6 text-left">
+            {!selectedEvent ? (
+              <div className="bg-neutral-950/40 border border-neutral-900 rounded-xl p-10 text-center">
+                <p className="text-xs text-neutral-500 font-mono">No events available at this time.</p>
+              </div>
+            ) : (
             <AnimatePresence mode="wait">
               <motion.div
                 key={selectedEvent.id}
@@ -344,6 +353,7 @@ export default function EventsSection() {
                 </div>
               </motion.div>
             </AnimatePresence>
+            )}
           </div>
         </div>
       </div>

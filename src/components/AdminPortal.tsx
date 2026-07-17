@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '../utils/StateContext';
+import { useAuth } from '../utils/AuthContext';
 import {
   LayoutGrid,
   User,
@@ -96,6 +97,44 @@ interface MembershipApplication {
 }
 
 export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
+  const { user, profile, loading: authLoading } = useAuth();
+  const isAdmin = profile?.role === 'admin';
+
+  // Admin auth gate
+  if (!authLoading && (!user || !isAdmin)) {
+    return (
+      <div className="min-h-screen bg-[#070709] text-neutral-200 flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center space-y-6">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 border border-red-500/20">
+            <Shield className="h-8 w-8 text-red-400" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="font-serif text-xl font-bold text-white tracking-wider">Access Restricted</h2>
+            <p className="text-sm text-neutral-400 leading-relaxed">
+              This area is for administrators only. Please sign in with an admin account to access the management portal.
+            </p>
+          </div>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={onBackToHome}
+              className="px-5 py-2.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white text-xs font-mono tracking-wider transition-colors"
+            >
+              ← Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#070709] text-neutral-200 flex items-center justify-center">
+        <div className="animate-pulse text-gold-500 font-mono text-xs tracking-widest">Loading...</div>
+      </div>
+    );
+  }
+
   // Sidebar Tabs
   const [activeTab, setActiveTab] = useState<string>('Dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -559,7 +598,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   { name: 'Media Library', icon: Briefcase, count: null },
                   { name: 'Journal CMS', icon: FileSpreadsheet, count: null },
                   { name: 'Ask Gillian', icon: HelpCircle, count: null },
-                  { name: 'Charity', icon: Flame, count: null },
                   { name: 'Rewards & Badges', icon: Shield, count: null }
                 ].map((item) => {
                   const Icon = item.icon;

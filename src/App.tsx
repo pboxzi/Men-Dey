@@ -9,7 +9,6 @@ import {
   Crown,
   Calendar,
   HelpCircle,
-  ShoppingBag,
   Heart,
   Play,
   ArrowRight,
@@ -35,6 +34,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from './utils/theme';
+import { useAuth } from './utils/AuthContext';
 import NotificationBell from './components/NotificationBell';
 
 // Import Types
@@ -49,12 +49,11 @@ import {
 // Import Custom Modals & Pages
 import AskGillianModal from './components/AskGillianModal';
 import VideoPlayerModal from './components/VideoPlayerModal';
-import ShopModal from './components/ShopModal';
-import CharityModal from './components/CharityModal';
+
 import ExperienceModal from './components/ExperienceModal';
 import MembershipModal from './components/MembershipModal';
 import Modal from './components/Modal';
-import { TermsOfServiceModal, PrivacyPolicyModal, CharityDisclosuresModal } from './components/LegalModals';
+import { TermsOfServiceModal, PrivacyPolicyModal } from './components/LegalModals';
 
 // Import Core Inline Sections
 import AboutSection from './components/AboutSection';
@@ -64,8 +63,8 @@ import CommunitySection from './components/CommunitySection';
 import EventsSection from './components/EventsSection';
 import ExperiencesSection from './components/ExperiencesSection';
 import MembershipSection from './components/MembershipSection';
-import ShopSection from './components/ShopSection';
-import CharitySection from './components/CharitySection';
+
+
 import FAQSection from './components/FAQSection';
 import FanPortal from './components/FanPortal';
 import AdminPortal from './components/AdminPortal';
@@ -114,7 +113,7 @@ export default function App() {
     const hash = window.location.hash.replace('#', '').toUpperCase();
     if (hash === 'PORTAL') return { vm: 'portal' as const, nav: 'HOME' };
     if (hash === 'ADMIN') return { vm: 'admin' as const, nav: 'HOME' };
-    const sections = ['HOME','ABOUT','JOURNAL','MEDIA','COMMUNITY','EXPERIENCES','MEMBERSHIP','EVENTS','SHOP','CHARITY','FAQ'];
+    const sections = ['HOME','ABOUT','JOURNAL','MEDIA','COMMUNITY','EXPERIENCES','MEMBERSHIP','EVENTS','FAQ'];
     // Match exact section names or sub-routes like EXPERIENCES/BOOK/123
     const baseSection = hash.split('/')[0];
     if (sections.includes(baseSection)) return { vm: 'landing' as const, nav: baseSection };
@@ -125,24 +124,9 @@ export default function App() {
   const [viewMode, setViewMode] = useState<'landing' | 'portal' | 'admin'>(resolveHash().vm);
 
   // User Authentication & Profile States (Landing Page level)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState('');
-
-  useEffect(() => {
-    const checkUser = () => {
-      const loggedIn = localStorage.getItem('kr_is_logged_in') === 'true';
-      const name = localStorage.getItem('kr_auth_name');
-      setIsLoggedIn(loggedIn);
-      if (loggedIn || name) {
-        setUserName(name || 'John Smith');
-      } else {
-        setUserName('');
-      }
-    };
-    checkUser();
-    window.addEventListener('storage', checkUser);
-    return () => window.removeEventListener('storage', checkUser);
-  }, [viewMode]);
+  const { user, profile } = useAuth();
+  const isLoggedIn = !!user;
+  const userName = profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || '';
 
   // Mobile navigation collapsible menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -222,11 +206,9 @@ export default function App() {
     const timer = setTimeout(() => {
       const otherImages = [
         '/src/assets/images/pillar_ask_gillian_1784103625430.jpg',
-        '/src/assets/images/pillar_charity_1784103654464.jpg',
         '/src/assets/images/pillar_events_1784103610855.jpg',
         '/src/assets/images/pillar_experiences_1784103582190.jpg',
         '/src/assets/images/pillar_membership_1784103595657.jpg',
-        '/src/assets/images/pillar_shop_1784103639052.jpg'
       ];
       otherImages.forEach((src) => {
         const img = new Image();
@@ -240,8 +222,6 @@ export default function App() {
   // Modal Triggers
   const [isAskGillianOpen, setIsAskGillianOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
-  const [isShopOpen, setIsShopOpen] = useState(false);
-  const [isCharityOpen, setIsCharityOpen] = useState(false);
   const [isExperienceOpen, setIsExperienceOpen] = useState(false);
   const [isMembershipOpen, setIsMembershipOpen] = useState(false);
   const [isEventsOpen, setIsEventsOpen] = useState(false);
@@ -249,7 +229,6 @@ export default function App() {
   // Legal Modals Triggers
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
-  const [isDisclosuresOpen, setIsDisclosuresOpen] = useState(false);
 
   // Newsletter Subscription
   const [subscribeEmail, setSubscribeEmail] = useState('');
@@ -395,8 +374,8 @@ export default function App() {
             </div>
           </a>
 
-          {/* Desktop Navigation — scrollable */}
-          <nav className="hidden lg:flex items-center gap-0.5 flex-1 overflow-x-auto scrollbar-hide min-w-0">
+          {/* Desktop Navigation — centered */}
+          <nav className="hidden lg:flex items-center justify-center gap-1 flex-1 min-w-0">
             {[
               'HOME',
               'ABOUT',
@@ -406,14 +385,12 @@ export default function App() {
               'EXPERIENCES',
               'MEMBERSHIP',
               'EVENTS',
-              'SHOP',
-              'CHARITY',
               'FAQ',
             ].map((link) => (
               <button
                 key={link}
                 onClick={() => handleNavClick(link)}
-                className={`px-2.5 py-1.5 text-[10px] font-medium tracking-widest transition-colors rounded whitespace-nowrap shrink-0 ${
+                className={`px-3 py-1.5 text-[11px] font-medium tracking-widest transition-colors rounded-md whitespace-nowrap ${
                   activeNav === link
                     ? 'text-gold-500 font-semibold bg-gold-500/10 border border-gold-500/30'
                     : 'text-neutral-400 hover:text-white hover:bg-neutral-900/40 border border-transparent'
@@ -573,8 +550,6 @@ export default function App() {
                     'EXPERIENCES',
                     'MEMBERSHIP',
                     'EVENTS',
-                    'SHOP',
-                    'CHARITY',
                     'FAQ',
                   ].map((link) => (
                     <button
@@ -1138,79 +1113,6 @@ export default function App() {
                           </span>
                         </button>
 
-                        {/* Shop Card */}
-                        <button
-                          onClick={() => handleNavClick('SHOP')}
-                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
-                        >
-                          {/* Rich Background Visual */}
-                          <div className="absolute inset-0 z-0 overflow-hidden">
-                            <img
-                              src="/src/assets/images/pillar_shop_1784103639052.jpg"
-                              alt="Shop Background"
-                              referrerPolicy="no-referrer"
-                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
-                          </div>
-
-                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
-                            05
-                          </div>
-                          <div className="space-y-4 relative z-10">
-                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-850 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
-                              <ShoppingBag className="h-4 w-4" />
-                            </span>
-                            <div className="space-y-1">
-                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
-                                SHOP
-                              </h3>
-                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
-                                Purchase premium customized hoodies, tees & official memorabilia.
-                              </p>
-                            </div>
-                          </div>
-                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
-                            EXPORIUM <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
-                          </span>
-                        </button>
-
-                        {/* Charity Card */}
-                        <button
-                          onClick={() => handleNavClick('CHARITY')}
-                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
-                        >
-                          {/* Rich Background Visual */}
-                          <div className="absolute inset-0 z-0 overflow-hidden">
-                            <img
-                              src="/src/assets/images/pillar_charity_1784103654464.jpg"
-                              alt="Charity Background"
-                              referrerPolicy="no-referrer"
-                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
-                          </div>
-
-                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
-                            06
-                          </div>
-                          <div className="space-y-4 relative z-10">
-                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-800 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
-                              <Heart className="h-4 w-4" />
-                            </span>
-                            <div className="space-y-1">
-                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
-                                CHARITY
-                              </h3>
-                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
-                                Support global children's pediatric clinics & NF research.
-                              </p>
-                            </div>
-                          </div>
-                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
-                            KINDNESS ACTS <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
-                          </span>
-                        </button>
                       </div>
                     </div>
                   </section>
@@ -1270,8 +1172,6 @@ export default function App() {
                 <EventsSection />
               </div>
             )}
-            {activeNav === 'SHOP' && <ShopSection />}
-            {activeNav === 'CHARITY' && <CharitySection />}
             {activeNav === 'FAQ' && <FAQSection />}
           </motion.div>
         </AnimatePresence>
@@ -1390,10 +1290,6 @@ export default function App() {
               <button onClick={() => setIsTermsOpen(true)} className="hover:text-gold-500 transition-colors uppercase">
                 Terms of Service
               </button>
-              <span>•</span>
-              <button onClick={() => setIsDisclosuresOpen(true)} className="hover:text-gold-500 transition-colors uppercase">
-                Charity Disclosures
-              </button>
             </div>
           </div>
         </div>
@@ -1402,17 +1298,12 @@ export default function App() {
       {/* --- ALL INTERACTIVE MODALS INJECTED HERE --- */}
       <AskGillianModal isOpen={isAskGillianOpen} onClose={() => setIsAskGillianOpen(false)} />
 
-      <ShopModal isOpen={isShopOpen} onClose={() => setIsShopOpen(false)} />
-
-      <CharityModal isOpen={isCharityOpen} onClose={() => setIsCharityOpen(false)} />
-
       <ExperienceModal isOpen={isExperienceOpen} onClose={() => setIsExperienceOpen(false)} />
 
       <MembershipModal isOpen={isMembershipOpen} onClose={() => setIsMembershipOpen(false)} />
 
       <TermsOfServiceModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
       <PrivacyPolicyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
-      <CharityDisclosuresModal isOpen={isDisclosuresOpen} onClose={() => setIsDisclosuresOpen(false)} />
 
       {isEventsOpen && (
         <Modal
@@ -1479,21 +1370,6 @@ export default function App() {
         >
           <Sparkles className="h-4.5 w-4.5" />
           <span className="text-[9px] font-mono tracking-widest uppercase">Portal</span>
-        </button>
-
-        {/* Shop Button */}
-        <button
-          onClick={() => {
-            navigateTo('landing', 'SHOP');
-          }}
-          className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
-            viewMode === 'landing' && activeNav === 'SHOP'
-              ? 'text-gold-500 scale-105'
-              : 'text-neutral-400 hover:text-white'
-          }`}
-        >
-          <ShoppingBag className="h-4.5 w-4.5" />
-          <span className="text-[9px] font-mono tracking-widest uppercase">Shop</span>
         </button>
 
         {/* More/Menu Button */}

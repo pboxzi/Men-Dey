@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '../utils/StateContext';
+import { useAuth } from '../utils/AuthContext';
 import NotificationBell from './NotificationBell';
 import {
   LayoutGrid,
@@ -51,7 +52,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
-import { TermsOfServiceModal, PrivacyPolicyModal, CharityDisclosuresModal } from './LegalModals';
+import { TermsOfServiceModal, PrivacyPolicyModal } from './LegalModals';
 
 interface FanPortalProps {
   onBackToHome: () => void;
@@ -159,43 +160,31 @@ const getLoyaltyRank = (points: number) => {
 };
 
 export default function FanPortal({ onBackToHome }: FanPortalProps) {
-  // Authentication States
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return localStorage.getItem('kr_is_logged_in') === 'true';
-  });
+  // Authentication
+  const { user, session, profile, loading: sessionLoading, signIn, signUp, signOut, updateProfile } = useAuth();
+  const isLoggedIn = !!user;
+
   const [authMode, setAuthMode] = useState<'login' | 'register'>('register');
-  const [authStep, setAuthStep] = useState<'form' | 'verification' | 'welcome'>('form');
-
-  // Auth Inputs
-  const [authName, setAuthName] = useState(() => {
-    return localStorage.getItem('kr_auth_name') || 'John Smith';
-  });
-  const [authEmail, setAuthEmail] = useState(() => {
-    return localStorage.getItem('kr_auth_email') || 'john.smith@gmail.com';
-  });
+  const [authName, setAuthName] = useState('');
+  const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
-  const [authCountry, setAuthCountry] = useState(() => {
-    return localStorage.getItem('kr_auth_country') || 'USA';
-  });
+  const [authCountry, setAuthCountry] = useState('USA');
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
 
-  // Keep localStorage in sync with Auth state changes
+  // Sync profile data into local state when logged in
   useEffect(() => {
-    localStorage.setItem('kr_is_logged_in', isLoggedIn ? 'true' : 'false');
-  }, [isLoggedIn]);
-
-  useEffect(() => {
-    localStorage.setItem('kr_auth_name', authName);
-  }, [authName]);
-
-  useEffect(() => {
-    localStorage.setItem('kr_auth_email', authEmail);
-  }, [authEmail]);
-
-  useEffect(() => {
-    localStorage.setItem('kr_auth_country', authCountry);
-  }, [authCountry]);
-  const [verificationCode, setVerificationCode] = useState('');
-  const [verificationError, setVerificationError] = useState('');
+    if (profile) {
+      setAuthName(profile.name);
+      setAuthEmail(profile.email);
+      setAuthCountry(profile.country || 'Global');
+    } else if (user) {
+      const name = user.user_metadata?.name || user.email?.split('@')[0] || 'Fan';
+      setAuthName(name);
+      setAuthEmail(user.email || '');
+    }
+  }, [profile, user]);
 
   // Portal State
   const [activeTab, setActiveTab] = useState<'My Requests' | 'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Events' | 'Membership' | 'Orders' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'>('Dashboard');
@@ -226,7 +215,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   // Legal Modals triggers
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
-  const [isDisclosuresOpen, setIsDisclosuresOpen] = useState(false);
+
 
   // Communication bridge modal state
   const [showDispatchModal, setShowDispatchModal] = useState(false);
@@ -1387,27 +1376,36 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   };
 
   // Auth Submit
-  const handleAuthSubmit = (e: React.FormEvent) => {
+  const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (authMode === 'login') {
-      setIsLoggedIn(true);
-      setActiveTab('Dashboard');
-    } else {
-      setAuthStep('verification');
-    }
-  };
-
-  const handleVerifyCode = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (verificationCode.trim() === '543821' || verificationCode.trim().length >= 4) {
-      setAuthStep('welcome');
-      setTimeout(() => {
-        setIsLoggedIn(true);
-        setAuthStep('form');
+    setAuthError('');
+    setAuthLoading(true);
+    try {
+      if (authMode === 'login') {
+        const { error } = await signIn(authEmail, authPassword);
+        if (error) {
+          setAuthError(error);
+          return;
+        }
         setActiveTab('Dashboard');
-      }, 2000);
-    } else {
-      setVerificationError('Invalid verification key. Try "543821" or any 6-digit key.');
+      } else {
+        const { error, user: newUser } = await signUp(authEmail, authPassword, authName);
+        if (error) {
+          setAuthError(error);
+          return;
+        }
+        if (newUser) {
+          setShowWelcome(true);
+          setTimeout(() => {
+            setShowWelcome(false);
+            if (authCountry) {
+              updateProfile({ country: authCountry });
+            }
+          }, 2000);
+        }
+      }
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -1420,7 +1418,35 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(223,186,137,0.03),transparent)] pointer-events-none" />
           
           <AnimatePresence mode="wait">
-            {authStep === 'form' && (
+            {showWelcome ? (
+              <motion.div
+                key="welcome-panel"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="w-full max-w-md rounded-xl border border-neutral-900 bg-neutral-950 p-8 shadow-2xl text-center space-y-6"
+              >
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gold-500/10 text-gold-500 border border-gold-500/25">
+                  <Sparkles className="h-6 w-6 animate-pulse" />
+                </div>
+                <div className="space-y-1.5">
+                  <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest block font-bold">
+                    REGISTRATION SENT
+                  </span>
+                  <h4 className="font-serif text-lg font-bold tracking-wider text-white">
+                    CHECK YOUR EMAIL
+                  </h4>
+                  <p className="text-xs text-neutral-400 max-w-xs mx-auto leading-relaxed">
+                    A confirmation link has been sent to <span className="text-white font-bold">{authEmail}</span>. Please check your inbox and confirm your email to activate your sanctuary access.
+                  </p>
+                </div>
+                <div className="rounded border border-neutral-900 bg-neutral-900/40 p-4">
+                  <p className="text-xs italic text-gold-500 font-serif leading-relaxed">
+                    "It's a wonderful thing when we can connect with transparency and sincerity. Welcome. Let's do some good."
+                  </p>
+                  <p className="text-[8px] text-neutral-500 font-mono mt-2 uppercase tracking-widest">— GILLIAN ANDERSON</p>
+                </div>
+              </motion.div>
+            ) : (
               <motion.div
                 key="form-panel"
                 initial={{ opacity: 0, scale: 0.97 }}
@@ -1428,24 +1454,15 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 exit={{ opacity: 0, scale: 0.97 }}
                 className="w-full max-w-md rounded-xl border border-neutral-900 bg-[#0a0a0c] p-6.5 shadow-2xl relative overflow-hidden text-left space-y-6"
               >
-                {/* Visual accents */}
                 <div className="absolute top-0 right-0 h-20 w-20 bg-[radial-gradient(circle_at_top_right,rgba(223,186,137,0.07),transparent)] pointer-events-none" />
                 <div className="absolute bottom-0 left-0 h-20 w-20 bg-[radial-gradient(circle_at_bottom_left,rgba(223,186,137,0.02),transparent)] pointer-events-none" />
 
-                {/* Header branding */}
                 <div className="text-center space-y-2">
-                  <span className="font-serif text-2xl font-bold tracking-widest text-white block">
-                    GA
-                  </span>
-                  <p className="font-serif text-xs font-bold tracking-widest text-neutral-300 uppercase">
-                    Gillian Anderson Sanctuary
-                  </p>
-                  <p className="font-mono text-[8px] tracking-[0.25em] text-gold-500/70 uppercase">
-                    Official Communication Bridge
-                  </p>
+                  <span className="font-serif text-2xl font-bold tracking-widest text-white block">GA</span>
+                  <p className="font-serif text-xs font-bold tracking-widest text-neutral-300 uppercase">Gillian Anderson Sanctuary</p>
+                  <p className="font-mono text-[8px] tracking-[0.25em] text-gold-500/70 uppercase">Official Communication Bridge</p>
                 </div>
 
-                {/* Switcher tabs */}
                 <div className="grid grid-cols-2 gap-1 border-b border-neutral-900 pb-1.5">
                   <button
                     onClick={() => setAuthMode('register')}
@@ -1465,7 +1482,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   </button>
                 </div>
 
-                {/* Core form */}
+                {authError && (
+                  <div className="border border-red-900/50 bg-red-950/20 rounded p-3 text-center">
+                    <p className="text-[10px] font-mono text-red-400 font-semibold">{authError}</p>
+                  </div>
+                )}
+
                 <form onSubmit={handleAuthSubmit} className="space-y-4">
                   {authMode === 'register' && (
                     <div className="space-y-1.5">
@@ -1540,10 +1562,14 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                   <button
                     type="submit"
-                    className="w-full flex items-center justify-center gap-1.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 rounded text-xs transition-all active:scale-95 uppercase tracking-wider shadow-md shadow-gold-500/10 mt-6"
+                    disabled={authLoading}
+                    className="w-full flex items-center justify-center gap-1.5 bg-gold-500 hover:bg-gold-400 disabled:bg-neutral-700 disabled:text-neutral-500 text-neutral-950 font-bold py-2.5 rounded text-xs transition-all active:scale-95 uppercase tracking-wider shadow-md shadow-gold-500/10 mt-6"
                   >
-                    <Lock className="h-3.5 w-3.5" />
-                    {authMode === 'register' ? 'Authorize Registration' : 'Establish Connection'}
+                    {authLoading ? (
+                      <span className="animate-pulse">Processing...</span>
+                    ) : (
+                      <><Lock className="h-3.5 w-3.5" />{authMode === 'register' ? 'Authorize Registration' : 'Establish Connection'}</>
+                    )}
                   </button>
                 </form>
 
@@ -1554,101 +1580,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   >
                     ← Back to Landing Page
                   </button>
-                </div>
-              </motion.div>
-            )}
-
-            {authStep === 'verification' && (
-              <motion.div
-                key="verification-panel"
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.97 }}
-                className="w-full max-w-md rounded-xl border border-neutral-900 bg-[#0a0a0c] p-6.5 shadow-2xl relative text-left space-y-6"
-              >
-                <div className="text-center space-y-2">
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-gold-500/10 text-gold-500 border border-gold-500/20">
-                    <ShieldAlert className="h-5 w-5" />
-                  </div>
-                  <h4 className="font-serif text-base tracking-wider text-white uppercase">
-                    VERIFY YOUR SANCTUARY KEY
-                  </h4>
-                  <p className="text-[11px] text-neutral-400 max-w-sm mx-auto leading-relaxed">
-                    Under our safety protocols, a verification key has been simulated for your connection. Please enter the simulated access key below.
-                  </p>
-                </div>
-
-                <form onSubmit={handleVerifyCode} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-wider block text-center">
-                      ENTER SIMULATED CODE (USE: "543821")
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={verificationCode}
-                      onChange={(e) => {
-                        setVerificationCode(e.target.value);
-                        setVerificationError('');
-                      }}
-                      placeholder="e.g. 543821"
-                      className="w-full text-center rounded border border-neutral-900 bg-neutral-950 px-3 py-3 text-sm text-white outline-none font-mono tracking-widest focus:border-gold-500/50"
-                    />
-                    {verificationError && (
-                      <p className="text-[10px] text-red-500 text-center font-semibold mt-1">
-                        {verificationError}
-                      </p>
-                    )}
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full flex items-center justify-center gap-1.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 rounded text-xs transition-all active:scale-95 uppercase tracking-wider"
-                  >
-                    <CheckCircle2 className="h-4 w-4" />
-                    Verify Connection Key
-                  </button>
-                </form>
-
-                <div className="text-center">
-                  <button
-                    onClick={() => setAuthStep('form')}
-                    className="text-[10px] font-mono text-neutral-500 hover:text-white"
-                  >
-                    ← Back to parameters
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            {authStep === 'welcome' && (
-              <motion.div
-                key="welcome-panel"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-md rounded-xl border border-neutral-900 bg-neutral-950 p-8 shadow-2xl text-center space-y-6"
-              >
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gold-500/10 text-gold-500 border border-gold-500/25">
-                  <Sparkles className="h-6 w-6 animate-pulse" />
-                </div>
-
-                <div className="space-y-1.5">
-                  <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest block font-bold">
-                    SECURITY LEVEL UNLOCKED
-                  </span>
-                  <h4 className="font-serif text-lg font-bold tracking-wider text-white">
-                    WELCOME BACK TO THE SANCTUARY
-                  </h4>
-                  <p className="text-xs text-neutral-400 max-w-xs mx-auto leading-relaxed">
-                    Welcome, <span className="text-white font-bold">{authName}</span>. Your registered fan bridge has been verified. Redirecting to official workspace...
-                  </p>
-                </div>
-
-                <div className="rounded border border-neutral-900 bg-neutral-900/40 p-4">
-                  <p className="text-xs italic text-gold-500 font-serif leading-relaxed">
-                    "It's a wonderful thing when we can connect with transparency and sincerity. Welcome. Let's do some good."
-                  </p>
-                  <p className="text-[8px] text-neutral-500 font-mono mt-2 uppercase tracking-widest">— GILLIAN ANDERSON</p>
                 </div>
               </motion.div>
             )}
@@ -3973,10 +3904,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                   <div className="pt-3 border-t border-neutral-900 flex justify-between items-center">
                     <button
-                      onClick={() => {
-                        setIsLoggedIn(false);
-                        setAuthStep('form');
-                      }}
+                      onClick={signOut}
                       className="px-5 py-2 bg-red-600/10 border border-red-500/20 hover:bg-red-600/20 text-red-500 font-bold rounded text-xs uppercase tracking-wider transition-colors"
                     >
                       Disconnect Connection Bridge
@@ -4089,7 +4017,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         <div className="flex gap-4">
           <button onClick={() => setIsTermsOpen(true)} className="hover:text-gold-500 transition-colors cursor-pointer uppercase bg-transparent border-none">Terms of Service</button>
           <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-gold-500 transition-colors cursor-pointer uppercase bg-transparent border-none">Privacy Policy</button>
-          <button onClick={() => setIsDisclosuresOpen(true)} className="hover:text-gold-500 transition-colors cursor-pointer uppercase bg-transparent border-none">Charity Disclosures</button>
         </div>
       </footer>
 
@@ -4672,7 +4599,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
       <TermsOfServiceModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
       <PrivacyPolicyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
-      <CharityDisclosuresModal isOpen={isDisclosuresOpen} onClose={() => setIsDisclosuresOpen(false)} />
+
 
     </div>
   );

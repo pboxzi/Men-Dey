@@ -47,6 +47,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
+import AdminMembershipReview from './AdminMembershipReview';
 
 interface AdminPortalProps {
   onBackToHome: () => void;
@@ -1731,88 +1732,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           )}
 
           {/* ACTIVE VIEW: MEMBERSHIPS APPLICATIONS MANAGER */}
-          {activeTab === 'Memberships' && (
-            <div className="space-y-6 text-left">
-              <div className="border-b border-neutral-900 pb-4">
-                <h2 className="font-serif text-xl font-bold tracking-wider text-white">
-                  Gold & Platinum Memberships Approval CMS
-                </h2>
-                <p className="text-xs text-neutral-500 leading-normal font-mono">
-                  Confirm membership credentials, inspect fan profiles, and approve upgrades to unlock perks.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden">
-                <div className="px-5 py-4 border-b border-neutral-900 bg-neutral-950/20 flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold text-neutral-400 uppercase">
-                    Pending applications ({memberships.filter(m => m.status === 'Pending').length})
-                  </span>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[10px] uppercase">
-                        <th className="px-5 py-3 font-semibold">Application ID</th>
-                        <th className="px-4 py-3 font-semibold">Applicant Name</th>
-                        <th className="px-4 py-3 font-semibold">Email Contact</th>
-                        <th className="px-4 py-3 font-semibold">Applied Tier</th>
-                        <th className="px-4 py-3 font-semibold">Submission Date</th>
-                        <th className="px-4 py-3 font-semibold">Status</th>
-                        <th className="px-5 py-3 font-semibold text-right">Decisions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-neutral-900/40">
-                      {memberships.map((app) => (
-                        <tr key={app.id} className="hover:bg-neutral-950/20 transition-all">
-                          <td className="px-5 py-3.5 font-mono text-neutral-300 font-semibold">{app.id}</td>
-                          <td className="px-4 py-3.5 font-semibold text-white">{app.name}</td>
-                          <td className="px-4 py-3.5 text-neutral-400 font-mono">{app.email}</td>
-                          <td className="px-4 py-3.5">
-                            <span className="px-2 py-0.5 rounded bg-gold-500/10 text-gold-500 font-bold border border-gold-500/20 font-mono text-[10px]">
-                              {app.tier} MEMBER
-                            </span>
-                          </td>
-                          <td className="px-4 py-3.5 text-neutral-400 font-mono">{app.appliedOn}</td>
-                          <td className="px-4 py-3.5">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${
-                              app.status === 'Pending' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
-                              app.status === 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500/20' :
-                              'bg-red-500/10 text-red-500 border border-red-500/20'
-                            }`}>
-                              {app.status}
-                            </span>
-                          </td>
-                          <td className="px-5 py-3.5 text-right">
-                            {app.status === 'Pending' ? (
-                              <div className="flex justify-end gap-1.5">
-                                <button
-                                  onClick={() => handleMembershipAction(app.id, 'Approved')}
-                                  className="p-1 rounded bg-green-500/10 hover:bg-green-500 text-green-500 hover:text-neutral-950 transition-colors border border-green-500/20"
-                                  title="Approve Member"
-                                >
-                                  <Check className="h-4 w-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleMembershipAction(app.id, 'Rejected')}
-                                  className="p-1 rounded bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white transition-colors border border-red-500/20"
-                                  title="Reject Application"
-                                >
-                                  <X className="h-4 w-4" />
-                                </button>
-                              </div>
-                            ) : (
-                              <span className="text-neutral-500 font-mono text-[10px]">Processed</span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
+          {activeTab === 'Memberships' && <AdminMembershipReview />}
 
           {/* ACTIVE VIEW: SHOP ORDERS */}
           {activeTab === 'Shop Orders' && (

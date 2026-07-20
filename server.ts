@@ -67,12 +67,15 @@ app.get('/api/auth/me', requireAuth, async (req, res) => {
     .eq('id', user.id)
     .single();
   if (error) return res.status(500).json({ error: 'Failed to fetch profile.' });
-  res.json({ user, profile });
+  // Merge user_metadata into profile for extra fields
+  const meta = user.user_metadata || {};
+  const enriched = { ...profile, bio: meta.bio || '', favorite_movie: meta.favorite_movie || '', contact: meta.contact || '', avatar_url: meta.avatar_url || '' };
+  res.json({ user, profile: enriched });
 });
 
 app.put('/api/auth/profile', requireAuth, async (req, res) => {
   const user = (req as any).user;
-  const { name, country, avatar_text } = req.body;
+  const { name, country, avatar_text, bio, favorite_movie, contact } = req.body;
   const updates: any = {};
   if (name !== undefined) updates.name = name;
   if (country !== undefined) updates.country = country;
@@ -86,7 +89,55 @@ app.put('/api/auth/profile', requireAuth, async (req, res) => {
     .select('*')
     .single();
   if (error) return res.status(500).json({ error: 'Failed to update profile.' });
-  res.json({ profile: data });
+
+  // Store extra fields in auth user_metadata (JSON blob)
+  const metaUpdates: any = {};
+  if (bio !== undefined) metaUpdates.bio = bio;
+  if (favorite_movie !== undefined) metaUpdates.favorite_movie = favorite_movie;
+  if (contact !== undefined) metaUpdates.contact = contact;
+  if (Object.keys(metaUpdates).length > 0) {
+    const existing = user.user_metadata || {};
+    await supabase.auth.admin.updateUserById(user.id, {
+      user_metadata: { ...existing, ...metaUpdates }
+    });
+  }
+
+  const enriched = { ...data, bio: metaUpdates.bio ?? user.user_metadata?.bio ?? '', favorite_movie: metaUpdates.favorite_movie ?? user.user_metadata?.favorite_movie ?? '', contact: metaUpdates.contact ?? user.user_metadata?.contact ?? '', avatar_url: user.user_metadata?.avatar_url ?? '' };
+  res.json({ profile: enriched });
+});
+
+// Avatar upload
+app.post('/api/auth/avatar', requireAuth, async (req, res) => {
+  try {
+    const user = (req as any).user;
+    const { image } = req.body; // base64 data URL
+    if (!image) return res.status(400).json({ error: 'No image provided' });
+
+    const matches = image.match(/^data:image\/(\w+);base64,(.+)$/);
+    if (!matches) return res.status(400).json({ error: 'Invalid image format' });
+
+    const ext = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+    const buffer = Buffer.from(matches[2], 'base64');
+    const fileName = `avatar_${user.id}_${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(fileName, buffer, { contentType: `image/${ext}`, upsert: true });
+
+    if (uploadError) return res.status(500).json({ error: uploadError.message });
+
+    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
+
+    // Store avatar_url in user_metadata
+    const existing = user.user_metadata || {};
+    await supabase.auth.admin.updateUserById(user.id, {
+      user_metadata: { ...existing, avatar_url: publicUrl }
+    });
+
+    res.json({ avatar_url: publicUrl });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Lazy loaded Gemini API integration
@@ -1263,6 +1314,128 @@ app.post('/api/portal/points', async (req, res) => {
   const { error } = await supabase.from('loyalty_points').insert({ total: newTotal, delta: delta || 0 });
   if (error) return res.status(500).json({ error: error.message });
   res.json({ points: newTotal });
+});
+
+// ─── Membership system ──────────────────────────────────────
+
+// Create a membership request
+app.post('/api/membership/request', async (req, res) => {
+  try {
+    const { user_id, tier_id, tier_name, tier_price, card_name, card_serial, member_name, member_email, member_phone, member_country, profile_photo, comm_method } = req.body;
+    if (!user_id || !tier_id || !card_name || !comm_method) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    // Map tier_id to enum values
+    const tierMap: Record<string, string> = { scully: 'basic', gibson: 'premium', milburn: 'vip', upgrade_pending: 'upgrade_pending' };
+    const tierEnum = tierMap[tier_id] || 'basic';
+
+    const messageData = { card_serial, comm_method, tier_price, tier_name, tier_id, profile_photo, phone: member_phone, member_name };
+
+    const { data, error } = await supabase.from('membership_applications').insert({
+      user_id,
+      email: member_email || '',
+      full_name: card_name,
+      country: member_country || 'Global',
+      tier: tierEnum,
+      status: 'pending',
+      message: JSON.stringify(messageData),
+      notes: '',
+    }).select('*').single();
+    if (error) return res.status(500).json({ error: error.message });
+
+    // Return normalized membership object
+    const membership = normalizeMembership(data);
+    res.json({ success: true, membership });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+function normalizeMembership(row: any) {
+  if (!row) return null;
+  let msg: any = {};
+  try { msg = typeof row.message === 'string' ? JSON.parse(row.message) : (row.message || {}); } catch {}
+  let nts: any = {};
+  try { nts = typeof row.notes === 'string' ? JSON.parse(row.notes) : (row.notes || {}); } catch {}
+  return {
+    id: row.id, user_id: row.user_id,
+    status: row.status === 'suspended' ? 'expired' : row.status,
+    tier_id: msg.tier_id || row.tier,
+    tier_name: msg.tier_name || row.tier,
+    tier_price: msg.tier_price || msg.price || '',
+    card_name: row.full_name || '',
+    card_serial: msg.card_serial || '',
+    member_name: msg.member_name || row.full_name || '',
+    member_email: row.email || '',
+    member_phone: msg.phone || '',
+    member_country: row.country || '',
+    profile_photo: msg.profile_photo || '',
+    comm_method: msg.comm_method || '',
+    membership_number: nts.membership_number || '',
+    activation_date: row.reviewed_at || '',
+    expiration_date: nts.expiration_date || '',
+    cancel_reason: nts.cancel_reason || '',
+    admin_notes: nts.admin_notes || '',
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+// Get current user's membership
+app.get('/api/membership/my', async (req, res) => {
+  try {
+    const userId = req.query.user_id as string;
+    if (!userId) return res.status(400).json({ error: 'user_id required' });
+    const { data, error } = await supabase.from('membership_applications')
+      .select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle();
+    if (error) return res.status(500).json({ error: error.message });
+    res.json({ membership: normalizeMembership(data) });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin: get all membership requests
+app.get('/api/admin/membership-requests', async (_req, res) => {
+  try {
+    const { data, error } = await supabase.from('membership_applications').select('*').order('created_at', { ascending: false });
+    if (error) return res.status(500).json({ error: error.message });
+    res.json((data || []).map(normalizeMembership));
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin: update membership status
+app.put('/api/admin/membership-requests/:id', async (req, res) => {
+  try {
+    const { status, membership_number, activation_date, expiration_date, cancel_reason, admin_notes } = req.body;
+    const updates: any = { updated_at: new Date().toISOString() };
+
+    if (status) {
+      const statusMap: Record<string, string> = { pending: 'pending', active: 'active', expired: 'cancelled', cancelled: 'cancelled', upgrade_pending: 'upgrade_pending' };
+      updates.status = statusMap[status] || 'pending';
+    }
+    if (activation_date) updates.reviewed_at = activation_date;
+
+    // Store extra fields in notes JSON
+    if (membership_number || expiration_date || cancel_reason || admin_notes) {
+      const { data: current } = await supabase.from('membership_applications').select('notes').eq('id', req.params.id).single();
+      let existingNotes: any = {};
+      try { existingNotes = current?.notes ? JSON.parse(current.notes) : {}; } catch {}
+      if (membership_number) existingNotes.membership_number = membership_number;
+      if (expiration_date) existingNotes.expiration_date = expiration_date;
+      if (cancel_reason !== undefined) existingNotes.cancel_reason = cancel_reason;
+      if (admin_notes !== undefined) existingNotes.admin_notes = admin_notes;
+      updates.notes = JSON.stringify(existingNotes);
+    }
+
+    const { data, error } = await supabase.from('membership_applications').update(updates).eq('id', req.params.id).select('*').single();
+    if (error) return res.status(500).json({ error: error.message });
+    res.json({ success: true, membership: normalizeMembership(data) });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ─── Admin dynamic data ─────────────────────────────────────

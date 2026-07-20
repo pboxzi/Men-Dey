@@ -8,6 +8,10 @@ export interface Profile {
   email: string;
   country: string;
   avatar_text: string;
+  avatar_url: string;
+  bio: string;
+  favorite_movie: string;
+  contact: string;
   role: 'user' | 'admin';
   created_at: string;
   updated_at: string;
@@ -34,13 +38,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = useCallback(async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    if (!error && data) {
-      setProfile(data as Profile);
+    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    try {
+      const r = await fetch('/api/auth/me', {
+        headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+      });
+      const d = await r.json();
+      if (r.ok && d.profile) {
+        setProfile(d.profile as Profile);
+      }
+    } catch {
+      // fallback to direct query
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (!error && data) {
+        const userMeta = (await supabase.auth.getUser()).data.user?.user_metadata || {};
+        setProfile({ ...data, bio: userMeta.bio || '', favorite_movie: userMeta.favorite_movie || '', contact: userMeta.contact || '', avatar_url: userMeta.avatar_url || '' } as Profile);
+      }
     }
   }, []);
 
@@ -121,13 +138,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateProfile = async (updates: Partial<Profile>) => {
     if (!user) return { error: 'Not authenticated' };
-    const { error } = await supabase
-      .from('profiles')
-      .update(updates)
-      .eq('id', user.id);
-    if (error) return { error: error.message };
-    await fetchProfile(user.id);
-    return {};
+    const token = (await supabase.auth.getSession()).data.session?.access_token;
+    try {
+      const r = await fetch('/api/auth/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
+        body: JSON.stringify(updates),
+      });
+      const d = await r.json();
+      if (!r.ok) return { error: d.error || 'Failed to update profile' };
+      setProfile(prev => prev ? { ...prev, ...d.profile } : d.profile);
+      return {};
+    } catch (err: any) {
+      return { error: err.message };
+    }
   };
 
   return (

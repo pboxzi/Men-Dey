@@ -7,6 +7,8 @@ import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '../utils/StateContext';
 import { useAuth } from '../utils/AuthContext';
 import NotificationBell from './NotificationBell';
+import MyMembershipDashboard from './MyMembershipDashboard';
+import ProfileSection from './ProfileSection';
 import {
   LayoutGrid,
   User,
@@ -25,7 +27,7 @@ import {
   Search,
   MessageSquare,
   Copy,
-  CheckCircle2,
+  Check, CheckCircle2,
   Clock,
   ArrowLeft,
   ChevronRight,
@@ -259,11 +261,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [isPolishing, setIsPolishing] = useState(false);
   const [newRequestContact, setNewRequestContact] = useState<'Website' | 'Email' | 'WhatsApp' | 'Telegram'>('Email');
   const [newRequestContactVal, setNewRequestContactVal] = useState('');
-
-  // Local state copy of profile fields
-  const [profileBio, setProfileBio] = useState('');
-  const [profileMovie, setProfileMovie] = useState('');
-  const [profileContact, setProfileContact] = useState('');
 
   // Dynamic Event registrations
   const [portalEvents, setPortalEvents] = useState<EventItem[]>([]);
@@ -2396,121 +2393,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               </div>
             )}
 
-            {/* VIEW RENDERING 4: MEMBERSHIP (Holographic Card and upgrade forms) */}
+            {/* VIEW RENDERING 4: MEMBERSHIP (Status-aware dashboard) */}
             {activeTab === 'Membership' && (
-              <div className="space-y-6 text-left">
-                <div className="space-y-1 border-b border-neutral-900 pb-4 flex justify-between items-end">
-                  <div className="space-y-1">
-                    <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
-                      Official Sanctuary Membership
-                    </h2>
-                    <p className="text-xs text-neutral-500 font-mono">
-                      Your holographic Digital Access Card. Upgrade to unlock direct channel tokens.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setShowPortalMembershipModal(true)}
-                    className="flex items-center gap-1.5 bg-neutral-900 border border-neutral-800 hover:bg-neutral-850 text-gold-500 font-bold py-1.5 px-3.5 rounded text-xs transition-all active:scale-95"
-                  >
-                    <Plus className="h-4 w-4" /> Upgrade Level
-                  </button>
-                </div>
-
-                {/* Current Membership Card */}
-                <div className="max-w-md mx-auto">
-                  <div className="rounded-2xl border-2 border-gold-500 bg-gradient-to-b from-neutral-900 via-[#121216] to-[#08080a] p-6 shadow-2xl relative overflow-hidden space-y-6 aspect-[1.6/1]">
-                    <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/[0.03] via-transparent to-amber-500/[0.05] pointer-events-none" />
-                    <div className="absolute -inset-y-12 -inset-x-32 bg-gradient-to-r from-transparent via-gold-500/[0.02] to-transparent rotate-12 pointer-events-none animate-pulse" />
-
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-0.5">
-                        <span className="text-[7px] font-mono text-neutral-500 tracking-[0.25em] uppercase block leading-none">Gillian Anderson Official</span>
-                        <span className="text-sm font-bold text-white tracking-widest font-serif leading-none">SANCTUARY CARD</span>
-                      </div>
-                      <Crown className="h-6 w-6 text-gold-500" />
-                    </div>
-
-                    <div className="space-y-1">
-                      <span className="text-[8px] font-mono text-neutral-500 block uppercase leading-none">CARDHOLDER</span>
-                      <p className="text-base font-bold text-white tracking-wide uppercase">{authName}</p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-left border-t border-neutral-900/60 pt-3">
-                      <div>
-                        <span className="text-[7px] font-mono text-neutral-500 uppercase block">MEMBER ID</span>
-                        <span className="text-[10px] font-mono font-bold text-neutral-300">{user?.id?.substring(0, 8).toUpperCase() || 'PENDING'}</span>
-                      </div>
-                      <div>
-                        <span className="text-[7px] font-mono text-neutral-500 uppercase block">LEVEL ACCESS</span>
-                        <span className="text-[10px] font-mono font-bold text-gold-500">{rank.name.toUpperCase()}</span>
-                      </div>
-                      <div className="flex justify-end items-center">
-                        <div className="h-8 w-8 bg-white p-0.5 rounded shrink-0 flex items-center justify-center">
-                          <div className="grid grid-cols-4 gap-px">
-                            {[...Array(16)].map((_, i) => (
-                              <div key={i} className={`h-1 w-1 ${[0,3,4,7,8,11,12,13,14,15].includes(i) ? 'bg-black' : 'bg-transparent'}`} />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Experience Tier Membership Levels */}
-                <div className="space-y-4">
-                  <h3 className="text-xs font-mono font-bold text-white uppercase tracking-widest pb-2 border-b border-neutral-900/40">
-                    Experience Access Tiers
-                  </h3>
-                  <p className="text-xs text-neutral-500 font-mono mb-4">
-                    Each membership tier unlocks exclusive experiences. Your current loyalty rank: <span className="text-gold-500 font-bold">{rank.name}</span>.
-                  </p>
-                  
-                  <div className="grid gap-4 md:grid-cols-3">
-                    {(backendContent?.membershipTiers || []).map((tier: any) => (
-                      <div key={tier.id} className="relative rounded-xl border border-neutral-800 bg-gradient-to-b from-neutral-900/20 to-neutral-950 p-5 space-y-3 hover:border-gold-500/30 transition-all">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <span className="text-[7px] font-mono text-neutral-500 uppercase tracking-widest block">TIER</span>
-                            <span className="text-lg font-bold text-white font-serif tracking-wider">{tier.name}</span>
-                          </div>
-                          <span className="text-xs font-mono text-gold-500 font-bold">{tier.price}</span>
-                        </div>
-                        <ul className="space-y-1">
-                          {(tier.benefits || []).map((b: string, i: number) => (
-                            <li key={i} className="text-[10px] text-neutral-400 flex items-start gap-1.5">
-                              <CheckCircle2 className="h-3 w-3 text-gold-500 shrink-0 mt-px" />
-                              {b}
-                            </li>
-                          ))}
-                        </ul>
-                        <div className="flex items-center gap-2 pt-2 border-t border-neutral-900/40">
-                          <span className="text-[9px] font-mono text-neutral-500">{tier.price === 'Free' ? 'Free access tier' : `$${tier.price?.replace(/[^0-9.]/g, '')}/mo`}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Loyalty Points Progress to Next Tier */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono font-bold text-white uppercase tracking-widest">LOYALTY PROGRESS TO NEXT EXPERIENCE TIER</span>
-                    <span className="text-[9px] font-mono text-neutral-500">{Math.round(progressPercent)}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-neutral-900 rounded-full overflow-hidden border border-neutral-800/40">
-                    <div 
-                      className="h-full bg-gradient-to-r from-amber-500 via-slate-400 to-purple-400 rounded-full transition-all duration-500"
-                      style={{ width: `${progressPercent}%` }}
-                    />
-                  </div>
-                  <div className="flex justify-between text-[9px] font-mono text-neutral-500">
-                    <span>Gold (0 PTS)</span>
-                    <span>Platinum (1,500 PTS)</span>
-                    <span>Diamond (10,000 PTS)</span>
-                  </div>
-                </div>
-              </div>
+              <MyMembershipDashboard userId={user?.id} authName={authName} rank={rank} progressPercent={progressPercent} content={backendContent} />
             )}
 
             {/* VIEW RENDERING 5: ORDERS (Exclusive Merchandise requests tracker) */}
@@ -2922,89 +2807,17 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
             {/* VIEW RENDERING 8: PROFILE */}
             {activeTab === 'Profile' && (
-              <div className="space-y-6 text-left">
-                <div className="space-y-1 border-b border-neutral-900 pb-4">
-                  <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
-                    Your official profile
-                  </h2>
-                  <p className="text-xs text-neutral-500 font-mono">
-                    Maintain your active sanctuary biography, country clubs memberships, and achievements.
-                  </p>
-                </div>
-
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-6.5 max-w-2xl mx-auto space-y-6">
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-neutral-900 pb-5">
-                    <div className="flex items-center gap-4">
-                      <div className="h-16 w-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-xl font-bold text-gold-500 uppercase font-serif shrink-0">
-                        {authName.slice(0, 2)}
-                      </div>
-                      <div className="leading-tight text-left">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="text-base font-bold text-white">{authName}</h3>
-                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[9px] font-mono font-bold tracking-wider uppercase ${rank.badgeColor}`}>
-                            <span>{rank.icon}</span>
-                            <span>{rank.name}</span>
-                          </span>
-                        </div>
-                        <p className="text-[10px] text-neutral-500 font-mono mt-1">COUNTRY: {authCountry}</p>
-                      </div>
-                    </div>
-
-                    {/* Progress Bar & Loyalty Stats */}
-                    <div className="w-full md:w-64 space-y-2 bg-neutral-900/30 border border-neutral-900/50 p-3 rounded-xl text-left">
-                      <div className="flex justify-between items-center text-[9px] font-mono">
-                        <span className="text-neutral-500 uppercase tracking-widest font-semibold">CO-OP LOYALTY RANK</span>
-                        <span className="text-gold-500 font-bold">{loyaltyPoints.toLocaleString()} PTS</span>
-                      </div>
-                      <div className="relative w-full h-1.5 bg-neutral-900/80 rounded-full overflow-hidden border border-neutral-800/40">
-                        <motion.div 
-                          className="absolute left-0 top-0 h-full bg-gradient-to-r from-amber-500 via-yellow-500 to-gold-400 rounded-full"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${progressPercent}%` }}
-                          transition={{ duration: 0.8, ease: 'easeOut' }}
-                        />
-                      </div>
-                      <div className="flex justify-between items-center text-[8px] font-mono text-neutral-500 leading-tight">
-                        <span>{rank.min} PTS</span>
-                        <span className="text-neutral-400 font-medium truncate max-w-[150px]">Next: {rank.next} ({rank.max} PTS)</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <form onSubmit={(e) => { e.preventDefault(); showToast('Profile details updated successfully!', 'success'); }} className="space-y-4 text-xs">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">FULL NAME</label>
-                        <input type="text" value={authName} onChange={(e) => setAuthName(e.target.value)} className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2 text-white outline-none focus:border-gold-500/50" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">EMAIL ADDRESS</label>
-                        <input type="email" value={authEmail} disabled className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2 text-neutral-500 outline-none" />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">PRIMARY PHONE DETAIL</label>
-                        <input type="text" value={profileContact} onChange={(e) => setProfileContact(e.target.value)} className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2 text-white outline-none focus:border-gold-500/50" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">FAVORITE GILLIAN MOVIE/PROJECT</label>
-                        <input type="text" value={profileMovie} onChange={(e) => setProfileMovie(e.target.value)} className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2 text-white outline-none focus:border-gold-500/50" />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">BIOGRAPHY / STORY</label>
-                      <textarea rows={3} value={profileBio} onChange={(e) => setProfileBio(e.target.value)} className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2 text-white outline-none focus:border-gold-500/50 resize-none leading-relaxed" />
-                    </div>
-
-                    <button type="submit" className="px-5 py-2 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded text-xs uppercase tracking-wider transition-colors">
-                      Save Profile credentials
-                    </button>
-                  </form>
-                </div>
-              </div>
+              <ProfileSection
+                authName={authName}
+                authEmail={authEmail}
+                authCountry={authCountry}
+                onAuthNameChange={setAuthName}
+                onAuthCountryChange={setAuthCountry}
+                rank={rank}
+                progressPercent={progressPercent}
+                loyaltyPoints={loyaltyPoints}
+                showToast={showToast}
+              />
             )}
 
             {/* VIEW RENDERING 9: MY JOURNEY (Vertical Timeline) */}

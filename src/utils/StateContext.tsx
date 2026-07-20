@@ -163,40 +163,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   const [journalComments, setJournalComments] = useState<{ [journalId: string]: JournalComment[] }>({});
   const [subscribers, setSubscribers] = useState<string[]>([]);
   const [proposalChats, setProposalChats] = useState<{ [requestId: string]: any[] }>({});
-  const [notifications, setNotifications] = useState<PortalNotification[]>([
-    {
-      id: '1',
-      title: 'Reply from Gillian Anderson',
-      message: 'Gillian responded to your question: "Our backstage habits define how we connect with the silence..."',
-      timestamp: '5m ago',
-      read: false,
-      type: 'reply'
-    },
-    {
-      id: '2',
-      title: 'New Journal Release',
-      message: 'Gillian published a new exclusive journal post: "Behind the scenes of my West End play rehearsals."',
-      timestamp: '2h ago',
-      read: false,
-      type: 'update'
-    },
-    {
-      id: '3',
-      title: 'Experience Update',
-      message: 'Your application for "Private Live-Streamed Conclave" has been updated to "Under Review".',
-      timestamp: '1d ago',
-      read: true,
-      type: 'alert'
-    },
-    {
-      id: '4',
-      title: 'Shop Restock Alert',
-      message: 'Limited edition signed scripts of "The X-Files" pilot are now restocked in the Sanctuary Shop.',
-      timestamp: '3d ago',
-      read: true,
-      type: 'alert'
-    }
-  ]);
+  const [notifications, setNotifications] = useState<PortalNotification[]>([]);
 
   const addNotification = (title: string, message: string, type: 'reply' | 'update' | 'alert') => {
     const newNotif: PortalNotification = {

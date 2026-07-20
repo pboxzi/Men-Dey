@@ -87,6 +87,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     if (error) return { error: error.message };
     if (!data.user) return { error: 'Registration failed. Please try again.' };
+
+    // Create profile row immediately (upsert to handle trigger race)
+    const { error: profileError } = await supabase.from('profiles').upsert({
+      id: data.user.id,
+      name,
+      email,
+      country: 'Global',
+      role: 'user',
+    });
+    if (profileError) {
+      console.warn('Profile creation warning:', profileError.message);
+    }
+
+    // Fetch the profile so it's available immediately
+    await fetchProfile(data.user.id);
+
     return { user: data.user };
   };
 

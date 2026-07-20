@@ -1228,6 +1228,43 @@ app.post('/api/portal/channels/:channel', async (req, res) => {
   res.json({ success: true, message: data });
 });
 
+// ─── Portal store & rewards ─────────────────────────────────
+
+app.get('/api/portal/store-items', async (_req, res) => {
+  const { data, error } = await supabase.from('shop_products').select('*');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+const REWARDS_CATALOG = [
+  { id: 'r1', title: 'SAYes Mentoring Digital Wallpaper Pack', description: 'Exclusive high-res desktop & phone background bundle.', cost: 500, icon: '\u{1F4DA}' },
+  { id: 'r2', title: 'Personalized Sanctuary Access Certificate', description: 'Downloadable custom-signed high-fidelity entry token.', cost: 1000, icon: '\u{1F4DC}' },
+  { id: 'r3', title: 'Exclusive Video Message Clip', description: 'A downloadable personal audio/video file of Gillian.', cost: 2000, icon: '\u{1F3AC}' },
+];
+
+app.get('/api/portal/rewards', async (_req, res) => {
+  const { data, error } = await supabase.from('portal_rewards').select('*').order('cost');
+  if (error || !data || data.length === 0) {
+    return res.json(REWARDS_CATALOG);
+  }
+  res.json(data);
+});
+
+app.get('/api/portal/points', async (_req, res) => {
+  const { data, error } = await supabase.from('loyalty_points').select('total').order('updated_at', { ascending: false }).limit(1);
+  if (error || !data || data.length === 0) return res.json({ points: 0 });
+  res.json({ points: data[0].total });
+});
+
+app.post('/api/portal/points', async (req, res) => {
+  const { delta } = req.body;
+  const { data: current } = await supabase.from('loyalty_points').select('total').order('updated_at', { ascending: false }).limit(1);
+  const newTotal = (current?.[0]?.total || 0) + (delta || 0);
+  const { error } = await supabase.from('loyalty_points').insert({ total: newTotal, delta: delta || 0 });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ points: newTotal });
+});
+
 // ─── Admin dynamic data ─────────────────────────────────────
 
 app.get('/api/admin/notifications', async (_req, res) => {

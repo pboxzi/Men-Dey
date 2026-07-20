@@ -302,8 +302,26 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
   // Status statistics mapping helper
   const getStatusCount = (status: RequestDetail['status']) => {
-    return requests.filter(r => r.status === status).length + (status === 'In Discussion' ? 26 : status === 'Submitted' ? 21 : status === 'Under Review' ? 23 : status === 'Offer Made' ? 15 : status === 'Payment Requested' ? 19 : status === 'Confirmed' ? 19 : status === 'Completed' ? 8 : 10);
+    return requests.filter(r => r.status === status).length;
   };
+
+  const totalReqs = requests.length || 0;
+  const donutData = [
+    { key: 'Submitted' as const, color: '#f59e0b' },
+    { key: 'Under Review' as const, color: '#3b82f6' },
+    { key: 'In Discussion' as const, color: '#8b5cf6' },
+    { key: 'Offer Made' as const, color: '#6366f1' },
+    { key: 'Payment Requested' as const, color: '#f97316' },
+    { key: 'Confirmed' as const, color: '#06b6d4' },
+    { key: 'Completed' as const, color: '#10b981' },
+  ];
+  let cumPct = 0;
+  const donutArcs = totalReqs > 0 ? donutData.map(d => {
+    const pct = Math.round((getStatusCount(d.key) / totalReqs) * 100);
+    const offset = 100 - cumPct;
+    cumPct += pct;
+    return { ...d, pct, offset, dasharray: `${pct} ${100 - pct}` };
+  }) : [];
 
   // Handler for updating a Request status
   const handleUpdateStatus = async (id: string, newStatus: RequestDetail['status']) => {
@@ -453,29 +471,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     showToast(`Membership Application ${id} has been ${decision}!`, decision === 'Approved' ? 'success' : 'info');
   };
 
-  // Run database backup simulation
+  // Placeholder for database backup
   const handleBackupDb = () => {
-    setBackupProgress(0);
-    setBackupLogs(['Initializing backup sequence...', 'Verifying data structures...']);
-    
-    let current = 0;
-    const interval = setInterval(() => {
-      current += 20;
-      setBackupProgress(current);
-
-      if (current === 20) {
-        setBackupLogs(prev => [...prev, 'Backing up user records table: 128,947 files verified.']);
-      } else if (current === 40) {
-        setBackupLogs(prev => [...prev, 'Backing up requests metadata table: 156 objects compiled.']);
-      } else if (current === 60) {
-        setBackupLogs(prev => [...prev, 'Packing static assets, images, and video metadata hashes.']);
-      } else if (current === 80) {
-        setBackupLogs(prev => [...prev, 'Establishing secure handshake with offsite warm backup vault...']);
-      } else if (current === 100) {
-        setBackupLogs(prev => [...prev, 'Backup sequence COMPLETED successfully. File signature: GA-BKP-20260701-0852.tar.gz']);
-        clearInterval(interval);
-      }
-    }, 800);
+    showToast('Database backup not yet implemented via API.', 'info');
   };
 
   return (
@@ -554,7 +552,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           {/* Super Administrator Menu */}
           <div className="flex items-center gap-2.5">
             <div className="h-8 w-8 rounded-full border-2 border-red-500 bg-neutral-900 overflow-hidden shrink-0 flex items-center justify-center relative">
-              <div className="text-xs font-mono font-bold text-white">AD</div>
+              <div className="text-xs font-mono font-bold text-white">{((profile?.name || user?.email?.split('@')[0] || 'Admin').match(/\b\w/g) || []).join('').toUpperCase().slice(0, 2) || 'AD'}</div>
             </div>
             <div className="hidden sm:flex flex-col text-left">
               <span className="text-xs font-semibold text-white leading-tight">Admin</span>
@@ -590,10 +588,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
               <nav className="space-y-0.5">
                 {[
                   { name: 'Dashboard', icon: LayoutGrid, count: null },
-                  { name: 'Requests', icon: FileText, count: 24, countColor: 'bg-red-500' },
-                  { name: 'Memberships', icon: Award, count: 11, countColor: 'bg-amber-500' },
+                  { name: 'Requests', icon: FileText, count: null },
+                  { name: 'Memberships', icon: Award, count: null },
                   { name: 'Events', icon: Calendar, count: null },
-                  { name: 'Shop Orders', icon: ShoppingBag, count: 8, countColor: 'bg-amber-500' },
+                  { name: 'Shop Orders', icon: ShoppingBag, count: null },
                   { name: 'Community', icon: Users, count: null },
                   { name: 'Media Library', icon: Briefcase, count: null },
                   { name: 'Journal CMS', icon: FileSpreadsheet, count: null },
@@ -622,7 +620,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                         <span>{item.name}</span>
                       </div>
                       {item.count !== null && (
-                        <span className={`h-4 px-1 min-w-[16px] text-[9px] font-mono font-bold text-neutral-950 rounded flex items-center justify-center ${item.countColor || 'bg-red-500'}`}>
+                        <span className="h-4 px-1 min-w-[16px] text-[9px] font-mono font-bold text-neutral-950 rounded flex items-center justify-center bg-red-500">
                           {item.count}
                         </span>
                       )}
@@ -638,7 +636,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
               </span>
               <nav className="space-y-0.5">
                 {[
-                  { name: 'Users', icon: Users, count: 15 },
+                  { name: 'Users', icon: Users, count: null },
                   { name: 'Notifications', icon: Bell, count: null },
                   { name: 'Communication Log', icon: MessageCircle, count: null },
                   { name: 'Analytics', icon: Activity, count: null },
@@ -729,7 +727,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 text-left">
                 <div className="space-y-1">
                   <h1 className="font-serif text-2xl font-bold tracking-wider text-white">
-                    Welcome back, Admin
+                    Welcome back, {profile?.name || user?.email?.split('@')[0] || 'Admin'}
                   </h1>
                   <p className="text-xs text-neutral-500 font-mono">
                     Here's what's happening on the platform today.
@@ -739,7 +737,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 <div className="flex items-center gap-2.5">
                   <div className="flex items-center gap-1 bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded text-xs text-neutral-300 font-mono">
                     <Calendar className="h-3.5 w-3.5 text-neutral-500" />
-                    <span>May 20, 2024</span>
+                    <span>{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                     <ChevronDown className="h-3 w-3 text-neutral-500" />
                   </div>
 
@@ -795,9 +793,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Total Members</span>
                     <Users className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">128,947</h3>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{requests.length + orders.length + memberships.length}</h3>
                   <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>↑ 1,243 this week</span>
+                    <span>Active on platform</span>
                   </p>
                 </div>
 
@@ -807,9 +805,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Active Requests</span>
                     <FileText className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">156</h3>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{requests.length}</h3>
                   <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>↑ 12 this week</span>
+                    <span>In the system</span>
                   </p>
                 </div>
 
@@ -819,9 +817,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Pending Reviews</span>
                     <Clock className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">24</h3>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{requests.filter(r => r.status === 'Submitted' || r.status === 'Under Review').length}</h3>
                   <p className="text-[10px] font-mono text-amber-500 flex items-center gap-0.5">
-                    <span>↑ 6 awaiting review</span>
+                    <span>Awaiting review</span>
                   </p>
                 </div>
 
@@ -831,21 +829,21 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Events This Month</span>
                     <Calendar className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">7</h3>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{events.length}</h3>
                   <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>↑ 2 upcoming</span>
+                    <span>Scheduled</span>
                   </p>
                 </div>
 
                 {/* Revenue (This Month) */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5 col-span-2 lg:col-span-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Revenue (Month)</span>
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Orders</span>
                     <Briefcase className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-gold-500">$42,780</h3>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-gold-500">{orders.length}</h3>
                   <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>↑ 18% vs last month</span>
+                    <span>Total orders</span>
                   </p>
                 </div>
 
@@ -1104,24 +1102,12 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       <div className="relative h-32 w-32 shrink-0">
                         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                           <circle cx="18" cy="18" r="15.915" fill="none" stroke="#161619" strokeWidth="3" />
-                          
-                          {/* Segment Submitted (14%) - Amber/Yellow */}
-                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f59e0b" strokeWidth="3" strokeDasharray="14 86" strokeDashoffset="100" />
-                          {/* Segment Under Review (15%) - Blue */}
-                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#3b82f6" strokeWidth="3" strokeDasharray="15 85" strokeDashoffset="86" />
-                          {/* Segment Contacted (11%) - Green */}
-                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#10b981" strokeWidth="3" strokeDasharray="11 89" strokeDashoffset="71" />
-                          {/* Segment In Discussion (18%) - Purple */}
-                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#8b5cf6" strokeWidth="3" strokeDasharray="18 82" strokeDashoffset="60" />
-                          {/* Segment Offer Made (10%) - Indigo */}
-                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#6366f1" strokeWidth="3" strokeDasharray="10 90" strokeDashoffset="42" />
-                          {/* Segment Payment Requested (13%) - Orange */}
-                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#f97316" strokeWidth="3" strokeDasharray="13 87" strokeDashoffset="32" />
-                          {/* Segment Confirmed/Completed (19%) - Teal */}
-                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#06b6d4" strokeWidth="3" strokeDasharray="19 81" strokeDashoffset="19" />
+                          {donutArcs.map((d, i) => (
+                            <circle key={d.key} cx="18" cy="18" r="15.915" fill="none" stroke={d.color} strokeWidth="3" strokeDasharray={d.dasharray} strokeDashoffset={d.offset} />
+                          ))}
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                          <span className="text-xl font-bold font-mono text-white leading-none">156</span>
+                          <span className="text-xl font-bold font-mono text-white leading-none">{requests.length}</span>
                           <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider mt-0.5">Total</span>
                         </div>
                       </div>
@@ -1174,7 +1160,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <AlertCircle className="h-4 w-4" />
                           </div>
                           <div className="space-y-0.5">
-                            <h5 className="text-xs font-semibold text-white">24 requests awaiting review</h5>
+                            <h5 className="text-xs font-semibold text-white">{requests.filter(r => r.status === 'Submitted' || r.status === 'Under Review').length} requests awaiting review</h5>
                             <p className="text-[10px] text-neutral-400">Requires your attention</p>
                           </div>
                         </div>
@@ -1191,7 +1177,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <Award className="h-4 w-4" />
                           </div>
                           <div className="space-y-0.5">
-                            <h5 className="text-xs font-semibold text-white">11 membership applications</h5>
+                            <h5 className="text-xs font-semibold text-white">{memberships.filter(m => m.status === 'Pending').length} membership applications</h5>
                             <p className="text-[10px] text-neutral-400">Pending approval</p>
                           </div>
                         </div>
@@ -1208,7 +1194,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <ShoppingBag className="h-4 w-4" />
                           </div>
                           <div className="space-y-0.5">
-                            <h5 className="text-xs font-semibold text-white">8 shop orders pending action</h5>
+                            <h5 className="text-xs font-semibold text-white">{orders.filter(o => o.status === 'Payment Requested').length} shop orders pending action</h5>
                             <p className="text-[10px] text-neutral-400">Awaiting response</p>
                           </div>
                         </div>
@@ -1225,7 +1211,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <Calendar className="h-4 w-4" />
                           </div>
                           <div className="space-y-0.5">
-                            <h5 className="text-xs font-semibold text-white">2 events need follow-up</h5>
+                            <h5 className="text-xs font-semibold text-white">{events.length} events scheduled</h5>
                             <p className="text-[10px] text-neutral-400">Action required</p>
                           </div>
                         </div>
@@ -1247,30 +1233,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     </div>
 
                     <div className="space-y-4">
-                      {/* Chart Grid Line Visual using inline SVG */}
-                      <div className="h-28 w-full bg-neutral-950/40 rounded border border-neutral-900/60 p-2 relative overflow-hidden">
-                        <svg className="w-full h-full" viewBox="0 0 100 40" preserveAspectRatio="none">
-                          {/* Grid horizontal markers */}
-                          <line x1="0" y1="10" x2="100" y2="10" stroke="#1c1c21" strokeWidth="0.25" />
-                          <line x1="0" y1="20" x2="100" y2="20" stroke="#1c1c21" strokeWidth="0.25" />
-                          <line x1="0" y1="30" x2="100" y2="30" stroke="#1c1c21" strokeWidth="0.25" />
-                          
-                          {/* Members curve (Green line) */}
-                          <path d="M0,35 Q15,30 30,22 T60,18 T90,8 T100,6" fill="none" stroke="#10b981" strokeWidth="1" />
-                          
-                          {/* Requests curve (Amber line) */}
-                          <path d="M0,38 Q15,35 30,28 T60,25 T90,15 T100,10" fill="none" stroke="#f59e0b" strokeWidth="1" />
-
-                          {/* Orders curve (Purple line) */}
-                          <path d="M0,39 Q15,38 30,35 T60,32 T90,20 T100,18" fill="none" stroke="#8b5cf6" strokeWidth="0.75" strokeDasharray="1 1" />
-                        </svg>
-                        
-                        <div className="absolute inset-x-0 bottom-1 px-2 flex justify-between text-[8px] font-mono text-neutral-600">
-                          <span>May 14</span>
-                          <span>May 16</span>
-                          <span>May 18</span>
-                          <span>May 20</span>
-                        </div>
+                      {/* Platform Activity */}
+                      <div className="h-28 w-full bg-neutral-950/40 rounded border border-neutral-900/60 p-6 flex items-center justify-center">
+                        <p className="text-[10px] font-mono text-neutral-500">No platform activity data yet</p>
                       </div>
 
                       {/* Legend */}
@@ -2273,9 +2238,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     onChange={(e) => setAnnounceScope(e.target.value)}
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none"
                   >
-                    <option value="All Members">All Members (128,947 fans)</option>
-                    <option value="Gold Members Only">Gold Members Only (3,420 fans)</option>
-                    <option value="Platinum Members Only">Platinum Members Only (840 fans)</option>
+                    <option value="All Members">All Members</option>
+                    <option value="Gold Members Only">Gold Members Only</option>
+                    <option value="Platinum Members Only">Platinum Members Only</option>
                   </select>
                 </div>
 

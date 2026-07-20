@@ -198,6 +198,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     requests: backendRequests,
     proposalChats: backendProposalChats,
     orders: backendOrders,
+    discussions: backendDiscussions,
+    content: backendContent,
     addRequest,
     addRequestChatMessage,
     addOrder,
@@ -259,9 +261,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [newRequestContactVal, setNewRequestContactVal] = useState('');
 
   // Local state copy of profile fields
-  const [profileBio, setProfileBio] = useState('Dedicated humanitarian and lifelong theater and film advocate. Inspired by acts of humble kindness.');
-  const [profileMovie, setProfileMovie] = useState('The X-Files & Sex Education');
-  const [profileContact, setProfileContact] = useState('+1 (555) 123-4567');
+  const [profileBio, setProfileBio] = useState('');
+  const [profileMovie, setProfileMovie] = useState('');
+  const [profileContact, setProfileContact] = useState('');
 
   // Dynamic Event registrations
   const [portalEvents, setPortalEvents] = useState<EventItem[]>([]);
@@ -272,210 +274,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   // Community State
   const [activeCountryClub, setActiveCountryClub] = useState<string>('Global');
-  const [clubDiscussions, setClubDiscussions] = useState<{ [club: string]: DiscussionPost[] }>({
-    Global: [
-      {
-        id: 'g1',
-        author: 'Scully_Seeker',
-        text: 'Does anyone know if Gillian is doing any West End stage talks or London signings soon?',
-        time: '2 hours ago',
-        replies: [
-          { id: 'g1-r1', author: 'XFilesFan_99', text: 'Yes! She announced several speaking dates in London. Check her official updates page!', time: '1 hour ago' }
-        ]
-      },
-      {
-        id: 'g2',
-        author: 'BeExcellent',
-        text: 'Be kind to everyone you meet today. Simple reminders make the world shine.',
-        time: '4 hours ago',
-        replies: []
-      }
-    ],
-    USA: [
-      {
-        id: 'us1',
-        author: 'SAYes_Volunteer',
-        text: 'Cape Town mentoring sessions are truly transformative. Love supporting SAYes.',
-        time: '5 hours ago',
-        replies: [
-          { id: 'us1-r1', author: 'MentorshipFan', text: "Gillian's mentoring models are absolute masterclasses in compassion. So inspiring!", time: '3 hours ago' }
-        ]
-      }
-    ],
-    Canada: [
-      {
-        id: 'ca1',
-        author: 'London_Scully',
-        text: "Greetings from Gillian's childhood stomping grounds in London!",
-        time: '1 day ago',
-        replies: []
-      }
-    ],
-    UK: [
-      {
-        id: 'uk1',
-        author: 'Chester_S',
-        text: 'London Charity Dinner tickets requested! Praying to get allocated a supporter slot.',
-        time: '12 hours ago',
-        replies: []
-      }
-    ],
-    Australia: [
-      {
-        id: 'au1',
-        author: 'AussieSAYes',
-        text: 'Met a SAYes mentoring supervisor in Sydney today. Absolute gem!',
-        time: '6 hours ago',
-        replies: []
-      }
-    ],
-    'New Zealand': [
-      {
-        id: 'nz1',
-        author: 'KiwiSeeker',
-        text: 'Rewatching the entire X-Files series tonight in Auckland. Absolute classics.',
-        time: '10 hours ago',
-        replies: []
-      }
-    ],
-    Japan: [
-      {
-        id: 'jp1',
-        author: 'TokyoSaito',
-        text: 'Gillian has such a deep appreciation for classical theater and independent cinema.',
-        time: '1 day ago',
-        replies: [
-          { id: 'jp1-r1', author: 'Thespian_47', text: 'Yes, her devotion to the craft of acting is highly admired here!', time: '18 hours ago' }
-        ]
-      }
-    ],
-    Germany: [
-      {
-        id: 'de1',
-        author: 'Berlin_Bridges',
-        text: 'Organizing a local youth mentoring seminar in Munich next month to support transition advocacy.',
-        time: '2 days ago',
-        replies: []
-      }
-    ],
-    Brazil: [
-      {
-        id: 'br1',
-        author: 'Rio_Scully',
-        text: 'Gillian Anderson has the warmest heart. Infinite love from Rio de Janeiro!',
-        time: '3 days ago',
-        replies: []
-      }
-    ],
-    France: [
-      {
-        id: 'fr1',
-        author: 'ParisianSkeptic',
-        text: 'Her elegance and wit during theater panel conferences here in Paris is legendary.',
-        time: '1 day ago',
-        replies: []
-      }
-    ],
-    India: [
-      {
-        id: 'in1',
-        author: 'Rajesh_Kumar',
-        text: 'The kindness philosophy is universal. Namaste from Delhi community!',
-        time: '2 days ago',
-        replies: []
-      }
-    ],
-    Mexico: [
-      {
-        id: 'mx1',
-        author: 'Gomez_Scully',
-        text: 'Be compassionate to each other! Greeting from Mexico City fans!',
-        time: '4 days ago',
-        replies: []
-      }
-    ],
-    'South Africa': [
-      {
-        id: 'za1',
-        author: 'CapeTown_Rebel',
-        text: 'Love to see the youth mentoring transition focus. Absolute queen.',
-        time: '5 days ago',
-        replies: []
-      }
-    ],
-    'South Korea': [
-      {
-        id: 'kr1',
-        author: 'Seoul_Scully',
-        text: 'Amazing to see Korean fans uniting for youth mentorship charity drives!',
-        time: '2 days ago',
-        replies: []
-      }
-    ],
-    Italy: [
-      {
-        id: 'it1',
-        author: 'Rome_Thespian',
-        text: "Gillian's presence at the theater stages here is always a joy.",
-        time: '3 days ago',
-        replies: []
-      }
-    ],
-    Spain: [
-      {
-        id: 'es1',
-        author: 'Madrid_Scully',
-        text: 'West End play adaptations touring Spain would be a dream come true!',
-        time: '4 days ago',
-        replies: []
-      }
-    ],
-    Argentina: [
-      {
-        id: 'ar1',
-        author: 'Diego_P',
-        text: 'She represents the ultimate elegant standard. Big support from Buenos Aires!',
-        time: '2 days ago',
-        replies: []
-      }
-    ],
-    Philippines: [
-      {
-        id: 'ph1',
-        author: 'Pinoy_Empowered',
-        text: "You are empowered! Everyday reminder to keep being compassionate.",
-        time: '3 days ago',
-        replies: []
-      }
-    ],
-    Singapore: [
-      {
-        id: 'sg1',
-        author: 'Merlion_Scully',
-        text: 'The official communication bridge works so fast. Thank you Sarah/management!',
-        time: '12 hours ago',
-        replies: []
-      }
-    ],
-    Ireland: [
-      {
-        id: 'ie1',
-        author: 'Dublin_Scully',
-        text: 'A wet London afternoon today but keeping the warm heart. Be compassionate lads!',
-        time: '2 days ago',
-        replies: []
-      }
-    ],
-    Netherlands: [
-      {
-        id: 'nl1',
-        author: 'Amsterdam_Scully',
-        text: 'Supporting mentoring initiatives in Europe is so important. Kudos to Gillian.',
-        time: '3 days ago',
-        replies: []
-      }
-    ]
-  });
+  const [clubDiscussions, setClubDiscussions] = useState<{ [club: string]: DiscussionPost[] }>({});
+
+  useEffect(() => {
+    if (backendDiscussions && Object.keys(backendDiscussions).length > 0) {
+      setClubDiscussions(backendDiscussions);
+    }
+  }, [backendDiscussions]);
   const [newDiscussionText, setNewDiscussionText] = useState('');
   const [replyInputs, setReplyInputs] = useState<{ [postId: string]: string }>({});
 
@@ -499,10 +304,37 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     }
   }, [backendOrders]);
 
+  // Portal store items from DB
+  const [storeItems, setStoreItems] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/portal/store-items').then(r => r.ok ? r.json() : []).then(data => {
+      setStoreItems(data.map((p: any) => ({
+        id: p.id,
+        item: p.name,
+        price: String(p.price),
+        desc: p.description,
+        icon: p.image_placeholder || '📦'
+      })));
+    }).catch(() => {});
+  }, []);
+
+  // Portal rewards from DB
+  const [portalRewards, setPortalRewards] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/portal/rewards').then(r => r.ok ? r.json() : []).then(setPortalRewards).catch(() => {});
+  }, []);
+
   // Messages State for 3 active channels
 
   // Loyalty & Rewards State
-  const [loyaltyPoints, setLoyaltyPoints] = useState(4500);
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+
+  useEffect(() => {
+    fetch('/api/portal/points').then(r => r.ok ? r.json() : { points: 0 }).then(d => setLoyaltyPoints(d.points)).catch(() => {});
+  }, []);
+
   const rank = getLoyaltyRank(loyaltyPoints);
   const progressPercent = Math.min(100, Math.max(0, ((loyaltyPoints - rank.min) / (rank.max - rank.min)) * 100));
   const [badges, setBadges] = useState([]);
@@ -525,11 +357,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [accentColor, setAccentColor] = useState<'gold' | 'red' | 'green' | 'blue'>('gold');
 
   // Selected Avatar Preset
-  const [selectedAvatar, setSelectedAvatar] = useState<{ id: string; name: string; emoji: string }>({
-    id: 'scully',
-    name: 'Dana Scully',
-    emoji: '🔬'
-  });
+  const [selectedAvatar, setSelectedAvatar] = useState<{ id: string; name: string; emoji: string } | null>(null);
 
   // Avatar Options
   const avatarPresets = [
@@ -556,20 +384,20 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     management: { id: string; sender: 'management' | 'user'; text: string; timestamp: string }[];
     events: { id: string; sender: 'management' | 'user'; text: string; timestamp: string }[];
     vault: { id: string; sender: 'management' | 'user'; text: string; timestamp: string }[];
-  }>({
-    management: [
-      { id: 'm1', sender: 'management', text: "Hello, this is Sarah from Gillian's official representation team. We have received your Meet & Greet proposal. Gillian is very touched by your youth mentoring support story.", timestamp: 'May 18, 11:05 AM' },
-      { id: 'm2', sender: 'user', text: "Hi Sarah! Thank you so much for reaching out. It is an absolute dream of mine. I have been supporting youth mentorship for five years, inspired directly by Gillian's quiet benevolence.", timestamp: 'May 18, 01:14 PM' },
-      { id: 'm3', sender: 'management', text: "That is wonderful to hear. We are currently mapping out some private slots around her charity summit schedule in July. Could you confirm if you will be in London during the entire second week of July?", timestamp: 'May 20, 04:10 PM' },
-      { id: 'm4', sender: 'user', text: "Yes, absolutely! I can arrange my travel to match any day or time that works best for Gillian. I will also be attending the charity screening.", timestamp: 'May 20, 04:18 PM' }
-    ],
-    events: [
-      { id: 'e1', sender: 'management', text: "Welcome to the Event Coordination Desk. Registered members can request access codes and schedule digital/physical entry passes here.", timestamp: 'May 21, 09:12 AM' }
-    ],
-    vault: [
-      { id: 'v1', sender: 'management', text: "Vault Logistics Desk active. We verify physical product certificates, shipping couriers, and state synchronization.", timestamp: 'May 22, 10:45 AM' }
-    ]
-  });
+  }>({ management: [], events: [], vault: [] });
+
+  useEffect(() => {
+    const channels = ['management', 'events', 'vault'] as const;
+    channels.forEach(async (channel) => {
+      try {
+        const res = await fetch(`/api/portal/channels/${channel}`);
+        if (res.ok) {
+          const data = await res.json();
+          setChannelMessages(prev => ({ ...prev, [channel]: data }));
+        }
+      } catch {}
+    });
+  }, []);
 
   // Shop Cart State
   const [cart, setCart] = useState<{ id: string; item: string; price: string; quantity: number }[]>([]);
@@ -579,7 +407,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   // Live Virtual Event Stage State
   const [activeEventStageId, setActiveEventStageId] = useState<string | null>(null);
-  const [eventClaps, setEventClaps] = useState(145);
+  const [eventClaps, setEventClaps] = useState(0);
   const [userEventMessage, setUserEventMessage] = useState('');
 
   // Active Proposal Inner Chat Timeline
@@ -751,41 +579,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
     // Prepend a journey milestone for direct communication
     addJourneyMilestone(
-      `Dispatched Message: ${currentChannel === 'management' ? 'Sarah (Liaison)' : currentChannel === 'events' ? 'Event Coordinator' : 'Vault Support'}`,
+      `Dispatched Message: ${currentChannel === 'management' ? 'Management' : currentChannel === 'events' ? 'Event Coordinator' : 'Vault Support'}`,
       `Secure communication logged regarding portal inquiry: "${userText.substring(0, 30)}..."`,
       'bg-blue-500'
     );
-
-    // Simulate management reply
-    setTimeout(() => {
-      let replyText = "Perfect. I have logged that in our coordination sheet. Let me check with our team and get back to you with an official update shortly.";
-      const textLower = userText.toLowerCase();
-
-      if (textLower.includes('meet') || textLower.includes('greet') || textLower.includes('gillian') || textLower.includes('proposal')) {
-        replyText = "Gillian is always deeply humbled to meet supporters who fund youth mentoring through SAYes. We are coordinating private slots around her charity summit in July.";
-      } else if (textLower.includes('ticket') || textLower.includes('event') || textLower.includes('canyon') || textLower.includes('ride') || textLower.includes('gala')) {
-        replyText = "Our Event Coordination team has marked your clearance. Please ensure your digital QR code access pass is downloaded and ready for screening.";
-      } else if (textLower.includes('order') || textLower.includes('shipping') || textLower.includes('transit') || textLower.includes('item') || textLower.includes('shop') || textLower.includes('cart')) {
-        replyText = "Our white-glove sanctuary courier handles shipping securely. You can monitor and manually advance your live transit steps under the Shop/Orders page.";
-      } else if (textLower.includes('point') || textLower.includes('reward') || textLower.includes('badge')) {
-        replyText = "Every loyalty point and badge denotes genuine contributions to youth mentoring and SAYes. Your kindness has direct real-world impact.";
-      }
-
-      const replyMsg = {
-        id: `reply-${Date.now()}`,
-        sender: 'management' as const,
-        text: replyText,
-        timestamp: new Date().toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' })
-      };
-
-      setChannelMessages((prev) => ({
-        ...prev,
-        [currentChannel]: [...(prev[currentChannel] || []), replyMsg]
-      }));
-
-      pushNotification(`Liaison reply: "${replyText.substring(0, 45)}..."`);
-      showToast('New secure message incoming...', 'info');
-    }, 1200);
   };
 
   const handleAddDiscussion = (e: React.FormEvent) => {
@@ -910,48 +707,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         authName || 'John Smith'
       );
 
-      // Calculate auto-fill communication details
-      const adminEmail = 'liaison@gillian-sanctuary.org';
-      const adminWhatsApp = '15550199999';
-      const adminTelegram = 'GillianLiaisonBot';
-
-      const messageText = `[OFFICIAL GILLIAN SANCTUARY PROPOSAL]\n` +
-        `Hello Administrative Team,\n\n` +
-        `I have successfully submitted an official proposal on the Fan Sanctuary Platform.\n\n` +
-        `• Proposal ID: ${createdReq.id}\n` +
-        `• Proposer: ${createdReq.member}\n` +
-        `• Category: ${createdReq.type}\n` +
-        `• Preferred Date: ${createdReq.preferredDate}\n` +
-        `• Location: ${createdReq.location}\n` +
-        `• Guests: ${createdReq.attendees}\n` +
-        `• Contact Bridge: ${createdReq.whatsappNumber}\n\n` +
-        `Sincerity Pledge:\n` +
-        `"${createdReq.sincerity}"\n\n` +
-        `Please review my credentials and initiate active private discussion tracking. Thank you!`;
-
-      let linkUrl = '';
-      if (newRequestContact === 'Email') {
-        linkUrl = `mailto:${adminEmail}?subject=${encodeURIComponent(`Official Fan Proposal ${createdReq.id}`)}&body=${encodeURIComponent(messageText)}`;
-      } else if (newRequestContact === 'WhatsApp') {
-        linkUrl = `https://api.whatsapp.com/send?phone=${adminWhatsApp}&text=${encodeURIComponent(messageText)}`;
-      } else if (newRequestContact === 'Telegram') {
-        linkUrl = `https://t.me/${adminTelegram}?text=${encodeURIComponent(messageText)}`;
-      } else {
-        linkUrl = `https://gillian-sanctuary.org/dispatch?id=${createdReq.id}&msg=${encodeURIComponent(messageText)}`;
-      }
+      const messageText = `Proposal ${createdReq.id} submitted successfully. Our management team will review and respond via the portal.`;
 
       setDispatchMessage(messageText);
-      setDispatchUrl(linkUrl);
-      setDispatchMethod(newRequestContact);
+      setDispatchUrl(window.location.href);
+      setDispatchMethod('Portal');
       setIsCopiedDispatch(false);
       setShowDispatchModal(true);
-
-      // Attempt direct popup trigger
-      try {
-        window.open(linkUrl, '_blank');
-      } catch (e) {
-        // browser blocked popup, fallback handled beautifully via showDispatchModal
-      }
 
       showToast('Your official proposal has been submitted successfully!', 'success');
       setShowPortalRequestWizard(false);
@@ -1001,7 +763,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     showToast(`Status updated to ${newStatus}`, 'success');
   };
 
-  const handleAddTimelineComment = (requestId: string, textToPost: string, targetStatus?: string) => {
+  const handleAddTimelineComment = async (requestId: string, textToPost: string, targetStatus?: string) => {
     if (!textToPost.trim()) return;
 
     const timestamp = new Date().toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
@@ -1055,79 +817,22 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     setTimelineCommentText('');
     showToast('Your comment has been securely posted to the timeline.', 'success');
 
-    // 2. Trigger automatic coordinator reply after delay
-    setTimeout(() => {
-      const currentReq = userRequests.find(r => r.id === requestId);
-      let replyText = "Understood. Sarah has noted this. We are validating your scheduling proposals and will update this timeline shortly. Be excellent.";
-      let newReplyStatus = nextStatus;
-
-      const textLower = textToPost.toLowerCase();
-      if (textLower.includes('date') || textLower.includes('time') || textLower.includes('saturday') || textLower.includes('july') || textLower.includes('meet')) {
-        replyText = "The proposed slot has been sent to our calendar coordination module. We will lock in security and issue a clearance voucher. Proposal status is now escalated to Under Review.";
-        newReplyStatus = 'Under Review';
-      } else if (textLower.includes('charity') || textLower.includes('cancer') || textLower.includes('organization') || textLower.includes('sincere')) {
-        replyText = "We appreciate the verified credentials and charity background you shared. Sincerity parameters have been confirmed. Status moved to In Discussion.";
-        newReplyStatus = 'In Discussion';
-      } else if (textLower.includes('offer') || textLower.includes('accept') || textLower.includes('agree')) {
-        replyText = "Amazing. Since you've accepted our initial logistics, I am generating a physical coordination clearance contract. Proposal status updated to Offer Made.";
-        newReplyStatus = 'Offer Made';
-      } else if (textLower.includes('pay') || textLower.includes('fee') || textLower.includes('donation')) {
-        replyText = "Charity support verification processed. Status updated to Payment Requested for secure voluntary logging.";
-        newReplyStatus = 'Payment Requested';
-      } else if (textLower.includes('resolve') || textLower.includes('done') || textLower.includes('thanks') || textLower.includes('thank you')) {
-        replyText = "You're very welcome! We're glad to support. Status is now fully Approved/Resolved in our gateway. Be excellent.";
-        newReplyStatus = 'Approved';
-      }
-
-      const replyMsg = {
-        id: `pmsg-reply-${Date.now()}`,
-        sender: 'management' as const,
-        text: replyText,
-        timestamp: new Date().toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' })
-      };
-
-      setProposalChats(prev => ({
-        ...prev,
-        [requestId]: [...(prev[requestId] || []), replyMsg]
-      }));
-
-      // Update status to Sarah's proposed status
-      setUserRequests(prev => prev.map(r => {
-        if (r.id === requestId) {
-          return {
-            ...r,
-            status: newReplyStatus,
-            lastUpdated: replyMsg.timestamp
-          };
-        }
-        return r;
-      }));
-
-      if (currentReq && currentReq.status !== newReplyStatus) {
-        const replySystemLog = {
-          id: `pmsg-sys-reply-${Date.now()}`,
-          sender: 'system' as const,
-          text: `SYSTEM STATE CHANGE: Coordinator Sarah adjusted status to [${newReplyStatus}]`,
-          timestamp: replyMsg.timestamp
-        };
-        setProposalChats(prev => ({
-          ...prev,
-          [requestId]: [...(prev[requestId] || []), replySystemLog]
-        }));
-      }
-
-      pushNotification(`Liaison reply on ${requestId}: "${replyText.substring(0, 45)}..."`);
-      showToast('Sarah (Liaison Coordinator) posted a reply.', 'info');
-    }, 1500);
+    // Send the message to the backend
+    try {
+      await fetch(`/api/requests/${requestId}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sender: 'user', text: textToPost })
+      });
+    } catch {}
   };
 
   const handlePortalMembershipRequest = (e: React.FormEvent) => {
     e.preventDefault();
     if (!mReason.trim() || !mContactVal.trim()) return;
 
-    const randomNum = Math.floor(100000 + Math.random() * 900000);
     const newReq: RequestDetail = {
-      id: `KR-MEM-${randomNum}`,
+      id: `KR-MEM-${Date.now()}`,
       type: `Membership Upgrade: ${mType.toUpperCase()}`,
       preferredDate: 'Immediate Activation',
       location: authCountry,
@@ -1158,7 +863,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     setPortalEvents((prev) =>
       prev.map((e) => {
         if (e.id === id) {
-          return { ...e, registered: true, ticketRef: `KR-TKT-${Math.floor(100000 + Math.random() * 900000)}` };
+          return { ...e, registered: true, ticketRef: `KR-TKT-${Date.now()}` };
         }
         return e;
       })
@@ -1192,13 +897,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     } catch {}
   };
 
-  const redeemableItems = [
-    { id: 'r1', title: 'SAYes Mentoring Digital Wallpaper Pack', cost: 500, icon: '📚', desc: 'Exclusive high-res desktop & phone background bundle.' },
-    { id: 'r2', title: 'Personalized Sanctuary Access Certificate', cost: 1000, icon: '📜', desc: 'Downloadable custom-signed high-fidelity entry token.' },
-    { id: 'r3', title: 'Exclusive Video Message Clip', cost: 2000, icon: '🎬', desc: 'A downloadable personal audio/video file of Gillian.' }
-  ];
+  const redeemableItems: { id: string; title: string; cost: number; icon: string; desc: string }[] = [];
 
-  const handleRedeemReward = async (item: typeof redeemableItems[0]) => {
+  const handleRedeemReward = async (item: typeof portalRewards[0]) => {
     if (loyaltyPoints < item.cost) {
       showToast('Insufficient loyalty points for this redemption.', 'error');
       return;
@@ -1260,13 +961,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     } catch {}
   };
 
-  const storeItems = [
-    { id: 's1', item: "Signed 'The X-Files' Pilot Script Copy", price: "0.00", desc: "Gold Member perk. Shipping proceeds support youth mentoring." },
-    { id: 's2', item: "Scully Forensic Stylus Pen", price: "15.00", desc: "Sleek metallic stylus pen with laser etching." },
-    { id: 's3', item: "Official 'We Manifesto' Cap", price: "35.00", desc: "Vintage dad-hat fit with supportive empowerment embroidery." }
-  ];
-
-  const handleAddToCart = (item: typeof storeItems[0]) => {
+  const handleAddToCart = (item: any) => {
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id);
       if (existing) {
@@ -1288,7 +983,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
     const consolidatedItems = cart.map((i) => `${i.item} (x${i.quantity})`).join(', ');
     const totalCost = cart.reduce((acc, curr) => acc + parseFloat(curr.price) * curr.quantity, 0).toFixed(2);
-    const randomNum = Math.floor(100000 + Math.random() * 900000);
 
     try {
       await addOrder(consolidatedItems, totalCost, authName || 'John Smith');
@@ -1306,68 +1000,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         'bg-green-500'
       );
 
-      // Dynamic points award based on price
-      const earnedPoints = Math.max(100, Math.floor(parseFloat(totalCost) * 10));
-      setLoyaltyPoints((prev) => prev + earnedPoints);
-
-      // Trigger unlockable collector badge if they ordered a physical item
-      const hasCollectorBadge = badges.some(b => b.title === "Scully's Investigator");
-      if (!hasCollectorBadge) {
-        const colBadge = {
-          id: `b-col-${Date.now()}`,
-          title: "Scully's Investigator",
-          desc: "Ordered official limited merchandise from private catalog",
-          date: new Date().toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' }),
-          icon: '🔬'
-        };
-        setBadges(prev => [...prev, colBadge]);
-        pushNotification(`Achievement unlocked: Scully's Investigator! Check your profile.`);
-      }
-
-      pushNotification(`Order successfully placed! Reference ID: GA-SHP-${randomNum}. Earned +${earnedPoints} loyalty points.`);
+      pushNotification('Order successfully placed. Awaiting confirmation.');
       showToast('Checkout approved! State synchronized.', 'success');
     } catch (err) {
       console.error(err);
       showToast('Failed to process merchandise order.', 'error');
     }
-  };
-
-  const handleSimulateTransitStep = (orderId: string) => {
-    const statusSequence = [
-      'Preparing 📦',
-      'Dispatched from Sanctuary Hub 🛫',
-      'Arrived at Customs Gateway 🛃',
-      'Out for White-glove Delivery 🚚',
-      'Delivered & Verified ✅'
-    ];
-
-    setOrders((prev) =>
-      prev.map((ord) => {
-        if (ord.id === orderId) {
-          const currentIndex = statusSequence.indexOf(ord.status);
-          if (currentIndex !== -1 && currentIndex < statusSequence.length - 1) {
-            const nextStatus = statusSequence[currentIndex + 1];
-            
-            // Push alert
-            pushNotification(`Shipping status updated: Order ${orderId} is now "${nextStatus}"`);
-            showToast(`Order status updated to: ${nextStatus}`, 'success');
-
-            // Log milestone if delivered
-            if (nextStatus === 'Delivered & Verified ✅') {
-              addJourneyMilestone(
-                `Order Delivered: ${ord.id}`,
-                `Your shipment containing "${ord.item.substring(0, 30)}..." has been verified and safely received.`,
-                'bg-emerald-500'
-              );
-              setLoyaltyPoints(prev => prev + 100); // 100 bonus pts for verified delivery
-            }
-
-            return { ...ord, status: nextStatus };
-          }
-        }
-        return ord;
-      })
-    );
   };
 
   const handleDeleteNotification = (id: string) => {
@@ -1587,80 +1225,64 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         </div>
       ) : (
         
-        /* 2. DYNAMIC PORTAL DASHBOARD onceLoggedIn */
-        <div className="flex-1 flex flex-col relative w-full bg-[#070709]">
+        /* 2. PORTAL WORKSPACE */
+          <div className="flex flex-col min-h-screen bg-[#050505]">
           
-          {/* TOP PORTAL HEADER BAR - Symmetrical to Admin/Management Dashboard */}
-          <header className="sticky top-0 z-40 w-full border-b border-neutral-900/80 bg-[#070709]/95 backdrop-blur-md px-4 md:px-6 py-3 flex items-center justify-between h-14 shrink-0">
-            {/* Left Brand Identity */}
-            <div className="flex items-center gap-2.5">
+          {/* STICKY HEADER */}
+          <header className="sticky top-0 z-40 w-full border-b border-neutral-900/80 bg-[#050505]/95 backdrop-blur-md px-4 md:px-8 flex items-center justify-between h-16 shrink-0">
+            <div className="flex items-center gap-4">
               <button
                 onClick={onBackToHome}
-                className="p-1.5 rounded bg-neutral-900/80 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors"
+                className="p-1.5 rounded-lg bg-neutral-950/60 border border-neutral-800/50 text-neutral-500 hover:text-neutral-100 hover:border-neutral-700 transition-all"
                 aria-label="Back to landing"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
               </button>
-              <div className="flex items-center gap-2">
-                <span className="font-serif text-sm md:text-base font-bold tracking-widest text-gold-500">
-                  KR
+              <div className="flex items-center gap-3">
+                <span className="font-serif text-lg font-bold tracking-widest text-gold-500 leading-none">
+                  GA
                 </span>
-                <div className="h-3 w-[1px] bg-neutral-800" />
-                <div className="flex flex-col text-left">
-                  <span className="font-serif text-[8px] md:text-[9px] font-bold tracking-widest text-neutral-300 leading-tight">
-                    SANCTUARY
+                <div className="h-4 w-px bg-neutral-800/60" />
+                <div className="flex flex-col">
+                  <span className="font-serif text-[10px] font-semibold tracking-wider text-neutral-200 leading-tight">
+                    Co-op
                   </span>
-                  <span className="font-mono text-[5px] md:text-[6px] tracking-[0.15em] text-gold-500/70 font-bold uppercase leading-none">
-                    OFFICIAL MEMBER PORTAL
+                  <span className="font-mono text-[7px] tracking-[0.2em] text-gold-500/60 font-semibold uppercase leading-none">
+                    Member Workspace
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Right side: Points pill & Profile & Menu Trigger */}
-            <div className="flex items-center gap-2 md:gap-3">
-              {/* Point pill wallet indicator */}
-              <div className="flex items-center gap-1 px-2 py-1 rounded bg-gold-500/10 border border-gold-500/20 text-[9px] font-mono text-gold-400 font-bold shrink-0">
-                <span>🏆</span>
-                <span>{loyaltyPoints.toLocaleString()} PTS</span>
-              </div>
-
-              {/* Rank visual badge */}
-              <div className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[8px] font-mono font-bold uppercase tracking-wider shrink-0 ${rank.badgeColor}`}>
-                <span>{rank.icon}</span>
-                <span>{rank.name}</span>
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gold-500/5 border border-gold-500/15 text-[10px] font-mono text-gold-400/80 font-medium">
+                <span className="text-gold-500/60">✦</span>
+                <span>{loyaltyPoints.toLocaleString()} pts</span>
               </div>
 
               <NotificationBell />
 
-              <div className="h-3 w-[1px] bg-neutral-800 hidden sm:block" />
-
-              {/* User Avatar dropdown preview */}
-              <div className="flex items-center gap-2">
-                <div className="h-6.5 w-6.5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-bold text-gold-500 uppercase font-serif shrink-0">
-                  {authName.slice(0, 2)}
+              <div className="flex items-center gap-2 pl-2 border-l border-neutral-800/60">
+                <div className="h-7 w-7 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-500/5 border border-gold-500/25 flex items-center justify-center text-[9px] font-bold text-gold-500 font-serif">
+                  {authName.slice(0, 1).toUpperCase()}
                 </div>
-                <div className="hidden md:flex flex-col text-left leading-none">
-                  <span className="text-xs font-semibold text-white">{authName}</span>
-                  <span className="text-[7px] font-mono text-neutral-500 uppercase">VERIFIED FAN</span>
+                <div className="hidden md:flex flex-col leading-none">
+                  <span className="text-xs font-medium text-neutral-100">{authName}</span>
+                  <span className="text-[7px] font-mono text-neutral-500 uppercase tracking-wider">{rank.name}</span>
                 </div>
               </div>
 
-              {/* Mobile Menu trigger */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-1.5 rounded bg-neutral-900/50 border border-neutral-900 text-neutral-400 hover:text-white transition-all ml-1 shrink-0"
-                aria-label="Toggle navigation menu"
+                className="md:hidden p-1.5 rounded-lg bg-neutral-950/60 border border-neutral-800/50 text-neutral-500 hover:text-neutral-100 transition-all"
+                aria-label="Toggle navigation"
               >
                 {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
               </button>
             </div>
           </header>
 
-          {/* MAIN BODY CONTAINER WITH OVERFLOW CONTROL */}
-          <div className="flex-1 flex overflow-hidden relative">
-            
-            {/* Soft backdrop blur overlay for mobile sidebar */}
+          <div className="flex flex-1 relative">
             <AnimatePresence>
               {isMobileMenuOpen && (
                 <motion.div
@@ -1668,347 +1290,288 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="fixed inset-0 bg-black/70 backdrop-blur-xs z-40 md:hidden"
+                  className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
                   onClick={() => setIsMobileMenuOpen(false)}
                 />
               )}
             </AnimatePresence>
 
-            {/* SIDEBAR NAVIGATION */}
-            <aside 
+            {/* FIXED SIDEBAR */}
+            <aside
               className={`
-                shrink-0 border-r border-neutral-900/60 bg-[#0a0a0c] p-4 flex flex-col justify-between transition-transform duration-300 ease-in-out z-50
-                ${isMobileMenuOpen 
-                  ? 'fixed top-14 left-0 bottom-0 w-64 shadow-2xl translate-x-0 flex' 
-                  : 'fixed top-14 left-0 bottom-0 w-64 -translate-x-full md:translate-x-0 md:static md:h-[calc(100vh-56px)] md:w-64 md:flex md:overflow-y-auto'
+                bg-[#0a0a0c] border-r border-neutral-900/60 flex flex-col justify-between transition-all duration-300 z-30
+                ${isMobileMenuOpen
+                  ? 'fixed inset-y-0 left-0 w-64 shadow-2xl translate-x-0 pt-16'
+                  : 'fixed inset-y-0 left-0 w-64 -translate-x-full md:translate-x-0 md:pt-16'
                 }
               `}
             >
-              <div className="space-y-6">
-                <div>
-                  <span className="text-[9px] font-mono font-bold tracking-[0.15em] text-neutral-600 uppercase block pl-2 mb-2">
-                    WORKSPACE NAVIGATION
-                  </span>
-                  
-                  {/* Navigation Menu */}
-                  <nav className="space-y-1">
-                    {[
-                      { name: 'Dashboard', icon: LayoutGrid },
-                      { name: 'Profile', icon: User },
-                      { name: 'Community', icon: Users },
-                      { name: 'Messages', icon: MessageSquare },
-                      { name: 'My Requests', icon: FileText },
-                      { name: 'Events', icon: Calendar },
-                      { name: 'Membership', icon: Award },
-                      { name: 'Orders', icon: ShoppingBag },
-                      { name: 'My Journey', icon: Compass },
-                      { name: 'Rewards', icon: Gift },
-                      { name: 'Notifications', icon: Bell },
-                      { name: 'Settings', icon: Settings }
-                    ].map((item) => {
-                      const Icon = item.icon;
-                      const isUnread = item.name === 'Notifications' && notifications.some(n => n.unread);
-                      const isSelected = activeTab === item.name;
+              <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5 scrollbar-thin">
+                <span className="text-[7px] font-mono font-semibold tracking-[0.2em] text-neutral-600 uppercase pl-3 pb-2 block">
+                  Navigation
+                </span>
+                {[
+                  { name: 'Dashboard', icon: LayoutGrid },
+                  { name: 'Profile', icon: User },
+                  { name: 'Community', icon: Users },
+                  { name: 'Messages', icon: MessageSquare },
+                  { name: 'My Requests', icon: FileText },
+                  { name: 'Events', icon: Calendar },
+                  { name: 'Membership', icon: Award },
+                  { name: 'Orders', icon: ShoppingBag },
+                  { name: 'My Journey', icon: Compass },
+                  { name: 'Rewards', icon: Gift },
+                  { name: 'Notifications', icon: Bell },
+                  { name: 'Settings', icon: Settings }
+                ].map((item) => {
+                  const Icon = item.icon;
+                  const isUnread = item.name === 'Notifications' && notifications.some(n => n.unread);
+                  const isSelected = activeTab === item.name;
 
-                      return (
-                        <button
-                          key={item.name}
-                          onClick={() => {
-                            setActiveTab(item.name as any);
-                            setSelectedRequestId(null); // Reset detail expansion
-                            setIsMobileMenuOpen(false); // Close mobile menu
-                          }}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-all text-left ${
-                            isSelected
-                              ? 'bg-gold-500/10 text-gold-500 font-bold border border-gold-500/20 shadow-sm'
-                              : 'text-neutral-400 hover:bg-neutral-900/40 hover:text-white border border-transparent'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <Icon className={`h-4 w-4 shrink-0 transition-colors ${isSelected ? 'text-gold-500' : 'text-neutral-500 group-hover:text-neutral-300'}`} />
-                            <span>{item.name}</span>
-                          </div>
-                          {item.name === 'Messages' ? (
-                            <span className="bg-gold-500 text-neutral-950 font-bold text-[9px] h-4 min-w-4 px-1 rounded-full flex items-center justify-center font-mono">
-                              2
-                            </span>
-                          ) : isUnread ? (
-                            <span className="h-1.5 w-1.5 rounded-full bg-gold-500 animate-pulse" />
-                          ) : null}
-                        </button>
-                      );
-                    })}
-                  </nav>
-                </div>
-              </div>
+                  return (
+                    <button
+                      key={item.name}
+                      onClick={() => {
+                        setActiveTab(item.name as any);
+                        setSelectedRequestId(null);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-all text-left rounded-lg relative ${
+                        isSelected
+                          ? 'bg-gold-500/10 text-gold-400 font-medium'
+                          : 'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-900/40'
+                      }`}
+                    >
+                      {isSelected && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r-full bg-gold-500/70" />
+                      )}
+                      <div className="flex items-center gap-3">
+                        <Icon className={`h-4 w-4 shrink-0 ${isSelected ? 'text-gold-500/80' : 'text-neutral-600'}`} />
+                        <span>{item.name}</span>
+                      </div>
+                      {isUnread ? (
+                        <span className="h-1.5 w-1.5 rounded-full bg-gold-500/80" />
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </nav>
 
-              {/* Bottom Member badge card */}
-              <div className="mt-8 border border-gold-500/15 rounded-xl bg-gradient-to-b from-gold-500/[0.02] to-transparent p-4 relative overflow-hidden text-left space-y-3.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-mono font-bold text-gold-500 tracking-wider flex items-center gap-1.5 uppercase">
-                    <span className="text-xs">{rank.icon}</span>
-                    <span>{rank.name}</span>
-                  </span>
-                  <span className="text-[8px] font-mono text-neutral-500">★</span>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <div className="h-8 w-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-xs font-bold text-gold-500 uppercase font-serif shrink-0">
-                    {authName.slice(0, 2)}
+              {/* Sidebar Member Card */}
+              <div className="px-3 py-4 border-t border-neutral-900/60">
+                <div className="rounded-xl bg-neutral-950/40 border border-neutral-900 p-3.5 space-y-3 shadow-lg shadow-black/40">
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-500/5 border border-gold-500/25 flex items-center justify-center text-[10px] font-bold text-gold-500 font-serif shrink-0">
+                      {authName.slice(0, 1).toUpperCase()}
+                    </div>
+                    <div className="flex flex-col leading-tight min-w-0">
+                      <span className="text-xs font-medium text-neutral-100 truncate">{authName}</span>
+                      <span className="text-[7px] font-mono text-neutral-500 uppercase tracking-wider">{rank.name}</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col leading-tight">
-                    <span className="text-xs font-bold text-white truncate max-w-[135px]">{authName}</span>
-                    <span className="text-[8px] text-neutral-500 font-mono uppercase tracking-wide">Verified Fan sanctuary</span>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[8px] font-mono text-neutral-500">
+                      <span>Progress</span>
+                      <span className="text-gold-500/60">{Math.round(progressPercent)}%</span>
+                    </div>
+                    <div className="h-1 bg-neutral-900/60 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-gold-500/40 to-gold-500/70 rounded-full transition-all duration-500"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
                   </div>
-                </div>
-
-                {/* Mini Rank Progress Bar */}
-                <div className="space-y-1 pt-1">
-                  <div className="flex justify-between items-center text-[8px] font-mono text-neutral-500">
-                    <span>RANK PROGRESS</span>
-                    <span>{Math.round(progressPercent)}%</span>
+                  <div className="flex items-center justify-between text-[7px] font-mono text-neutral-600 pt-1 border-t border-neutral-900/60">
+                    <span>ID: {user?.id?.substring(0, 8).toUpperCase() || 'PENDING'}</span>
+                    <span>{authCountry.toUpperCase()}</span>
                   </div>
-                  <div className="w-full h-1 bg-neutral-900 rounded-full overflow-hidden border border-neutral-800/40">
-                    <div 
-                      className="h-full bg-gradient-to-r from-amber-500 to-gold-400 rounded-full transition-all duration-500"
-                      style={{ width: `${progressPercent}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between text-[9px] font-mono text-neutral-500 pt-2 border-t border-neutral-900">
-                  <span>ID: KR-MEM-000321</span>
-                  <span>{authCountry.toUpperCase()}</span>
                 </div>
               </div>
             </aside>
 
-            {/* MAIN WORKSPACE SCREEN CONTENT */}
-            <main className="flex-1 overflow-y-auto bg-[#070709] p-4 md:p-6 lg:p-8 space-y-6">
+            {/* MAIN CONTENT */}
+            <main className="flex-1 md:ml-64 min-h-[calc(100vh-4rem)] overflow-y-auto bg-[#050505] p-4 md:p-8 lg:p-10 space-y-6 md:space-y-8">
             
             {/* VIEW RENDERING 1: DASHBOARD */}
             {activeTab === 'Dashboard' && (
-              <div className="space-y-6 text-left">
-                <div className="space-y-1">
-                  <h1 className="font-serif text-2xl font-bold tracking-wider text-white uppercase">
-                    Welcome back, {authName}
-                  </h1>
-                  <p className="text-xs text-neutral-500 font-mono">
-                    "Be excellent to yourself, John. Welcome back to the official sanctuary."
-                  </p>
+              <div className="max-w-4xl mx-auto relative">
+
+                {/* Ambient glow */}
+                <div className="absolute -top-40 -right-40 w-96 h-96 bg-gold-500/[0.02] rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-amber-500/[0.01] rounded-full blur-[100px] pointer-events-none" />
+
+                {/* ---- MEMBER LETTERHEAD ---- */}
+                <div className="relative mb-16 md:mb-20">
+                  <div className="flex items-center justify-end mb-8">
+                    <div className="font-mono text-[8px] text-neutral-600 tracking-wider text-right leading-relaxed">
+                      {new Date().toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase()}<br />
+                      {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    </div>
+                  </div>
+
+                  <div className="space-y-5">
+                    <h1 className="font-serif text-4xl md:text-5xl font-black text-white uppercase tracking-tight leading-[1.1]">
+                      Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {authName}
+                    </h1>
+                    <p className="text-sm text-neutral-400 font-sans leading-relaxed max-w-xl">
+                      Your sanctuary is quiet, your connections are growing, and there is always something meaningful waiting for you.
+                    </p>
+                  </div>
+
+                  <div className="h-px bg-gradient-to-r from-gold-500/40 via-gold-500/20 to-transparent mt-8" />
                 </div>
 
-                {/* Grid 4 Stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-4 space-y-1 relative">
-                    <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider block">LOYALTY REWARDS POINTS</span>
-                    <h3 className={`text-xl font-bold text-white font-mono`}>{loyaltyPoints.toLocaleString()} PTS</h3>
-                    <p className="text-[9px] text-green-500 font-mono">↑ Dynamic point wallet</p>
+                {/* ---- MEMBERSHIP BAR ---- */}
+                <div className="relative mb-16 md:mb-20 grid grid-cols-1 md:grid-cols-3 gap-px bg-neutral-900/60 rounded-2xl overflow-hidden">
+                  <div className="bg-neutral-950/60 p-5 md:p-6">
+                    <span className="font-mono text-[8px] text-neutral-600 uppercase tracking-widest">Membership</span>
+                    <p className="font-serif text-sm font-bold text-neutral-100 mt-1.5 uppercase tracking-wide">{rank.name}</p>
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60" />
+                      <span className="font-mono text-[9px] text-neutral-500">{loyaltyPoints.toLocaleString()} points</span>
+                    </div>
                   </div>
-                  <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-4 space-y-1">
-                    <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider block">ACTIVE PROPOSALS</span>
-                    <h3 className="text-xl font-bold text-white font-mono">{userRequests.length} Active</h3>
-                    <p className="text-[9px] text-amber-500 font-mono">{userRequests.filter(r => r.status === 'In Discussion').length} under discussion</p>
+                  <div className="bg-neutral-950/60 p-5 md:p-6">
+                    <span className="font-mono text-[8px] text-neutral-600 uppercase tracking-widest">Progress</span>
+                    <p className="font-serif text-sm font-bold text-neutral-100 mt-1.5">{Math.round(progressPercent)}%</p>
+                    <div className="h-1 bg-neutral-900/60 rounded-full mt-2.5 overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-gold-500/40 to-gold-500/70 rounded-full transition-all duration-700" style={{ width: `${progressPercent}%` }} />
+                    </div>
+                    <p className="font-mono text-[8px] text-neutral-600 mt-1.5">Next: {rank.next} · {loyaltyPoints.toLocaleString()} / {rank.max.toLocaleString()} pts</p>
                   </div>
-                  <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-4 space-y-1">
-                    <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider block">MEMBER LEVEL</span>
-                    <h3 className="text-base font-bold text-gold-500 font-mono truncate uppercase flex items-center gap-1.5">
-                      <span>{rank.icon}</span>
-                      <span>{rank.name}</span>
-                    </h3>
-                    <p className="text-[9px] text-neutral-500 font-mono">Dues support Youth Mentoring</p>
-                  </div>
-                  <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-4 space-y-1">
-                    <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider block">UNREAD ALERTS</span>
-                    <h3 className="text-xl font-bold text-white font-mono">
-                      {notifications.filter(n => n.unread).length} New
-                    </h3>
-                    <p className="text-[9px] text-neutral-500 font-mono">Check Notification Inbox</p>
+                  <div className="bg-neutral-950/60 p-5 md:p-6">
+                    <span className="font-mono text-[8px] text-neutral-600 uppercase tracking-widest">Rank</span>
+                    <p className="font-serif text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-amber-300 mt-1.5 uppercase tracking-wide">{rank.next}</p>
+                    <p className="font-mono text-[8px] text-neutral-600 mt-2.5">{rank.max - loyaltyPoints} pts remaining to advance</p>
                   </div>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-12">
-                  {/* Left Col (8 cols) */}
-                  <div className="md:col-span-8 space-y-6">
-                    {/* Official Reminders & Announcements */}
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 space-y-4">
-                      <div className="flex items-center justify-between border-b border-neutral-900 pb-2">
-                        <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                          Official Sanctuary Reminders
-                        </h3>
-                        <span className="text-[9px] bg-gold-500/10 text-gold-500 font-mono px-2 py-0.5 rounded uppercase font-bold">
-                          Live News feed
-                        </span>
-                      </div>
+                {/* ---- TWO-COLUMN CONTENT ---- */}
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-16 md:mb-20">
 
-                      <div className="space-y-4 text-xs">
-                        <div className="flex gap-3 items-start border-b border-neutral-900/50 pb-3">
-                          <span className="p-1.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0 mt-0.5">
-                            <Calendar className="h-4 w-4" />
-                          </span>
-                          <div className="space-y-1">
-                            <h4 className="font-semibold text-white">Cape Town Mentoring Summit Scheduled</h4>
-                            <p className="text-neutral-400 leading-relaxed">
-                              Registration is now open for registered Gold members. Gillian and the SAYes mentoring crew are mapping the summit itinerary for Saturday, July 12th. Tickets are strictly limited.
-                            </p>
-                            <button
-                              onClick={() => setActiveTab('Events')}
-                              className="text-[10px] text-gold-500 font-mono font-bold hover:underline"
-                            >
-                              Register Event Ticket →
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-3 items-start pb-1">
-                          <span className="p-1.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20 shrink-0 mt-0.5">
-                            <Sparkles className="h-4 w-4" />
-                          </span>
-                          <div className="space-y-1">
-                            <h4 className="font-semibold text-white">Monthly Video Greeting from Gillian Anderson</h4>
-                            <p className="text-neutral-400 leading-relaxed">
-                              "Greetings to our wonderful global community. Let's keep sharing kind moments, listening with our hearts, and looking out for one another." Click the Media tab to stream.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                  {/* LEFT: Journey Timeline (3 cols) */}
+                  <div className="md:col-span-3 space-y-5">
+                    <div className="flex items-center gap-2.5">
+                      <Compass className="h-3.5 w-3.5 text-gold-500/60" />
+                      <span className="font-mono text-[9px] text-gold-500/60 uppercase tracking-widest font-bold">Your Journey</span>
+                      <span className="h-px flex-1 bg-neutral-900/60" />
                     </div>
 
-                    {/* Chronological Recent Activity Feed */}
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 space-y-4">
-                      <div className="flex items-center justify-between border-b border-neutral-900 pb-2">
-                        <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                          Chronological Activity Feed
-                        </h3>
-                        <span className="text-[9px] text-neutral-500 font-mono">
-                          Real-time Logs
-                        </span>
-                      </div>
-
-                      <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
-                        {journeyLog.slice(0, 5).map((log) => (
-                          <div key={log.id} className="flex gap-3 items-start text-xs border-b border-neutral-900/50 pb-3 last:border-0 last:pb-0">
-                            <span className={`h-2 w-2 rounded-full mt-1.5 shrink-0 ${log.color || 'bg-gold-500'}`} />
-                            <div className="space-y-0.5">
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-semibold text-white">{log.title}</h4>
-                                <span className="text-[8px] font-mono text-neutral-500">{log.date}</span>
-                              </div>
-                              <p className="text-neutral-400 text-[11px] leading-snug">{log.description}</p>
+                    {journeyLog.length > 0 ? (
+                      <div className="space-y-0">
+                        {journeyLog.slice(0, 4).map((log, i) => (
+                          <div key={log.id || i} className="flex gap-4 group">
+                            <div className="flex flex-col items-center pt-1">
+                              <div className="h-2 w-2 rounded-full bg-gold-500/40 ring-2 ring-[#050505]" />
+                              {i < Math.min(journeyLog.length, 4) - 1 && <div className="w-px flex-1 bg-neutral-900/60" />}
+                            </div>
+                            <div className="flex-1 min-w-0 pb-5">
+                              <p className="font-serif text-sm font-bold text-neutral-200 group-hover:text-neutral-100 transition-colors uppercase tracking-wide">{log.title}</p>
+                              {log.description && (
+                                <p className="text-xs text-neutral-500 font-sans mt-0.5 leading-relaxed">{log.description}</p>
+                              )}
+                              <p className="font-mono text-[7px] text-neutral-600 mt-1 tracking-wide">{log.date}</p>
                             </div>
                           </div>
                         ))}
                       </div>
-                    </div>
-
-                    {/* Sincerity Quote Card */}
-                    <div className="rounded-xl border border-neutral-900 bg-gradient-to-r from-neutral-950 to-[#0e0e11] p-6 relative overflow-hidden">
-                      <div className="absolute right-4 bottom-4 h-24 w-24 bg-[radial-gradient(circle_at_center,rgba(223,186,137,0.03),transparent)] pointer-events-none" />
-                      <p className="text-sm italic font-serif text-gold-500 leading-relaxed">
-                        "Be excellent to each other. Connection is a superpower. Every child deserves mentorship and a steady guide through life's complex forest."
-                      </p>
-                      <div className="flex justify-between items-center mt-4 pt-4 border-t border-neutral-900/60 text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
-                        <span>Official Community Reminder</span>
-                        <span className="text-white font-bold">— GILLIAN ANDERSON</span>
+                    ) : (
+                      <div className="border border-dashed border-neutral-900/60 rounded-xl p-8 text-center">
+                        <p className="font-serif text-sm text-neutral-500">Your journey begins here</p>
+                        <p className="text-xs text-neutral-600 mt-1 font-sans">Submit a request or register for an event to log your first milestone.</p>
                       </div>
-                    </div>
+                    )}
                   </div>
 
-                  {/* Right Col (4 cols) */}
-                  <div className="md:col-span-4 space-y-6">
-                    {/* Fast Navigation Shortcuts */}
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-4.5 space-y-3">
-                      <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider pb-2 border-b border-neutral-900">
-                        Sanctuary Shortcuts
-                      </h4>
-                      <div className="space-y-2">
-                        <button
-                          onClick={() => setShowPortalRequestWizard(true)}
-                          className="w-full text-left bg-neutral-950 hover:bg-neutral-900 border border-neutral-900 p-2.5 rounded flex items-center justify-between text-xs transition-colors group"
-                        >
-                          <span className="text-neutral-300 font-semibold group-hover:text-gold-500">Submit New Request</span>
-                          <Plus className="h-3.5 w-3.5 text-neutral-600 group-hover:text-gold-500" />
-                        </button>
-                        <button
-                          onClick={() => setActiveTab('Events')}
-                          className="w-full text-left bg-neutral-950 hover:bg-neutral-900 border border-neutral-900 p-2.5 rounded flex items-center justify-between text-xs transition-colors group"
-                        >
-                          <span className="text-neutral-300 font-semibold group-hover:text-gold-500">View Events Ticket</span>
-                          <Calendar className="h-3.5 w-3.5 text-neutral-600 group-hover:text-gold-500" />
-                        </button>
-                        <button
-                          onClick={() => setShowPortalMembershipModal(true)}
-                          className="w-full text-left bg-neutral-950 hover:bg-neutral-900 border border-neutral-900 p-2.5 rounded flex items-center justify-between text-xs transition-colors group"
-                        >
-                          <span className="text-neutral-300 font-semibold group-hover:text-gold-500">Request Membership Upgrade</span>
-                          <Award className="h-3.5 w-3.5 text-neutral-600 group-hover:text-gold-500" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Daily Fan Interaction Check-In */}
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-4.5 space-y-4">
-                      <div className="flex items-center justify-between border-b border-neutral-900 pb-2">
-                        <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                          Daily Trivia Check-In
-                        </h3>
-                        <span className="text-[9px] bg-gold-500/10 text-gold-500 font-mono px-2 py-0.5 rounded font-bold">
-                          +50 PTS
-                        </span>
+                  {/* RIGHT: Upcoming + Quick Actions (2 cols) */}
+                  <div className="md:col-span-2 space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2.5">
+                        <Calendar className="h-3.5 w-3.5 text-gold-500/60" />
+                        <span className="font-mono text-[9px] text-gold-500/60 uppercase tracking-widest font-bold">Upcoming</span>
+                        <span className="h-px flex-1 bg-neutral-900/60" />
                       </div>
 
-                      {!dailyQuizAnswered ? (
-                        <div className="space-y-3 text-xs">
-                          <p className="text-neutral-400 font-semibold leading-snug">
-                            Which iconic character did Gillian Anderson play in the legendary science fiction series 'The X-Files'?
-                          </p>
-                          <div className="grid grid-cols-1 gap-2">
-                            {[
-                              { label: 'Agent Dana Scully', isCorrect: true },
-                              { label: 'Detective Stella Gibson', isCorrect: false },
-                              { label: 'Dr. Jean Milburn', isCorrect: false },
-                              { label: 'Lady Dedlock', isCorrect: false }
-                            ].map((opt) => (
-                              <button
-                                key={opt.label}
-                                onClick={() => {
-                                  setDailyQuizAnswered(true);
-                                  setDailyQuizChoice(opt.label);
-                                  if (opt.isCorrect) {
-                                    setDailyQuizResult('correct');
-                                    setLoyaltyPoints((prev) => prev + 50);
-                                    pushNotification('Daily Check-In trivia answered correctly! Earned +50 Loyalty Points.');
-                                    addJourneyMilestone('Daily Trivia Check-In', 'Answered X-Files series trivia correctly and received 50 loyalty points.');
-                                    showToast('Correct! +50 Points added.', 'success');
-                                  } else {
-                                    setDailyQuizResult('incorrect');
-                                    pushNotification('Daily Check-In trivia answered incorrectly. Try again tomorrow!');
-                                    showToast('Incorrect answer. Better luck tomorrow!', 'error');
-                                  }
-                                }}
-                                className="w-full text-left bg-neutral-950 hover:bg-neutral-900 border border-neutral-900 px-3 py-2 rounded text-xs text-neutral-300 hover:text-white transition-colors"
-                              >
-                                {opt.label}
-                              </button>
-                            ))}
+                      {portalEvents.filter(e => !e.registered).length > 0 ? (
+                        <button onClick={() => setActiveTab('Events')} className="w-full text-left group">
+                          <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 hover:border-gold-500/30 transition-all shadow-lg shadow-black/20">
+                            <div className="flex items-center gap-4">
+                              <div className="flex flex-col items-center justify-center h-14 w-14 rounded-lg border border-neutral-900 bg-neutral-950/60 font-mono shrink-0">
+                                <span className="text-base font-semibold text-neutral-100 leading-none">
+                                  {(() => { try { const d = new Date(portalEvents.filter(e => !e.registered)[0].date); return isNaN(d.getTime()) ? '--' : d.getDate(); } catch { return '--'; } })()}
+                                </span>
+                                <span className="text-[7px] font-semibold text-gold-500/60 tracking-wider mt-0.5 leading-none uppercase">
+                                  {(() => { try { const d = new Date(portalEvents.filter(e => !e.registered)[0].date); return isNaN(d.getTime()) ? 'TBD' : d.toLocaleString('en', { month: 'short' }); } catch { return 'TBD'; } })()}
+                                </span>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="font-serif text-sm font-bold text-neutral-100 group-hover:text-gold-500/80 transition-colors uppercase tracking-wide">{portalEvents.filter(e => !e.registered)[0].title}</p>
+                                <p className="text-[10px] text-neutral-500 font-sans mt-0.5">{portalEvents.filter(e => !e.registered)[0].location}</p>
+                              </div>
+                            </div>
                           </div>
-                        </div>
+                        </button>
                       ) : (
-                        <div className="text-center py-2 space-y-2">
-                          <div className={`text-xs font-bold font-mono uppercase ${dailyQuizResult === 'correct' ? 'text-green-500' : 'text-red-500'}`}>
-                            {dailyQuizResult === 'correct' ? '🎉 Correct Answer!' : '❌ Incorrect choice'}
-                          </div>
-                          <p className="text-xs text-neutral-400">
-                            You answered: <span className="text-white font-semibold font-mono">{dailyQuizChoice}</span>
-                          </p>
-                          <p className="text-[10px] text-neutral-500 italic leading-snug">
-                            Gillian Anderson famously portrayed Agent Dana Scully, earning an Emmy, a Golden Globe, and a SAG Award. Check back tomorrow for the next sanctuary trivia check-in!
-                          </p>
+                        <div className="border border-dashed border-neutral-900/60 rounded-xl p-5 text-center">
+                          <p className="font-serif text-sm text-neutral-500">No upcoming events</p>
+                          <p className="text-[10px] text-neutral-600 mt-1 font-sans">New gatherings will appear here.</p>
                         </div>
                       )}
                     </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2.5">
+                        <LayoutGrid className="h-3.5 w-3.5 text-gold-500/60" />
+                        <span className="font-mono text-[9px] text-gold-500/60 uppercase tracking-widest font-bold">Quick Access</span>
+                        <span className="h-px flex-1 bg-neutral-900/60" />
+                      </div>
+                      <div className="grid grid-cols-1 gap-2">
+                        {[
+                          { label: 'Membership', icon: Award, onClick: () => setActiveTab('Membership') },
+                          { label: 'Events', icon: Calendar, onClick: () => setActiveTab('Events') },
+                          { label: 'Messages', icon: MessageSquare, onClick: () => setActiveTab('Messages') },
+                          { label: 'Community', icon: Users, onClick: () => setActiveTab('Community') },
+                        ].map((item) => {
+                          const Icon = item.icon;
+                          return (
+                            <button key={item.label} onClick={item.onClick}
+                              className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg border border-neutral-900 bg-neutral-950/20 hover:border-gold-500/30 hover:bg-gold-500/5 transition-all text-left group shadow-lg shadow-black/20"
+                            >
+                              <Icon className="h-3.5 w-3.5 text-neutral-500 group-hover:text-gold-500/60 transition-colors" />
+                              <span className="font-serif text-xs font-bold text-neutral-200 group-hover:text-gold-500/80 transition-colors uppercase tracking-wide">{item.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                {/* ---- NEW SECTION: Requests & Rewards glance ---- */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
+                  <button onClick={() => setShowPortalRequestWizard(true)}
+                    className="group relative overflow-hidden rounded-xl border border-neutral-900 bg-neutral-950/20 p-5 hover:border-gold-500/30 hover:bg-gold-500/[0.02] transition-all text-left shadow-lg shadow-black/20"
+                  >
+                    <div className="absolute -top-10 -right-10 w-24 h-24 bg-gold-500/[0.03] rounded-full blur-[60px] pointer-events-none" />
+                    <div className="relative">
+                      <FileText className="h-4 w-4 text-gold-500/60 mb-2" />
+                      <p className="font-serif text-sm font-bold text-neutral-200 group-hover:text-gold-500/80 transition-colors uppercase tracking-wide">Submit a Request</p>
+                      <p className="text-[10px] text-neutral-500 mt-1 font-sans">Send a personal proposal to Gillian's coordination team.</p>
+                    </div>
+                  </button>
+
+                  <button onClick={() => setActiveTab('Rewards')}
+                    className="group relative overflow-hidden rounded-xl border border-neutral-900 bg-neutral-950/20 p-5 hover:border-gold-500/30 hover:bg-gold-500/[0.02] transition-all text-left shadow-lg shadow-black/20"
+                  >
+                    <div className="absolute -top-10 -right-10 w-24 h-24 bg-gold-500/[0.03] rounded-full blur-[60px] pointer-events-none" />
+                    <div className="relative">
+                      <Gift className="h-4 w-4 text-gold-500/60 mb-2" />
+                      <p className="font-serif text-sm font-bold text-neutral-200 group-hover:text-gold-500/80 transition-colors uppercase tracking-wide">Loyalty Rewards</p>
+                      <p className="text-[10px] text-neutral-500 mt-1 font-sans">{loyaltyPoints.toLocaleString()} points available to redeem.</p>
+                    </div>
+                  </button>
+                </div>
+
               </div>
             )}
 
@@ -2679,9 +2242,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           {activeSubTab === 'MESSAGES' && (
                             <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-4 flex flex-col h-[350px]">
                               <div className="flex-1 overflow-y-auto space-y-4 pr-1 mb-3 text-xs">
-                                {(proposalChats[req.id] || [
-                                  { id: 'p_m_def', sender: 'management', text: "Welcome to your Proposal bridge. You can communicate directly with Sarah regarding credentials and details for this specific request.", timestamp: req.submittedOn }
-                                ]).map((msg) => (
+                                {(proposalChats[req.id] || []).map((msg) => (
                                   <div key={msg.id} className={`flex gap-3 text-left ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                                     <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[9px] ${
                                       msg.sender === 'user' ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-950 border-gold-800/35 text-gold-500'
@@ -2700,7 +2261,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                 ))}
                               </div>
                               <form
-                                onSubmit={(e) => {
+                                onSubmit={async (e) => {
                                   e.preventDefault();
                                   if (!newProposalMsg.trim()) return;
                                   const userText = newProposalMsg.trim();
@@ -2713,29 +2274,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                   }));
                                   setNewProposalMsg('');
 
-                                  addJourneyMilestone(
-                                    `Dispatched Proposal Msg: ${req.id}`,
-                                    `Sent secure details message regarding proposal: "${userText.substring(0, 30)}..."`,
-                                    'bg-blue-500'
-                                  );
-
-                                  setTimeout(() => {
-                                    let replyText = "Understood. Sarah has noted this. We are validating your scheduling proposals and will update this timeline shortly. Be excellent.";
-                                    const textLower = userText.toLowerCase();
-                                    if (textLower.includes('date') || textLower.includes('time') || textLower.includes('saturday') || textLower.includes('july')) {
-                                      replyText = "The proposed slot has been sent to our calendar coordination module. We will lock in security and issue a clearance voucher.";
-                                    } else if (textLower.includes('charity') || textLower.includes('cancer') || textLower.includes('organization')) {
-                                      replyText = "We appreciate the verified credentials you uploaded. It makes our authorization flow significantly faster.";
-                                    }
-
-                                    const replyMsg = { id: `pmsg-reply-${Date.now()}`, sender: 'management' as const, text: replyText, timestamp: new Date().toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) };
-                                    setProposalChats(prev => ({
-                                      ...prev,
-                                      [req.id]: [...(prev[req.id] || []), replyMsg]
-                                    }));
-                                    pushNotification(`Liaison reply on ${req.id}: "${replyText.substring(0, 45)}..."`);
-                                    showToast('Proposal liaison message received.', 'info');
-                                  }, 1200);
+                                  try {
+                                    await fetch(`/api/requests/${req.id}/chat`, {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ sender: 'user', text: userText })
+                                    });
+                                  } catch {}
                                 }}
                                 className="flex gap-2 border-t border-neutral-900 pt-3"
                               >
@@ -2758,25 +2303,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               <h4 className="text-xs font-mono font-bold text-neutral-500 uppercase tracking-widest pb-1 border-b border-neutral-900">
                                 Management Issued Coordination Guidelines
                               </h4>
-                              <div className="space-y-2">
-                                {[
-                                  { title: 'Standard Meet & Greet Agreement.pdf', size: '245 KB' },
-                                  { title: 'Charity Verification Confirmation.pdf', size: '180 KB' }
-                                ].map((doc, idx) => (
-                                  <div key={idx} className="flex items-center justify-between p-3 rounded-lg border border-neutral-900 bg-neutral-900/10 hover:border-neutral-800 transition-colors">
-                                    <div className="flex items-center gap-3 text-xs">
-                                      <FileText className="h-5 w-5 text-gold-500 shrink-0" />
-                                      <div>
-                                        <p className="font-semibold text-white leading-tight">{doc.title}</p>
-                                        <p className="text-[9px] text-neutral-500 font-mono">Size: {doc.size}</p>
-                                      </div>
-                                    </div>
-                                    <button onClick={() => showToast(`Downloading ${doc.title}...`, 'info')} className="p-1.5 border border-neutral-800 bg-neutral-950 hover:bg-neutral-900 text-neutral-400 hover:text-white rounded text-xs transition-colors">
-                                      <Download className="h-4 w-4" />
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
+                              <p className="text-[10px] text-neutral-500 font-mono">No documents available yet.</p>
                             </div>
                           )}
                         </div>
@@ -2836,11 +2363,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               <p className="text-gold-500 font-semibold mt-1">✓ ACCESS GRANTED</p>
                             </div>
                             
-                            {/* Simple inline mock QR code */}
-                            <div className="h-12 w-12 bg-white border border-neutral-800 rounded p-1 shrink-0 flex flex-wrap gap-0.5 overflow-hidden">
-                              {Array.from({ length: 49 }).map((_, i) => (
-                                <div key={i} className={`h-1.5 w-1.5 ${Math.random() > 0.4 ? 'bg-black' : 'bg-transparent'}`} />
-                              ))}
+                            {/* QR placeholder */}
+                            <div className="h-12 w-12 bg-white border border-neutral-800 rounded p-1 shrink-0 flex items-center justify-center">
+                              <div className="grid grid-cols-5 gap-0.5">
+                                {[...Array(25)].map((_, i) => (
+                                  <div key={i} className={`h-1.5 w-1.5 ${[0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24].includes(i) ? 'bg-black' : 'bg-transparent'}`} />
+                                ))}
+                              </div>
                             </div>
                           </div>
                           
@@ -2909,17 +2438,19 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-left border-t border-neutral-900/60 pt-3">
                       <div>
                         <span className="text-[7px] font-mono text-neutral-500 uppercase block">MEMBER ID</span>
-                        <span className="text-[10px] font-mono font-bold text-neutral-300">KR-MEM-000321</span>
+                        <span className="text-[10px] font-mono font-bold text-neutral-300">{user?.id?.substring(0, 8).toUpperCase() || 'PENDING'}</span>
                       </div>
                       <div>
                         <span className="text-[7px] font-mono text-neutral-500 uppercase block">LEVEL ACCESS</span>
                         <span className="text-[10px] font-mono font-bold text-gold-500">{rank.name.toUpperCase()}</span>
                       </div>
                       <div className="flex justify-end items-center">
-                        <div className="h-8 w-8 bg-white p-0.5 rounded shrink-0 flex flex-wrap gap-px overflow-hidden">
-                          {Array.from({ length: 25 }).map((_, i) => (
-                            <div key={i} className={`h-1 w-1 ${Math.random() > 0.5 ? 'bg-black' : 'bg-transparent'}`} />
-                          ))}
+                        <div className="h-8 w-8 bg-white p-0.5 rounded shrink-0 flex items-center justify-center">
+                          <div className="grid grid-cols-4 gap-px">
+                            {[...Array(16)].map((_, i) => (
+                              <div key={i} className={`h-1 w-1 ${[0,3,4,7,8,11,12,13,14,15].includes(i) ? 'bg-black' : 'bg-transparent'}`} />
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2936,96 +2467,28 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   </p>
                   
                   <div className="grid gap-4 md:grid-cols-3">
-                    {/* GOLD TIER */}
-                    <div className="relative rounded-xl border border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-neutral-950 p-5 space-y-3 hover:border-amber-500/50 transition-all">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[7px] font-mono text-amber-500 uppercase tracking-widest block">TIER</span>
-                          <span className="text-lg font-bold text-amber-400 font-serif tracking-wider">GOLD</span>
+                    {(backendContent?.membershipTiers || []).map((tier: any) => (
+                      <div key={tier.id} className="relative rounded-xl border border-neutral-800 bg-gradient-to-b from-neutral-900/20 to-neutral-950 p-5 space-y-3 hover:border-gold-500/30 transition-all">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-[7px] font-mono text-neutral-500 uppercase tracking-widest block">TIER</span>
+                            <span className="text-lg font-bold text-white font-serif tracking-wider">{tier.name}</span>
+                          </div>
+                          <span className="text-xs font-mono text-gold-500 font-bold">{tier.price}</span>
                         </div>
-                        <span className="text-2xl font-bold text-amber-500/30">★</span>
-                      </div>
-                      <div className="space-y-1.5">
-                        <span className="text-xs text-neutral-400">Access to Gold-tier experiences</span>
-                        <span className="text-[10px] text-green-500 font-mono">8+ Meet & Greets + Creative + Literary</span>
-                        <span className="text-[10px] text-neutral-500">Morning Coffee, Garden Party, Script Reading, Fan Convention</span>
-                      </div>
-                      <div className="flex items-center gap-2 pt-2 border-t border-neutral-900/40">
-                        <span className="text-xs font-bold text-amber-500">COMPLIMENTARY</span>
-                        <span className="text-[9px] font-mono text-neutral-500">Fan-funded spots available</span>
-                      </div>
-                      {(rank.min >= 0 && rank.min < 1500) && (
-                        <span className="text-[9px] font-mono text-green-500 flex items-center gap-1">
-                          <CheckCircle2 className="h-3 w-3" /> YOUR CURRENT TIER
-                        </span>
-                      )}
-                    </div>
-
-                    {/* PLATINUM TIER */}
-                    <div className="relative rounded-xl border border-slate-400/30 bg-gradient-to-b from-slate-900/20 to-neutral-950 p-5 space-y-3 hover:border-slate-400/50 transition-all">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[7px] font-mono text-slate-400 uppercase tracking-widest block">TIER</span>
-                          <span className="text-lg font-bold text-slate-300 font-serif tracking-wider">PLATINUM</span>
+                        <ul className="space-y-1">
+                          {(tier.benefits || []).map((b: string, i: number) => (
+                            <li key={i} className="text-[10px] text-neutral-400 flex items-start gap-1.5">
+                              <CheckCircle2 className="h-3 w-3 text-gold-500 shrink-0 mt-px" />
+                              {b}
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="flex items-center gap-2 pt-2 border-t border-neutral-900/40">
+                          <span className="text-[9px] font-mono text-neutral-500">{tier.price === 'Free' ? 'Free access tier' : `$${tier.price?.replace(/[^0-9.]/g, '')}/mo`}</span>
                         </div>
-                        <span className="text-2xl font-bold text-slate-400/30">★★</span>
                       </div>
-                      <div className="space-y-1.5">
-                        <span className="text-xs text-neutral-400">All Gold + Platinum-tier experiences</span>
-                        <span className="text-[10px] text-blue-500 font-mono">6+ Acting Masterclasses + Philanthropy + Behind-the-Scenes</span>
-                        <span className="text-[10px] text-neutral-500">Backstage Pass, Acting Masterclass, SAYes Cape Town Retreat</span>
-                      </div>
-                      <div className="flex items-center gap-2 pt-2 border-t border-neutral-900/40">
-                        <span className="text-xs font-bold text-slate-400">COMPLIMENTARY</span>
-                        <span className="text-[9px] font-mono text-neutral-500">Limited exclusive spots</span>
-                      </div>
-                      {(rank.min >= 1500 && rank.min < 3500) && (
-                        <span className="text-[9px] font-mono text-green-500 flex items-center gap-1">
-                          <CheckCircle2 className="h-3 w-3" /> YOUR CURRENT TIER
-                        </span>
-                      )}
-                      {(rank.min < 1500) && (
-                        <button
-                          onClick={() => { setMType('platinum'); setShowPortalMembershipModal(true); }}
-                          className="w-full mt-2 bg-slate-900 hover:bg-slate-800 border border-slate-400/30 text-slate-300 font-bold py-1.5 px-3 rounded text-[9px] font-mono uppercase transition-all"
-                        >
-                          Upgrade to Platinum
-                        </button>
-                      )}
-                    </div>
-
-                    {/* DIAMOND TIER */}
-                    <div className="relative rounded-xl border border-purple-400/30 bg-gradient-to-b from-purple-950/20 to-neutral-950 p-5 space-y-3 hover:border-purple-400/50 transition-all ring-1 ring-purple-500/10">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-[7px] font-mono text-purple-400 uppercase tracking-widest block">TIER</span>
-                          <span className="text-lg font-bold text-purple-300 font-serif tracking-wider">DIAMOND</span>
-                        </div>
-                        <span className="text-2xl font-bold text-purple-400/30">★★★</span>
-                      </div>
-                      <div className="space-y-1.5">
-                        <span className="text-xs text-neutral-400">All Platinum + Diamond-tier experiences</span>
-                        <span className="text-[10px] text-purple-500 font-mono">4+ Private Audiences + VIP Gala + Birthday Celebration</span>
-                        <span className="text-[10px] text-neutral-500">Private Audience, VIP Gala, Birthday, Holiday Gathering</span>
-                      </div>
-                      <div className="flex items-center gap-2 pt-2 border-t border-neutral-900/40">
-                        <span className="text-xs font-bold text-purple-400">COMPLIMENTARY</span>
-                        <span className="text-[9px] font-mono text-neutral-500">Ultra-exclusive, 1-2 spots each</span>
-                      </div>
-                      {(rank.min >= 10000) && (
-                        <span className="text-[9px] font-mono text-green-500 flex items-center gap-1">
-                          <CheckCircle2 className="h-3 w-3" /> YOUR CURRENT TIER
-                        </span>
-                      )}
-                      {(rank.min < 10000) && (
-                        <button
-                          onClick={() => { setMType('diamond'); setShowPortalMembershipModal(true); }}
-                          className="w-full mt-2 bg-purple-950/20 hover:bg-purple-950/30 border border-purple-400/30 text-purple-300 font-bold py-1.5 px-3 rounded text-[9px] font-mono uppercase transition-all"
-                        >
-                          Upgrade to Diamond
-                        </button>
-                      )}
-                    </div>
+                    ))}
                   </div>
                 </div>
 
@@ -3092,14 +2555,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                 {ord.status}
                               </span>
                               <span className="text-[10px] text-neutral-500 font-mono font-bold">Ordered: {ord.date}</span>
-                              {ord.status !== 'Delivered & Verified ✅' && (
-                                <button
-                                  onClick={() => handleSimulateTransitStep(ord.id)}
-                                  className="text-[9px] font-mono bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded transition-all mt-1 uppercase"
-                                >
-                                  Simulate Transit Step 📦
-                                </button>
-                              )}
                             </div>
                           </div>
                         ))}
@@ -3491,7 +2946,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             <span>{rank.name}</span>
                           </span>
                         </div>
-                        <p className="text-[10px] text-neutral-500 font-mono mt-1">MEMBER SINCE MAY 10, 2024 • COUNTRY: {authCountry}</p>
+                        <p className="text-[10px] text-neutral-500 font-mono mt-1">COUNTRY: {authCountry}</p>
                       </div>
                     </div>
 
@@ -3595,13 +3050,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       </p>
                     </div>
                     <p className="text-xs text-neutral-400 leading-normal">
-                      Share a quiet act of kindness you performed today. We record it in your spiritual Sanctuary Journey Log and award you 250 loyalty points.
+                      Share a quiet act of kindness you performed today. It will be logged to your Sanctuary Journey Log.
                     </p>
 
                     <form onSubmit={(e) => {
                       handleAddKindnessAct(e);
-                      // Award points
-                      setLoyaltyPoints(prev => prev + 250);
                     }} className="space-y-3 pt-2">
                       <div className="space-y-1">
                         <label className="text-[10px] font-mono text-neutral-400 uppercase">Kindness Title</label>
@@ -3690,7 +3143,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     </p>
 
                     <div className="space-y-3.5 pt-2">
-                      {redeemableItems.map((item) => {
+                      {portalRewards.map((item) => {
                         const isUnlocked = badges.some(b => b.title === item.title);
                         return (
                           <div key={item.id} className="p-3 border border-neutral-900/60 rounded bg-neutral-900/20 text-xs text-left space-y-2 relative overflow-hidden">
@@ -3701,7 +3154,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               </div>
                               <span className="text-gold-500 font-mono font-bold shrink-0">{item.cost} PTS</span>
                             </div>
-                            <p className="text-[10px] text-neutral-400 leading-normal">{item.desc}</p>
+                            <p className="text-[10px] text-neutral-400 leading-normal">{item.description}</p>
                             <button
                               onClick={() => handleRedeemReward(item)}
                               disabled={isUnlocked}
@@ -4012,11 +3465,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     )}
 
       {/* FOOTER BAR */}
-      <footer className="border-t border-neutral-950 bg-[#050506] py-4 text-center text-[10px] font-mono text-neutral-500 px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-        <span>© 2026 Gillian Anderson Official Fan Platform. Under quiet private administration.</span>
-        <div className="flex gap-4">
-          <button onClick={() => setIsTermsOpen(true)} className="hover:text-gold-500 transition-colors cursor-pointer uppercase bg-transparent border-none">Terms of Service</button>
-          <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-gold-500 transition-colors cursor-pointer uppercase bg-transparent border-none">Privacy Policy</button>
+      <footer className="border-t border-white/[0.03] bg-[#070709] py-5 px-4 md:px-8">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-[9px] font-mono text-white/20">
+          <span>&copy; 2026 Gillian Anderson Co-op. All rights reserved.</span>
+          <div className="flex gap-5">
+            <button onClick={() => setIsTermsOpen(true)} className="hover:text-gold-500/60 transition-colors bg-transparent border-none cursor-pointer">Terms</button>
+            <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-gold-500/60 transition-colors bg-transparent border-none cursor-pointer">Privacy</button>
+          </div>
         </div>
       </footer>
 

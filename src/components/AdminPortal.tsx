@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGlobalState } from '../utils/StateContext';
 import { useAuth } from '../utils/AuthContext';
 import { supabase } from '../utils/supabase';
@@ -154,7 +154,20 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   };
 
   // Search input
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setShowNotifications(false);
+      }
+    };
+    if (showNotifications) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showNotifications]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
 
   // Notifications State (fetched from DB)
   const [notificationCount, setNotificationCount] = useState(0);
@@ -196,6 +209,12 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       setProposalChats(backendProposalChats);
     }
   }, [backendProposalChats]);
+
+  // Live clock tick
+  useEffect(() => {
+    const t = setInterval(() => setCurrentTime(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })), 60000);
+    return () => clearInterval(t);
+  }, []);
 
   // Scroll to top immediately whenever activeTab changes
   useEffect(() => {
@@ -291,6 +310,130 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     })();
   }, []);
 
+  // Platform Activity (daily aggregates)
+  const [activityData, setActivityData] = useState<{
+      today: { bookings: number; orders: number; members: number };
+      week: { bookings: number; orders: number; members: number };
+      dailyBars: { label: string; bookings: number; orders: number; members: number }[];
+  }>({ today: { bookings: 0, orders: 0, members: 0 }, week: { bookings: 0, orders: 0, members: 0 }, dailyBars: [] });
+
+  const fetchActivityData = async () => {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const weekAgo = new Date(now.getTime() - 7 * 86400000).toISOString();
+
+    const sevenDays: Date[] = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(now.getTime() - (6 - i) * 86400000);
+      return d;
+    });
+
+    const [
+      { data: allBookings },
+      { data: allOrders },
+      { data: allProfiles },
+    ] = await Promise.all([
+      supabase.from('experience_requests').select('created_at'),
+      supabase.from('orders').select('updated_at'),
+      supabase.from('profiles').select('created_at'),
+    ]);
+
+    const dailyBars = sevenDays.map((day) => {
+      const dayStart = new Date(day.getFullYear(), day.getMonth(), day.getDate()).toISOString();
+      const dayEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1).toISOString();
+      return {
+        label: day.toLocaleDateString('en-US', { weekday: 'short' }),
+        bookings: (allBookings || []).filter((b: any) => b.created_at && new Date(b.created_at) >= new Date(dayStart) && new Date(b.created_at) < new Date(dayEnd)).length,
+        orders: (allOrders || []).filter((o: any) => o.updated_at && new Date(o.updated_at) >= new Date(dayStart) && new Date(o.updated_at) < new Date(dayEnd)).length,
+        members: (allProfiles || []).filter((p: any) => p.created_at && new Date(p.created_at) >= new Date(dayStart) && new Date(p.created_at) < new Date(dayEnd)).length,
+      };
+    });
+
+    const todayBookings = (allBookings || []).filter((b: any) => b.created_at && new Date(b.created_at) >= new Date(todayStart)).length;
+    const todayOrders = (allOrders || []).filter((o: any) => o.updated_at && new Date(o.updated_at) >= new Date(todayStart)).length;
+    const todayMembers = (allProfiles || []).filter((p: any) => p.created_at && new Date(p.created_at) >= new Date(todayStart)).length;
+    const weekBookings = (allBookings || []).filter((b: any) => b.created_at && new Date(b.created_at) >= new Date(weekAgo)).length;
+    const weekOrders = (allOrders || []).filter((o: any) => o.updated_at && new Date(o.updated_at) >= new Date(weekAgo)).length;
+    const weekMembers = (allProfiles || []).filter((p: any) => p.created_at && new Date(p.created_at) >= new Date(weekAgo)).length;
+
+    setActivityData({
+      today: { bookings: todayBookings, orders: todayOrders, members: todayMembers },
+      week: { bookings: weekBookings, orders: weekOrders, members: weekMembers },
+      dailyBars,
+    });
+  };
+
+  // Recent Experience Bookings (for dashboard panel)
+  const [recentBookings, setRecentBookings] = useState<any[]>([]);
+
+  const fetchRecentBookings = async () => {
+    const { data } = await supabase
+      .from('experience_requests')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(5);
+    if (data) setRecentBookings(data);
+  };
+
+  // Dashboard live stats (fetched independently)
+  const [dashboardStats, setDashboardStats] = useState({
+    totalMembers: 0,
+    totalExperiences: 0,
+    experienceBookings: 0,
+    pendingBookings: 0,
+    subscriberCount: 0,
+    totalRevenue: 0,
+  });
+
+  const [bookingStatusCounts, setBookingStatusCounts] = useState({ confirmed: 0, pending: 0, cancelled: 0 });
+
+  const fetchDashboardStats = async () => {
+    const [
+      { count: profileCount },
+      { count: expCount },
+      { count: expBookings },
+      { count: pendingB },
+      { count: confirmedB },
+      { count: cancelledB },
+      { count: subsCount },
+      { data: ordersData },
+    ] = await Promise.all([
+      supabase.from('profiles').select('*', { count: 'exact', head: true }),
+      supabase.from('experiences').select('*', { count: 'exact', head: true }).eq('published', true),
+      supabase.from('experience_requests').select('*', { count: 'exact', head: true }),
+      supabase.from('experience_requests').select('*', { count: 'exact', head: true }).is('confirmed_date', null).is('cancelled_reason', null),
+      supabase.from('experience_requests').select('*', { count: 'exact', head: true }).not('confirmed_date', 'is', null).is('cancelled_reason', null),
+      supabase.from('experience_requests').select('*', { count: 'exact', head: true }).not('cancelled_reason', 'is', null),
+      supabase.from('subscribers').select('*', { count: 'exact', head: true }),
+      supabase.from('orders').select('price'),
+    ]);
+    const revenue = (ordersData || []).reduce((sum, o: any) => sum + (parseFloat(o.price) || 0), 0);
+    setDashboardStats({
+      totalMembers: profileCount ?? 0,
+      totalExperiences: expCount ?? 0,
+      experienceBookings: expBookings ?? 0,
+      pendingBookings: pendingB ?? 0,
+      subscriberCount: subsCount ?? 0,
+      totalRevenue: revenue,
+    });
+    setBookingStatusCounts({
+      confirmed: confirmedB ?? 0,
+      pending: pendingB ?? 0,
+      cancelled: cancelledB ?? 0,
+    });
+  };
+
+  useEffect(() => {
+    fetchDashboardStats();
+    fetchActivityData();
+    fetchRecentBookings();
+    const interval = setInterval(() => {
+      fetchDashboardStats();
+      fetchActivityData();
+      fetchRecentBookings();
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Modal forms
   const [showEventModal, setShowEventModal] = useState(false);
   const [eventTitle, setEventTitle] = useState('');
@@ -310,37 +453,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const [journalExcerpt, setJournalExcerpt] = useState('');
   const [journalContent, setJournalContent] = useState('');
 
-  // Backup state
-  const [backupProgress, setBackupProgress] = useState<number | null>(null);
-  const [backupLogs, setBackupLogs] = useState<string[]>([]);
-
   // Settings State
   const [platformName, setPlatformName] = useState('Gillian Anderson Official Fan Platform');
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [allowRegistration, setAllowRegistration] = useState(true);
-
-  // Status statistics mapping helper
-  const getStatusCount = (status: RequestDetail['status']) => {
-    return requests.filter(r => r.status === status).length;
-  };
-
-  const totalReqs = requests.length || 0;
-  const donutData = [
-    { key: 'Submitted' as const, color: '#f59e0b' },
-    { key: 'Under Review' as const, color: '#3b82f6' },
-    { key: 'In Discussion' as const, color: '#8b5cf6' },
-    { key: 'Offer Made' as const, color: '#6366f1' },
-    { key: 'Payment Requested' as const, color: '#f97316' },
-    { key: 'Confirmed' as const, color: '#06b6d4' },
-    { key: 'Completed' as const, color: '#10b981' },
-  ];
-  let cumPct = 0;
-  const donutArcs = totalReqs > 0 ? donutData.map(d => {
-    const pct = Math.round((getStatusCount(d.key) / totalReqs) * 100);
-    const offset = 100 - cumPct;
-    cumPct += pct;
-    return { ...d, pct, offset, dasharray: `${pct} ${100 - pct}` };
-  }) : [];
 
   // Handler for updating a Request status
   const handleUpdateStatus = async (id: string, newStatus: RequestDetail['status']) => {
@@ -348,20 +464,28 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       await updateRequestStatus(id, newStatus);
       const timestamp = new Date().toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
 
-      // Add communication log automatically
+      // Add communication log automatically (local + DB)
       const targetReq = requests.find(r => r.id === id);
       if (targetReq) {
-        const newLog: CommunicationLogItem = {
+        const nextAction = newStatus === 'In Discussion' ? 'Discuss security and schedules' : newStatus === 'Offer Made' ? 'Awaiting offer acceptance' : newStatus === 'Payment Requested' ? 'Awaiting voluntary payment' : 'Follow up standard processing';
+        const notes = `Status updated to ${newStatus}.`;
+        setCommLogs(prev => [{
           id: `COM-000${Date.now().toString().slice(-3)}`,
           requestId: id,
           member: targetReq.member,
           method: 'WhatsApp',
           lastContact: 'Just now',
           by: 'Admin',
-          notes: `Status updated to ${newStatus}.`,
-          nextAction: newStatus === 'In Discussion' ? 'Discuss security and schedules' : newStatus === 'Offer Made' ? 'Awaiting offer acceptance' : newStatus === 'Payment Requested' ? 'Awaiting voluntary payment' : 'Follow up standard processing'
-        };
-        setCommLogs(prev => [newLog, ...prev]);
+          notes,
+          nextAction,
+        }, ...prev]);
+        await supabase.from('communication_logs').insert({
+          request_id: id,
+          member: targetReq.member,
+          method: 'WhatsApp',
+          notes,
+          next_action: nextAction,
+        }).then(() => {});
       }
 
       if (selectedRequest && selectedRequest.id === id) {
@@ -448,22 +572,45 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     } catch {};
   };
 
-  // Handler for sending announcement
-  const handleSendAnnouncement = (e: React.FormEvent) => {
+  // Handler for sending announcement (inserts into admin_notifications)
+  const handleSendAnnouncement = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!announceTitle.trim() || !announceText.trim()) return;
 
+    const { error } = await supabase.from('admin_notifications').insert({
+      title: announceTitle.trim(),
+      message: announceText.trim(),
+      status: 'unread',
+      scope: announceScope,
+    });
+    if (error) {
+      showToast('Failed to send announcement: ' + error.message, 'error');
+      return;
+    }
     showToast(`Announcement "${announceTitle}" sent successfully to ${announceScope}!`, 'success');
     setShowAnnounceModal(false);
     setAnnounceTitle('');
     setAnnounceText('');
   };
 
-  // Handler for creating Journal post
-  const handleCreateJournal = (e: React.FormEvent) => {
+  // Handler for creating Journal post (inserts into journal_entries)
+  const handleCreateJournal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!journalTitle.trim()) return;
 
+    const { error } = await supabase.from('journal_entries').insert({
+      title: journalTitle.trim(),
+      category: journalCategory || 'General',
+      excerpt: journalExcerpt.trim() || '',
+      content: journalContent.trim() || '',
+      date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+      readTime: '3 min read',
+      image: '',
+    });
+    if (error) {
+      showToast('Failed to publish journal entry: ' + error.message, 'error');
+      return;
+    }
     showToast(`CMS Journal Entry "${journalTitle}" published successfully to the platform CMS!`, 'success');
     setShowJournalModal(false);
     setJournalTitle('');
@@ -480,10 +627,18 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     showToast(`Membership Application ${id} has been ${decision}!`, decision === 'Approved' ? 'success' : 'info');
   };
 
-  // Placeholder for database backup
-  const handleBackupDb = () => {
-    showToast('Database backup not yet implemented via API.', 'info');
-  };
+  const bTotal = bookingStatusCounts.pending + bookingStatusCounts.confirmed + bookingStatusCounts.cancelled;
+  let bCumPct = 0;
+  const bookingArcs = bTotal > 0 ? [
+    { key: 'Pending', color: '#f59e0b', count: bookingStatusCounts.pending },
+    { key: 'Confirmed', color: '#10b981', count: bookingStatusCounts.confirmed },
+    { key: 'Cancelled', color: '#ef4444', count: bookingStatusCounts.cancelled },
+  ].map(d => {
+    const pct = Math.round((d.count / bTotal) * 100);
+    const offset = 100 - bCumPct;
+    bCumPct += pct;
+    return { ...d, pct, offset, dasharray: `${pct} ${100 - pct}` };
+  }) : [];
 
   return (
     <div className="min-h-screen bg-[#070709] text-neutral-200 flex flex-col font-sans selection:bg-gold-500 selection:text-neutral-950">
@@ -520,7 +675,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
         <div className="hidden lg:flex items-center relative w-full max-w-md ml-4">
           <input
             type="text"
-            placeholder="Search requests, members, orders, events..."
+            placeholder="Search bookings, members, orders, events..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-neutral-950 border border-neutral-900 rounded px-3.5 py-1.5 pl-9 text-xs text-neutral-300 placeholder-neutral-600 outline-none focus:border-red-500/30 transition-colors"
@@ -531,13 +686,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
         {/* Right Actions: bell, messages, profile dropdown */}
         <div className="flex items-center gap-4">
           
-          {/* Notifications alert */}
-          <div className="relative">
+          {/* Notifications alert with dropdown */}
+          <div className="relative" ref={notifRef}>
             <button
-              onClick={() => {
-                setNotificationCount(0);
-                showToast("Notification logs cleared.", "info");
-              }}
+              onClick={() => setShowNotifications(!showNotifications)}
               className="p-2 rounded bg-neutral-900/50 border border-neutral-900 hover:border-neutral-800 text-neutral-400 hover:text-white transition-all cursor-pointer"
             >
               <Bell className="h-4 w-4" />
@@ -547,13 +699,69 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 </span>
               )}
             </button>
+
+            {showNotifications && (
+              <div className="absolute right-0 top-full mt-2 w-80 bg-neutral-950 border border-neutral-900 rounded-lg shadow-2xl z-50 overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-900">
+                  <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">Notifications</h4>
+                  <button
+                    onClick={() => {
+                      setNotificationCount(0);
+                      showToast('Notifications cleared.', 'info');
+                    }}
+                    className="text-[9px] font-mono text-neutral-500 hover:text-white"
+                  >
+                    Clear all
+                  </button>
+                </div>
+                <div className="max-h-72 overflow-y-auto divide-y divide-neutral-900/40">
+                  {notifications.length === 0 ? (
+                    <div className="px-4 py-8 text-center text-[10px] font-mono text-neutral-500">
+                      No notifications yet
+                    </div>
+                  ) : (
+                    notifications.slice(0, 10).map((n: any) => (
+                      <button
+                        key={n.id}
+                        onClick={() => {
+                          if (n.status === 'unread') {
+                            supabase.from('admin_notifications').update({ status: 'read' }).eq('id', n.id).then(() => {
+                              setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, status: 'read' } : x));
+                              setNotificationCount(prev => Math.max(0, prev - 1));
+                            });
+                          }
+                        }}
+                        className={`w-full text-left px-4 py-3 hover:bg-neutral-900/40 transition-colors ${n.status === 'unread' ? 'bg-amber-500/[0.03] border-l-2 border-l-amber-500' : ''}`}
+                      >
+                        <h5 className="text-xs font-semibold text-white">{n.title}</h5>
+                        <p className="text-[10px] text-neutral-400 mt-0.5 line-clamp-2">{n.message}</p>
+                        <span className="text-[8px] font-mono text-neutral-600 mt-1 block">{n.created_at ? new Date(n.created_at).toLocaleDateString() : ''}</span>
+                      </button>
+                    ))
+                  )}
+                </div>
+                <div className="px-4 py-2.5 border-t border-neutral-900 text-center">
+                  <button
+                    onClick={() => { setShowNotifications(false); setActiveTab('Notifications'); }}
+                    className="text-[10px] font-mono text-gold-500 hover:text-gold-400"
+                  >
+                    View all notifications
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <button
             onClick={() => setActiveTab('Communication Log')}
-            className="p-2 rounded bg-neutral-900/50 border border-neutral-900 hover:border-neutral-800 text-neutral-400 hover:text-white transition-all"
+            className="relative p-2 rounded bg-neutral-900/50 border border-neutral-900 hover:border-neutral-800 text-neutral-400 hover:text-white transition-all"
           >
             <Mail className="h-4 w-4" />
+            {notificationCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-amber-500 text-[7px] font-bold text-white flex items-center justify-center border border-neutral-950">
+                {notificationCount}
+              </span>
+            )}
           </button>
 
           <div className="h-5 w-[1px] bg-neutral-800" />
@@ -564,7 +772,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
               <div className="text-xs font-mono font-bold text-white">{((profile?.name || user?.email?.split('@')[0] || 'Admin').match(/\b\w/g) || []).join('').toUpperCase().slice(0, 2) || 'AD'}</div>
             </div>
             <div className="hidden sm:flex flex-col text-left">
-              <span className="text-xs font-semibold text-white leading-tight">Admin</span>
+              <span className="text-xs font-semibold text-white leading-tight">{profile?.name || user?.email?.split('@')[0] || 'Admin'}</span>
               <span className="text-[9px] font-mono font-bold text-red-400 leading-none">Super Administrator</span>
             </div>
             <ChevronDown className="h-3.5 w-3.5 text-neutral-500" />
@@ -747,7 +955,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   <div className="flex items-center gap-1 bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded text-xs text-neutral-300 font-mono">
                     <Calendar className="h-3.5 w-3.5 text-neutral-500" />
                     <span>{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                    <ChevronDown className="h-3 w-3 text-neutral-500" />
+                    <span className="text-neutral-600 mx-0.5">·</span>
+                    <span className="text-neutral-400">{currentTime}</span>
                   </div>
 
                   {/* Quick Actions Dropdown */}
@@ -780,21 +989,14 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                         <FileSpreadsheet className="h-3.5 w-3.5 text-amber-500" />
                         Create Journal Post
                       </button>
-                      <div className="h-[1px] bg-neutral-900 my-1" />
-                      <button
-                        onClick={handleBackupDb}
-                        className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center gap-2"
-                      >
-                        <Database className="h-3.5 w-3.5 text-neutral-400" />
-                        Backup Data
-                      </button>
+
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* STATS COUNT GRID (5 CARDS) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {/* STATS COUNT GRID (6 LIVE CARDS) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                 
                 {/* Total Members */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5 relative overflow-hidden">
@@ -802,57 +1004,71 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Total Members</span>
                     <Users className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{requests.length + orders.length + memberships.length}</h3>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalMembers}</h3>
                   <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>Active on platform</span>
+                    <span>Registered profiles</span>
                   </p>
                 </div>
 
-                {/* Active Requests */}
+                {/* Experiences */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Active Requests</span>
-                    <FileText className="h-4 w-4 text-neutral-600" />
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Experiences</span>
+                    <Star className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{requests.length}</h3>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalExperiences}</h3>
                   <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>In the system</span>
+                    <span>Published offerings</span>
                   </p>
                 </div>
 
-                {/* Pending Reviews */}
+                {/* Experience Bookings */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Pending Reviews</span>
-                    <Clock className="h-4 w-4 text-neutral-600" />
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{requests.filter(r => r.status === 'Submitted' || r.status === 'Under Review').length}</h3>
-                  <p className="text-[10px] font-mono text-amber-500 flex items-center gap-0.5">
-                    <span>Awaiting review</span>
-                  </p>
-                </div>
-
-                {/* Events This Month */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Events This Month</span>
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Bookings</span>
                     <Calendar className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{events.length}</h3>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.experienceBookings}</h3>
                   <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>Scheduled</span>
+                    <span>Total bookings</span>
                   </p>
                 </div>
 
-                {/* Revenue (This Month) */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5 col-span-2 lg:col-span-1">
+                {/* Pending Bookings */}
+                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Orders</span>
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Pending</span>
+                    <Clock className="h-4 w-4 text-neutral-600" />
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-amber-500">{dashboardStats.pendingBookings}</h3>
+                  <p className="text-[10px] font-mono text-amber-500 flex items-center gap-0.5">
+                    <span>Awaiting confirmation</span>
+                  </p>
+                </div>
+
+                {/* Subscribers */}
+                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Subscribers</span>
+                    <Mail className="h-4 w-4 text-neutral-600" />
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.subscriberCount}</h3>
+                  <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
+                    <span>Newsletter</span>
+                  </p>
+                </div>
+
+                {/* Revenue */}
+                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Revenue</span>
                     <Briefcase className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-gold-500">{orders.length}</h3>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-gold-500">
+                    ${dashboardStats.totalRevenue.toLocaleString()}
+                  </h3>
                   <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>Total orders</span>
+                    <span>From orders</span>
                   </p>
                 </div>
 
@@ -864,14 +1080,14 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 {/* Left Column (9 cols): Requests log table, Events summary, and Orders summary */}
                 <div className="xl:col-span-9 space-y-6">
                   
-                  {/* Recent Requests Panel */}
+                  {/* Recent Experience Bookings Panel */}
                   <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden">
                     <div className="px-5 py-4 border-b border-neutral-900 flex items-center justify-between">
                       <h3 className="text-xs font-mono font-bold tracking-wider text-white uppercase text-left">
-                        Recent Requests
+                        Recent Experience Bookings
                       </h3>
                       <button
-                        onClick={() => setActiveTab('Requests')}
+                        onClick={() => setActiveTab('Experiences')}
                         className="text-[10px] font-mono text-gold-500 hover:text-gold-400 font-semibold"
                       >
                         View All
@@ -882,65 +1098,74 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       <table className="w-full text-left text-xs border-collapse">
                         <thead>
                           <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[10px] uppercase">
-                            <th className="px-5 py-3 font-semibold">ID</th>
-                            <th className="px-4 py-3 font-semibold">Type</th>
+                            <th className="px-5 py-3 font-semibold">Booking Ref</th>
                             <th className="px-4 py-3 font-semibold">Member</th>
+                            <th className="px-4 py-3 font-semibold">Date</th>
+                            <th className="px-4 py-3 font-semibold">Participants</th>
                             <th className="px-4 py-3 font-semibold">Status</th>
-                            <th className="px-4 py-3 font-semibold">Updated</th>
                             <th className="px-5 py-3 font-semibold text-right">Action</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-neutral-900/60">
-                          {requests.map((req) => (
-                            <tr key={req.id} className="hover:bg-neutral-950/40 transition-colors">
-                              <td className="px-5 py-3.5 font-mono font-semibold text-neutral-300">
-                                {req.id}
-                              </td>
-                              <td className="px-4 py-3.5 text-white font-medium">
-                                {req.type}
-                              </td>
-                              <td className="px-4 py-3.5">
-                                <div className="flex items-center gap-2">
-                                  <div className="h-6 w-6 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-mono text-gold-500 font-bold shrink-0">
-                                    {req.memberAvatar}
+                          {(searchQuery
+                            ? recentBookings.filter(bk =>
+                                (bk.member_name || bk.full_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                (bk.booking_reference || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                (bk.id || '').toString().toLowerCase().includes(searchQuery.toLowerCase())
+                              )
+                            : recentBookings
+                          ).map((bk) => {
+                            const isConfirmed = bk.confirmed_date;
+                            const isCancelled = bk.cancelled_reason;
+                            const status = isCancelled ? 'Cancelled' : isConfirmed ? 'Confirmed' : 'Pending';
+                            const statusColor = status === 'Confirmed' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                              status === 'Cancelled' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                              'bg-amber-500/10 text-amber-500 border-amber-500/20';
+                            return (
+                              <tr key={bk.id} className="hover:bg-neutral-950/40 transition-colors">
+                                <td className="px-5 py-3.5 font-mono font-semibold text-neutral-300">
+                                  {bk.booking_reference || bk.id?.toString().slice(0, 8)}
+                                </td>
+                                <td className="px-4 py-3.5">
+                                  <div className="flex items-center gap-2">
+                                    <div className="h-6 w-6 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-mono text-gold-500 font-bold shrink-0">
+                                      {bk.member_avatar || (bk.member_name || '?').slice(0, 2).toUpperCase()}
+                                    </div>
+                                    <span className="text-neutral-300 font-medium">{bk.member_name || bk.full_name || 'Anonymous'}</span>
                                   </div>
-                                  <span className="text-neutral-300 font-medium">{req.member}</span>
-                                </div>
-                              </td>
-                              <td className="px-4 py-3.5">
-                                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${
-                                  req.status === 'In Discussion' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
-                                  req.status === 'Under Review' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' :
-                                  req.status === 'Offer Made' ? 'bg-purple-500/10 text-purple-500 border border-purple-500/20' :
-                                  req.status === 'Payment Requested' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' :
-                                  req.status === 'Confirmed' ? 'bg-green-500/10 text-green-500 border border-green-500/20' :
-                                  'bg-neutral-500/10 text-neutral-400 border border-neutral-800'
-                                }`}>
-                                  <span className={`h-1 w-1 rounded-full ${
-                                    req.status === 'In Discussion' ? 'bg-amber-500' :
-                                    req.status === 'Under Review' ? 'bg-blue-500' :
-                                    req.status === 'Confirmed' ? 'bg-green-500' : 'bg-neutral-400'
-                                  }`} />
-                                  {req.status}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3.5 text-neutral-400 font-mono text-[11px]">
-                                {req.updated}
-                              </td>
-                              <td className="px-5 py-3.5 text-right">
-                                <button
-                                  onClick={() => {
-                                    setSelectedRequest(req);
-                                    setRequestStatusEdit(req.status);
-                                    setActiveTab('Requests');
-                                  }}
-                                  className="px-3 py-1 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-[10px] font-mono text-neutral-300 rounded hover:text-white transition-colors"
-                                >
-                                  View
-                                </button>
+                                </td>
+                                <td className="px-4 py-3.5 text-neutral-400 font-mono text-[11px]">
+                                  {bk.preferred_date || bk.confirmed_date || '-'}
+                                </td>
+                                <td className="px-4 py-3.5 text-neutral-300 font-mono">
+                                  {bk.participants || 1}
+                                </td>
+                                <td className="px-4 py-3.5">
+                                  <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${statusColor}`}>
+                                    <span className={`h-1 w-1 rounded-full ${
+                                      status === 'Confirmed' ? 'bg-green-500' : status === 'Cancelled' ? 'bg-red-500' : 'bg-amber-500'
+                                    }`} />
+                                    {status}
+                                  </span>
+                                </td>
+                                <td className="px-5 py-3.5 text-right">
+                                  <button
+                                    onClick={() => setActiveTab('Experiences')}
+                                    className="px-3 py-1 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-[10px] font-mono text-neutral-300 rounded hover:text-white transition-colors"
+                                  >
+                                    View
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                          {recentBookings.length === 0 && (
+                            <tr>
+                              <td colSpan={6} className="px-5 py-8 text-center text-[10px] font-mono text-neutral-500">
+                                No experience bookings yet
                               </td>
                             </tr>
-                          ))}
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -1095,14 +1320,17 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 {/* Right Column (3 cols): Pie donut chart, System alerts, Platform activity line chart */}
                 <div className="xl:col-span-3 space-y-6">
                   
-                  {/* Requests by Status - SVG Donut Chart */}
+                  {/* Booking Status - SVG Donut Chart */}
                   <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 text-left space-y-4">
                     <div className="flex items-center justify-between pb-3 border-b border-neutral-900">
                       <h4 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase">
-                        Requests by Status
+                        Booking Status
                       </h4>
-                      <button className="text-[10px] font-mono text-neutral-500 hover:text-white">
-                        View Report
+                      <button
+                        onClick={() => setActiveTab('Experiences')}
+                        className="text-[10px] font-mono text-gold-500 hover:text-gold-400 font-semibold"
+                      >
+                        Manage
                       </button>
                     </div>
 
@@ -1111,37 +1339,29 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       <div className="relative h-32 w-32 shrink-0">
                         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                           <circle cx="18" cy="18" r="15.915" fill="none" stroke="#161619" strokeWidth="3" />
-                          {donutArcs.map((d, i) => (
+                          {bookingArcs.map((d) => (
                             <circle key={d.key} cx="18" cy="18" r="15.915" fill="none" stroke={d.color} strokeWidth="3" strokeDasharray={d.dasharray} strokeDashoffset={d.offset} />
                           ))}
                         </svg>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                          <span className="text-xl font-bold font-mono text-white leading-none">{requests.length}</span>
-                          <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider mt-0.5">Total</span>
-                        </div>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                        <span className="text-xl font-bold font-mono text-white leading-none">{dashboardStats.experienceBookings}</span>
+                        <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider mt-0.5">Total</span>
+                      </div>
                       </div>
 
                       {/* Donut Legend */}
                       <div className="flex-1 text-[11px] font-mono text-neutral-400 space-y-1.5 w-full">
                         <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#f59e0b]" />Submitted</span>
-                          <span className="text-white font-semibold">{getStatusCount('Submitted')}</span>
+                          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#f59e0b]" />Pending</span>
+                          <span className="text-white font-semibold">{bookingStatusCounts.pending}</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#3b82f6]" />Under Review</span>
-                          <span className="text-white font-semibold">{getStatusCount('Under Review')}</span>
+                          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#10b981]" />Confirmed</span>
+                          <span className="text-white font-semibold">{bookingStatusCounts.confirmed}</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#8b5cf6]" />In Discussion</span>
-                          <span className="text-white font-semibold">{getStatusCount('In Discussion')}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#f97316]" />Payment Req.</span>
-                          <span className="text-white font-semibold">{getStatusCount('Payment Requested')}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#06b6d4]" />Confirmed</span>
-                          <span className="text-white font-semibold">{getStatusCount('Confirmed')}</span>
+                          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#ef4444]" />Cancelled</span>
+                          <span className="text-white font-semibold">{bookingStatusCounts.cancelled}</span>
                         </div>
                       </div>
                     </div>
@@ -1159,24 +1379,24 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     </div>
 
                     <div className="space-y-3">
-                      {/* Alert 1 */}
+                      {/* Alert 1 - Experience Bookings */}
                       <button
-                        onClick={() => setActiveTab('Requests')}
-                        className="w-full flex items-center justify-between p-2.5 rounded-lg border border-red-500/20 bg-red-500/[0.02] hover:bg-red-500/[0.04] text-left transition-all group"
+                        onClick={() => setActiveTab('Experiences')}
+                        className="w-full flex items-center justify-between p-2.5 rounded-lg border border-amber-500/20 bg-amber-500/[0.02] hover:bg-amber-500/[0.04] text-left transition-all group"
                       >
                         <div className="flex gap-2 items-center">
-                          <div className="p-1.5 rounded bg-red-500/10 text-red-500 shrink-0">
-                            <AlertCircle className="h-4 w-4" />
+                          <div className="p-1.5 rounded bg-amber-500/10 text-amber-500 shrink-0">
+                            <Calendar className="h-4 w-4" />
                           </div>
                           <div className="space-y-0.5">
-                            <h5 className="text-xs font-semibold text-white">{requests.filter(r => r.status === 'Submitted' || r.status === 'Under Review').length} requests awaiting review</h5>
-                            <p className="text-[10px] text-neutral-400">Requires your attention</p>
+                            <h5 className="text-xs font-semibold text-white">{dashboardStats.pendingBookings} experience bookings pending</h5>
+                            <p className="text-[10px] text-neutral-400">Awaiting confirmation</p>
                           </div>
                         </div>
                         <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-white transition-colors" />
                       </button>
 
-                      {/* Alert 2 */}
+                      {/* Alert 2 - Memberships */}
                       <button
                         onClick={() => setActiveTab('Memberships')}
                         className="w-full flex items-center justify-between p-2.5 rounded-lg border border-amber-500/20 bg-amber-500/[0.02] hover:bg-amber-500/[0.04] text-left transition-all group"
@@ -1230,75 +1450,69 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     </div>
                   </div>
 
-                  {/* Platform Activity (7 Days) - Line chart representation */}
+                  {/* Platform Activity (7 Days) - Live bar chart */}
                   <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 text-left space-y-4">
                     <div className="flex items-center justify-between pb-3 border-b border-neutral-900">
                       <h4 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase">
                         Platform Activity (7 Days)
                       </h4>
-                      <button className="text-[10px] font-mono text-neutral-500 hover:text-white">
-                        View Analytics
-                      </button>
+                      <span className="text-[10px] font-mono text-neutral-500">
+                        Today: <span className="text-white font-semibold">{activityData.today.bookings + activityData.today.orders + activityData.today.members}</span>
+                      </span>
                     </div>
 
                     <div className="space-y-4">
-                      {/* Platform Activity */}
-                      <div className="h-28 w-full bg-neutral-950/40 rounded border border-neutral-900/60 p-6 flex items-center justify-center">
-                        <p className="text-[10px] font-mono text-neutral-500">No platform activity data yet</p>
+                      {/* Daily Bar Chart */}
+                      <div className="h-28 w-full bg-neutral-950/40 rounded border border-neutral-900/60 p-3 flex items-end gap-1.5">
+                          {activityData.dailyBars.map((day, i) => {
+                          const maxVal = Math.max(...activityData.dailyBars.map(d => Math.max(d.bookings, d.orders, d.members, 1)));
+                          return (
+                            <div key={i} className="flex-1 flex flex-col items-center justify-end h-full gap-0.5">
+                              <div className="w-full flex gap-[2px] items-end justify-center" style={{ height: '100%' }}>
+                                <div
+                                  className="w-1.5 rounded-t-sm bg-[#10b981] transition-all duration-300"
+                                  style={{ height: `${(day.members / maxVal) * 80}%` }}
+                                  title={`${day.members} members`}
+                                />
+                                <div
+                                  className="w-1.5 rounded-t-sm bg-[#f59e0b] transition-all duration-300"
+                                  style={{ height: `${(day.bookings / maxVal) * 80}%` }}
+                                  title={`${day.bookings} bookings`}
+                                />
+                                <div
+                                  className="w-1.5 rounded-t-sm bg-[#8b5cf6] transition-all duration-300"
+                                  style={{ height: `${(day.orders / maxVal) * 80}%` }}
+                                  title={`${day.orders} orders`}
+                                />
+                              </div>
+                              <span className="text-[7px] font-mono text-neutral-500 leading-none">{day.label}</span>
+                            </div>
+                          );
+                        })}
                       </div>
 
-                      {/* Legend */}
-                      <div className="grid grid-cols-3 gap-2 text-[9px] font-mono text-neutral-500">
-                        <div className="flex items-center gap-1">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
-                          <span>Members</span>
+                      {/* Summary + Legend */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-[9px] font-mono text-neutral-500">
+                          <div className="flex items-center gap-1">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
+                            <span>Members</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#f59e0b]" />
+                            <span>Bookings</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <span className="h-1.5 w-1.5 rounded-full bg-[#8b5cf6]" />
+                            <span>Orders</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#f59e0b]" />
-                          <span>Requests</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#8b5cf6]" />
-                          <span>Orders</span>
+                        <div className="text-[9px] font-mono text-neutral-500">
+                          <span className="text-white font-semibold">{activityData.week.bookings + activityData.week.orders + activityData.week.members}</span> this week
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  {/* Backup database log output console */}
-                  {backupProgress !== null && (
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 text-left space-y-3">
-                      <div className="flex items-center justify-between border-b border-neutral-900 pb-2">
-                        <h4 className="text-xs font-mono font-bold text-neutral-400 uppercase">
-                          DB Backup Console Logs
-                        </h4>
-                        <button
-                          onClick={() => setBackupProgress(null)}
-                          className="text-[10px] font-mono text-neutral-500 hover:text-white"
-                        >
-                          Clear
-                        </button>
-                      </div>
-
-                      <div className="w-full bg-neutral-950 p-3 rounded border border-neutral-900 font-mono text-[10px] space-y-1.5 text-neutral-400 leading-normal max-h-[150px] overflow-y-auto">
-                        {backupLogs.map((logStr, lIdx) => (
-                          <p key={lIdx} className={logStr.includes('COMPLETED') ? 'text-green-500 font-bold' : ''}>
-                            &gt; {logStr}
-                          </p>
-                        ))}
-                      </div>
-
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-[9px] font-mono text-neutral-500">
-                          <span>Backup progress</span>
-                          <span className="font-bold text-neutral-300">{backupProgress}%</span>
-                        </div>
-                        <div className="w-full bg-neutral-900 h-1.5 rounded overflow-hidden">
-                          <div className="h-full bg-green-500 transition-all duration-300" style={{ width: `${backupProgress}%` }} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
 
                 </div>
 
@@ -1585,13 +1799,11 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     </p>
 
                     <div className="grid grid-cols-2 gap-3.5">
-                      <button
-                        onClick={handleBackupDb}
-                        className="p-4 rounded border border-neutral-900 hover:border-neutral-800 bg-neutral-950 flex flex-col items-center justify-center text-center gap-2 group transition-all"
-                      >
-                        <Database className="h-5 w-5 text-amber-500 group-hover:scale-110 transition-transform" />
-                        <span className="font-bold text-white font-mono text-[10px]">BACKUP DATABASE</span>
-                      </button>
+                      <div className="p-4 rounded border border-neutral-900 bg-neutral-950 flex flex-col items-center justify-center text-center gap-2 group transition-all">
+                        <Database className="h-5 w-5 text-amber-500" />
+                        <span className="font-bold text-white font-mono text-[10px]">DB STORED ON SUPABASE</span>
+                        <span className="text-[8px] font-mono text-neutral-500">Automatic backups managed</span>
+                      </div>
 
                       <button
                         onClick={() => {

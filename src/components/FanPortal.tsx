@@ -15,7 +15,6 @@ import {
   LayoutGrid,
   User,
   Users,
-  Mail,
   FileText,
   Calendar,
   Award,
@@ -34,11 +33,8 @@ import {
   ArrowLeft,
   ChevronRight,
   Download,
-  Share2,
   Send,
-  ExternalLink,
   MessageCircle,
-  HelpCircle,
   MapPin,
   ShieldAlert,
   Heart,
@@ -50,7 +46,6 @@ import {
   Globe,
   Upload,
   ThumbsUp,
-  RotateCcw,
   Menu,
   X
 } from 'lucide-react';
@@ -193,8 +188,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   // Portal State
   const [activeTab, setActiveTab] = useState<'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Events' | 'Experiences' | 'Membership' | 'Orders' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'>('Dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSubTab, setActiveSubTab] = useState<'TIMELINE' | 'DETAILS' | 'MESSAGES' | 'DOCUMENTS'>('TIMELINE');
-
   // Selected single request detail expansion
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
 
@@ -204,10 +197,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     orders: backendOrders,
     discussions: backendDiscussions,
     content: backendContent,
-    addRequest,
-    addRequestChatMessage,
     addOrder,
-    polishSincerity
+    addDiscussionPost,
+    addDiscussionReply,
+    addNotification,
   } = useGlobalState();
 
   const [userRequests, setUserRequests] = useState<RequestDetail[]>([]);
@@ -223,12 +216,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
 
-  // Communication bridge modal state
-  const [showDispatchModal, setShowDispatchModal] = useState(false);
-  const [dispatchMessage, setDispatchMessage] = useState('');
-  const [dispatchUrl, setDispatchUrl] = useState('');
-  const [dispatchMethod, setDispatchMethod] = useState('');
-  const [isCopiedDispatch, setIsCopiedDispatch] = useState(false);
+  // Communication bridge modal — removed (feature deprecated)
 
   // Storage synchronization listener so Fan and Admin portals update reactively in real-time
   useEffect(() => {
@@ -254,15 +242,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   }, [activeTab, isLoggedIn, selectedRequestId]);
 
   // Request wizard in portal
-  const [showPortalRequestWizard, setShowPortalRequestWizard] = useState(false);
-  const [newRequestType, setNewRequestType] = useState('Fan Letter');
-  const [newRequestDate, setNewRequestDate] = useState('');
-  const [newRequestLocation, setNewRequestLocation] = useState('');
-  const [newRequestAttendees, setNewRequestAttendees] = useState('1 Person');
-  const [newRequestSincerity, setNewRequestSincerity] = useState('');
-  const [isPolishing, setIsPolishing] = useState(false);
-  const [newRequestContact, setNewRequestContact] = useState<'Website' | 'Email' | 'WhatsApp' | 'Telegram'>('Email');
-  const [newRequestContactVal, setNewRequestContactVal] = useState('');
+  // (request wizard state removed — feature deprecated)
 
   // Dynamic Event registrations
   const [portalEvents, setPortalEvents] = useState<EventItem[]>([]);
@@ -343,18 +323,46 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
   const [membership, setMembership] = useState<any>(null);
 
+  const normalizeMembership = (row: any): any => {
+    if (!row) return null;
+    let msg: any = {};
+    try { msg = typeof row.message === 'string' ? JSON.parse(row.message) : (row.message || {}); } catch {}
+    let nts: any = {};
+    try { nts = typeof row.notes === 'string' ? JSON.parse(row.notes) : (row.notes || {}); } catch {}
+    return {
+      id: row.id, user_id: row.user_id,
+      status: row.status === 'suspended' ? 'expired' : row.status,
+      tier_id: msg.tier_id || row.tier,
+      tier_name: msg.tier_name || row.tier,
+      tier_price: msg.tier_price || msg.price || '',
+      card_name: row.full_name || '',
+      card_serial: msg.card_serial || '',
+      member_name: msg.member_name || row.full_name || '',
+      member_email: row.email || '',
+      member_phone: msg.phone || '',
+      member_country: row.country || '',
+      profile_photo: msg.profile_photo || '',
+      comm_method: msg.comm_method || '',
+      membership_number: nts.membership_number || '',
+      activation_date: row.reviewed_at || '',
+      expiration_date: nts.expiration_date || '',
+      cancel_reason: nts.cancel_reason || '',
+      admin_notes: nts.admin_notes || '',
+      created_at: row.created_at,
+    };
+  };
+
   useEffect(() => {
+    if (!user?.id) return;
     void (async () => {
-      const { data: pts } = await supabase.from('loyalty_points').select('total').eq('user_id', user?.id).limit(1);
+      const [{ data: pts }, { data: card }] = await Promise.all([
+        supabase.from('loyalty_points').select('total').eq('user_id', user.id).limit(1),
+        supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+      ]);
       if (pts && pts.length > 0) setLoyaltyPoints(pts[0].total);
+      if (card) setMembership(normalizeMembership(card));
     })();
-    if (user?.id) {
-      void (async () => {
-        const { data: mem } = await supabase.from('memberships').select('*').eq('user_id', user.id).limit(1);
-        if (mem && mem.length > 0) setMembership(mem[0]);
-      })();
-    }
-  }, [user]);
+  }, [user, activeTab]);
 
   const rank = getLoyaltyRank(loyaltyPoints);
   // Override rank display with membership tier if active
@@ -377,6 +385,22 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     })();
   }, []);
 
+  // Additional dashboard stats
+  const [fanStats, setFanStats] = useState({ bookings: 0, memberSince: '' });
+  useEffect(() => {
+    if (!user?.id) return;
+    void (async () => {
+      const [{ count }, { data: prof }] = await Promise.all([
+        supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+        supabase.from('profiles').select('created_at').eq('id', user.id).maybeSingle(),
+      ]);
+      setFanStats({
+        bookings: count ?? 0,
+        memberSince: prof?.created_at || '',
+      });
+    })();
+  }, [user]);
+
   // Kindness log & Journey timeline State
   const [journeyLog, setJourneyLog] = useState([]);
 
@@ -393,46 +417,17 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   // Portal Theme Customizer
   const [accentColor, setAccentColor] = useState<'gold' | 'red' | 'green' | 'blue'>('gold');
 
-  // Selected Avatar Preset
-  const [selectedAvatar, setSelectedAvatar] = useState<{ id: string; name: string; emoji: string } | null>(null);
-
-  // Avatar Options
-  const avatarPresets = [
-    { id: 'scully', name: 'Dana Scully (The X-Files)', emoji: '🔬' },
-    { id: 'gibson', name: 'Stella Gibson (The Fall)', emoji: '🕵️‍♀️' },
-    { id: 'milburn', name: 'Jean Milburn (Sex Education)', emoji: '📚' },
-    { id: 'bedford', name: 'Lady Dedlock (Bleak House)', emoji: '🕯️' },
-    { id: 'margaret', name: 'Margaret Thatcher (The Crown)', emoji: '👑' }
-  ];
-
-  // Daily Quiz Trivia
-  const [dailyQuizAnswered, setDailyQuizAnswered] = useState(false);
-  const [dailyQuizChoice, setDailyQuizChoice] = useState<string | null>(null);
-  const [dailyQuizResult, setDailyQuizResult] = useState<'correct' | 'incorrect' | null>(null);
-
-  // Community Comments & Topics
-  const [activeTopicFilter, setActiveTopicFilter] = useState<'#All' | '#XFiles' | '#TheFall' | '#SexEducation' | '#FanArt'>('#All');
-  const [newCommentText, setNewCommentText] = useState<{ [postId: string]: string }>({});
-
-  // Messages State for 3 active channels
-  const [currentChannel, setCurrentChannel] = useState<'management' | 'events' | 'vault'>('management');
+  // Messages State for management channel
   const [newMessage, setNewMessage] = useState('');
-  const [channelMessages, setChannelMessages] = useState<{
-    management: { id: string; sender: 'management' | 'user'; text: string; timestamp: string }[];
-    events: { id: string; sender: 'management' | 'user'; text: string; timestamp: string }[];
-    vault: { id: string; sender: 'management' | 'user'; text: string; timestamp: string }[];
-  }>({ management: [], events: [], vault: [] });
+  const [channelMessages, setChannelMessages] = useState<{ id: string; sender: 'management' | 'user'; text: string; timestamp: string }[]>([]);
 
   useEffect(() => {
-    const channels = ['management', 'events', 'vault'] as const;
-    channels.forEach(async (channel) => {
+    void (async () => {
       try {
-        const { data, error } = await supabase.from('channel_messages').select('*').eq('name', channel);
-        if (!error && data) {
-          setChannelMessages(prev => ({ ...prev, [channel]: data }));
-        }
+        const { data, error } = await supabase.from('channel_messages').select('*').eq('name', 'management');
+        if (!error && data) setChannelMessages(data);
       } catch {}
-    });
+    })();
   }, []);
 
   // Shop Cart State
@@ -440,11 +435,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'crypto'>('card');
   const [checkoutCardNumber, setCheckoutCardNumber] = useState('');
   const [checkoutCryptoWallet, setCheckoutCryptoWallet] = useState('');
-
-  // Live Virtual Event Stage State
-  const [activeEventStageId, setActiveEventStageId] = useState<string | null>(null);
-  const [eventClaps, setEventClaps] = useState(0);
-  const [userEventMessage, setUserEventMessage] = useState('');
 
   // Active Proposal Inner Chat Timeline
   const [proposalChats, setProposalChats] = useState<{ [proposalId: string]: { id: string; sender: 'management' | 'user' | 'system'; text: string; timestamp: string }[] }>({});
@@ -455,11 +445,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     }
   }, [backendProposalChats]);
 
-  const [newProposalMsg, setNewProposalMsg] = useState('');
   const [timelineCommentText, setTimelineCommentText] = useState('');
 
-  // Step-by-step Request Wizard tabs
-  const [requestWizardStep, setRequestWizardStep] = useState(1);
+  // (request wizard step removed — feature deprecated)
 
   // Notifications State
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -473,6 +461,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   // Helper helper to generate dynamic portal notifications
   const pushNotification = (text: string) => {
+    addNotification('Sanction Update', text, 'update');
     setNotifications(prev => [
       {
         id: `n-${Date.now()}`,
@@ -485,7 +474,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   };
 
   // Helper to append dynamic journey milestones
-  const addJourneyMilestone = (title: string, description: string, color: string = 'bg-gold-500') => {
+  const addJourneyMilestone = async (title: string, description: string, color: string = 'bg-gold-500') => {
+    try {
+      await supabase.from('journey_log').insert({ title, description, color, user_id: user?.id });
+    } catch {}
     setJourneyLog(prev => [
       {
         id: `j-${Date.now()}`,
@@ -578,7 +570,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   };
 
   // General helpers
-  const [copied, setCopied] = useState(false);
   const [helpSubmitted, setHelpSubmitted] = useState(false);
   const [helpText, setHelpText] = useState('');
   const [showHelpModal, setShowHelpModal] = useState(false);
@@ -590,13 +581,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [mContact, setMContact] = useState<'Website' | 'Email' | 'WhatsApp' | 'Telegram'>('Email');
   const [mContactVal, setMContactVal] = useState('');
 
-  const handleCopyId = (id: string) => {
-    navigator.clipboard.writeText(id);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
@@ -610,74 +595,67 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       timestamp
     };
 
-    setChannelMessages((prev) => ({
-      ...prev,
-      [currentChannel]: [...(prev[currentChannel] || []), newMsg]
-    }));
+    try {
+      await supabase.from('channel_messages').insert({
+        name: 'management', sender: 'user', text: userText
+      });
+    } catch {}
+
+    setChannelMessages((prev) => [...prev, newMsg]);
     setNewMessage('');
 
-    // Prepend a journey milestone for direct communication
-    addJourneyMilestone(
-      `Dispatched Message: ${currentChannel === 'management' ? 'Management' : currentChannel === 'events' ? 'Event Coordinator' : 'Vault Support'}`,
+    await addJourneyMilestone(
+      'Dispatched Message: Management',
       `Secure communication logged regarding portal inquiry: "${userText.substring(0, 30)}..."`,
       'bg-blue-500'
     );
   };
 
-  const handleAddDiscussion = (e: React.FormEvent) => {
+  const handleAddDiscussion = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newDiscussionText.trim()) return;
 
-    const newDisc: DiscussionPost = {
-      id: `disc-${Date.now()}`,
-      author: authName,
-      text: newDiscussionText.trim(),
-      time: 'Just now',
-      replies: []
-    };
-
-    setClubDiscussions((prev) => ({
-      ...prev,
-      [activeCountryClub]: [newDisc, ...(prev[activeCountryClub] || [])]
-    }));
-    setNewDiscussionText('');
+    try {
+      const newDisc = await addDiscussionPost(activeCountryClub, newDiscussionText.trim(), authName);
+      setClubDiscussions((prev) => ({
+        ...prev,
+        [activeCountryClub]: [newDisc as DiscussionPost, ...(prev[activeCountryClub] || [])]
+      }));
+      setNewDiscussionText('');
+      showToast('Discussion posted!', 'success');
+    } catch {
+      showToast('Failed to post discussion.', 'error');
+    }
   };
 
-  const handleAddReply = (postId: string, e: React.FormEvent) => {
+  const handleAddReply = async (postId: string, e: React.FormEvent) => {
     e.preventDefault();
     const replyText = replyInputs[postId]?.trim();
     if (!replyText) return;
 
-    const newReply: DiscussionReply = {
-      id: `reply-${Date.now()}`,
-      author: authName,
-      text: replyText,
-      time: 'Just now'
-    };
-
-    setClubDiscussions((prev) => {
-      const currentList = prev[activeCountryClub] || [];
-      const updatedList = currentList.map((post) => {
-        if (post.id === postId) {
-          return {
-            ...post,
-            replies: [...(post.replies || []), newReply]
-          };
-        }
-        return post;
+    try {
+      const newReply = await addDiscussionReply(activeCountryClub, postId, replyText, authName);
+      setClubDiscussions((prev) => {
+        const currentList = prev[activeCountryClub] || [];
+        const updatedList = currentList.map((post) => {
+          if (post.id === postId) {
+            return {
+              ...post,
+              replies: [...(post.replies || []), newReply as DiscussionReply]
+            };
+          }
+          return post;
+        });
+        return {
+          ...prev,
+          [activeCountryClub]: updatedList
+        };
       });
-      return {
-        ...prev,
-        [activeCountryClub]: updatedList
-      };
-    });
-
-    setReplyInputs((prev) => ({
-      ...prev,
-      [postId]: ''
-    }));
-
-    showToast('Reply added to thread!', 'success');
+      setReplyInputs((prev) => ({ ...prev, [postId]: '' }));
+      showToast('Reply added to thread!', 'success');
+    } catch {
+      showToast('Failed to add reply.', 'error');
+    }
   };
 
   const handleLikeCreation = async (id: string) => {
@@ -731,43 +709,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     showToast('Creation uploaded successfully!', 'success');
   };
 
-  const handlePortalSubmitRequest = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newRequestSincerity.trim() || !newRequestContactVal.trim()) return;
-
-    try {
-      const createdReq = await addRequest(
-        newRequestType,
-        newRequestDate || 'Not specified',
-        newRequestLocation || 'Global / Virtual',
-        newRequestAttendees,
-        `${newRequestContact}: ${newRequestContactVal}`,
-        newRequestSincerity,
-        authName || 'John Smith'
-      );
-
-      const messageText = `Proposal ${createdReq.id} submitted successfully. Our management team will review and respond via the portal.`;
-
-      setDispatchMessage(messageText);
-      setDispatchUrl(window.location.href);
-      setDispatchMethod('Portal');
-      setIsCopiedDispatch(false);
-      setShowDispatchModal(true);
-
-      showToast('Your official proposal has been submitted successfully!', 'success');
-      setShowPortalRequestWizard(false);
-      setRequestWizardStep(1); // Reset Wizard
-      setNewRequestDate('');
-      setNewRequestLocation('');
-      setNewRequestSincerity('');
-      setNewRequestContactVal('');
-      setSelectedRequestId(createdReq.id);
-      setActiveTab('My Requests');
-    } catch (err) {
-      console.error(err);
-      showToast('Failed to connect to full-stack server.', 'error');
-    }
-  };
+  // (handlePortalSubmitRequest removed — feature deprecated)
 
   const handleUpdateReqStatus = (requestId: string, newStatus: string) => {
     const reqObj = userRequests.find(r => r.id === requestId);
@@ -877,8 +819,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       submittedOn: new Date().toLocaleString([], { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
       lastUpdated: new Date().toLocaleString([], { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
       sincerity: mReason,
-      member: authName || 'John Smith',
-      memberAvatar: (authName || 'JS').split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2),
+      member: authName,
+      memberAvatar: authName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2),
       updated: 'Just now'
     };
 
@@ -928,8 +870,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       await supabase.from('journey_log').insert({ title: newLog.title, description: newLog.description, color: newLog.color });
     } catch {}
   };
-
-  const redeemableItems: { id: string; title: string; cost: number; icon: string; desc: string }[] = [];
 
   const handleRedeemReward = async (item: typeof portalRewards[0]) => {
     if (loyaltyPoints < item.cost) {
@@ -1005,7 +945,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     const totalCost = cart.reduce((acc, curr) => acc + parseFloat(curr.price) * curr.quantity, 0).toFixed(2);
 
     try {
-      await addOrder(consolidatedItems, totalCost, authName || 'John Smith');
+      await addOrder(consolidatedItems, totalCost, authName);
 
       setCart([]);
       
@@ -1412,188 +1352,443 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {/* MAIN CONTENT */}
             <main className="flex-1 md:ml-64 min-h-[calc(100vh-4rem)] overflow-y-auto bg-[#050505] p-4 md:p-8 lg:p-10 space-y-6 md:space-y-8">
             
-            {/* VIEW RENDERING 1: DASHBOARD */}
+            {/* VIEW RENDERING 1: DASHBOARD — Cinematic Rebuild */}
             {activeTab === 'Dashboard' && (
-              <div className="max-w-4xl mx-auto relative">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto relative">
 
-                {/* Ambient glow */}
-                <div className="absolute -top-40 -right-40 w-96 h-96 bg-gold-500/[0.02] rounded-full blur-[120px] pointer-events-none" />
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-amber-500/[0.01] rounded-full blur-[100px] pointer-events-none" />
+                {/* ── ATMOSPHERE: Layered light orbs ── */}
+                <div className="absolute -top-48 -right-48 w-[500px] h-[500px] bg-gold-500/[0.04] rounded-full blur-[150px] pointer-events-none" />
+                <div className="absolute -bottom-48 -left-48 w-[400px] h-[400px] bg-amber-500/[0.03] rounded-full blur-[130px] pointer-events-none" />
+                <div className="absolute top-1/3 left-1/3 w-[300px] h-[300px] bg-rose-500/[0.015] rounded-full blur-[120px] pointer-events-none" />
+                <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-gold-500/30 rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '4s' }} />
+                <div className="absolute bottom-1/4 left-1/4 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '3s', animationDelay: '1s' }} />
+                <div className="absolute top-1/4 right-1/3 w-1 h-1 bg-rose-400/20 rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '5s', animationDelay: '2s' }} />
 
-                {/* ---- MEMBER LETTERHEAD ---- */}
-                <div className="relative mb-16 md:mb-20">
-                  <div className="flex items-center justify-end mb-8">
-                    <div className="font-mono text-[8px] text-neutral-600 tracking-wider text-right leading-relaxed">
-                      {new Date().toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase()}<br />
-                      {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                {/* ── HERO: Rank Crest + Cinematic Welcome ── */}
+                <div className="relative mb-14">
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                    <div className="space-y-5 flex-1">
+                      {/* Rank crest + greeting */}
+                      <div className="flex items-center gap-4">
+                        <motion.div
+                          initial={{ scale: 0, rotate: -20 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ type: 'spring', stiffness: 180, damping: 12, delay: 0.1 }}
+                          className="relative h-14 w-14 shrink-0"
+                        >
+                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-gold-500/30 to-amber-500/10 blur-sm" />
+                          <div className="relative h-full w-full rounded-2xl bg-gradient-to-br from-gold-500/20 to-amber-500/5 border border-gold-500/30 flex items-center justify-center text-2xl shadow-lg shadow-gold-500/5">
+                            {displayRank.icon || '✦'}
+                          </div>
+                        </motion.div>
+                        <div className="space-y-1.5">
+                          <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2 }}
+                          >
+                            <span className="inline-block px-2 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/20 font-mono text-[7px] text-gold-500/80 tracking-[0.15em] uppercase font-semibold">
+                              {displayRank.name}
+                            </span>
+                          </motion.div>
+                          <motion.h1
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.25 }}
+                            className="font-elegant text-3xl md:text-4xl font-bold text-white tracking-tight leading-[1.15]"
+                          >
+                            Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {authName.split(' ')[0]}
+                          </motion.h1>
+                        </div>
+                      </div>
+
+                      {/* Time-aware message + signature quote */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.35 }}
+                        className="pl-[4.25rem] space-y-3"
+                      >
+                        <p className="text-sm text-neutral-400 font-elegant leading-relaxed max-w-xl">
+                          {new Date().getHours() < 12
+                            ? 'The world wakes with possibility. Every great story begins with a single step — and yours is already being written.'
+                            : new Date().getHours() < 18
+                            ? 'Light bends golden through the afternoon. This is your space to create, connect, and belong to something extraordinary.'
+                            : 'As the stars take their watch, remember: the most meaningful connections are often forged in quiet moments. You are home here.'}
+                        </p>
+                        <div className="flex items-center gap-3">
+                          <span className="h-px w-6 bg-gold-500/30" />
+                          <span className="font-elegant text-[10px] italic text-gold-500/50 tracking-wide">— Gillian</span>
+                        </div>
+                      </motion.div>
                     </div>
+
+                    {/* Date medallion */}
+                    <motion.div
+                      initial={{ y: -15, opacity: 0, scale: 0.9 }}
+                      animate={{ y: 0, opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.3, type: 'spring', stiffness: 150, damping: 14 }}
+                      className="hidden md:flex flex-col items-center justify-center h-18 w-18 rounded-2xl bg-gradient-to-b from-neutral-900/90 to-neutral-950/90 border border-neutral-800/80 font-mono shrink-0 shadow-2xl shadow-black/40"
+                    >
+                      <span className="text-2xl font-bold text-white leading-none tracking-tight">{new Date().getDate()}</span>
+                      <span className="text-[7px] font-semibold text-gold-500/70 tracking-widest mt-0.5 uppercase">{new Date().toLocaleString('en', { month: 'short' })}</span>
+                    </motion.div>
                   </div>
 
-                  <div className="space-y-5">
-                    <h1 className="font-serif text-4xl md:text-5xl font-black text-white uppercase tracking-tight leading-[1.1]">
-                      Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {authName}
-                    </h1>
-                    <p className="text-sm text-neutral-400 font-sans leading-relaxed max-w-xl">
-                      Your sanctuary is quiet, your connections are growing, and there is always something meaningful waiting for you.
-                    </p>
-                  </div>
-
-                  <div className="h-px bg-gradient-to-r from-gold-500/40 via-gold-500/20 to-transparent mt-8" />
+                  {/* Signature divider */}
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ delay: 0.4, duration: 0.8, ease: 'easeOut' }}
+                    className="h-px bg-gradient-to-r from-gold-500/40 via-gold-500/15 to-transparent mt-8 origin-left"
+                  />
                 </div>
 
-                {/* ---- MEMBERSHIP BAR ---- */}
-                <div className="relative mb-16 md:mb-20 grid grid-cols-1 md:grid-cols-3 gap-px bg-neutral-900/60 rounded-2xl overflow-hidden">
-                  <div className="bg-neutral-950/60 p-5 md:p-6">
-                    <span className="font-mono text-[8px] text-neutral-600 uppercase tracking-widest">Membership</span>
-                    <p className="font-serif text-sm font-bold text-neutral-100 mt-1.5 uppercase tracking-wide">{displayRank.name}</p>
-                    <div className="flex items-center gap-1.5 mt-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60" />
-                      <span className="font-mono text-[9px] text-neutral-500">{loyaltyPoints.toLocaleString()} points</span>
-                    </div>
-                  </div>
-                  <div className="bg-neutral-950/60 p-5 md:p-6">
-                    <span className="font-mono text-[8px] text-neutral-600 uppercase tracking-widest">Progress</span>
-                    <p className="font-serif text-sm font-bold text-neutral-100 mt-1.5">{Math.round(progressPercent)}%</p>
-                    <div className="h-1 bg-neutral-900/60 rounded-full mt-2.5 overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-gold-500/40 to-gold-500/70 rounded-full transition-all duration-700" style={{ width: `${progressPercent}%` }} />
-                    </div>
-                    <p className="font-mono text-[8px] text-neutral-600 mt-1.5">Next: {displayRank.next} · {loyaltyPoints.toLocaleString()} / {displayRank.max.toLocaleString()} pts</p>
-                  </div>
-                  <div className="bg-neutral-950/60 p-5 md:p-6">
-                    <span className="font-mono text-[8px] text-neutral-600 uppercase tracking-widest">Rank</span>
-                    <p className="font-serif text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-amber-300 mt-1.5 uppercase tracking-wide">{displayRank.next}</p>
-                    <p className="font-mono text-[8px] text-neutral-600 mt-2.5">{displayRank.max - loyaltyPoints} pts remaining to advance</p>
-                  </div>
-                </div>
+                {/* ── STAT ROW: Glass-panel achievements ── */}
+                <motion.div
+                  initial={{ y: 25, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12"
+                >
+                  {[
+                    {
+                      isCard: true,
+                      card: membership,
+                      fallbackName: displayRank.name,
+                    },
+                    { label: 'Bookings', value: fanStats.bookings.toString(), accent: 'blue', icon: '★' },
+                    { label: 'Events', value: portalEvents.filter(e => e.registered).length.toString(), accent: 'emerald', icon: '●' },
+                    { label: 'Orders', value: orders.length.toString(), accent: 'violet', icon: '◆' },
+                  ].map((stat: any, i) => {
+                    if (stat.isCard) {
+                      const c = stat.card;
+                      const isActive = c?.status === 'active';
+                      return (
+                        <motion.div
+                          key="membership-card"
+                          initial={{ y: 20, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.25, type: 'spring', stiffness: 120, damping: 14 }}
+                          whileHover={{ y: -2, scale: 1.02 }}
+                          className="relative overflow-hidden rounded-2xl border border-gold-500/25 bg-gradient-to-br from-gold-500/[0.07] via-gold-500/[0.02] to-transparent backdrop-blur-sm p-4 text-left shadow-lg shadow-gold-500/5 transition-all duration-300 group"
+                        >
+                          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-gold-500/[0.05] to-transparent rounded-bl-full pointer-events-none" />
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <span className="text-base">👑</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-sans text-[11px] font-bold text-white leading-tight truncate">{c?.card_name || 'Member'}</p>
+                              <div className="flex items-center gap-1">
+                                <span className="font-sans text-[8px] text-gold-500/90 font-semibold truncate">{c?.tier_name || stat.fallbackName}</span>
+                                {isActive && <span className="h-1 w-1 rounded-full bg-green-500" />}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 border-t border-gold-500/10 pt-1.5">
+                            <div>
+                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Member #</span>
+                              <span className="font-sans text-[8px] text-neutral-200 font-semibold truncate block">{c?.membership_number || '—'}</span>
+                            </div>
+                            <div>
+                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Serial</span>
+                              <span className="font-sans text-[8px] text-neutral-200 font-semibold truncate block">{c?.card_serial || '—'}</span>
+                            </div>
+                            <div>
+                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Activated</span>
+                              <span className="font-sans text-[8px] text-neutral-200 font-semibold">{c?.activation_date ? new Date(c.activation_date).toLocaleDateString() : '—'}</span>
+                            </div>
+                            <div>
+                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Expires</span>
+                              <span className="font-sans text-[8px] text-neutral-200 font-semibold">{c?.expiration_date ? new Date(c.expiration_date).toLocaleDateString() : '—'}</span>
+                            </div>
+                          </div>
+                          {!c && <p className="font-mono text-[7px] text-neutral-600 mt-1">No card</p>}
+                        </motion.div>
+                      );
+                    }
+                    const accentMap: Record<string, string> = {
+                      blue: 'border-blue-500/20 from-blue-500/[0.06] via-blue-500/[0.015] to-transparent shadow-blue-500/5',
+                      emerald: 'border-emerald-500/20 from-emerald-500/[0.06] via-emerald-500/[0.015] to-transparent shadow-emerald-500/5',
+                      violet: 'border-violet-500/20 from-violet-500/[0.06] via-violet-500/[0.015] to-transparent shadow-violet-500/5',
+                    };
+                    const textAccent: Record<string, string> = {
+                      blue: 'text-blue-400', emerald: 'text-emerald-400', violet: 'text-violet-400',
+                    };
+                    return (
+                      <motion.div
+                        key={stat.label}
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.25 + i * 0.08, type: 'spring', stiffness: 120, damping: 14 }}
+                        whileHover={{ y: -2, scale: 1.02 }}
+                        className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br ${accentMap[stat.accent]} backdrop-blur-sm p-5 text-left shadow-lg transition-all duration-300 group`}
+                      >
+                        <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-white/[0.03] to-transparent rounded-bl-full" />
+                        <span className="text-xl block mb-2 opacity-50 group-hover:opacity-80 transition-opacity">{stat.icon}</span>
+                        <p className={`font-elegant text-2xl font-bold tracking-tight ${textAccent[stat.accent]}`}>
+                          {String(stat.value)}
+                        </p>
+                        <p className="font-mono text-[8px] text-neutral-600 uppercase tracking-wider mt-1 font-medium">{stat.label}</p>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
 
-                {/* ---- TWO-COLUMN CONTENT ---- */}
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-16 md:mb-20">
+                {/* ── TWO-COLUMN CONTENT ── */}
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-14">
 
-                  {/* LEFT: Journey Timeline (3 cols) */}
+                  {/* LEFT COL: Journey + activity (3/5) */}
                   <div className="md:col-span-3 space-y-5">
-                    <div className="flex items-center gap-2.5">
-                      <Compass className="h-3.5 w-3.5 text-gold-500/60" />
-                      <span className="font-mono text-[9px] text-gold-500/60 uppercase tracking-widest font-bold">Your Journey</span>
-                      <span className="h-px flex-1 bg-neutral-900/60" />
+                    <div className="flex items-center gap-3">
+                      <div className="h-6 w-6 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
+                        <Compass className="h-3 w-3 text-gold-500/70" />
+                      </div>
+                      <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Your Journey</span>
+                      <span className="h-px flex-1 bg-gradient-to-r from-neutral-900/80 to-transparent" />
+                      <button onClick={() => setActiveTab('My Journey')} className="font-mono text-[7px] text-neutral-600 hover:text-gold-500/60 uppercase tracking-wider transition-colors">View all</button>
                     </div>
 
                     {journeyLog.length > 0 ? (
-                      <div className="space-y-0">
-                        {journeyLog.slice(0, 4).map((log, i) => (
-                          <div key={log.id || i} className="flex gap-4 group">
-                            <div className="flex flex-col items-center pt-1">
-                              <div className="h-2 w-2 rounded-full bg-gold-500/40 ring-2 ring-[#050505]" />
-                              {i < Math.min(journeyLog.length, 4) - 1 && <div className="w-px flex-1 bg-neutral-900/60" />}
-                            </div>
-                            <div className="flex-1 min-w-0 pb-5">
-                              <p className="font-serif text-sm font-bold text-neutral-200 group-hover:text-neutral-100 transition-colors uppercase tracking-wide">{log.title}</p>
-                              {log.description && (
-                                <p className="text-xs text-neutral-500 font-sans mt-0.5 leading-relaxed">{log.description}</p>
-                              )}
-                              <p className="font-mono text-[7px] text-neutral-600 mt-1 tracking-wide">{log.date}</p>
-                            </div>
-                          </div>
-                        ))}
+                      <div className="relative">
+                        {/* Timeline vertical track */}
+                        <div className="absolute left-[11px] top-2 bottom-2 w-px bg-gradient-to-b from-gold-500/30 via-gold-500/10 to-transparent pointer-events-none" />
+
+                        <div className="space-y-1">
+                          {journeyLog.slice(0, 5).map((log, i) => (
+                            <motion.div
+                              key={log.id || i}
+                              initial={{ x: -12, opacity: 0 }}
+                              animate={{ x: 0, opacity: 1 }}
+                              transition={{ delay: i * 0.06, type: 'spring', stiffness: 100 }}
+                              className="flex gap-4 group"
+                            >
+                              <div className="flex flex-col items-center pt-[6px] relative z-10">
+                                <div className={`h-3 w-3 rounded-full ${log.color || 'bg-gold-500/50'} ring-[3px] ring-[#050505] shadow-sm group-hover:shadow-md group-hover:shadow-gold-500/20 transition-shadow duration-300`} />
+                              </div>
+                              <div className="flex-1 min-w-0 pb-[14px]">
+                                <p className="font-elegant text-sm font-bold text-neutral-200 group-hover:text-gold-500/60 transition-colors duration-300 tracking-wide">{log.title}</p>
+                                {log.description && (
+                                  <p className="text-[11px] text-neutral-500 font-sans mt-0.5 leading-relaxed line-clamp-2">{log.description}</p>
+                                )}
+                                <p className="font-mono text-[7px] text-neutral-700 mt-1 tracking-wide">{log.date}</p>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
                       </div>
                     ) : (
-                      <div className="border border-dashed border-neutral-900/60 rounded-xl p-8 text-center">
-                        <p className="font-serif text-sm text-neutral-500">Your journey begins here</p>
-                        <p className="text-xs text-neutral-600 mt-1 font-sans">Submit a request or register for an event to log your first milestone.</p>
+                      <div className="rounded-2xl border border-dashed border-neutral-900/60 bg-neutral-950/20 p-10 text-center">
+                        <Compass className="h-6 w-6 text-neutral-700 mx-auto mb-3" />
+                        <p className="font-elegant text-sm text-neutral-500">Your journey begins here</p>
+                        <p className="text-xs text-neutral-600 mt-1 font-sans max-w-xs mx-auto">Book an experience or register for an event to log your first milestone.</p>
                       </div>
                     )}
+
+                    {/* Explore CTA */}
+                    <motion.button
+                      whileHover={{ x: 4 }}
+                      onClick={() => setActiveTab('Experiences')}
+                      className="group w-full rounded-2xl border border-dashed border-neutral-900/50 bg-neutral-950/10 p-4 hover:border-gold-500/30 hover:bg-gold-500/[0.02] transition-all text-left"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="h-7 w-7 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
+                            <Sparkles className="h-3.5 w-3.5 text-gold-500/60" />
+                          </div>
+                          <span className="font-elegant text-xs font-bold text-neutral-400 group-hover:text-gold-500/60 transition-colors tracking-wide uppercase">Discover experiences crafted for you</span>
+                        </div>
+                        <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-gold-500/60 transition-colors" />
+                      </div>
+                    </motion.button>
                   </div>
 
-                  {/* RIGHT: Upcoming + Quick Actions (2 cols) */}
-                  <div className="md:col-span-2 space-y-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2.5">
-                        <Calendar className="h-3.5 w-3.5 text-gold-500/60" />
-                        <span className="font-mono text-[9px] text-gold-500/60 uppercase tracking-widest font-bold">Upcoming</span>
-                        <span className="h-px flex-1 bg-neutral-900/60" />
-                      </div>
+                  {/* RIGHT COL: Events + Community + Quick access (2/5) */}
+                  <div className="md:col-span-2 space-y-5">
 
+                    {/* ── Events card ── */}
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.3 }}
+                      className="rounded-2xl border border-neutral-900/70 bg-neutral-950/20 overflow-hidden shadow-xl shadow-black/20 hover:border-gold-500/20 transition-colors duration-500"
+                    >
+                      <div className="flex items-center gap-2.5 px-5 pt-4 pb-3 border-b border-neutral-900/30">
+                        <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
+                          <Calendar className="h-3 w-3 text-gold-500/70" />
+                        </div>
+                        <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Upcoming</span>
+                      </div>
                       {portalEvents.filter(e => !e.registered).length > 0 ? (
-                        <button onClick={() => setActiveTab('Events')} className="w-full text-left group">
-                          <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 hover:border-gold-500/30 transition-all shadow-lg shadow-black/20">
-                            <div className="flex items-center gap-4">
-                              <div className="flex flex-col items-center justify-center h-14 w-14 rounded-lg border border-neutral-900 bg-neutral-950/60 font-mono shrink-0">
-                                <span className="text-base font-semibold text-neutral-100 leading-none">
-                                  {(() => { try { const d = new Date(portalEvents.filter(e => !e.registered)[0].date); return isNaN(d.getTime()) ? '--' : d.getDate(); } catch { return '--'; } })()}
-                                </span>
-                                <span className="text-[7px] font-semibold text-gold-500/60 tracking-wider mt-0.5 leading-none uppercase">
-                                  {(() => { try { const d = new Date(portalEvents.filter(e => !e.registered)[0].date); return isNaN(d.getTime()) ? 'TBD' : d.toLocaleString('en', { month: 'short' }); } catch { return 'TBD'; } })()}
-                                </span>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="font-serif text-sm font-bold text-neutral-100 group-hover:text-gold-500/80 transition-colors uppercase tracking-wide">{portalEvents.filter(e => !e.registered)[0].title}</p>
-                                <p className="text-[10px] text-neutral-500 font-sans mt-0.5">{portalEvents.filter(e => !e.registered)[0].location}</p>
-                              </div>
+                        <button onClick={() => setActiveTab('Events')} className="w-full text-left p-5 group hover:bg-gold-500/[0.02] transition-colors">
+                          <div className="flex items-center gap-4">
+                            <div className="flex flex-col items-center justify-center h-14 w-14 rounded-xl border border-neutral-800/60 bg-neutral-950/60 font-mono shrink-0 shadow-inner shadow-black/30">
+                              <span className="text-lg font-bold text-white leading-none">
+                                {new Date(portalEvents.filter(e => !e.registered)[0].date).getDate()}
+                              </span>
+                              <span className="text-[6px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">
+                                {new Date(portalEvents.filter(e => !e.registered)[0].date).toLocaleString('en', { month: 'short' })}
+                              </span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-elegant text-sm font-bold text-neutral-100 group-hover:text-gold-500/60 transition-colors tracking-wide truncate">{portalEvents.filter(e => !e.registered)[0].title}</p>
+                              <p className="text-[10px] text-neutral-500 font-sans mt-1">{portalEvents.filter(e => !e.registered)[0].location}</p>
+                              <span className="inline-block mt-2 text-[7px] font-mono text-gold-500/50 uppercase tracking-wider group-hover:text-gold-500/70 transition-colors">Register now →</span>
                             </div>
                           </div>
                         </button>
                       ) : (
-                        <div className="border border-dashed border-neutral-900/60 rounded-xl p-5 text-center">
-                          <p className="font-serif text-sm text-neutral-500">No upcoming events</p>
-                          <p className="text-[10px] text-neutral-600 mt-1 font-sans">New gatherings will appear here.</p>
+                        <div className="p-6 text-center">
+                          <Calendar className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
+                          <p className="font-elegant text-sm text-neutral-500">All clear on the horizon</p>
+                          <p className="text-[10px] text-neutral-600 mt-0.5 font-sans">New events will appear here when announced.</p>
                         </div>
                       )}
-                    </div>
+                    </motion.div>
 
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2.5">
-                        <LayoutGrid className="h-3.5 w-3.5 text-gold-500/60" />
-                        <span className="font-mono text-[9px] text-gold-500/60 uppercase tracking-widest font-bold">Quick Access</span>
-                        <span className="h-px flex-1 bg-neutral-900/60" />
+                    {/* ── Community chatter ── */}
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.38 }}
+                      className="rounded-2xl border border-neutral-900/70 bg-neutral-950/20 overflow-hidden shadow-xl shadow-black/20 hover:border-gold-500/20 transition-colors duration-500"
+                    >
+                      <div className="flex items-center gap-2.5 px-5 pt-4 pb-3 border-b border-neutral-900/30">
+                        <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
+                          <Users className="h-3 w-3 text-gold-500/70" />
+                        </div>
+                        <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Community</span>
                       </div>
-                      <div className="grid grid-cols-1 gap-2">
+                      <div className="p-4 space-y-2">
+                        {(clubDiscussions[activeCountryClub] || []).length > 0 ? (
+                          (clubDiscussions[activeCountryClub] || []).slice(0, 2).map((post) => (
+                            <button
+                              key={post.id}
+                              onClick={() => setActiveTab('Community')}
+                              className="w-full text-left group rounded-xl p-3 hover:bg-gold-500/[0.03] transition-colors"
+                            >
+                              <p className="font-elegant text-xs font-semibold text-neutral-200 group-hover:text-gold-500/60 transition-colors leading-snug">
+                                {post.text.length > 80 ? post.text.substring(0, 80) + '…' : post.text}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1.5">
+                                <span className="font-mono text-[7px] text-neutral-500">{post.author}</span>
+                                <span className="h-1 w-1 rounded-full bg-neutral-700" />
+                                <span className="font-mono text-[7px] text-neutral-500">{post.replies?.length || 0} replies</span>
+                              </div>
+                            </button>
+                          ))
+                        ) : (
+                          <button onClick={() => setActiveTab('Community')} className="w-full text-center py-4 group rounded-xl hover:bg-gold-500/[0.02] transition-colors">
+                            <Users className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
+                            <p className="font-elegant text-xs text-neutral-500 group-hover:text-gold-500/60 transition-colors">Be the first to start a conversation</p>
+                          </button>
+                        )}
+                        <button onClick={() => setActiveTab('Community')}
+                          className="w-full text-center pt-3 border-t border-neutral-900/30 font-mono text-[7px] text-neutral-600 hover:text-gold-500/60 uppercase tracking-wider transition-colors"
+                        >
+                          Browse all discussions
+                        </button>
+                      </div>
+                    </motion.div>
+
+                    {/* ── Quick Access ── */}
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.46 }}
+                    >
+                      <div className="flex items-center gap-2.5 mb-3">
+                        <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
+                          <LayoutGrid className="h-3 w-3 text-gold-500/70" />
+                        </div>
+                        <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Quick Access</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
                         {[
-                          { label: 'Membership', icon: Award, onClick: () => setActiveTab('Membership') },
-                          { label: 'Experiences', icon: Star, onClick: () => setActiveTab('Experiences') },
-                          { label: 'Events', icon: Calendar, onClick: () => setActiveTab('Events') },
-                          { label: 'Messages', icon: MessageSquare, onClick: () => setActiveTab('Messages') },
-                          { label: 'Community', icon: Users, onClick: () => setActiveTab('Community') },
+                          { label: 'Experiences', icon: Star, tab: 'Experiences' as const },
+                          { label: 'Membership', icon: Award, tab: 'Membership' as const },
+                          { label: 'Messages', icon: MessageSquare, tab: 'Messages' as const },
+                          { label: 'Rewards', icon: Gift, tab: 'Rewards' as const },
                         ].map((item) => {
                           const Icon = item.icon;
                           return (
-                            <button key={item.label} onClick={item.onClick}
-                              className="flex items-center gap-3 px-3.5 py-2.5 rounded-lg border border-neutral-900 bg-neutral-950/20 hover:border-gold-500/30 hover:bg-gold-500/5 transition-all text-left group shadow-lg shadow-black/20"
+                            <motion.button
+                              key={item.label}
+                              whileHover={{ y: -1, scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => setActiveTab(item.tab)}
+                              className="flex items-center gap-3 px-3.5 py-3 rounded-xl border border-neutral-900/60 bg-neutral-950/20 hover:border-gold-500/30 hover:bg-gold-500/[0.03] transition-all text-left group shadow-lg shadow-black/10"
                             >
-                              <Icon className="h-3.5 w-3.5 text-neutral-500 group-hover:text-gold-500/60 transition-colors" />
-                              <span className="font-serif text-xs font-bold text-neutral-200 group-hover:text-gold-500/80 transition-colors uppercase tracking-wide">{item.label}</span>
-                            </button>
+                              <div className="h-7 w-7 rounded-lg bg-neutral-900/80 border border-neutral-800/60 flex items-center justify-center group-hover:bg-gold-500/10 group-hover:border-gold-500/30 transition-all">
+                                <Icon className="h-3.5 w-3.5 text-neutral-500 group-hover:text-gold-500/70 transition-colors" />
+                              </div>
+                              <span className="font-elegant text-[11px] font-bold text-neutral-300 group-hover:text-gold-500/60 transition-colors tracking-wide">{item.label}</span>
+                            </motion.button>
                           );
                         })}
                       </div>
-                    </div>
+                    </motion.div>
+
                   </div>
                 </div>
 
-                {/* ---- NEW SECTION: Requests & Rewards glance ---- */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
-                  <button onClick={() => setShowPortalRequestWizard(true)}
-                    className="group relative overflow-hidden rounded-xl border border-neutral-900 bg-neutral-950/20 p-5 hover:border-gold-500/30 hover:bg-gold-500/[0.02] transition-all text-left shadow-lg shadow-black/20"
-                  >
-                    <div className="absolute -top-10 -right-10 w-24 h-24 bg-gold-500/[0.03] rounded-full blur-[60px] pointer-events-none" />
-                    <div className="relative">
-                      <FileText className="h-4 w-4 text-gold-500/60 mb-2" />
-                      <p className="font-serif text-sm font-bold text-neutral-200 group-hover:text-gold-500/80 transition-colors uppercase tracking-wide">Submit a Request</p>
-                      <p className="text-[10px] text-neutral-500 mt-1 font-sans">Send a personal proposal to Gillian's coordination team.</p>
-                    </div>
-                  </button>
-
-                  <button onClick={() => setActiveTab('Rewards')}
-                    className="group relative overflow-hidden rounded-xl border border-neutral-900 bg-neutral-950/20 p-5 hover:border-gold-500/30 hover:bg-gold-500/[0.02] transition-all text-left shadow-lg shadow-black/20"
-                  >
-                    <div className="absolute -top-10 -right-10 w-24 h-24 bg-gold-500/[0.03] rounded-full blur-[60px] pointer-events-none" />
-                    <div className="relative">
-                      <Gift className="h-4 w-4 text-gold-500/60 mb-2" />
-                      <p className="font-serif text-sm font-bold text-neutral-200 group-hover:text-gold-500/80 transition-colors uppercase tracking-wide">Loyalty Rewards</p>
-                      <p className="text-[10px] text-neutral-500 mt-1 font-sans">{loyaltyPoints.toLocaleString()} points available to redeem.</p>
-                    </div>
-                  </button>
+                {/* ── BOTTOM: Action cards with elegance ── */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-8">
+                  {[
+                    {
+                      icon: Users, label: 'Community', sub: 'Connect with fellow members in your country club.',
+                      color: 'from-gold-500/15 via-gold-500/5 to-transparent border-gold-500/25',
+                      iconBg: 'bg-gold-500/15 border-gold-500/25',
+                      iconColor: 'text-gold-500/80',
+                      glow: 'bg-gold-500/[0.06]',
+                      action: () => setActiveTab('Community'),
+                    },
+                    {
+                      icon: Gift, label: 'Loyalty Rewards', sub: `${loyaltyPoints.toLocaleString()} points ready to redeem.`,
+                      color: 'from-amber-500/15 via-amber-500/5 to-transparent border-amber-500/25',
+                      iconBg: 'bg-amber-500/15 border-amber-500/25',
+                      iconColor: 'text-amber-500/80',
+                      glow: 'bg-amber-500/[0.06]',
+                      action: () => setActiveTab('Rewards'),
+                    },
+                    {
+                      icon: Star, label: 'Book Experiences', sub: 'Exclusive intimate moments await you.',
+                      color: 'from-blue-500/15 via-blue-500/5 to-transparent border-blue-500/25',
+                      iconBg: 'bg-blue-500/15 border-blue-500/25',
+                      iconColor: 'text-blue-500/80',
+                      glow: 'bg-blue-500/[0.06]',
+                      action: () => setActiveTab('Experiences'),
+                    },
+                  ].map((card, i) => {
+                    const Icon = card.icon;
+                    return (
+                      <motion.button
+                        key={card.label}
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.35 + i * 0.08 }}
+                        whileHover={{ y: -3, scale: 1.015 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={card.action}
+                        className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br ${card.color} p-5 text-left shadow-xl shadow-black/30 transition-all duration-300`}
+                      >
+                        <div className={`absolute -top-10 -right-10 w-24 h-24 ${card.glow} rounded-full blur-[50px]`} />
+                        <div className="relative flex items-center gap-3.5">
+                          <div className={`h-10 w-10 rounded-xl ${card.iconBg} border flex items-center justify-center shrink-0 shadow-lg shadow-black/20 group-hover:scale-110 transition-transform duration-300`}>
+                            <Icon className={`h-4.5 w-4.5 ${card.iconColor}`} />
+                          </div>
+                          <div>
+                            <p className="font-elegant text-sm font-bold text-neutral-100 group-hover:text-white transition-colors tracking-wide">{card.label}</p>
+                            <p className="font-mono text-[8px] text-neutral-500 mt-0.5">{card.sub}</p>
+                          </div>
+                        </div>
+                        {/* Shine sweep on hover */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
+                      </motion.button>
+                    );
+                  })}
                 </div>
 
-              </div>
+              </motion.div>
             )}
 
             {/*             {/* VIEW RENDERING 2: MY REQUESTS (REMOVED - merged into Experiences) */}
@@ -2064,7 +2259,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-4 flex flex-col h-[450px]">
                   <div className="flex-1 overflow-y-auto space-y-4 pr-1 mb-4 text-xs">
-                    {channelMessages.management.map((msg) => (
+                    {channelMessages.map((msg) => (
                       <div key={msg.id} className={`flex gap-3 text-left ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                         <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[9px] ${
                           msg.sender === 'user' ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-950 border-gold-800/35 text-gold-500'
@@ -2582,209 +2777,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         </div>
       </footer>
 
-      {/* DYNAMIC PORTAL REQUEST WIZARD */}
-      <AnimatePresence>
-        {showPortalRequestWizard && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowPortalRequestWizard(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-md"
-            />
-            
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-2xl overflow-hidden rounded-xl border border-neutral-900 bg-neutral-950 p-6.5 shadow-2xl z-10 text-left space-y-4 max-h-[90vh] overflow-y-auto"
-            >
-              <h3 className="font-serif text-base tracking-wider text-gold-500 uppercase">
-                Submit Official Proposal
-              </h3>
-
-              <form onSubmit={handlePortalSubmitRequest} className="space-y-4 text-xs">
-                {/* Wizard Steps Indicator */}
-                <div className="flex items-center justify-between font-mono text-[9px] text-neutral-500 pb-3 border-b border-neutral-900 mb-4">
-                  <span className={requestWizardStep === 1 ? 'text-gold-500 font-bold' : ''}>1. PROFILE</span>
-                  <span className="h-px bg-neutral-900 flex-1 mx-3" />
-                  <span className={requestWizardStep === 2 ? 'text-gold-500 font-bold' : ''}>2. COORDINATES</span>
-                  <span className="h-px bg-neutral-900 flex-1 mx-3" />
-                  <span className={requestWizardStep === 3 ? 'text-gold-500 font-bold' : ''}>3. SINCERITY</span>
-                </div>
-
-                {requestWizardStep === 1 && (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-400 uppercase">PROPOSAL TYPE</label>
-                        <select
-                          value={newRequestType}
-                          onChange={(e) => setNewRequestType(e.target.value)}
-                          className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50"
-                        >
-                          <option value="Fan Letter">Fan Letter</option>
-                          <option value="Ask Question">Ask Question</option>
-                          <option value="Meet & Greet">Meet & Greet</option>
-                          <option value="Virtual Meeting">Virtual Meeting</option>
-                          <option value="Birthday Greeting">Birthday Greeting</option>
-                          <option value="Personalized Video">Personalized Video</option>
-                          <option value="Autograph Request">Autograph Request</option>
-                          <option value="Interview Request">Interview Request</option>
-                          <option value="Business Inquiry">Business Inquiry</option>
-                          <option value="Collaboration">Collaboration</option>
-                        </select>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-400 uppercase">ATTENDEES COUNT</label>
-                        <select
-                          value={newRequestAttendees}
-                          onChange={(e) => setNewRequestAttendees(e.target.value)}
-                          className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50"
-                        >
-                          <option value="1 Person">1 Person (Just Me)</option>
-                          <option value="2 People">2 People</option>
-                          <option value="3-5 People">3-5 People</option>
-                          <option value="Organization">Charity Delegation</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-400 uppercase">CONTACT METHOD</label>
-                        <select
-                          value={newRequestContact}
-                          onChange={(e) => setNewRequestContact(e.target.value as any)}
-                          className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50"
-                        >
-                          <option value="Email">Email</option>
-                          <option value="WhatsApp">WhatsApp</option>
-                          <option value="Telegram">Telegram</option>
-                          <option value="Website">Website Sanctuary ID</option>
-                        </select>
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-400 uppercase">CONTACT VALUE</label>
-                        <input
-                          type="text"
-                          required
-                          value={newRequestContactVal}
-                          onChange={(e) => setNewRequestContactVal(e.target.value)}
-                          placeholder={newRequestContact === 'WhatsApp' ? '+1 (555) 000-0000' : 'john@example.com'}
-                          className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex justify-end pt-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!newRequestContactVal.trim()) {
-                            showToast('Please provide your contact method value.', 'error');
-                            return;
-                          }
-                          setRequestWizardStep(2);
-                        }}
-                        className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 px-6 rounded text-xs uppercase transition-all"
-                      >
-                        Next Step: Coordinates
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {requestWizardStep === 2 && (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-400 uppercase">PREFERRED DATE RANGE</label>
-                        <input
-                          type="text"
-                          required
-                          value={newRequestDate}
-                          onChange={(e) => setNewRequestDate(e.target.value)}
-                          placeholder="e.g. July 12th-15th, 2024"
-                          className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-400 uppercase">LOCATION (CITY, COUNTRY)</label>
-                        <input
-                          type="text"
-                          required
-                          value={newRequestLocation}
-                          onChange={(e) => setNewRequestLocation(e.target.value)}
-                          placeholder="e.g. Toronto, Canada"
-                          className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setRequestWizardStep(1)}
-                        className="border border-neutral-800 hover:bg-neutral-900 text-neutral-400 font-bold py-2 px-5 rounded text-xs uppercase transition-all"
-                      >
-                        Back
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!newRequestDate.trim() || !newRequestLocation.trim()) {
-                            showToast('Please provide Preferred Date and Location.', 'error');
-                            return;
-                          }
-                          setRequestWizardStep(3);
-                        }}
-                        className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 px-6 rounded text-xs uppercase transition-all"
-                      >
-                        Next Step: Sincerity
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {requestWizardStep === 3 && (
-                  <div className="space-y-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-mono text-neutral-400 uppercase">WHY DOES THIS MATTER TO YOU?</label>
-                      <textarea
-                        required
-                        rows={3}
-                        value={newRequestSincerity}
-                        onChange={(e) => setNewRequestSincerity(e.target.value)}
-                        placeholder="Share your sincere story. Integrity is our primary benchmark..."
-                        className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50 resize-none leading-relaxed"
-                      />
-                    </div>
-
-                    <div className="flex justify-between pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setRequestWizardStep(2)}
-                        className="border border-neutral-800 hover:bg-neutral-900 text-neutral-400 font-bold py-2 px-5 rounded text-xs uppercase transition-all"
-                      >
-                        Back
-                      </button>
-                      <button
-                        type="submit"
-                        className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 px-6 rounded text-xs uppercase transition-all"
-                      >
-                        Authorize and Submit Proposal
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* DYNAMIC PORTAL REQUEST WIZARD — removed (feature deprecated) */}
 
       {/* PORTAL MEMBERSHIP UPGRADE MODAL */}
       <AnimatePresence>
@@ -3028,118 +3021,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         )}
       </AnimatePresence>
 
-      {/* COMMUNICATION BRIDGE DISPATCH MODAL */}
-      <AnimatePresence>
-        {showDispatchModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowDispatchModal(false)}
-              className="absolute inset-0 bg-black/85 backdrop-blur-md"
-            />
-
-            {/* Modal Body */}
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-neutral-800 bg-[#070709] p-6 text-left shadow-2xl shadow-gold-500/5"
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-neutral-900 pb-4">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-gold-500 flex items-center gap-1.5">
-                    <Sparkles className="h-3 w-3 animate-pulse text-gold-500" />
-                    Secure Communication Bridge
-                  </span>
-                  <h3 className="text-base font-serif font-bold text-white uppercase tracking-wide">
-                    Dispatching {dispatchMethod} Notification
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setShowDispatchModal(false)}
-                  className="rounded-full border border-neutral-900 bg-neutral-950 p-1.5 text-neutral-500 hover:text-white hover:border-neutral-800 transition-all"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              {/* Body */}
-              <div className="py-5 space-y-4">
-                <p className="text-xs text-neutral-400 leading-relaxed">
-                  To complete your submission, please send the pre-filled authentication text directly to the sanctuary administrators. This guarantees direct coordination tracking and immediate security validation.
-                </p>
-
-                {/* Pre-filled message text area */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-[10px] font-mono text-neutral-500 uppercase">
-                    <span>Pre-filled Notification Text</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(dispatchMessage);
-                        setIsCopiedDispatch(true);
-                        setTimeout(() => setIsCopiedDispatch(false), 2000);
-                      }}
-                      className="flex items-center gap-1 hover:text-gold-500 transition-colors"
-                    >
-                      {isCopiedDispatch ? (
-                        <>
-                          <CheckCircle2 className="h-3 w-3 text-gold-500" />
-                          <span>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3 w-3" />
-                          <span>Copy Message</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <div className="w-full rounded border border-neutral-900 bg-[#0a0a0c] p-3 text-[11px] font-mono text-neutral-300 whitespace-pre-wrap leading-relaxed max-h-[180px] overflow-y-auto border-l-2 border-l-gold-500">
-                    {dispatchMessage}
-                  </div>
-                </div>
-
-                {/* Bridge Info */}
-                <div className="p-3 bg-gold-500/[0.02] border border-gold-500/10 rounded-xl flex items-start gap-3">
-                  <ShieldAlert className="h-4.5 w-4.5 text-gold-500 shrink-0 mt-0.5" />
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-bold text-gold-500">Security Liaison Dispatch</h4>
-                    <p className="text-[11px] text-neutral-400 leading-normal">
-                      The admin will receive your dispatch details. They will then assess date feasibility, log credentials, and continually update progress on the administrative side so that your entire coordination lifecycle is securely tracked.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Footer */}
-              <div className="flex flex-col sm:flex-row gap-2 justify-end border-t border-neutral-900 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowDispatchModal(false)}
-                  className="px-4 py-2 border border-neutral-900 hover:border-neutral-800 text-xs font-semibold text-neutral-400 hover:text-white rounded-lg transition-colors uppercase font-mono"
-                >
-                  Skip to Tracker
-                </button>
-                <a
-                  href={dispatchUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setShowDispatchModal(false)}
-                  className="px-5 py-2 bg-gradient-to-r from-gold-500 to-amber-600 hover:from-gold-400 hover:to-amber-500 text-neutral-950 font-bold rounded-lg text-xs transition-all flex items-center justify-center gap-1.5 uppercase tracking-wide active:scale-95 shadow-lg shadow-gold-500/10"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  Open {dispatchMethod} Link
-                </a>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* COMMUNICATION BRIDGE DISPATCH MODAL — removed (feature deprecated) */}
 
       {/* SYSTEM TOAST NOTIFICATIONS */}
       <AnimatePresence>

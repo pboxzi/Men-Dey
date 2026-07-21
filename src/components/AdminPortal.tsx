@@ -91,15 +91,6 @@ interface CommunicationLogItem {
   nextAction: string;
 }
 
-interface MembershipApplication {
-  id: string;
-  name: string;
-  email: string;
-  status: 'Pending' | 'Approved' | 'Rejected';
-  appliedOn: string;
-  tier: 'Gold' | 'Platinum';
-}
-
 export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const { user, profile, loading: authLoading } = useAuth();
   const isAdmin = profile?.role === 'admin';
@@ -275,19 +266,13 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
   const [selectedOrder, setSelectedOrder] = useState<ShopOrder | null>(null);
 
-  // Membership Applications (fetched from membership_applications)
-  const [memberships, setMemberships] = useState<any[]>([]);
+  // Membership pending count (for dashboard alert)
+  const [pendingMemberships, setPendingMemberships] = useState(0);
 
   useEffect(() => {
     void (async () => {
-      const { data, error } = await supabase.from('membership_applications').select('*').order('created_at', { ascending: false });
-      if (!error && data) {
-        setMemberships(data.map((r: any) => ({
-          id: r.id, name: r.full_name || r.member_name, email: r.email,
-          status: r.status === 'active' ? 'Approved' : r.status === 'cancelled' ? 'Rejected' : 'Pending',
-          tier: r.tier, appliedOn: r.created_at
-        })));
-      }
+      const { count } = await supabase.from('membership_applications').select('*', { count: 'exact', head: true }).in('status', ['pending', 'upgrade_pending']);
+      setPendingMemberships(count ?? 0);
     })();
   }, []);
 
@@ -619,14 +604,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     setJournalContent('');
   };
 
-  // Handler for Membership Approval
-  const handleMembershipAction = async (id: string, decision: 'Approved' | 'Rejected') => {
-    setMemberships(prev => prev.map(m => m.id === id ? { ...m, status: decision } : m));
-    try {
-      await supabase.from('membership_applications').update({ status: decision === 'Approved' ? 'active' : 'cancelled', updated_at: new Date().toISOString() }).eq('id', id);
-    } catch {}
-    showToast(`Membership Application ${id} has been ${decision}!`, decision === 'Approved' ? 'success' : 'info');
-  };
+  // Handled by AdminMembershipReview component
 
   const bTotal = bookingStatusCounts.pending + bookingStatusCounts.confirmed + bookingStatusCounts.cancelled;
   let bCumPct = 0;
@@ -1406,7 +1384,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <Award className="h-4 w-4" />
                           </div>
                           <div className="space-y-0.5">
-                            <h5 className="text-xs font-semibold text-white">{memberships.filter(m => m.status === 'Pending').length} membership applications</h5>
+                            <h5 className="text-xs font-semibold text-white">{pendingMemberships} membership applications</h5>
                             <p className="text-[10px] text-neutral-400">Pending approval</p>
                           </div>
                         </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../utils/supabase';
+import { useAuth } from '../utils/AuthContext';
 import { Calendar, Clock, MapPin, CheckCircle, Send, Sparkles, Loader2, X, ArrowLeft, MessageCircle, Mail, Users, FileText, AlertTriangle, RefreshCw } from 'lucide-react';
 
 const MONTH_LOOKUP: Record<string, number> = {
@@ -35,6 +36,7 @@ interface RegistrationForm {
 }
 
 export default function EventsSection() {
+  const { user, profile } = useAuth();
   const [dbEvents, setDbEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,6 +47,7 @@ export default function EventsSection() {
     name: '', email: '', phone: '', country: '', attendees: 1, specialRequests: '', commMethod: 'email',
   });
   const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [ticketRef, setTicketRef] = useState('');
 
   const events = dbEvents;
@@ -72,15 +75,38 @@ export default function EventsSection() {
     return () => clearInterval(id);
   }, [nextEvent]);
 
+  const STORAGE_KEY = 'ga_event_registrant';
+
+  const loadSaved = () => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {};
+  };
+
+  const saveForm = () => {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ name: form.name, email: form.email, phone: form.phone, country: form.country })); } catch {}
+  };
+
   const resetFlow = () => {
     setStep('idle');
     setSelectedEvent(null);
     setForm({ name: '', email: '', phone: '', country: '', attendees: 1, specialRequests: '', commMethod: 'email' });
     setTicketRef('');
+    setSubmitError('');
   };
 
   const startRegistration = (evt: any) => {
     setSelectedEvent(evt);
+    const saved = loadSaved();
+    setForm({
+      name: profile?.full_name || user?.user_metadata?.name || saved.name || '',
+      email: user?.email || saved.email || '',
+      phone: profile?.phone || user?.user_metadata?.phone || saved.phone || '',
+      country: profile?.country || user?.user_metadata?.country || saved.country || '',
+      attendees: 1, specialRequests: '', commMethod: 'email',
+    });
     setStep('form');
   };
 
@@ -93,22 +119,27 @@ export default function EventsSection() {
     if (!selectedEvent) return;
     setSaving(true);
     const ref = `EVT-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-    try {
-      await supabase.from('event_registrations').insert({
-        id: `reg-${Date.now()}`,
-        event_id: selectedEvent.id, event_title: selectedEvent.title,
-        event_day: selectedEvent.day, event_month: selectedEvent.month,
-        event_location: selectedEvent.location, event_time: selectedEvent.event_time || selectedEvent.time,
-        member_name: form.name, member_email: form.email,
-        phone: form.phone, country: form.country,
-        ticket_qty: form.attendees, special_requests: form.specialRequests,
-        communication_method: form.commMethod,
-        ticket_ref: ref, status: 'pending',
-      });
-    } catch {}
+    const { error: insertErr } = await supabase.from('event_registrations').insert({
+      id: `reg-${Date.now()}`,
+      event_id: selectedEvent.id, event_title: selectedEvent.title,
+      event_day: selectedEvent.day, event_month: selectedEvent.month,
+      event_location: selectedEvent.location, event_time: selectedEvent.event_time || selectedEvent.time,
+      user_id: user?.id || null,
+      member_name: form.name, member_email: form.email,
+      phone: form.phone, country: form.country,
+      ticket_qty: form.attendees, special_requests: form.specialRequests,
+      communication_method: form.commMethod,
+      ticket_ref: ref, status: 'pending',
+    });
+    if (insertErr) {
+      setSubmitError(insertErr.message);
+      setSaving(false);
+      return;
+    }
     setTicketRef(ref);
     setSaving(false);
     setStep('submitted');
+    saveForm();
 
     const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${ref}\nEvent: ${selectedEvent.title}\nDate: ${selectedEvent.month} ${selectedEvent.day}, 2026\nAttendees: ${form.attendees}\n\n--- MESSAGE ---\n${form.specialRequests ? form.specialRequests + '\n\n' : ''}`;
     if (form.commMethod === 'whatsapp') {
@@ -285,6 +316,9 @@ export default function EventsSection() {
                           </div>
                         </div>
                       </div>
+                      {submitError && (
+                        <p className="text-[10px] text-red-400 font-mono text-center">{submitError}</p>
+                      )}
                       <div className="flex gap-3 pt-2">
                         <button onClick={() => setStep('form')}
                           className="flex-1 py-3 rounded-xl border border-neutral-800 text-neutral-400 hover:text-white text-xs font-mono transition-colors"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { supabase } from '../utils/supabase';
-import { Calendar, Clock, MapPin, Users, Trash2, RefreshCw, Plus, X, Check, Search, ArrowLeft, LayoutGrid, List, AlertTriangle } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Trash2, RefreshCw, Plus, X, Check, Search, ArrowLeft, LayoutGrid, List, AlertTriangle, ChevronRight } from 'lucide-react';
 
 interface AdminEvent {
   id: string; title: string; type: string; description: string;

@@ -55,6 +55,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
   const [registeringEvent, setRegisteringEvent] = useState<EventItem | null>(null);
   const [form, setForm] = useState({ name: '', email: '', phone: '', country: '', attendees: 1, specialRequests: '', commMethod: 'email' as 'whatsapp' | 'email' });
   const [saving, setSaving] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [ticketRef, setTicketRef] = useState('');
 
   const fetchData = useCallback(async () => {
@@ -107,6 +108,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
     setStep('idle');
     setRegisteringEvent(null);
     setTicketRef('');
+    setSubmitError('');
   };
 
   const handleSubmitForm = () => {
@@ -119,18 +121,21 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
     setSaving(true);
     const ref = `EVT-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
     const regId = `reg-${Date.now()}`;
-    try {
-      await supabase.from('event_registrations').insert({
-        id: regId, event_id: registeringEvent.id, event_title: registeringEvent.title,
-        event_day: registeringEvent.day, event_month: registeringEvent.month,
-        event_location: registeringEvent.location, event_time: registeringEvent.time,
-        user_id: user?.id, member_name: form.name, member_email: form.email,
-        phone: form.phone, country: form.country,
-        ticket_qty: form.attendees, special_requests: form.specialRequests,
-        communication_method: form.commMethod,
-        ticket_ref: ref, status: 'pending',
-      });
-    } catch {}
+    const { error: insertErr } = await supabase.from('event_registrations').insert({
+      id: regId, event_id: registeringEvent.id, event_title: registeringEvent.title,
+      event_day: registeringEvent.day, event_month: registeringEvent.month,
+      event_location: registeringEvent.location, event_time: registeringEvent.time,
+      user_id: user?.id, member_name: form.name, member_email: form.email,
+      phone: form.phone, country: form.country,
+      ticket_qty: form.attendees, special_requests: form.specialRequests,
+      communication_method: form.commMethod,
+      ticket_ref: ref, status: 'pending',
+    });
+    if (insertErr) {
+      setSubmitError(insertErr.message);
+      setSaving(false);
+      return;
+    }
     setEvents(prev => prev.map(e => e.id === registeringEvent.id ? {
       ...e, registered: true, ticketRef: ref, regId, regStatus: 'pending',
       attendees: form.attendees, specialRequests: form.specialRequests, commMethod: form.commMethod,
@@ -141,6 +146,13 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
     addJourneyMilestone?.('Registered for Event', `Registered for ${registeringEvent.title}`, 'bg-blue-500');
     pushNotification?.('Event registration submitted! Check your ref.');
     showToast?.('Registration submitted!', 'success');
+
+    const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${ref}\nEvent: ${registeringEvent.title}\nDate: ${registeringEvent.month} ${registeringEvent.day}, 2026\nAttendees: ${form.attendees}\n\n--- MESSAGE ---\n${form.specialRequests ? form.specialRequests + '\n\n' : ''}`;
+    if (form.commMethod === 'whatsapp') {
+      window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+    } else {
+      window.open(`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Event Registration - ' + ref)}&body=${encodeURIComponent(msg)}`, '_blank');
+    }
   };
 
   const openCommApp = () => {
@@ -518,6 +530,9 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                         </div>
                       </div>
                     </div>
+                    {submitError && (
+                      <p className="text-[10px] text-red-400 font-mono text-center">{submitError}</p>
+                    )}
                     <div className="flex gap-3 pt-2">
                       <button onClick={() => setStep('form')}
                         className="flex-1 py-3 rounded-xl border border-neutral-800 text-neutral-400 hover:text-white text-xs font-mono transition-colors"

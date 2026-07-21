@@ -398,11 +398,11 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       { data: ordersData },
     ] = await Promise.all([
       supabase.from('profiles').select('*', { count: 'exact', head: true }),
-      supabase.from('experiences').select('*', { count: 'exact', head: true }).eq('published', true),
+      supabase.from('experiences').select('*', { count: 'exact', head: true }),
       supabase.from('experience_requests').select('*', { count: 'exact', head: true }),
-      supabase.from('experience_requests').select('*', { count: 'exact', head: true }).is('confirmed_date', null).is('cancelled_reason', null),
-      supabase.from('experience_requests').select('*', { count: 'exact', head: true }).not('confirmed_date', 'is', null).is('cancelled_reason', null),
-      supabase.from('experience_requests').select('*', { count: 'exact', head: true }).not('cancelled_reason', 'is', null),
+      supabase.from('experience_requests').select('*', { count: 'exact', head: true }).in('status', ['submitted', 'pending', 'under_review']),
+      supabase.from('experience_requests').select('*', { count: 'exact', head: true }).in('status', ['discussion', 'active', 'completed']),
+      supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('status', 'cancelled'),
       supabase.from('subscribers').select('*', { count: 'exact', head: true }),
       supabase.from('orders').select('price'),
     ]);
@@ -1115,11 +1115,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                               )
                             : recentBookings
                           ).map((bk) => {
-                            const isConfirmed = bk.confirmed_date;
-                            const isCancelled = bk.cancelled_reason;
-                            const status = isCancelled ? 'Cancelled' : isConfirmed ? 'Confirmed' : 'Pending';
-                            const statusColor = status === 'Confirmed' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                              status === 'Cancelled' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                            const statusLabel = ({ submitted: 'Pending', pending: 'Pending', under_review: 'Pending', discussion: 'Discussion', active: 'Confirmed', completed: 'Completed', cancelled: 'Cancelled' } as Record<string, string>)[bk.status] || 'Pending';
+                            const statusColor = statusLabel === 'Confirmed' || statusLabel === 'Completed' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                              statusLabel === 'Cancelled' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                              statusLabel === 'Discussion' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
                               'bg-amber-500/10 text-amber-500 border-amber-500/20';
                             return (
                               <tr key={bk.id} className="hover:bg-neutral-950/40 transition-colors">
@@ -1143,9 +1142,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                                 <td className="px-4 py-3.5">
                                   <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${statusColor}`}>
                                     <span className={`h-1 w-1 rounded-full ${
-                                      status === 'Confirmed' ? 'bg-green-500' : status === 'Cancelled' ? 'bg-red-500' : 'bg-amber-500'
+                                      statusLabel === 'Confirmed' || statusLabel === 'Completed' ? 'bg-green-500' : statusLabel === 'Cancelled' ? 'bg-red-500' : statusLabel === 'Discussion' ? 'bg-blue-500' : 'bg-amber-500'
                                     }`} />
-                                    {status}
+                                    {statusLabel}
                                   </span>
                                 </td>
                                 <td className="px-5 py-3.5 text-right">

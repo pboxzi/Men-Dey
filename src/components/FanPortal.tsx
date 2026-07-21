@@ -405,7 +405,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   // Additional dashboard stats
   const [fanStats, setFanStats] = useState({ bookings: 0, memberSince: '' });
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id || activeTab !== 'Dashboard') return;
     void (async () => {
       const [{ count }, { data: prof }] = await Promise.all([
         supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
@@ -416,7 +416,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         memberSince: prof?.created_at || '',
       });
     })();
-  }, [user]);
+  }, [user, activeTab]);
 
   // Kindness log & Journey timeline State
   const [journeyLog, setJourneyLog] = useState([]);
@@ -2195,8 +2195,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               <div className="px-3 pb-3 flex items-center justify-between gap-2">
                                 <span className="text-[10px] font-mono font-bold text-white">{exp.price || 'Complimentary'}</span>
                                 <div className="flex gap-1.5">
-                                  <a
-                                    href={`/experiences#EXPERIENCES/BOOK/${exp.id}`}
+                                  <button
+                                    onClick={() => !isFull && (window.location.hash = `EXPERIENCES/BOOK/${exp.id}`)}
+                                    disabled={isFull}
                                     className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[8px] font-mono tracking-wider uppercase transition-all ${
                                       isFull
                                         ? 'bg-neutral-900 text-neutral-600 cursor-not-allowed'
@@ -2205,7 +2206,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                   >
                                     {isFull ? 'Full' : 'Book Now'}
                                     {!isFull && <ChevronRight className="h-2.5 w-2.5" />}
-                                  </a>
+                                  </button>
                                 </div>
                               </div>
                             </div>

@@ -27,6 +27,41 @@ function formatTime(d: string) {
   return isNaN(dt.getTime()) ? d : dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 
+const SNAKE_TO_CAMEL: Record<string, string> = {
+  experience_id: 'experienceId',
+  experience_title: 'experienceTitle',
+  booking_reference: 'bookingReference',
+  full_name: 'fullName',
+  preferred_date: 'preferredDate',
+  preferred_time: 'preferredTime',
+  special_requests: 'specialRequests',
+  communication_method: 'communicationMethod',
+  confirmed_date: 'confirmedDate',
+  confirmed_time: 'confirmedTime',
+  confirmed_location: 'confirmedLocation',
+  meeting_venue: 'meetingVenue',
+  virtual_link: 'virtualLink',
+  dress_code: 'dressCode',
+  arrival_instructions: 'arrivalInstructions',
+  admin_notes: 'adminNotes',
+  cancelled_reason: 'cancelledReason',
+  submitted_date: 'submittedDate',
+  created_at: 'createdAt',
+  user_id: 'userId',
+};
+
+function toCamelCase(row: Record<string, any>): ExperienceBooking {
+  const out: Record<string, any> = {};
+  for (const key of Object.keys(row)) {
+    const camel = SNAKE_TO_CAMEL[key] || key;
+    out[camel] = row[key];
+  }
+  if (out.timeline && typeof out.timeline === 'string') {
+    try { out.timeline = JSON.parse(out.timeline); } catch { out.timeline = []; }
+  }
+  return out as ExperienceBooking;
+}
+
 const STATUS_STEPS = [
   { key: 'pending', label: 'Request Submitted' },
   { key: 'under_review', label: 'Under Review' },
@@ -53,7 +88,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
       if (user?.id) query = query.eq('user_id', user.id);
       const { data, error } = await query.order('created_at', { ascending: false });
       if (!error && data) {
-        setBookings(data || []);
+        setBookings(data.map((r: any) => toCamelCase(r)));
       }
     } catch (err) {
       console.error('Failed to load bookings:', err);
@@ -166,7 +201,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-serif text-base font-bold text-white">{b.experienceTitle}</h3>
                 <span className={`px-2 py-0.5 rounded-full text-[8px] font-mono font-bold tracking-wider uppercase border ${getStatusColor(b.status)}`}>
-                  {b.status}
+                  {STATUS_STEPS.find(s => s.key === b.status)?.label || b.status}
                 </span>
               </div>
               <p className="text-[10px] font-mono text-neutral-500 mt-1">Reference: {b.bookingReference}</p>
@@ -385,7 +420,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
                       <div className="flex items-center gap-2 flex-wrap">
                         <h4 className="text-sm font-bold text-white group-hover:text-gold-500/80 transition-colors">{b.experienceTitle}</h4>
                         <span className={`px-1.5 py-0.5 rounded text-[7px] font-mono font-bold uppercase border ${getStatusColor(b.status)}`}>
-                          {b.status}
+                          {STATUS_STEPS.find(s => s.key === b.status)?.label || b.status}
                         </span>
                       </div>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-neutral-500 mt-1">
@@ -427,7 +462,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
                         <h4 className="text-xs font-bold text-neutral-300 group-hover:text-white transition-colors">{b.experienceTitle}</h4>
                         <div className="flex items-center gap-2 text-[9px] text-neutral-600 mt-0.5">
                           <span>{formatDate(b.submittedDate || b.createdAt)}</span>
-                          <span className={`uppercase ${b.status === 'completed' ? 'text-blue-500' : 'text-red-400'}`}>{b.status}</span>
+                          <span className={`uppercase ${b.status === 'completed' ? 'text-blue-500' : 'text-red-400'}`}>{STATUS_STEPS.find(s => s.key === b.status)?.label || b.status}</span>
                         </div>
                         <p className="text-[8px] font-mono text-neutral-600 mt-0.5">{b.bookingReference}</p>
                       </div>

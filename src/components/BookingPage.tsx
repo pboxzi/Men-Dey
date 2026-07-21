@@ -87,6 +87,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [bookingRef, setBookingRef] = useState('');
+  const [submitError, setSubmitError] = useState('');
 
   const formDefaults: FormData = {
     preferredDate: '',
@@ -148,6 +149,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
 
   const handleSubmit = async () => {
     setLoading(true);
+    setSubmitError('');
     try {
       const ref = 'REF-' + Date.now().toString(36).toUpperCase();
       const body: any = {
@@ -167,6 +169,9 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
         communication_method: form.communicationMethod,
       };
       if (user?.id) body.user_id = user.id;
+      body.member_name = profile?.name || personalInfo.fullName;
+      body.member_avatar = (profile?.name || personalInfo.fullName).slice(0, 2).toUpperCase();
+      body.submitted_date = new Date().toISOString();
 
       const { data, error } = await supabase.from('experience_requests').insert(body).select().single();
       if (error) {
@@ -187,6 +192,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
       if (onSuccess && data) onSuccess(data as any);
     } catch (err) {
       console.error('Booking failed:', err);
+      setSubmitError(String(err));
     } finally {
       setLoading(false);
     }
@@ -310,9 +316,17 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
               </ul>
             </div>
 
-            <button onClick={onBack} className="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all">
-              Browse More Experiences
-            </button>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <button onClick={onBack} className="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all">
+                Browse More Experiences
+              </button>
+              <button
+                onClick={() => window.location.hash = '#PORTAL'}
+                className="px-6 py-2.5 border border-gold-500/30 hover:border-gold-500/60 text-gold-500 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
+              >
+                Track in My Bookings
+              </button>
+            </div>
           </div>
         </motion.div>
       ) : (
@@ -548,6 +562,14 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Error display */}
+            {submitError && (
+              <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-xl flex items-start gap-2.5 text-[10px] text-red-400">
+                <AlertCircle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+                <span>Failed to submit: {submitError}. Check console for details.</span>
+              </div>
+            )}
 
             {/* ─── NAVIGATION ─── */}
             <div className="flex items-center justify-between">

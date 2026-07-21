@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../utils/supabase';
 import { Check, X, Search, Loader2, User, Mail, MessageCircle } from 'lucide-react';
 
 interface MembershipRequest {
@@ -14,6 +15,29 @@ interface MembershipRequest {
   created_at: string;
 }
 
+const normalizeMembership = (r: any): MembershipRequest => {
+  const msg = typeof r.message === 'string' ? JSON.parse(r.message || '{}') : (r.message || {});
+  const notes = typeof r.notes === 'string' ? JSON.parse(r.notes || '{}') : (r.notes || {});
+  return {
+    id: r.id, user_id: r.user_id || '', status: r.status || 'pending',
+    tier_id: msg.tier_id || '', tier_name: msg.tier_name || '', tier_price: msg.tier_price || '',
+    card_name: r.full_name || msg.card_name || r.card_name || '',
+    card_serial: msg.card_serial || r.card_serial || '',
+    member_name: msg.member_name || r.member_name || '',
+    member_email: r.email || msg.member_email || '',
+    member_phone: msg.phone || r.phone || '',
+    member_country: r.country || msg.member_country || '',
+    profile_photo: msg.profile_photo || r.profile_photo || '',
+    comm_method: msg.comm_method || r.comm_method || 'email',
+    membership_number: notes.membership_number || r.membership_number || '',
+    activation_date: r.reviewed_at || notes.activation_date || '',
+    expiration_date: notes.expiration_date || r.expiration_date || '',
+    cancel_reason: notes.cancel_reason || r.cancel_reason || '',
+    admin_notes: notes.admin_notes || r.admin_notes || '',
+    created_at: r.created_at || '',
+  };
+};
+
 export default function AdminMembershipReview() {
   const [requests, setRequests] = useState<MembershipRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,12 +45,13 @@ export default function AdminMembershipReview() {
   const [selectedRequest, setSelectedRequest] = useState<MembershipRequest | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  const fetchRequests = () => {
+  const fetchRequests = async () => {
     setLoading(true);
-    fetch('/api/admin/membership-requests')
-      .then(r => r.json())
-      .then(data => { setRequests(data || []); setLoading(false); })
-      .catch(() => setLoading(false));
+    try {
+      const { data, error } = await supabase.from('membership_applications').select('*').order('created_at', { ascending: false });
+      if (!error) setRequests((data || []).map(normalizeMembership));
+    } catch {}
+    setLoading(false);
   };
 
   useEffect(() => { fetchRequests(); }, []);
@@ -42,13 +67,21 @@ export default function AdminMembershipReview() {
       body.expiration_date = exp.toISOString();
     }
     try {
-      const r = await fetch('/api/admin/membership-requests/' + id, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
-      });
-      const d = await r.json();
-      if (d.success) {
-        setRequests(prev => prev.map(req => req.id === id ? d.membership : req));
-        if (selectedRequest?.id === id) setSelectedRequest(d.membership);
+      const { data: current } = await supabase.from('membership_applications').select('*').eq('id', id).single();
+      let notes: any = {};
+      try { notes = typeof current?.notes === 'string' ? JSON.parse(current.notes) : (current?.notes || {}); } catch {}
+      notes.membership_number = body.membership_number || notes.membership_number;
+      notes.expiration_date = body.expiration_date || notes.expiration_date;
+      const updates: any = { status, updated_at: new Date().toISOString() };
+      if (status === 'active') {
+        updates.reviewed_at = new Date().toISOString();
+        updates.notes = JSON.stringify(notes);
+      }
+      const { data, error } = await supabase.from('membership_applications').update(updates).eq('id', id).select('*').single();
+      if (!error && data) {
+        const norm = normalizeMembership(data);
+        setRequests(prev => prev.map(req => req.id === id ? norm : req));
+        if (selectedRequest?.id === id) setSelectedRequest(norm);
       }
     } catch {}
     setActionLoading(null);

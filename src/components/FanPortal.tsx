@@ -6,9 +6,11 @@
 import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '../utils/StateContext';
 import { useAuth } from '../utils/AuthContext';
+import { supabase } from '../utils/supabase';
 import NotificationBell from './NotificationBell';
 import MyMembershipDashboard from './MyMembershipDashboard';
 import ProfileSection from './ProfileSection';
+import FanExperienceBookings from './FanExperienceBookings';
 import {
   LayoutGrid,
   User,
@@ -189,7 +191,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   }, [profile, user]);
 
   // Portal State
-  const [activeTab, setActiveTab] = useState<'My Requests' | 'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Events' | 'Membership' | 'Orders' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'>('Dashboard');
+  const [activeTab, setActiveTab] = useState<'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Events' | 'Experiences' | 'Membership' | 'Orders' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'>('Dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<'TIMELINE' | 'DETAILS' | 'MESSAGES' | 'DOCUMENTS'>('TIMELINE');
 
@@ -266,7 +268,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [portalEvents, setPortalEvents] = useState<EventItem[]>([]);
 
   useEffect(() => {
-    fetch('/api/portal/events').then(r => r.ok ? r.json() : []).then(setPortalEvents).catch(() => {});
+    void (async () => {
+      const { data, error } = await supabase.from('portal_events').select('*').order('created_at', { ascending: false });
+      if (!error && data) setPortalEvents(data);
+    })();
   }, []);
 
   // Community State
@@ -285,7 +290,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [creations, setCreations] = useState<FanArtItem[]>([]);
 
   useEffect(() => {
-    fetch('/api/portal/creations').then(r => r.ok ? r.json() : []).then(setCreations).catch(() => {});
+    void (async () => {
+      const { data, error } = await supabase.from('fan_creations').select('*').order('created_at', { ascending: false });
+      if (!error && data) setCreations(data);
+    })();
   }, []);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadTitle, setUploadTitle] = useState('');
@@ -305,46 +313,78 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [storeItems, setStoreItems] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/portal/store-items').then(r => r.ok ? r.json() : []).then(data => {
-      setStoreItems(data.map((p: any) => ({
-        id: p.id,
-        item: p.name,
-        price: String(p.price),
-        desc: p.description,
-        icon: p.image_placeholder || '📦'
-      })));
-    }).catch(() => {});
+    void (async () => {
+      const { data, error } = await supabase.from('shop_products').select('*');
+      if (!error && data) {
+        setStoreItems(data.map((p: any) => ({
+          id: p.id,
+          item: p.name,
+          price: String(p.price),
+          desc: p.description,
+          icon: p.image_placeholder || '📦'
+        })));
+      }
+    })();
   }, []);
 
   // Portal rewards from DB
   const [portalRewards, setPortalRewards] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/portal/rewards').then(r => r.ok ? r.json() : []).then(setPortalRewards).catch(() => {});
+    void (async () => {
+      const { data, error } = await supabase.from('portal_rewards').select('*');
+      if (!error && data) setPortalRewards(data);
+    })();
   }, []);
 
   // Messages State for 3 active channels
 
   // Loyalty & Rewards State
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [membership, setMembership] = useState<any>(null);
 
   useEffect(() => {
-    fetch('/api/portal/points').then(r => r.ok ? r.json() : { points: 0 }).then(d => setLoyaltyPoints(d.points)).catch(() => {});
-  }, []);
+    void (async () => {
+      const { data: pts } = await supabase.from('loyalty_points').select('total').eq('user_id', user?.id).limit(1);
+      if (pts && pts.length > 0) setLoyaltyPoints(pts[0].total);
+    })();
+    if (user?.id) {
+      void (async () => {
+        const { data: mem } = await supabase.from('memberships').select('*').eq('user_id', user.id).limit(1);
+        if (mem && mem.length > 0) setMembership(mem[0]);
+      })();
+    }
+  }, [user]);
 
   const rank = getLoyaltyRank(loyaltyPoints);
-  const progressPercent = Math.min(100, Math.max(0, ((loyaltyPoints - rank.min) / (rank.max - rank.min)) * 100));
+  // Override rank display with membership tier if active
+  const displayRank = (membership?.status === 'active') ? {
+    name: membership.tier_name,
+    badgeColor: 'border-gold-500/30 bg-gold-500/10 text-gold-500',
+    icon: '👑',
+    min: rank.min,
+    max: rank.max,
+    next: rank.next
+  } : rank;
+
+  const progressPercent = Math.min(100, Math.max(0, ((loyaltyPoints - displayRank.min) / (displayRank.max - displayRank.min)) * 100));
   const [badges, setBadges] = useState([]);
 
   useEffect(() => {
-    fetch('/api/portal/badges').then(r => r.ok ? r.json() : []).then(setBadges).catch(() => {});
+    void (async () => {
+      const { data, error } = await supabase.from('user_badges').select('*');
+      if (!error && data) setBadges(data);
+    })();
   }, []);
 
   // Kindness log & Journey timeline State
   const [journeyLog, setJourneyLog] = useState([]);
 
   useEffect(() => {
-    fetch('/api/portal/journey').then(r => r.ok ? r.json() : []).then(setJourneyLog).catch(() => {});
+    void (async () => {
+      const { data, error } = await supabase.from('journey_log').select('*').order('created_at', { ascending: false });
+      if (!error && data) setJourneyLog(data);
+    })();
   }, []);
 
   const [newKindnessTitle, setNewKindnessTitle] = useState('');
@@ -387,9 +427,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     const channels = ['management', 'events', 'vault'] as const;
     channels.forEach(async (channel) => {
       try {
-        const res = await fetch(`/api/portal/channels/${channel}`);
-        if (res.ok) {
-          const data = await res.json();
+        const { data, error } = await supabase.from('channel_messages').select('*').eq('name', channel);
+        if (!error && data) {
           setChannelMessages(prev => ({ ...prev, [channel]: data }));
         }
       } catch {}
@@ -426,7 +465,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [notifications, setNotifications] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/portal/notifications').then(r => r.ok ? r.json() : []).then(setNotifications).catch(() => {});
+    void (async () => {
+      const { data, error } = await supabase.from('fan_notifications').select('*').order('created_at', { ascending: false });
+      if (!error && data) setNotifications(data);
+    })();
   }, []);
 
   // Helper helper to generate dynamic portal notifications
@@ -648,7 +690,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       })
     );
     try {
-      await fetch(`/api/portal/creations/${id}/like`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      const { data: item } = await supabase.from('fan_creations').select('likes').eq('id', id).single();
+      if (item) {
+        await supabase.from('fan_creations').update({ likes: (item.likes || 0) + 1 }).eq('id', id);
+      }
     } catch {}
   };
 
@@ -666,14 +711,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     };
 
     try {
-      const res = await fetch('/api/portal/creations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newC.title, category: newC.category, description: newC.description, author: newC.author })
-      });
-      if (res.ok) {
-        const created = await res.json();
-        setCreations((prev) => [{ ...newC, id: String(created.id) }, ...prev]);
+      const { data, error } = await supabase.from('fan_creations').insert({
+        title: newC.title, category: newC.category, description: newC.description, author: newC.author
+      }).select().single();
+      if (!error && data) {
+        setCreations((prev) => [{ ...newC, id: String(data.id) }, ...prev]);
       } else {
         setCreations((prev) => [newC, ...prev]);
       }
@@ -816,11 +858,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
     // Send the message to the backend
     try {
-      await fetch(`/api/requests/${requestId}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sender: 'user', text: textToPost })
-      });
+      await supabase.from('proposal_chats').insert({ request_id: requestId, sender: 'user', text: textToPost });
     } catch {}
   };
 
@@ -855,7 +893,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   const handleRegisterEvent = async (id: string) => {
     try {
-      await fetch(`/api/portal/events/${id}/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      const ticketRef = `GA-TKT-${Math.floor(100000 + Math.random() * 900000)}`;
+      await supabase.from('portal_events').update({ registered: true, ticket_ref: ticketRef }).eq('id', id);
     } catch {}
     setPortalEvents((prev) =>
       prev.map((e) => {
@@ -886,11 +925,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     pushNotification('Your act of kindness has been logged to your sanctuary timeline!');
     showToast('Your act of kindness has been logged to your sanctuary timeline!', 'success');
     try {
-      await fetch('/api/portal/journey', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newLog.title, description: newLog.description, color: newLog.color })
-      });
+      await supabase.from('journey_log').insert({ title: newLog.title, description: newLog.description, color: newLog.color });
     } catch {}
   };
 
@@ -940,21 +975,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     showToast(`Successfully redeemed: ${item.title}!`, 'success');
 
     try {
-      await fetch('/api/portal/badges', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: newBadge.title, description: newBadge.desc, icon: newBadge.icon })
-      });
-      await fetch('/api/portal/journey', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: journeyMilestone.title, description: journeyMilestone.description, color: journeyMilestone.color })
-      });
-      await fetch('/api/portal/notifications', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: `Successfully redeemed loyalty reward: ${item.title}. Check your unlocked badges!` })
-      });
+      await supabase.from('user_badges').insert({ title: newBadge.title, description: newBadge.desc, icon: newBadge.icon });
+      await supabase.from('journey_log').insert({ title: journeyMilestone.title, description: journeyMilestone.description, color: journeyMilestone.color });
+      await supabase.from('fan_notifications').insert({ text: `Successfully redeemed loyalty reward: ${item.title}. Check your unlocked badges!` });
     } catch {}
   };
 
@@ -1265,7 +1288,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 </div>
                 <div className="hidden md:flex flex-col leading-none">
                   <span className="text-xs font-medium text-neutral-100">{authName}</span>
-                  <span className="text-[7px] font-mono text-neutral-500 uppercase tracking-wider">{rank.name}</span>
+                  <span className="text-[7px] font-mono text-neutral-500 uppercase tracking-wider">{displayRank.name}</span>
                 </div>
               </div>
 
@@ -1312,7 +1335,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   { name: 'Profile', icon: User },
                   { name: 'Community', icon: Users },
                   { name: 'Messages', icon: MessageSquare },
-                  { name: 'My Requests', icon: FileText },
+                  { name: 'Experiences', icon: Star },
                   { name: 'Events', icon: Calendar },
                   { name: 'Membership', icon: Award },
                   { name: 'Orders', icon: ShoppingBag },
@@ -1363,7 +1386,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     </div>
                     <div className="flex flex-col leading-tight min-w-0">
                       <span className="text-xs font-medium text-neutral-100 truncate">{authName}</span>
-                      <span className="text-[7px] font-mono text-neutral-500 uppercase tracking-wider">{rank.name}</span>
+                      <span className="text-[7px] font-mono text-neutral-500 uppercase tracking-wider">{displayRank.name}</span>
                     </div>
                   </div>
                   <div className="space-y-1">
@@ -1422,7 +1445,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 <div className="relative mb-16 md:mb-20 grid grid-cols-1 md:grid-cols-3 gap-px bg-neutral-900/60 rounded-2xl overflow-hidden">
                   <div className="bg-neutral-950/60 p-5 md:p-6">
                     <span className="font-mono text-[8px] text-neutral-600 uppercase tracking-widest">Membership</span>
-                    <p className="font-serif text-sm font-bold text-neutral-100 mt-1.5 uppercase tracking-wide">{rank.name}</p>
+                    <p className="font-serif text-sm font-bold text-neutral-100 mt-1.5 uppercase tracking-wide">{displayRank.name}</p>
                     <div className="flex items-center gap-1.5 mt-2">
                       <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60" />
                       <span className="font-mono text-[9px] text-neutral-500">{loyaltyPoints.toLocaleString()} points</span>
@@ -1434,12 +1457,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     <div className="h-1 bg-neutral-900/60 rounded-full mt-2.5 overflow-hidden">
                       <div className="h-full bg-gradient-to-r from-gold-500/40 to-gold-500/70 rounded-full transition-all duration-700" style={{ width: `${progressPercent}%` }} />
                     </div>
-                    <p className="font-mono text-[8px] text-neutral-600 mt-1.5">Next: {rank.next} · {loyaltyPoints.toLocaleString()} / {rank.max.toLocaleString()} pts</p>
+                    <p className="font-mono text-[8px] text-neutral-600 mt-1.5">Next: {displayRank.next} · {loyaltyPoints.toLocaleString()} / {displayRank.max.toLocaleString()} pts</p>
                   </div>
                   <div className="bg-neutral-950/60 p-5 md:p-6">
                     <span className="font-mono text-[8px] text-neutral-600 uppercase tracking-widest">Rank</span>
-                    <p className="font-serif text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-amber-300 mt-1.5 uppercase tracking-wide">{rank.next}</p>
-                    <p className="font-mono text-[8px] text-neutral-600 mt-2.5">{rank.max - loyaltyPoints} pts remaining to advance</p>
+                    <p className="font-serif text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-amber-300 mt-1.5 uppercase tracking-wide">{displayRank.next}</p>
+                    <p className="font-mono text-[8px] text-neutral-600 mt-2.5">{displayRank.max - loyaltyPoints} pts remaining to advance</p>
                   </div>
                 </div>
 
@@ -1525,6 +1548,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       <div className="grid grid-cols-1 gap-2">
                         {[
                           { label: 'Membership', icon: Award, onClick: () => setActiveTab('Membership') },
+                          { label: 'Experiences', icon: Star, onClick: () => setActiveTab('Experiences') },
                           { label: 'Events', icon: Calendar, onClick: () => setActiveTab('Events') },
                           { label: 'Messages', icon: MessageSquare, onClick: () => setActiveTab('Messages') },
                           { label: 'Community', icon: Users, onClick: () => setActiveTab('Community') },
@@ -1572,744 +1596,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               </div>
             )}
 
-            {/* VIEW RENDERING 2: MY REQUESTS (Gateway tracking and submitting) */}
-            {activeTab === 'My Requests' && (
-              <div className="space-y-6 text-left">
-                
-                {/* Header detail or list conditional rendering */}
-                {selectedRequestId === null ? (
-                  showPortalRequestWizard ? (
-                    /* INTEGRATED PROPOSAL WIZARD INLINE VIEW */
-                    <div className="space-y-6 bg-[#0c0c0e] border border-neutral-900 rounded-xl p-6">
-                      <div className="flex items-center justify-between border-b border-neutral-900 pb-4">
-                        <div className="space-y-1">
-                          <h2 className="font-serif text-lg font-bold tracking-wider text-white uppercase flex items-center gap-2">
-                            <Sparkles className="h-5 w-5 text-gold-500 animate-pulse" />
-                            Integrated Proposal Wizard
-                          </h2>
-                          <p className="text-xs text-neutral-500 font-mono">
-                            Submit credentials directly to Gillian's administrative team.
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => {
-                            setShowPortalRequestWizard(false);
-                            setRequestWizardStep(1);
-                          }}
-                          className="text-xs text-neutral-400 hover:text-white border border-neutral-850 hover:bg-neutral-900/50 px-3 py-1.5 rounded font-mono transition-all"
-                        >
-                          Cancel & Close
-                        </button>
-                      </div>
+            {/*             {/* VIEW RENDERING 2: MY REQUESTS (REMOVED - merged into Experiences) */}
 
-                      {/* Progress Tracker */}
-                      <div className="grid grid-cols-3 gap-2 pb-4 border-b border-neutral-900/50">
-                        {[
-                          { step: 1, label: 'LOGISTICS', desc: 'Type & Contact' },
-                          { step: 2, label: 'COORDINATES', desc: 'Date & Location' },
-                          { step: 3, label: 'SINCERITY', desc: 'Verification' }
-                        ].map((s) => (
-                          <div
-                            key={s.step}
-                            className={`p-3 rounded-lg border text-left transition-all ${
-                              requestWizardStep === s.step
-                                ? 'border-gold-500 bg-gold-500/[0.02] text-white shadow-lg shadow-gold-500/5'
-                                : requestWizardStep > s.step
-                                ? 'border-green-500/20 bg-green-500/[0.01] text-neutral-400'
-                                : 'border-neutral-900 bg-transparent text-neutral-600'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className={`text-[10px] font-mono font-bold tracking-widest ${
-                                requestWizardStep === s.step ? 'text-gold-500' : requestWizardStep > s.step ? 'text-green-500' : 'text-neutral-500'
-                              }`}>
-                                STEP 0{s.step}
-                              </span>
-                              {requestWizardStep > s.step && <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />}
-                            </div>
-                            <p className="text-xs font-bold font-serif tracking-wide mt-1 uppercase">{s.label}</p>
-                            <p className="text-[9px] font-mono text-neutral-500 mt-0.5">{s.desc}</p>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Step Content */}
-                      <AnimatePresence mode="wait">
-                        <motion.div
-                          key={requestWizardStep}
-                          initial={{ opacity: 0, x: 10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -10 }}
-                          transition={{ duration: 0.2 }}
-                          className="space-y-4"
-                        >
-                          {requestWizardStep === 1 && (
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                  <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest block">PROPOSAL CATEGORY</label>
-                                  <select
-                                    value={newRequestType}
-                                    onChange={(e) => setNewRequestType(e.target.value)}
-                                    className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-white outline-none focus:border-gold-500/50 transition-colors text-xs"
-                                  >
-                                    <option value="Fan Letter">✉️ Fan Letter & Greeting</option>
-                                    <option value="Ask Question">❓ Ask Philosophical Question</option>
-                                    <option value="Meet & Greet">🤝 Meet & Greet Session</option>
-                                    <option value="Virtual Meeting">💻 Private Virtual Video Meeting</option>
-                                    <option value="Birthday Greeting">🎂 Personalized Birthday Greeting</option>
-                                    <option value="Personalized Video">📹 Personalized Video Shoutout</option>
-                                    <option value="Autograph Request">✒️ Signed Autograph Memorabilia</option>
-                                    <option value="Interview Request">🎙️ Interview & Podcast Request</option>
-                                    <option value="Business Inquiry">💼 Bespoke Business Inquiry</option>
-                                    <option value="Collaboration">🌟 Charity Collaboration Proposal</option>
-                                  </select>
-                                </div>
-
-                                <div className="space-y-1.5">
-                                  <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest block">ATTENDEE CAPACITY</label>
-                                  <select
-                                    value={newRequestAttendees}
-                                    onChange={(e) => setNewRequestAttendees(e.target.value)}
-                                    className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-white outline-none focus:border-gold-500/50 transition-colors text-xs"
-                                  >
-                                    <option value="1 Person">1 Person (Just Myself)</option>
-                                    <option value="2 People">2 People (Me & Guest)</option>
-                                    <option value="3-5 People">3-5 People (Family / Small Team)</option>
-                                    <option value="Organization">Charity Delegation / Foundation Representatives</option>
-                                  </select>
-                                </div>
-                              </div>
-
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                  <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest block">COMMUNICATION BRIDGE</label>
-                                  <select
-                                    value={newRequestContact}
-                                    onChange={(e) => setNewRequestContact(e.target.value as any)}
-                                    className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-white outline-none focus:border-gold-500/50 transition-colors text-xs"
-                                  >
-                                    <option value="Email">Secure Email Pipeline</option>
-                                    <option value="WhatsApp">Direct WhatsApp Line</option>
-                                    <option value="Telegram">Encrypted Telegram Channel</option>
-                                    <option value="Website">Website Sanctuary ID</option>
-                                  </select>
-                                </div>
-                                <div className="space-y-1.5">
-                                  <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest block">SECURE CONTACT ADDRESS/NUMBER</label>
-                                  <input
-                                    type="text"
-                                    required
-                                    value={newRequestContactVal}
-                                    onChange={(e) => setNewRequestContactVal(e.target.value)}
-                                    placeholder={newRequestContact === 'WhatsApp' ? '+1 (555) 123-4567' : 'fan@example.com'}
-                                    className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-white outline-none focus:border-gold-500/50 transition-all text-xs"
-                                  />
-                                </div>
-                              </div>
-
-                              <div className="flex justify-end pt-2">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    if (!newRequestContactVal.trim()) {
-                                      showToast('Please provide your secure contact destination.', 'error');
-                                      return;
-                                    }
-                                    setRequestWizardStep(2);
-                                  }}
-                                  className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 px-5 rounded text-xs tracking-wider uppercase transition-all flex items-center gap-1.5 active:scale-95"
-                                >
-                                  Next Step: Coordinates
-                                  <ChevronRight className="h-4 w-4" />
-                                </button>
-                              </div>
-                            </div>
-                          )}
-
-                          {requestWizardStep === 2 && (
-                            <div className="space-y-4">
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-1.5">
-                                  <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest block">PROPOSED DATE RANGE</label>
-                                  <input
-                                    type="text"
-                                    required
-                                    value={newRequestDate}
-                                    onChange={(e) => setNewRequestDate(e.target.value)}
-                                    placeholder="e.g. July 15-20, 2026 or Immediate"
-                                    className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-white outline-none focus:border-gold-500/50 transition-all text-xs"
-                                  />
-                                </div>
-                                <div className="space-y-1.5">
-                                  <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest block">PHYSICAL OR VIRTUAL LOCATION</label>
-                                  <input
-                                    type="text"
-                                    required
-                                    value={newRequestLocation}
-                                    onChange={(e) => setNewRequestLocation(e.target.value)}
-                                    placeholder="e.g. Los Angeles, CA or Zoom / Virtual"
-                                    className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-white outline-none focus:border-gold-500/50 transition-all text-xs"
-                                  />
-                                </div>
-                              </div>
-
-                              <div className="flex justify-between pt-2">
-                                <button
-                                  type="button"
-                                  onClick={() => setRequestWizardStep(1)}
-                                  className="border border-neutral-800 hover:bg-neutral-900 text-neutral-400 font-bold py-2 px-5 rounded text-xs tracking-wider uppercase transition-all"
-                                >
-                                  Back
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    if (!newRequestDate.trim()) {
-                                      showToast('Please provide Preferred Date range.', 'error');
-                                      return;
-                                    }
-                                    if (!newRequestLocation.trim()) {
-                                      showToast('Please specify a Physical or Virtual Location.', 'error');
-                                      return;
-                                    }
-                                    setRequestWizardStep(3);
-                                  }}
-                                  className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 px-5 rounded text-xs tracking-wider uppercase transition-all flex items-center gap-1.5 active:scale-95"
-                                >
-                                  Next Step: Sincerity
-                                  <ChevronRight className="h-4 w-4" />
-                                </button>
-                              </div>
-                            </div>
-                          )}
-
-                          {requestWizardStep === 3 && (
-                            <div className="space-y-4">
-                              <div className="space-y-1.5">
-                                <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest block">SINCERITY AND OBJECTIVE NARRATIVE</label>
-                                <textarea
-                                  required
-                                  rows={4}
-                                  value={newRequestSincerity}
-                                  onChange={(e) => setNewRequestSincerity(e.target.value)}
-                                  placeholder="Provide a detailed explanation of why this proposal is important to you or your charity foundation. This acts as our primary integrity benchmark."
-                                  className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-white outline-none focus:border-gold-500/50 resize-none leading-relaxed text-xs"
-                                />
-                                <div className="flex justify-end mt-1.5">
-                                  <button
-                                    type="button"
-                                    disabled={isPolishing || !newRequestSincerity.trim()}
-                                    onClick={async () => {
-                                      setIsPolishing(true);
-                                      try {
-                                        const res = await polishSincerity(newRequestSincerity);
-                                        setNewRequestSincerity(res.text);
-                                        showToast('Sincerity statement polished with Google Gemini AI!', 'success');
-                                      } catch (err) {
-                                        console.error(err);
-                                        showToast('Failed to polish text with Gemini API.', 'error');
-                                      } finally {
-                                        setIsPolishing(false);
-                                      }
-                                    }}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-mono font-bold text-gold-500 bg-gold-500/5 hover:bg-gold-500/10 border border-gold-500/20 rounded transition-all cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
-                                  >
-                                    {isPolishing ? (
-                                      <>
-                                        <span className="h-2 w-2 animate-spin rounded-full border-b border-gold-500" />
-                                        Musing...
-                                      </>
-                                    ) : (
-                                      <>
-                                        <span>✨ Polish with Gillian's AI Muse (Gemini API)</span>
-                                      </>
-                                    )}
-                                  </button>
-                                </div>
-                              </div>
-
-                              {/* Attestation Checkbox */}
-                              <div className="p-3.5 rounded-lg border border-neutral-900/80 bg-neutral-950/40 flex items-start gap-3">
-                                <input
-                                  type="checkbox"
-                                  required
-                                  id="attest_wizard_inline"
-                                  className="mt-0.5 accent-gold-500 h-3.5 w-3.5 rounded border-neutral-800 bg-neutral-900"
-                                />
-                                <label htmlFor="attest_wizard_inline" className="text-[10px] text-neutral-400 leading-snug cursor-pointer select-none text-left">
-                                  I hereby certify that this proposal is submitted with complete sincerity, respect, and adherence to the guidelines of Gillian Anderson's quiet private administration. I understand any false credentials will trigger immediate bridge deactivation.
-                                </label>
-                              </div>
-
-                              <div className="flex justify-between pt-2">
-                                <button
-                                  type="button"
-                                  onClick={() => setRequestWizardStep(2)}
-                                  className="border border-neutral-800 hover:bg-neutral-900 text-neutral-400 font-bold py-2 px-5 rounded text-xs tracking-wider uppercase transition-all"
-                                >
-                                  Back
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    const attestBox = document.getElementById('attest_wizard_inline') as HTMLInputElement | null;
-                                    if (!newRequestSincerity.trim()) {
-                                      showToast('Please provide your Sincerity Narrative.', 'error');
-                                      return;
-                                    }
-                                    if (attestBox && !attestBox.checked) {
-                                      showToast('Please attest sincerity to proceed.', 'error');
-                                      return;
-                                    }
-                                    handlePortalSubmitRequest(e);
-                                  }}
-                                  className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 px-6 rounded text-xs tracking-wider uppercase transition-all flex items-center gap-1.5 active:scale-95"
-                                >
-                                  Submit Official Proposal
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </motion.div>
-                      </AnimatePresence>
-                    </div>
-                  ) : (
-                    /* PROPOSALS LIST VIEW */
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between border-b border-neutral-900 pb-4">
-                        <div className="space-y-1">
-                          <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
-                            Official Proposal Hub
-                          </h2>
-                          <p className="text-xs text-neutral-500 font-mono">
-                            Track your submitted requests under the Universal Request Flow in real-time.
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => setShowPortalRequestWizard(true)}
-                          className="flex items-center gap-1 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 px-4 rounded text-xs tracking-wider transition-all uppercase active:scale-95"
-                        >
-                          <Plus className="h-4 w-4" />
-                          Submit New Proposal
-                        </button>
-                      </div>
-
-                      {/* Table grid listing requests */}
-                      <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden">
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left text-xs border-collapse">
-                            <thead>
-                              <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[9px] uppercase">
-                                <th className="px-5 py-3 font-semibold">Proposal ID</th>
-                                <th className="px-4 py-3 font-semibold">Request Type</th>
-                                <th className="px-4 py-3 font-semibold">Location</th>
-                                <th className="px-4 py-3 font-semibold">Status</th>
-                                <th className="px-4 py-3 font-semibold">Submitted Date</th>
-                                <th className="px-5 py-3 font-semibold text-right">Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-neutral-900/40 text-xs">
-                              {userRequests.map((req) => (
-                                <tr key={req.id} className="hover:bg-neutral-950/30 transition-all">
-                                  <td className="px-5 py-3.5 font-mono font-semibold text-neutral-300">
-                                    {req.id}
-                                  </td>
-                                  <td className="px-4 py-3.5 font-bold text-white">
-                                    {req.type}
-                                  </td>
-                                  <td className="px-4 py-3.5 text-neutral-400 font-mono">
-                                    {req.location}
-                                  </td>
-                                  <td className="px-4 py-3.5">
-                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase ${
-                                      req.status === 'In Discussion' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
-                                      req.status === 'Submitted' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' :
-                                      req.status === 'Under Review' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' :
-                                      req.status === 'Offer Made' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
-                                      req.status === 'Payment Requested' ? 'bg-pink-500/10 text-pink-400 border border-pink-500/20' :
-                                      'bg-green-500/10 text-green-500 border border-green-500/20'
-                                    }`}>
-                                      {req.status}
-                                    </span>
-                                  </td>
-                                  <td className="px-4 py-3.5 text-neutral-500 font-mono">
-                                    {req.submittedOn}
-                                  </td>
-                                  <td className="px-5 py-3.5 text-right">
-                                    <button
-                                      onClick={() => setSelectedRequestId(req.id)}
-                                      className="px-3 py-1 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-[10px] font-mono text-neutral-300 rounded hover:text-white transition-colors"
-                                    >
-                                      Track Workspace
-                                    </button>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                ) : (
-                  
-                  /* INDIVIDUAL EXPANDED REQUEST WORKSPACE */
-                  (() => {
-                    const req = userRequests.find(r => r.id === selectedRequestId);
-                    if (!req) return null;
-                    return (
-                      <div className="space-y-6">
-                        <div className="flex items-center justify-between border-b border-neutral-900 pb-4">
-                          <button
-                            onClick={() => setSelectedRequestId(null)}
-                            className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-gold-500 font-mono"
-                          >
-                            <ArrowLeft className="h-3.5 w-3.5" />
-                            Back to proposals list
-                          </button>
-                          <span className="text-[10px] font-mono text-neutral-500 uppercase">
-                            WORKSPACE: {req.id}
-                          </span>
-                        </div>
-
-                        {/* Top Summary Card */}
-                        <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
-                          <div className="flex items-center gap-3">
-                            <div className="h-12 w-12 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center text-xl text-gold-500 font-serif">
-                              KR
-                            </div>
-                            <div className="space-y-1">
-                              <span className="inline-block px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/25 text-[8px] font-mono font-bold text-amber-500 uppercase tracking-wider">
-                                {req.type.toUpperCase()}
-                              </span>
-                              <h3 className="text-base font-semibold text-white tracking-wide">{req.type} Tracking</h3>
-                              <p className="text-[10px] font-mono text-neutral-500 leading-none">Submitted On: {req.submittedOn}</p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2.5">
-                            <span className="text-[10px] font-mono text-neutral-400">Status:</span>
-                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-mono font-bold text-amber-500 uppercase leading-none">
-                              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-                              {req.status}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Subtabs selection */}
-                        <div className="flex items-center border-b border-neutral-900 gap-1 pb-px overflow-x-auto">
-                          {['TIMELINE', 'DETAILS', 'MESSAGES', 'DOCUMENTS'].map((subT) => (
-                            <button
-                              key={subT}
-                              onClick={() => setActiveSubTab(subT as any)}
-                              className={`px-4 py-2 text-xs font-bold font-mono tracking-wider transition-all border-b-2 uppercase ${
-                                activeSubTab === subT ? 'border-gold-500 text-gold-500' : 'border-transparent text-neutral-500 hover:text-white'
-                              }`}
-                            >
-                              {subT}
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Content render based on subtab */}
-                        <div className="min-h-[200px]">
-                          {activeSubTab === 'TIMELINE' && (
-                            <div className="space-y-6">
-                              {/* 1. STAGE PROGRESS TRACKER */}
-                              <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-4 text-left">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-neutral-900/60 gap-2">
-                                  <h4 className="text-xs font-mono font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
-                                    <Sparkles className="h-4 w-4 text-gold-500 animate-pulse" />
-                                    Proposal Lifecycle Stage Controller
-                                  </h4>
-                                  <span className="text-[10px] font-mono text-neutral-500 uppercase">
-                                    Click any stage to update the status in real-time
-                                  </span>
-                                </div>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-                                  {['Submitted', 'Under Review', 'In Discussion', 'Offer Made', 'Payment Requested', 'Approved'].map((stg) => {
-                                    const isActive = req.status === stg;
-                                    return (
-                                      <button
-                                        key={stg}
-                                        type="button"
-                                        onClick={() => handleUpdateReqStatus(req.id, stg)}
-                                        className={`px-2 py-3 rounded-lg border text-center transition-all ${
-                                          isActive
-                                            ? 'border-gold-500 bg-gold-500/[0.04] text-gold-500 shadow-sm shadow-gold-500/10 scale-[1.02] font-semibold'
-                                            : 'border-neutral-900 bg-neutral-900/30 text-neutral-500 hover:border-neutral-800 hover:text-neutral-300'
-                                        }`}
-                                      >
-                                        <p className="text-[8px] font-mono leading-none tracking-widest uppercase mb-1">STAGE</p>
-                                        <p className="text-[10px] font-serif truncate uppercase tracking-wider">{stg}</p>
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-
-                              {/* 2. CHRONOLOGICAL FEED */}
-                              <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-6 text-left">
-                                <div className="flex items-center justify-between pb-3 border-b border-neutral-900">
-                                  <h4 className="text-xs font-mono font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
-                                    <Clock className="h-4 w-4 text-neutral-500" />
-                                    Ticket Comment & System Activity Timeline
-                                  </h4>
-                                  <span className="text-[9px] font-mono text-neutral-500 uppercase">Chronological Log</span>
-                                </div>
-
-                                <div className="relative pl-6 border-l border-neutral-900/80 space-y-6 mt-4">
-                                  {/* Base Submission Event */}
-                                  <div className="relative">
-                                    <span className="absolute -left-[31px] top-1 h-4.5 w-4.5 rounded-full bg-green-500 border-4 border-[#070709]" />
-                                    <div className="space-y-1">
-                                      <h5 className="text-xs font-bold text-white flex items-center gap-2">
-                                        <span>Proposal Formally Submitted</span>
-                                        <span className="text-[8px] font-mono font-bold uppercase text-green-500 bg-green-500/10 px-1 py-0.5 rounded border border-green-500/20">GATEWAY VERIFIED</span>
-                                      </h5>
-                                      <p className="text-[10px] text-neutral-500 font-mono">{req.submittedOn}</p>
-                                      <p className="text-xs text-neutral-400 leading-relaxed">
-                                        Successfully securely logged into the gateway database queue with default integrity parameters cleared.
-                                      </p>
-                                    </div>
-                                  </div>
-
-                                  {/* Dynamic Chat & System Events */}
-                                  {(proposalChats[req.id] || []).map((msg, index) => {
-                                    if (msg.sender === 'system') {
-                                      return (
-                                        <div key={msg.id || index} className="relative py-1">
-                                          <span className="absolute -left-[28.5px] top-2 h-3 w-3 rounded-full bg-amber-500/30 border-2 border-amber-500" />
-                                          <div className="flex items-center gap-2 text-[10px] font-mono text-amber-500 bg-amber-500/5 px-3 py-1.5 border border-amber-500/10 rounded-md">
-                                            <ShieldAlert className="h-3.5 w-3.5 text-amber-500 shrink-0 animate-pulse" />
-                                            <span className="font-semibold">{msg.text}</span>
-                                            <span className="text-neutral-600 ml-auto">{msg.timestamp}</span>
-                                          </div>
-                                        </div>
-                                      );
-                                    }
-
-                                    const isMgt = msg.sender === 'management';
-                                    return (
-                                      <div key={msg.id || index} className="relative">
-                                        <span className={`absolute -left-[31px] top-1 h-4.5 w-4.5 rounded-full border-4 border-[#070709] ${
-                                          isMgt ? 'bg-gold-500' : 'bg-neutral-500'
-                                        }`} />
-                                        
-                                        <div className="space-y-1.5">
-                                          <div className="flex items-center gap-2">
-                                            <h5 className={`text-xs font-bold ${isMgt ? 'text-gold-500 font-serif' : 'text-neutral-200'}`}>
-                                              {isMgt ? 'Sarah (Liaison Coordinator)' : `${req.member || 'John Smith'} (Proposal Author)`}
-                                            </h5>
-                                            <span className="text-[9px] text-neutral-600 font-mono">{msg.timestamp}</span>
-                                          </div>
-                                          
-                                          <div className={`p-3.5 rounded-xl text-xs leading-relaxed max-w-[90%] border ${
-                                            isMgt 
-                                              ? 'bg-neutral-900/60 border-gold-950/20 text-neutral-200' 
-                                              : 'bg-[#0c0c0e] border-neutral-900/70 text-neutral-300'
-                                          }`}>
-                                            {msg.text}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-
-                              {/* 3. INTERACTIVE COMMENT & ACTION CONSOLE */}
-                              <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-4 text-left">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-1 gap-1">
-                                  <h4 className="text-xs font-mono font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
-                                    <MessageSquare className="h-4 w-4 text-gold-500" />
-                                    Post Ticket Comment & Dispatch Action
-                                  </h4>
-                                  <span className="text-[10px] text-neutral-500 font-mono">
-                                    Reactive Status Modification Engine
-                                  </span>
-                                </div>
-
-                                <div className="space-y-3">
-                                  <textarea
-                                    value={timelineCommentText}
-                                    onChange={(e) => setTimelineCommentText(e.target.value)}
-                                    placeholder="Type a support log, provide coordinates, ask Sarah a question, or leave feedback..."
-                                    rows={3}
-                                    className="w-full rounded border border-neutral-900 bg-neutral-950 px-3.5 py-2.5 text-xs text-white placeholder-neutral-700 outline-none focus:border-gold-500/40 resize-none leading-relaxed"
-                                  />
-
-                                  {/* Quick Actions & Send Bar */}
-                                  <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between pt-1">
-                                    {/* Quick Actions Deck */}
-                                    <div className="flex flex-wrap gap-1.5">
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const text = "Hi Sarah, I am writing to provide additional charity credentials for immediate verification review.";
-                                          setTimelineCommentText(text);
-                                        }}
-                                        className="px-2.5 py-1.5 border border-neutral-900 hover:border-neutral-800 bg-[#0c0c0e] hover:bg-neutral-900 text-[10px] font-mono text-neutral-400 hover:text-white rounded transition-colors uppercase"
-                                      >
-                                        Verify credentials
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const text = "Hi Sarah, our team is happy to accept the coordination offer parameters and confirm scheduled dates.";
-                                          setTimelineCommentText(text);
-                                        }}
-                                        className="px-2.5 py-1.5 border border-neutral-900 hover:border-neutral-800 bg-[#0c0c0e] hover:bg-neutral-900 text-[10px] font-mono text-neutral-400 hover:text-white rounded transition-colors uppercase"
-                                      >
-                                        Accept Offer
-                                      </button>
-                                      <button
-                                        type="button"
-                                        onClick={() => {
-                                          const text = "Thank you so much! This has been successfully resolved and perfectly organized.";
-                                          setTimelineCommentText(text);
-                                        }}
-                                        className="px-2.5 py-1.5 border border-neutral-900 hover:border-neutral-800 bg-[#0c0c0e] hover:bg-neutral-900 text-[10px] font-mono text-neutral-400 hover:text-white rounded transition-colors uppercase"
-                                      >
-                                        Resolve Ticket
-                                      </button>
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="flex gap-2 justify-end">
-                                      <button
-                                        type="button"
-                                        disabled={!timelineCommentText.trim()}
-                                        onClick={() => handleAddTimelineComment(req.id, timelineCommentText)}
-                                        className="px-4 py-2 bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-[11px] font-mono font-bold text-neutral-300 hover:text-white rounded transition-colors uppercase disabled:opacity-40"
-                                      >
-                                        Post Comment
-                                      </button>
-                                      <button
-                                        type="button"
-                                        disabled={!timelineCommentText.trim()}
-                                        onClick={() => handleAddTimelineComment(req.id, timelineCommentText, 'Approved')}
-                                        className="px-4 py-2 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded text-[11px] uppercase tracking-wider transition-all flex items-center gap-1 active:scale-95 disabled:opacity-40"
-                                      >
-                                        <Send className="h-3.5 w-3.5" />
-                                        Post & Resolve
-                                      </button>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {activeSubTab === 'DETAILS' && (
-                            <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-4">
-                              <h4 className="text-xs font-mono font-bold text-neutral-500 uppercase tracking-widest pb-1 border-b border-neutral-900">
-                                Detailed Request Logistics Parameters
-                              </h4>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                                <div>
-                                  <span className="text-neutral-500 font-mono text-[10px] uppercase block">Selected Request Type</span>
-                                  <p className="text-white font-semibold text-sm mt-0.5">{req.type}</p>
-                                </div>
-                                <div>
-                                  <span className="text-neutral-500 font-mono text-[10px] uppercase block">Proposed Location</span>
-                                  <p className="text-white font-semibold text-sm mt-0.5">{req.location}</p>
-                                </div>
-                                <div>
-                                  <span className="text-neutral-500 font-mono text-[10px] uppercase block">Preferred date / interval</span>
-                                  <p className="text-white font-semibold text-sm mt-0.5">{req.preferredDate}</p>
-                                </div>
-                                <div>
-                                  <span className="text-neutral-500 font-mono text-[10px] uppercase block">Attendees Count</span>
-                                  <p className="text-white font-semibold text-sm mt-0.5">{req.attendees}</p>
-                                </div>
-                                <div className="sm:col-span-2">
-                                  <span className="text-neutral-500 font-mono text-[10px] uppercase block">Communication Channel Details</span>
-                                  <p className="text-gold-500 font-semibold font-mono text-sm mt-0.5">{req.whatsappNumber}</p>
-                                </div>
-                                <div className="sm:col-span-2">
-                                  <span className="text-neutral-500 font-mono text-[10px] uppercase block">Sincerity Statement / Why it matters</span>
-                                  <p className="text-neutral-300 italic font-serif text-sm mt-0.5 leading-relaxed">"{req.sincerity}"</p>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-
-                          {activeSubTab === 'MESSAGES' && (
-                            <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-4 flex flex-col h-[350px]">
-                              <div className="flex-1 overflow-y-auto space-y-4 pr-1 mb-3 text-xs">
-                                {(proposalChats[req.id] || []).map((msg) => (
-                                  <div key={msg.id} className={`flex gap-3 text-left ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                                    <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[9px] ${
-                                      msg.sender === 'user' ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-950 border-gold-800/35 text-gold-500'
-                                    }`}>
-                                      {msg.sender === 'user' ? 'JS' : 'MGT'}
-                                    </div>
-                                    <div className="max-w-[75%] space-y-1">
-                                      <div className={`rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
-                                        msg.sender === 'user' ? 'bg-gold-500 text-neutral-950 font-bold' : 'bg-neutral-900 text-neutral-200'
-                                      }`}>
-                                        {msg.text}
-                                      </div>
-                                      <p className="text-[9px] text-neutral-600 font-mono">{msg.timestamp}</p>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                              <form
-                                onSubmit={async (e) => {
-                                  e.preventDefault();
-                                  if (!newProposalMsg.trim()) return;
-                                  const userText = newProposalMsg.trim();
-                                  const timestamp = new Date().toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' });
-                                  const userMsg = { id: `pmsg-${Date.now()}`, sender: 'user' as const, text: userText, timestamp };
-                                  
-                                  setProposalChats(prev => ({
-                                    ...prev,
-                                    [req.id]: [...(prev[req.id] || []), userMsg]
-                                  }));
-                                  setNewProposalMsg('');
-
-                                  try {
-                                    await fetch(`/api/requests/${req.id}/chat`, {
-                                      method: 'POST',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({ sender: 'user', text: userText })
-                                    });
-                                  } catch {}
-                                }}
-                                className="flex gap-2 border-t border-neutral-900 pt-3"
-                              >
-                                <input
-                                  type="text"
-                                  value={newProposalMsg}
-                                  onChange={(e) => setNewProposalMsg(e.target.value)}
-                                  placeholder="Type a supportive message to Sarah (Management)..."
-                                  className="flex-1 rounded border border-neutral-900 bg-neutral-950 px-4 py-2 text-xs text-white placeholder-neutral-600 outline-none focus:border-gold-500/40"
-                                />
-                                <button type="submit" disabled={!newProposalMsg.trim()} className="h-9 w-9 flex items-center justify-center rounded bg-gold-500 text-neutral-950 hover:bg-gold-400 active:scale-95 disabled:opacity-50 transition-all">
-                                  <Send className="h-4 w-4" />
-                                </button>
-                              </form>
-                            </div>
-                          )}
-
-                          {activeSubTab === 'DOCUMENTS' && (
-                            <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-3">
-                              <h4 className="text-xs font-mono font-bold text-neutral-500 uppercase tracking-widest pb-1 border-b border-neutral-900">
-                                Management Issued Coordination Guidelines
-                              </h4>
-                              <p className="text-[10px] text-neutral-500 font-mono">No documents available yet.</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })()
-                )}
-              </div>
-            )}
 
             {/* VIEW RENDERING 3: EVENTS (Digital ticketing system) */}
             {activeTab === 'Events' && (
@@ -2395,7 +1683,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
             {/* VIEW RENDERING 4: MEMBERSHIP (Status-aware dashboard) */}
             {activeTab === 'Membership' && (
-              <MyMembershipDashboard userId={user?.id} authName={authName} rank={rank} progressPercent={progressPercent} content={backendContent} />
+              <MyMembershipDashboard userId={user?.id} authName={authName} rank={displayRank} progressPercent={progressPercent} content={backendContent} />
             )}
 
             {/* VIEW RENDERING 5: ORDERS (Exclusive Merchandise requests tracker) */}
@@ -2591,7 +1879,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               </div>
             )}
 
-            {/* VIEW RENDERING 6: COMMUNITY (Country Clubs and Fan Creativity) */}
+            {/* VIEW RENDERING 6: EXPERIENCES */}
+            {activeTab === 'Experiences' && (
+              <FanExperienceBookings showToast={showToast} />
+            )}
+
+            {/* VIEW RENDERING 7: COMMUNITY (Country Clubs and Fan Creativity) */}
             {activeTab === 'Community' && (
               <div className="space-y-6 text-left">
                 
@@ -2813,9 +2106,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 authCountry={authCountry}
                 onAuthNameChange={setAuthName}
                 onAuthCountryChange={setAuthCountry}
-                rank={rank}
+                rank={displayRank}
                 progressPercent={progressPercent}
                 loyaltyPoints={loyaltyPoints}
+                membership={membership}
                 showToast={showToast}
               />
             )}

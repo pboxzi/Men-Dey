@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { User, Upload, Camera, Mail, Phone, MapPin, Globe, Film, BookOpen, Save, Loader2, Crown, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../utils/AuthContext';
+import { supabase } from '../utils/supabase';
 
 interface Props {
   authName: string;
@@ -12,12 +13,13 @@ interface Props {
   rank: { name: string; icon: string; badgeColor: string; min: number; max: number; next: string };
   progressPercent: number;
   loyaltyPoints: number;
+  membership: any;
   showToast: (msg: string, type?: 'success' | 'info' | 'error') => void;
 }
 
 const COUNTRIES = ['USA', 'UK', 'Canada', 'Australia', 'Germany', 'France', 'Italy', 'Spain', 'Japan', 'Brazil', 'India', 'Global', 'Other'];
 
-export default function ProfileSection({ authName, authEmail, authCountry, onAuthNameChange, onAuthCountryChange, rank, progressPercent, loyaltyPoints, showToast }: Props) {
+export default function ProfileSection({ authName, authEmail, authCountry, onAuthNameChange, onAuthCountryChange, rank, progressPercent, loyaltyPoints, membership, showToast }: Props) {
   const { profile, user, updateProfile } = useAuth();
 
   const [bio, setBio] = useState(profile?.bio || '');
@@ -33,26 +35,26 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
     if (!file || !file.type.startsWith('image/')) return;
     setUploadingAvatar(true);
     try {
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        const dataUrl = event.target?.result as string;
-        const token = (await import('../utils/supabase')).supabase.auth.getSession();
-        const accessToken = (await token).data.session?.access_token;
-        const r = await fetch('/api/auth/avatar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...(accessToken ? { 'Authorization': 'Bearer ' + accessToken } : {}) },
-          body: JSON.stringify({ image: dataUrl }),
-        });
-        const d = await r.json();
-        if (r.ok && d.avatar_url) {
-          setAvatarUrl(d.avatar_url);
-          showToast('Avatar uploaded successfully', 'success');
-        } else {
-          showToast(d.error || 'Upload failed', 'error');
-        }
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user?.id || 'anon'}_${Date.now()}.${fileExt}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+      if (uploadError) {
+        showToast(uploadError.message || 'Upload failed', 'error');
         setUploadingAvatar(false);
-      };
-      reader.readAsDataURL(file);
+        return;
+      }
+      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      const { error: updateError } = await supabase.from('profiles')
+        .update({ avatar_url: publicUrl }).eq('id', user?.id);
+      if (updateError) {
+        showToast(updateError.message || 'Upload failed', 'error');
+      } else {
+        setAvatarUrl(publicUrl);
+        showToast('Avatar uploaded successfully', 'success');
+      }
+      setUploadingAvatar(false);
     } catch {
       showToast('Upload failed', 'error');
       setUploadingAvatar(false);
@@ -158,6 +160,25 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
             </div>
           </div>
         </div>
+
+        {/* Membership Card (if active) */}
+        {membership?.status === 'active' && (
+          <div className="rounded-xl border border-gold-500/20 bg-gradient-to-br from-gold-500/[0.03] via-neutral-950 to-neutral-950 p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Crown className="h-4 w-4 text-gold-500" />
+                <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Official Membership</span>
+              </div>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-green-500/20 bg-green-500/5 text-green-500 text-[8px] font-mono font-bold uppercase">Active</span>
+            </div>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-[11px]">
+              <div><span className="text-neutral-500 block text-[9px]">Tier</span><span className="text-white font-bold">{membership.tier_name}</span></div>
+              <div><span className="text-neutral-500 block text-[9px]">Member #</span><span className="text-white font-mono">{membership.membership_number || 'N/A'}</span></div>
+              <div><span className="text-neutral-500 block text-[9px]">Activated</span><span className="text-white">{membership.activation_date ? new Date(membership.activation_date).toLocaleDateString() : 'N/A'}</span></div>
+              <div><span className="text-neutral-500 block text-[9px]">Expires</span><span className="text-white">{membership.expiration_date ? new Date(membership.expiration_date).toLocaleDateString() : 'Never'}</span></div>
+            </div>
+          </div>
+        )}
 
         {/* Profile Form */}
         <div className="space-y-5 text-xs">

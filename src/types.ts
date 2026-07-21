@@ -197,43 +197,57 @@ export interface Experience {
   spots: number;
   spotsTaken: number;
   description: string;
+  short_description: string;
+  full_description: string;
   details: string[];
   image: string;
+  gallery_images: string;
+  is_virtual: boolean;
+  max_guests: number;
+  availability: string;
+  booking_requirements: string;
+  featured: boolean;
+  published: boolean;
+  archived: boolean;
   popular: boolean;
-}
-
-export interface ExperienceRequest {
-  id: string;
-  experienceId: string;
-  experienceTitle: string;
-  memberName: string;
-  memberAvatar: string;
-  story: string;
-  status: string;
-  statusText: string;
-  submittedDate: string;
+  sort_order: number;
+  capacity: string;
+  intensity: string;
 }
 
 export interface ExperienceBooking {
   id: string;
   experienceId: string;
   experienceTitle: string;
+  bookingReference: string;
   fullName: string;
   email: string;
   phone: string;
   country: string;
-  city: string;
   preferredDate: string;
   preferredTime: string;
   participants: number;
   specialRequests: string;
   communicationMethod: 'whatsapp' | 'email';
-  story: string;
-  status: 'pending' | 'active' | 'completed' | 'cancelled';
-  statusText: string;
+  status: 'pending' | 'under_review' | 'discussion' | 'active' | 'completed' | 'cancelled';
   confirmedDate: string;
   confirmedTime: string;
   confirmedLocation: string;
+  meetingVenue: string;
+  virtualLink: string;
+  dressCode: string;
+  arrivalInstructions: string;
   adminNotes: string;
+  cancelledReason: string;
   submittedDate: string;
+  createdAt: string;
+  userId: string;
+  timeline: TimelineEntry[];
+}
+
+export interface TimelineEntry {
+  event: string;
+  date: string;
+  status: string;
+  note?: string;
 }

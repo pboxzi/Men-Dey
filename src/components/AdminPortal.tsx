@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '../utils/StateContext';
 import { useAuth } from '../utils/AuthContext';
+import { supabase } from '../utils/supabase';
 import {
   LayoutGrid,
   User,
@@ -39,6 +40,7 @@ import {
   RefreshCw,
   Database,
   Briefcase,
+  Star,
   AlertTriangle,
   Flame,
   Filter,
@@ -48,6 +50,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
 import AdminMembershipReview from './AdminMembershipReview';
+import AdminExperiences from './AdminExperiences';
 
 interface AdminPortalProps {
   onBackToHome: () => void;
@@ -158,10 +161,13 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const [notifications, setNotifications] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/admin/notifications').then(r => r.ok ? r.json() : []).then(data => {
-      setNotifications(data);
-      setNotificationCount(data.filter((n: any) => n.status === 'unread').length);
-    }).catch(() => {});
+    void (async () => {
+      const { data, error } = await supabase.from('admin_notifications').select('*');
+      if (!error && data) {
+        setNotifications(data);
+        setNotificationCount(data.filter((n: any) => n.status === 'unread').length);
+      }
+    })();
   }, []);
 
   // Request state
@@ -254,23 +260,35 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const [memberships, setMemberships] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/state').then(r => r.ok ? r.json() : {}).then((data: any) => {
-      if (data.memberships) setMemberships(data.memberships);
-    }).catch(() => {});
+    void (async () => {
+      const { data, error } = await supabase.from('memberships').select('*').order('created_at', { ascending: false });
+      if (!error && data) {
+        setMemberships(data.map((r: any) => ({
+          id: r.id, name: r.name, email: r.email, status: r.status,
+          tier: r.tier, appliedOn: r.applied_on
+        })));
+      }
+    })();
   }, []);
 
   // Upcoming Events (fetched from DB)
   const [events, setEvents] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/admin/events').then(r => r.ok ? r.json() : []).then(setEvents).catch(() => {});
+    void (async () => {
+      const { data, error } = await supabase.from('admin_events').select('*').order('created_at', { ascending: false });
+      if (!error && data) setEvents(data);
+    })();
   }, []);
 
   // Communication Log state (fetched from DB)
   const [commLogs, setCommLogs] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch('/api/admin/comm-logs').then(r => r.ok ? r.json() : []).then(setCommLogs).catch(() => {});
+    void (async () => {
+      const { data, error } = await supabase.from('communication_logs').select('*').order('created_at', { ascending: false });
+      if (!error && data) setCommLogs(data);
+    })();
   }, []);
 
   // Modal forms
@@ -395,10 +413,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     showToast('Communication log added successfully!', 'success');
 
     try {
-      await fetch('/api/admin/comm-logs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ request_id: requestId, member: reqObj.member, method: manualLogMethod, notes: newLog.notes, next_action: newLog.nextAction })
+      await supabase.from('communication_logs').insert({
+        request_id: requestId, member: reqObj.member, method: manualLogMethod, notes: newLog.notes, next_action: newLog.nextAction
       });
     } catch {};
   };
@@ -428,11 +444,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     showToast(`Event "${eventTitle}" created successfully on the platform!`, 'success');
 
     try {
-      await fetch('/api/admin/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newEv)
-      });
+      await supabase.from('admin_events').insert(newEv);
     } catch {};
   };
 
@@ -463,11 +475,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const handleMembershipAction = async (id: string, decision: 'Approved' | 'Rejected') => {
     setMemberships(prev => prev.map(m => m.id === id ? { ...m, status: decision } : m));
     try {
-      await fetch(`/api/memberships/${id}/status`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: decision })
-      });
+      await supabase.from('memberships').update({ status: decision, updated_at: new Date().toISOString() }).eq('id', id);
     } catch {}
     showToast(`Membership Application ${id} has been ${decision}!`, decision === 'Approved' ? 'success' : 'info');
   };
@@ -589,7 +597,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
               <nav className="space-y-0.5">
                 {[
                   { name: 'Dashboard', icon: LayoutGrid, count: null },
-                  { name: 'Requests', icon: FileText, count: null },
+                  { name: 'Experiences', icon: Star, count: null },
                   { name: 'Memberships', icon: Award, count: null },
                   { name: 'Events', icon: Calendar, count: null },
                   { name: 'Shop Orders', icon: ShoppingBag, count: null },
@@ -1299,440 +1307,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             </div>
           )}
 
-          {/* ACTIVE VIEW: REQUESTS MANAGER */}
-          {activeTab === 'Requests' && (
-            <div className="space-y-6 text-left">
-              <div className="flex items-center justify-between border-b border-neutral-900 pb-4">
-                <div className="space-y-1">
-                  <h2 className="font-serif text-xl font-bold tracking-wider text-white">
-                    Requests Management Center
-                  </h2>
-                  <p className="text-xs text-neutral-500 leading-normal font-mono">
-                    Perform scheduling approvals, status triggers, and log discussions with members.
-                  </p>
-                </div>
-                {selectedRequest && (
-                  <button
-                    onClick={() => setSelectedRequest(null)}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold text-neutral-300"
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5" />
-                    Back to List
-                  </button>
-                )}
-              </div>
-
-              {!selectedRequest ? (
-                <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden">
-                  <div className="p-4 border-b border-neutral-900 flex flex-wrap gap-4 items-center justify-between bg-neutral-950/20">
-                    <div className="relative w-full max-w-sm">
-                      <input
-                        type="text"
-                        placeholder="Filter requests by member or type..."
-                        className="w-full bg-neutral-950 border border-neutral-900 rounded px-3.5 py-1.5 pl-9 text-xs text-neutral-300 outline-none focus:border-red-500/30"
-                      />
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-600" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono text-neutral-500 uppercase">Quick Filter:</span>
-                      <button className="px-2.5 py-1 rounded bg-neutral-900 text-[10px] font-mono border border-neutral-800 text-gold-500 font-bold">
-                        All Requests ({requests.length})
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs border-collapse">
-                      <thead>
-                        <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[10px] uppercase">
-                          <th className="px-5 py-3 font-semibold">ID</th>
-                          <th className="px-4 py-3 font-semibold">Type</th>
-                          <th className="px-4 py-3 font-semibold">Member</th>
-                          <th className="px-4 py-3 font-semibold">Location</th>
-                          <th className="px-4 py-3 font-semibold">Attendees</th>
-                          <th className="px-4 py-3 font-semibold">Status</th>
-                          <th className="px-4 py-3 font-semibold">Updated</th>
-                          <th className="px-5 py-3 font-semibold text-right">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-neutral-900/40">
-                        {requests.map((req) => (
-                          <tr key={req.id} className="hover:bg-neutral-950/20 transition-all">
-                            <td className="px-5 py-3.5 font-mono font-semibold text-neutral-300">{req.id}</td>
-                            <td className="px-4 py-3.5 font-semibold text-white">{req.type}</td>
-                            <td className="px-4 py-3.5 font-medium text-neutral-300">{req.member}</td>
-                            <td className="px-4 py-3.5 text-neutral-400 font-mono">{req.location}</td>
-                            <td className="px-4 py-3.5 text-neutral-400 font-mono">{req.attendees}</td>
-                            <td className="px-4 py-3.5">
-                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${
-                                req.status === 'In Discussion' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
-                                req.status === 'Under Review' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' :
-                                req.status === 'Offer Made' ? 'bg-purple-500/10 text-purple-500 border border-purple-500/20' :
-                                req.status === 'Payment Requested' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' :
-                                req.status === 'Confirmed' ? 'bg-green-500/10 text-green-500 border border-green-500/20' :
-                                'bg-neutral-500/10 text-neutral-400 border border-neutral-800'
-                              }`}>
-                                {req.status}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3.5 font-mono text-neutral-500">{req.updated}</td>
-                            <td className="px-5 py-3.5 text-right">
-                              <button
-                                onClick={() => {
-                                  setSelectedRequest(req);
-                                  setRequestStatusEdit(req.status);
-                                }}
-                                className="px-3 py-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-[10px] font-mono text-white font-bold rounded shadow-sm"
-                              >
-                                View Details
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid gap-6 lg:grid-cols-12 items-start">
-                  
-                  {/* Selected Request Left Info panel */}
-                  <div className="lg:col-span-8 space-y-6">
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-6 space-y-6">
-                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-neutral-900">
-                        <div className="space-y-1">
-                          <span className="text-[10px] font-mono text-gold-500 uppercase font-bold">Proposal Metadata Details</span>
-                          <h3 className="text-base font-semibold text-white flex items-center gap-2">
-                            {selectedRequest.type}
-                            <span className="text-xs font-mono text-neutral-500 font-normal">({selectedRequest.id})</span>
-                          </h3>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-neutral-400">Current Phase:</span>
-                          <span className="px-2.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-xs font-mono font-bold text-amber-500">
-                            {selectedRequest.status}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="grid gap-6 sm:grid-cols-2 text-xs">
-                        <div className="space-y-1">
-                          <span className="text-neutral-500 block font-mono">Member Proposer</span>
-                          <p className="text-white font-semibold text-sm">{selectedRequest.member}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="text-neutral-500 block font-mono">Preferred Date / Interval</span>
-                          <p className="text-white font-semibold text-sm">{selectedRequest.preferredDate}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="text-neutral-500 block font-mono">Proposed Location</span>
-                          <p className="text-white font-semibold text-sm">{selectedRequest.location}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="text-neutral-500 block font-mono">Guest Count</span>
-                          <p className="text-white font-semibold text-sm">{selectedRequest.attendees}</p>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="text-neutral-500 block font-mono">Communication Link</span>
-                          <p className="text-white font-semibold text-sm">{selectedRequest.whatsappNumber} (WhatsApp Line)</p>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="text-neutral-500 block font-mono">Contribution Funding Status</span>
-                          <p className="text-gold-500 font-semibold text-sm">Voluntary Charity Allocations Confirmed</p>
-                        </div>
-                      </div>
-
-                      {/* Change Status Control Form */}
-                      <div className="pt-4 border-t border-neutral-900 space-y-3">
-                        <h4 className="text-xs font-mono font-bold text-neutral-400 uppercase">
-                          Management Control Actions
-                        </h4>
-                        <div className="flex flex-wrap items-center gap-3">
-                          <span className="text-xs text-neutral-400">Change Status Phase:</span>
-                          <select
-                            value={requestStatusEdit}
-                            onChange={(e) => setRequestStatusEdit(e.target.value as any)}
-                            className="bg-neutral-950 border border-neutral-900 rounded px-3 py-1.5 text-xs text-neutral-300 outline-none focus:border-red-500/40"
-                          >
-                            <option value="Submitted">Submitted</option>
-                            <option value="Under Review">Under Review</option>
-                            <option value="In Discussion">In Discussion</option>
-                            <option value="Offer Made">Offer Made</option>
-                            <option value="Payment Requested">Payment Requested</option>
-                            <option value="Confirmed">Confirmed</option>
-                            <option value="Completed">Completed</option>
-                          </select>
-                          <button
-                            onClick={() => handleUpdateStatus(selectedRequest.id, requestStatusEdit)}
-                            className="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-neutral-950 font-bold rounded text-xs transition-colors"
-                          >
-                            Execute Transition
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Sincerity Pledge and Gemini AI Assist Card */}
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-6 space-y-5">
-                      <div className="flex items-center justify-between border-b border-neutral-900 pb-3">
-                        <div className="space-y-0.5">
-                          <span className="text-[10px] font-mono text-gold-500 uppercase font-bold">Integrity Pledge Statement</span>
-                          <h4 className="text-xs font-semibold text-white uppercase tracking-wider font-mono">Member Sincerity Narrative</h4>
-                        </div>
-                        <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-mono font-bold text-emerald-400">
-                          Verified Integrity Check
-                        </span>
-                      </div>
-
-                      <div className="relative bg-neutral-950 p-4 rounded-lg border border-neutral-900/60 text-xs text-neutral-300 leading-relaxed font-mono">
-                        <span className="absolute -top-2.5 left-4 px-2 py-0.5 bg-neutral-900 border border-neutral-800 rounded text-[9px] font-mono text-neutral-500">
-                          ORIGINAL SUBMISSION
-                        </span>
-                        <p className="whitespace-pre-wrap italic">
-                          "{selectedRequest.sincerity || "No sincerity pledge was required or specified for this basic request type."}"
-                        </p>
-                      </div>
-
-                      {/* Gemini AI Assist Button and Panel */}
-                      <div className="pt-2">
-                        {!aiAnalysis ? (
-                          <button
-                            disabled={isAiEvaluating}
-                            onClick={async () => {
-                              setIsAiEvaluating(true);
-                              try {
-                                const res = await suggestOffer(selectedRequest);
-                                setAiAnalysis(res.analysis);
-                                setAiSuggestion(res.suggestion);
-                                showToast('AI Analysis & Offer Suggestion generated successfully!', 'success');
-                              } catch (err) {
-                                console.error(err);
-                                showToast('Failed to consult Google Gemini API.', 'error');
-                              } finally {
-                                setIsAiEvaluating(false);
-                              }
-                            }}
-                            className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold rounded text-xs tracking-wider uppercase transition-all shadow cursor-pointer disabled:opacity-50"
-                          >
-                            {isAiEvaluating ? (
-                              <>
-                                <span className="h-3.5 w-3.5 animate-spin rounded-full border-b-2 border-white" />
-                                Evaluating Sincerity with Gemini...
-                              </>
-                            ) : (
-                              <>
-                                <span>✨ Consult Google Gemini AI for Offer & Sincerity analysis</span>
-                              </>
-                            )}
-                          </button>
-                        ) : (
-                          <div className="space-y-4 rounded-lg border border-amber-500/15 bg-amber-500/[0.02] p-4">
-                            <div className="flex items-center justify-between">
-                              <h5 className="text-[10px] font-mono font-bold text-amber-500 uppercase tracking-widest flex items-center gap-1.5">
-                                <span>✨ Google Gemini Insights</span>
-                              </h5>
-                              <button
-                                onClick={() => {
-                                  setAiAnalysis('');
-                                  setAiSuggestion('');
-                                }}
-                                className="text-[10px] font-mono text-neutral-500 hover:text-white underline"
-                              >
-                                Re-evaluate
-                              </button>
-                            </div>
-
-                            <div className="space-y-3.5 text-xs text-neutral-300">
-                              <div className="space-y-1">
-                                <span className="text-[10px] font-mono text-neutral-500 block uppercase">SINCERITY & LOGISTICS ASSESSMENT:</span>
-                                <p className="bg-neutral-950 p-2.5 rounded border border-neutral-900 text-neutral-200 leading-relaxed">
-                                  {aiAnalysis}
-                                </p>
-                              </div>
-
-                              <div className="space-y-1">
-                                <div className="flex justify-between items-center">
-                                  <span className="text-[10px] font-mono text-neutral-500 block uppercase">RECOMMENDED TEAM OFFER REPLY:</span>
-                                  <button
-                                    onClick={() => {
-                                      setAdminTimelineMsg(aiSuggestion);
-                                      showToast('Offer suggestion loaded into Response field!', 'success');
-                                    }}
-                                    className="text-[9px] font-mono text-gold-500 hover:text-gold-400 bg-gold-500/5 hover:bg-gold-500/10 px-2 py-0.5 rounded border border-gold-500/10"
-                                  >
-                                    Load into Response field
-                                  </button>
-                                </div>
-                                <div className="relative bg-neutral-950 p-3 rounded border border-neutral-900 text-neutral-200 font-mono text-[11px] whitespace-pre-wrap leading-relaxed">
-                                  {aiSuggestion}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Communication Manual Log Entry Form */}
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-6 space-y-4">
-                      <h4 className="text-xs font-mono font-bold text-neutral-400 uppercase border-b border-neutral-900 pb-2">
-                        Log Manual Contact / Conversation
-                      </h4>
-
-                      <div className="space-y-4 text-xs">
-                        <div className="grid gap-4 sm:grid-cols-2">
-                          <div className="space-y-1.5">
-                            <label className="text-neutral-500 font-mono">CONTACT METHOD</label>
-                            <select
-                              value={manualLogMethod}
-                              onChange={(e) => setManualLogMethod(e.target.value as any)}
-                              className="w-full bg-neutral-950 border border-neutral-900 rounded px-3 py-2 text-white outline-none"
-                            >
-                              <option value="WhatsApp">WhatsApp</option>
-                              <option value="Email">Email</option>
-                              <option value="Telegram">Telegram</option>
-                            </select>
-                          </div>
-                          <div className="space-y-1.5">
-                            <label className="text-neutral-500 font-mono">NEXT EXPECTED ACTION</label>
-                            <input
-                              type="text"
-                              placeholder="e.g. Awaiting payment, coordinate slots"
-                              value={manualLogAction}
-                              onChange={(e) => setManualLogAction(e.target.value)}
-                              className="w-full bg-neutral-950 border border-neutral-900 rounded px-3 py-2 text-white outline-none focus:border-red-500/30"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <label className="text-neutral-500 font-mono uppercase">CONVERSATION SUMMARY / NOTES</label>
-                          <textarea
-                            rows={3}
-                            placeholder="Type details of the call or messages exchanged..."
-                            value={manualLogNote}
-                            onChange={(e) => setManualLogNote(e.target.value)}
-                            className="w-full bg-neutral-950 border border-neutral-900 rounded px-3 py-2 text-white outline-none focus:border-red-500/30"
-                          />
-                        </div>
-
-                        <div className="flex justify-end pt-1">
-                          <button
-                            onClick={() => handleAddManualLog(selectedRequest.id)}
-                            disabled={!manualLogNote.trim()}
-                            className="px-5 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold rounded text-xs transition-colors disabled:opacity-50 shadow"
-                          >
-                            Commit Communication Log
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-
-                  {/* Selected Request Right logs sidebar */}
-                  <div className="lg:col-span-4 space-y-6 text-left">
-                    
-                    {/* 1. SHARED MEMBER TIMELINE CHAT */}
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 space-y-4">
-                      <div className="flex items-center justify-between pb-2 border-b border-neutral-900">
-                        <h4 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase">
-                          Shared Member Chat Timeline
-                        </h4>
-                        <span className="text-[9px] font-mono text-red-500 uppercase bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20 animate-pulse">
-                          Live Shared Bridge
-                        </span>
-                      </div>
-
-                      <div className="max-h-[350px] overflow-y-auto space-y-3.5 pr-1 divide-y divide-neutral-900/40">
-                        {(proposalChats[selectedRequest.id] || []).map((msg, index) => {
-                          if (msg.sender === 'system') {
-                            return (
-                              <div key={msg.id || index} className="text-[10px] font-mono text-amber-500 bg-amber-500/5 p-2 rounded border border-amber-500/10 mt-2">
-                                {msg.text}
-                              </div>
-                            );
-                          }
-                          const isMgt = msg.sender === 'management';
-                          return (
-                            <div key={msg.id || index} className="space-y-1 pt-2 first:pt-0">
-                              <div className="flex items-center gap-1.5 justify-between">
-                                <span className={`text-[10px] font-bold ${isMgt ? 'text-red-400' : 'text-neutral-400'}`}>
-                                  {isMgt ? 'Management (Sarah)' : `${selectedRequest.member || 'Member'}`}
-                                </span>
-                                <span className="text-[8px] text-neutral-600 font-mono">{msg.timestamp}</span>
-                              </div>
-                              <p className="text-xs text-neutral-300 bg-neutral-950 p-2.5 rounded border border-neutral-900/60 leading-relaxed font-mono">
-                                {msg.text}
-                              </p>
-                            </div>
-                          );
-                        })}
-                        {(proposalChats[selectedRequest.id] || []).length === 0 && (
-                          <p className="text-xs text-neutral-500 italic text-center py-6">No shared timeline comments yet.</p>
-                        )}
-                      </div>
-
-                      {/* Timeline Message Dispatch Tool */}
-                      <div className="space-y-2 pt-3 border-t border-neutral-900">
-                        <label className="text-[10px] font-mono text-neutral-500 uppercase">
-                          Send Response To Member
-                        </label>
-                        <textarea
-                          rows={2}
-                          value={adminTimelineMsg}
-                          onChange={(e) => setAdminTimelineMsg(e.target.value)}
-                          placeholder="Type an official response or schedule log to dispatch..."
-                          className="w-full bg-neutral-950 border border-neutral-900 rounded p-2 text-xs text-white placeholder-neutral-700 outline-none focus:border-red-500/30 resize-none leading-relaxed"
-                        />
-                        <button
-                          onClick={() => handleSendAdminTimelineMsg(selectedRequest.id)}
-                          disabled={!adminTimelineMsg.trim()}
-                          className="w-full py-2 bg-red-600 hover:bg-red-500 text-neutral-950 font-mono font-bold rounded text-xs uppercase tracking-wider transition-colors disabled:opacity-40"
-                        >
-                          Send Timeline Response
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* 2. ADMINISTRATIVE LOG HISTORY */}
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 space-y-4">
-                      <h4 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase pb-2 border-b border-neutral-900">
-                        Administrative Call/Method Logs
-                      </h4>
-                      
-                      <div className="space-y-4 max-h-[250px] overflow-y-auto pr-1">
-                        {commLogs
-                          .filter(log => log.requestId === selectedRequest.id)
-                          .map((log, idx) => (
-                            <div key={log.id} className="p-3 rounded bg-neutral-950 border border-neutral-900 space-y-1 text-xs">
-                              <div className="flex items-center justify-between text-[10px] font-mono text-neutral-500">
-                                <span className="text-red-400 font-bold">{log.by}</span>
-                                <span>{log.lastContact}</span>
-                              </div>
-                              <p className="text-neutral-200 leading-normal font-medium">{log.notes}</p>
-                              <div className="text-[10px] text-neutral-500 border-t border-neutral-900/60 pt-1 mt-1 font-mono flex justify-between">
-                                <span>Action:</span>
-                                <span className="text-gold-500 font-bold">{log.nextAction}</span>
-                              </div>
-                            </div>
-                          ))}
-
-                        {commLogs.filter(log => log.requestId === selectedRequest.id).length === 0 && (
-                          <p className="text-xs text-neutral-500 italic py-4">No logged history found for this proposal yet.</p>
-                        )}
-                      </div>
-                    </div>
-
-                  </div>
-
-                </div>
-              )}
-            </div>
-          )}
-
           {/* ACTIVE VIEW: MEMBERSHIPS APPLICATIONS MANAGER */}
           {activeTab === 'Memberships' && <AdminMembershipReview />}
+          {activeTab === 'Experiences' && <AdminExperiences showToast={showToast} />}
 
           {/* ACTIVE VIEW: SHOP ORDERS */}
           {activeTab === 'Shop Orders' && (

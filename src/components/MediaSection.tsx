@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { YOUTUBE_VIDEOS as FALLBACK_VIDEOS, GALLERY_PHOTOS as FALLBACK_PHOTOS } from '../mediaData';
 import { MediaItem, PhotoItem } from '../types';
+import { supabase } from '../utils/supabase';
 import {
   Play,
   Tv,
@@ -48,8 +49,8 @@ export default function MediaSection() {
   // Fetch media data from backend API
   useEffect(() => {
     Promise.all([
-      fetch('/api/videos').then(r => r.ok ? r.json() : Promise.reject()).catch(() => FALLBACK_VIDEOS),
-      fetch('/api/photos').then(r => r.ok ? r.json() : Promise.reject()).catch(() => FALLBACK_PHOTOS),
+      supabase.from('videos').select('id, title, duration, youtube_id, subtitles, sort_order').order('sort_order').then(({ data, error }) => error || !data ? FALLBACK_VIDEOS : data.map((v: any) => ({ id: v.id, title: v.title, category: 'Uncategorized', duration: v.duration, youtubeId: v.youtube_id, subtitles: v.subtitles || [], sort_order: v.sort_order, videoPlaceholderText: v.title }))),
+      supabase.from('photos').select('id, title, url, description, likes, width, height, sort_order').order('sort_order').then(({ data, error }) => error || !data ? FALLBACK_PHOTOS : data.map((p: any) => ({ id: p.id, title: p.title, category: 'Uncategorized', url: p.url, description: p.description, likes: p.likes || 0, width: p.width, height: p.height }))),
     ]).then(([v, p]) => {
       setVideos(v);
       setPhotos(p);
@@ -130,7 +131,7 @@ export default function MediaSection() {
 
   // Photo Slideshow loop
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setTimeout>;
     if (isSlideshowActive && lightboxIndex !== null) {
       interval = setInterval(() => {
         handleNextPhoto();

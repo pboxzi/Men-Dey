@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Crown, IdCard, Check, Upload, User, ShieldCheck, Download, Copy, MessageCircle, Mail, Loader2, ArrowUp, Clock } from 'lucide-react';
 import { useAuth } from '../utils/AuthContext';
 import { useGlobalState } from '../utils/StateContext';
+import { supabase } from '../utils/supabase';
 
 interface MembershipData {
   id: string; user_id: string; status: string;
@@ -18,6 +19,35 @@ interface MembershipData {
 }
 
 const TIER_ORDER = ['scully', 'gibson', 'milburn'];
+
+function normalizeMembership(row: any): MembershipData | null {
+  if (!row) return null;
+  let msg: any = {};
+  try { msg = typeof row.message === 'string' ? JSON.parse(row.message) : (row.message || {}); } catch {}
+  let nts: any = {};
+  try { nts = typeof row.notes === 'string' ? JSON.parse(row.notes) : (row.notes || {}); } catch {}
+  return {
+    id: row.id, user_id: row.user_id,
+    status: row.status === 'suspended' ? 'expired' : row.status,
+    tier_id: msg.tier_id || row.tier,
+    tier_name: msg.tier_name || row.tier,
+    tier_price: msg.tier_price || msg.price || '',
+    card_name: row.full_name || '',
+    card_serial: msg.card_serial || '',
+    member_name: msg.member_name || row.full_name || '',
+    member_email: row.email || '',
+    member_phone: msg.phone || '',
+    member_country: row.country || '',
+    profile_photo: msg.profile_photo || '',
+    comm_method: msg.comm_method || '',
+    membership_number: nts.membership_number || '',
+    activation_date: row.reviewed_at || '',
+    expiration_date: nts.expiration_date || '',
+    cancel_reason: nts.cancel_reason || '',
+    admin_notes: nts.admin_notes || '',
+    created_at: row.created_at,
+  };
+}
 
 export default function MembershipSection() {
   const { user, profile } = useAuth();
@@ -53,10 +83,11 @@ export default function MembershipSection() {
 
   useEffect(() => {
     if (!user) { setCheckingMembership(false); return; }
-    fetch('/api/membership/my?user_id=' + user.id)
-      .then(r => r.json())
-      .then(d => { setMyMembership(d.membership); setCheckingMembership(false); })
-      .catch(() => setCheckingMembership(false));
+    void (async () => {
+      const { data } = await supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
+      setMyMembership(normalizeMembership(data));
+      setCheckingMembership(false);
+    })();
   }, [user]);
 
   const activeTier = tiers.find((t: any) => t.id === selectedTier) || tiers[0] || null;
@@ -104,16 +135,16 @@ export default function MembershipSection() {
         profile_photo: userPhoto || profile?.avatar_text || '',
         comm_method: commMethod,
       };
-      const r = await fetch('/api/membership/request', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
-      });
-      const text = await r.text();
-      if (!text) { showToast('Server returned empty response. Restart the dev server.', 'error'); setSubmitting(false); return; }
-      let d;
-      try { d = JSON.parse(text); } catch { showToast('Invalid response from server. Restart the dev server.', 'error'); setSubmitting(false); return; }
-      if (!d.success) { showToast(d.error || 'Submission failed', 'error'); setSubmitting(false); return; }
+      const tierMap: Record<string, string> = { scully: 'basic', gibson: 'premium', milburn: 'vip', upgrade_pending: 'upgrade_pending' };
+      const messageData = { card_serial: body.card_serial, comm_method: body.comm_method, tier_price: body.tier_price, tier_name: body.tier_name, tier_id: body.tier_id, profile_photo: body.profile_photo, phone: body.member_phone || '', member_name: body.member_name || '' };
+      const { data, error } = await supabase.from('membership_applications').insert({
+        user_id: body.user_id, email: body.member_email || '', full_name: body.card_name,
+        country: body.member_country || 'Global', tier: tierMap[body.tier_id] || 'basic',
+        status: 'pending', message: JSON.stringify(messageData), notes: '',
+      }).select('*').single();
+      if (error) { showToast(error.message || 'Submission failed', 'error'); setSubmitting(false); return; }
 
-      setMyMembership(d.membership);
+      setMyMembership(normalizeMembership(data));
       setShowCommModal(false);
       setSubmitDone(true);
       showToast('Membership request submitted successfully!', 'success');
@@ -158,15 +189,15 @@ export default function MembershipSection() {
         profile_photo: myMembership?.profile_photo || profile?.avatar_text || '',
         comm_method: upgradeCommMethod,
       };
-      const r = await fetch('/api/membership/request', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
-      });
-      const text = await r.text();
-      if (!text) { showToast('Upgrade failed — restart the dev server.', 'error'); setUpgrading(false); return; }
-      let d;
-      try { d = JSON.parse(text); } catch { showToast('Invalid response.', 'error'); setUpgrading(false); return; }
-      if (!d.success) { showToast(d.error || 'Upgrade failed', 'error'); setUpgrading(false); return; }
-      setMyMembership(d.membership);
+      const tierMap: Record<string, string> = { scully: 'basic', gibson: 'premium', milburn: 'vip', upgrade_pending: 'upgrade_pending' };
+      const messageData = { card_serial: body.card_serial, comm_method: body.comm_method, tier_price: body.tier_price, tier_name: body.tier_name, tier_id: body.tier_id, profile_photo: body.profile_photo, phone: body.member_phone || '', member_name: body.member_name || '' };
+      const { data, error } = await supabase.from('membership_applications').insert({
+        user_id: body.user_id, email: body.member_email || '', full_name: body.card_name,
+        country: body.member_country || 'Global', tier: tierMap[body.tier_id] || 'basic',
+        status: 'pending', message: JSON.stringify(messageData), notes: '',
+      }).select('*').single();
+      if (error) { showToast(error.message || 'Upgrade failed', 'error'); setUpgrading(false); return; }
+      setMyMembership(normalizeMembership(data));
       setShowUpgradeModal(false);
       showToast('Upgrade request submitted!', 'success');
       const msg = encodeURIComponent(

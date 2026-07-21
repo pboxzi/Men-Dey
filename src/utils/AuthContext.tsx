@@ -38,26 +38,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = useCallback(async (userId: string) => {
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
-    try {
-      const r = await fetch('/api/auth/me', {
-        headers: token ? { 'Authorization': 'Bearer ' + token } : {},
-      });
-      const d = await r.json();
-      if (r.ok && d.profile) {
-        setProfile(d.profile as Profile);
-      }
-    } catch {
-      // fallback to direct query
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      if (!error && data) {
-        const userMeta = (await supabase.auth.getUser()).data.user?.user_metadata || {};
-        setProfile({ ...data, bio: userMeta.bio || '', favorite_movie: userMeta.favorite_movie || '', contact: userMeta.contact || '', avatar_url: userMeta.avatar_url || '' } as Profile);
-      }
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    if (!error && data) {
+      const { data: { user } } = await supabase.auth.getUser();
+      const userMeta = user?.user_metadata || {};
+      setProfile({
+        ...data,
+        bio: userMeta.bio || '',
+        favorite_movie: userMeta.favorite_movie || '',
+        contact: userMeta.contact || '',
+        avatar_url: userMeta.avatar_url || '',
+      } as Profile);
     }
   }, []);
 
@@ -138,16 +133,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const updateProfile = async (updates: Partial<Profile>) => {
     if (!user) return { error: 'Not authenticated' };
-    const token = (await supabase.auth.getSession()).data.session?.access_token;
     try {
-      const r = await fetch('/api/auth/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': 'Bearer ' + token } : {}) },
-        body: JSON.stringify(updates),
-      });
-      const d = await r.json();
-      if (!r.ok) return { error: d.error || 'Failed to update profile' };
-      setProfile(prev => prev ? { ...prev, ...d.profile } : d.profile);
+      const dbUpdates: any = {};
+      if (updates.name !== undefined) dbUpdates.name = updates.name;
+      if (updates.country !== undefined) dbUpdates.country = updates.country;
+      if (updates.avatar_text !== undefined) dbUpdates.avatar_text = updates.avatar_text;
+      dbUpdates.updated_at = new Date().toISOString();
+
+      if (Object.keys(dbUpdates).length > 0) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .update(dbUpdates)
+          .eq('id', user.id)
+          .select('*')
+          .single();
+        if (error) return { error: error.message };
+        if (data) {
+          const userMeta = (await supabase.auth.getUser()).data.user?.user_metadata || {};
+          setProfile({
+            ...data,
+            bio: updates.bio ?? userMeta.bio ?? '',
+            favorite_movie: updates.favorite_movie ?? userMeta.favorite_movie ?? '',
+            contact: updates.contact ?? userMeta.contact ?? '',
+            avatar_url: userMeta.avatar_url ?? '',
+          });
+        }
+      }
+
+      // Store extra fields in auth user_metadata
+      const metaUpdates: any = {};
+      if (updates.bio !== undefined) metaUpdates.bio = updates.bio;
+      if (updates.favorite_movie !== undefined) metaUpdates.favorite_movie = updates.favorite_movie;
+      if (updates.contact !== undefined) metaUpdates.contact = updates.contact;
+      if (Object.keys(metaUpdates).length > 0) {
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        const existing = currentUser?.user_metadata || {};
+        await supabase.auth.updateUser({
+          data: { ...existing, ...metaUpdates }
+        });
+      }
+
       return {};
     } catch (err: any) {
       return { error: err.message };

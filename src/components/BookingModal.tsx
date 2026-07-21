@@ -1,20 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Experience, ExperienceBooking } from '../types';
+import { useAuth } from '../utils/AuthContext';
+import { supabase } from '../utils/supabase';
 import {
-  X,
-  ChevronRight,
-  ChevronLeft,
-  User,
-  Mail,
-  Calendar,
-  MessageSquare,
-  Send,
-  CheckCircle,
-  ShieldCheck,
-  AlertCircle,
-  MessageCircle,
-  Info
+  X, ChevronRight, ChevronLeft, CheckCircle, AlertCircle,
+  MessageCircle, Mail, Send, ShieldCheck, User, Calendar,
+  Info, Users, MapPin, Clock, Star, FileText,
 } from 'lucide-react';
 
 const WHATSAPP_NUMBER = '+447700000000';
@@ -27,16 +19,10 @@ interface BookingPageProps {
 }
 
 interface FormData {
-  fullName: string;
-  email: string;
-  phone: string;
-  country: string;
-  city: string;
   preferredDate: string;
   preferredTime: string;
   participants: number;
   specialRequests: string;
-  story: string;
   communicationMethod: 'whatsapp' | 'email';
 }
 
@@ -45,31 +31,37 @@ interface FormErrors {
 }
 
 const STEPS = [
-  { id: 1, label: 'Personal Info', icon: User },
-  { id: 2, label: 'Booking Details', icon: Calendar },
-  { id: 3, label: 'Communication', icon: MessageSquare },
-  { id: 4, label: 'Review & Submit', icon: CheckCircle },
+  { id: 1, label: 'Booking Details', icon: Calendar },
+  { id: 2, label: 'Communication', icon: MessageCircle },
+  { id: 3, label: 'Review & Submit', icon: CheckCircle },
 ];
 
 export default function BookingModal({ experience, onClose, onSuccess }: BookingPageProps) {
+  const { user, profile } = useAuth();
+  const isLoggedIn = !!user;
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [bookingRef, setBookingRef] = useState('');
 
-  const [form, setForm] = useState<FormData>({
-    fullName: '',
-    email: '',
-    phone: '',
-    country: '',
-    city: '',
+  const formDefaults: FormData = {
     preferredDate: '',
     preferredTime: '',
     participants: 1,
     specialRequests: '',
-    story: '',
     communicationMethod: 'email',
-  });
+  };
+
+  const [form, setForm] = useState<FormData>(formDefaults);
+
+  const personalInfo = {
+    fullName: profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || '',
+    email: profile?.email || user?.email || '',
+    phone: profile?.contact || '',
+    country: profile?.country || 'USA',
+  };
 
   const updateForm = (field: keyof FormData, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -80,32 +72,20 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
 
   const validateStep1 = (): boolean => {
     const e: FormErrors = {};
-    if (!form.fullName.trim()) e.fullName = 'Full name is required';
-    if (!form.email.trim()) e.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Invalid email address';
-    if (!form.phone.trim()) e.phone = 'Phone number is required';
-    if (!form.country.trim()) e.country = 'Country is required';
-    if (!form.city.trim()) e.city = 'City is required';
+    if (!form.preferredDate) e.preferredDate = 'Preferred date is required';
+    else {
+      const d = new Date(form.preferredDate);
+      if (d < new Date(new Date().toDateString())) e.preferredDate = 'Date must be today or in the future';
+    }
+    if (!form.preferredTime) e.preferredTime = 'Preferred time is required';
+    if (form.participants < 1 || form.participants > experience.max_guests) {
+      e.participants = `Participants must be 1-${experience.max_guests}`;
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
   const validateStep2 = (): boolean => {
-    const e: FormErrors = {};
-    if (!form.preferredDate) e.preferredDate = 'Preferred date is required';
-    else {
-      const d = new Date(form.preferredDate);
-      if (d < new Date()) e.preferredDate = 'Date must be in the future';
-    }
-    if (!form.preferredTime) e.preferredTime = 'Preferred time is required';
-    if (form.participants < 1 || form.participants > experience.spots) {
-      e.participants = `Participants must be 1-${experience.spots}`;
-    }
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
-  const validateStep3 = (): boolean => {
     const e: FormErrors = {};
     if (!form.communicationMethod) e.communicationMethod = 'Select a communication method';
     setErrors(e);
@@ -115,40 +95,37 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
   const handleNext = () => {
     if (step === 1 && !validateStep1()) return;
     if (step === 2 && !validateStep2()) return;
-    if (step === 3 && !validateStep3()) return;
-    setStep(prev => Math.min(prev + 1, 4));
+    setStep(prev => Math.min(prev + 1, 3));
   };
 
   const handleBack = () => setStep(prev => Math.max(prev - 1, 1));
 
   const buildMessage = (): string => {
-    return `EXPERIENCE BOOKING REQUEST\n\nExperience: ${experience.title}\nCategory: ${experience.category}\nTier: ${experience.tier}\n\n--- PERSONAL INFO ---\nName: ${form.fullName}\nEmail: ${form.email}\nPhone: ${form.phone}\nCountry: ${form.country}\nCity: ${form.city}\n\n--- BOOKING DETAILS ---\nPreferred Date: ${form.preferredDate}\nPreferred Time: ${form.preferredTime}\nParticipants: ${form.participants}\n\n--- SPECIAL REQUESTS ---\n${form.specialRequests || 'None'}\n\n--- WHY THIS EXPERIENCE ---\n${form.story || 'Not provided'}`;
+    return `EXPERIENCE BOOKING REQUEST\n\nExperience: ${experience.title}\nCategory: ${experience.category}\n\n--- PERSONAL INFO ---\nName: ${personalInfo.fullName}\nEmail: ${personalInfo.email}\nPhone: ${personalInfo.phone || 'Not provided'}\nCountry: ${personalInfo.country}\n\n--- BOOKING DETAILS ---\nPreferred Date: ${form.preferredDate}\nPreferred Time: ${form.preferredTime}\nParticipants: ${form.participants}\n\n--- SPECIAL REQUESTS ---\n${form.specialRequests || 'None'}`;
   };
 
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/experience-requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          experienceId: experience.id,
-          experienceTitle: experience.title,
-          fullName: form.fullName,
-          email: form.email,
-          phone: form.phone,
-          country: form.country,
-          city: form.city,
-          preferredDate: form.preferredDate,
-          preferredTime: form.preferredTime,
-          participants: form.participants,
-          specialRequests: form.specialRequests,
-          communicationMethod: form.communicationMethod,
-          story: form.story,
-        }),
-      });
-      if (!res.ok) throw new Error('Failed to submit booking');
-      const data = await res.json();
+      const body: any = {
+        experienceId: experience.id,
+        experienceTitle: experience.title,
+        fullName: personalInfo.fullName,
+        email: personalInfo.email,
+        phone: personalInfo.phone,
+        country: personalInfo.country,
+        preferredDate: form.preferredDate,
+        preferredTime: form.preferredTime,
+        participants: form.participants,
+        specialRequests: form.specialRequests,
+        communicationMethod: form.communicationMethod,
+      };
+      if (user?.id) body.userId = user.id;
+
+      const { data, error } = await supabase.from('experience_requests').insert(body).select().single();
+      if (error) throw new Error('Failed to submit booking');
+
+      setBookingRef(data?.bookingReference || '');
 
       const message = encodeURIComponent(buildMessage());
       if (form.communicationMethod === 'whatsapp') {
@@ -158,7 +135,7 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
       }
 
       setSuccess(true);
-      onSuccess(data.booking);
+      if (data.booking) onSuccess(data.booking);
     } catch (err) {
       console.error('Booking failed:', err);
     } finally {
@@ -212,19 +189,21 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
             Book Experience
           </h2>
           <p className="text-[11px] text-neutral-400">
-            {experience.title} — {experience.tier} Tier
+            {experience.title}
           </p>
         </div>
       </div>
 
       {success ? (
-        /* ─── Success State ──────────────────────────── */
         <div className="text-center space-y-6 py-16">
           <div className="h-16 w-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto">
             <CheckCircle className="h-8 w-8 text-emerald-500" />
           </div>
           <div className="space-y-2">
             <h3 className="font-serif text-xl font-bold text-white">Booking Request Submitted!</h3>
+            {bookingRef && (
+              <p className="text-xs font-mono text-gold-500">Reference: {bookingRef}</p>
+            )}
             <p className="text-xs text-neutral-400 leading-relaxed max-w-md mx-auto">
               Your booking for <span className="text-gold-500 font-semibold">{experience.title}</span> has been received. Your {form.communicationMethod === 'whatsapp' ? 'WhatsApp' : 'email'} app has been opened with the booking details pre-filled.
             </p>
@@ -285,32 +264,33 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
               {step === 1 && (
                 <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
                   <h4 className="text-[10px] font-mono text-neutral-400 tracking-wider uppercase font-semibold flex items-center gap-2">
-                    <User className="h-3.5 w-3.5 text-gold-500" /> PERSONAL INFORMATION
-                  </h4>
-                  <InputField label="Full Name" field="fullName" placeholder="e.g. Dana Scully Enthusiast" />
-                  <InputField label="Email Address" field="email" type="email" placeholder="e.g. fan@example.com" />
-                  <InputField label="Phone Number" field="phone" type="tel" placeholder="e.g. +44 7700 123456" />
-                  <div className="grid grid-cols-2 gap-3">
-                    <InputField label="Country" field="country" placeholder="e.g. United Kingdom" />
-                    <InputField label="City" field="city" placeholder="e.g. London" />
-                  </div>
-                </motion.div>
-              )}
-
-              {step === 2 && (
-                <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
-                  <h4 className="text-[10px] font-mono text-neutral-400 tracking-wider uppercase font-semibold flex items-center gap-2">
                     <Calendar className="h-3.5 w-3.5 text-gold-500" /> BOOKING DETAILS
                   </h4>
 
-                  <div className="p-3 bg-neutral-900/50 border border-neutral-900 rounded-lg">
+                  {/* Auto-filled Personal Info Summary */}
+                  <div className="p-3 bg-neutral-900/50 border border-neutral-900 rounded-lg space-y-1.5">
+                    <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Your Information</span>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
+                      <span className="text-neutral-500">Name:</span><span className="text-white">{personalInfo.fullName}</span>
+                      <span className="text-neutral-500">Email:</span><span className="text-white">{personalInfo.email}</span>
+                      <span className="text-neutral-500">Phone:</span><span className="text-white">{personalInfo.phone || 'Not provided'}</span>
+                      <span className="text-neutral-500">Country:</span><span className="text-white">{personalInfo.country}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-neutral-900/50 border border-neutral-900 rounded-lg space-y-1.5">
+                    <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Selected Experience</span>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-neutral-400">Selected Experience</span>
+                      <span className="text-xs text-neutral-400">Experience</span>
                       <span className="text-xs font-bold text-gold-500">{experience.title}</span>
                     </div>
-                    <div className="flex items-center justify-between mt-1">
+                    <div className="flex items-center justify-between">
                       <span className="text-xs text-neutral-400">Category</span>
-                      <span className="text-[10px] text-neutral-500">{experience.category} — {experience.tier}</span>
+                      <span className="text-[10px] text-neutral-500">{experience.category}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-neutral-400">Price</span>
+                      <span className="text-xs font-bold text-white">{experience.price}</span>
                     </div>
                   </div>
 
@@ -321,34 +301,22 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
 
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">
-                      NUMBER OF PARTICIPANTS *
+                      NUMBER OF GUESTS *
                     </label>
                     <input
                       type="number"
                       min={1}
-                      max={experience.spots}
+                      max={experience.max_guests}
                       value={form.participants}
                       onChange={(e) => updateForm('participants', parseInt(e.target.value) || 1)}
                       className={`w-full bg-neutral-900 border rounded-lg px-3.5 py-2.5 text-white text-xs outline-none transition-colors ${
                         errors.participants ? 'border-red-500/50' : 'border-neutral-800 focus:border-gold-500/40'
                       }`}
                     />
-                    <p className="text-[9px] text-neutral-600 font-mono">{experience.spots - experience.spotsTaken} spots available</p>
+                    <p className="text-[9px] text-neutral-600 font-mono">
+                      {experience.spots - experience.spotsTaken} spots available (max {experience.max_guests})
+                    </p>
                     {errors.participants && <p className="text-[9px] text-red-400 flex items-center gap-1"><AlertCircle className="h-2.5 w-2.5" /> {errors.participants}</p>}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">
-                      WHY IS THIS EXPERIENCE MEANINGFUL?
-                    </label>
-                    <textarea
-                      rows={3}
-                      maxLength={500}
-                      placeholder="Share your connection to Gillian's work and why this experience matters to you..."
-                      value={form.story}
-                      onChange={(e) => updateForm('story', e.target.value)}
-                      className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-white text-xs outline-none focus:border-gold-500/40 resize-none leading-relaxed"
-                    />
                   </div>
 
                   <div className="space-y-1.5">
@@ -356,8 +324,8 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
                       SPECIAL REQUESTS (OPTIONAL)
                     </label>
                     <textarea
-                      rows={2}
-                      placeholder="Dietary requirements, accessibility needs, etc..."
+                      rows={3}
+                      placeholder="Dietary requirements, accessibility needs, scheduling preferences, or any other details..."
                       value={form.specialRequests}
                       onChange={(e) => updateForm('specialRequests', e.target.value)}
                       className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-white text-xs outline-none focus:border-gold-500/40 resize-none leading-relaxed"
@@ -366,14 +334,11 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
                 </motion.div>
               )}
 
-              {step === 3 && (
-                <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+              {step === 2 && (
+                <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
                   <h4 className="text-[10px] font-mono text-neutral-400 tracking-wider uppercase font-semibold flex items-center gap-2">
-                    <MessageSquare className="h-3.5 w-3.5 text-gold-500" /> CHOOSE COMMUNICATION METHOD
+                    <MessageCircle className="h-3.5 w-3.5 text-gold-500" /> CHOOSE YOUR PREFERRED COMMUNICATION METHOD
                   </h4>
-                  <p className="text-[11px] text-neutral-400 leading-relaxed">
-                    Select how you'd like the administrator to contact you about this booking.
-                  </p>
 
                   <div className="grid grid-cols-2 gap-4">
                     {[
@@ -383,7 +348,7 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
                         icon: MessageCircle,
                         color: 'text-emerald-400',
                         border: form.communicationMethod === 'whatsapp' ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-neutral-800 hover:border-neutral-700',
-                        desc: 'Quick messaging with the admin team',
+                        desc: 'Quick messaging with the admin team. You will send the first message.',
                       },
                       {
                         id: 'email' as const,
@@ -391,7 +356,7 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
                         icon: Mail,
                         color: 'text-blue-400',
                         border: form.communicationMethod === 'email' ? 'border-blue-500/40 bg-blue-500/5' : 'border-neutral-800 hover:border-neutral-700',
-                        desc: 'Formal communication via email',
+                        desc: 'Formal communication via email. You will send the first email.',
                       },
                     ].map((method) => (
                       <button
@@ -419,55 +384,73 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
 
                   <div className="p-3 bg-neutral-900/40 rounded-lg border border-neutral-900/60 flex items-start gap-2.5 text-[10px] text-neutral-400 leading-relaxed font-mono">
                     <Info className="h-4 w-4 text-gold-500 shrink-0 mt-0.5" />
-                    <span>After submission, your {form.communicationMethod === 'whatsapp' ? 'WhatsApp' : 'email'} app will open with pre-filled booking details. Send the message to complete your request.</span>
+                    <span>After submission, your {form.communicationMethod === 'whatsapp' ? 'WhatsApp' : 'email'} app will open with a pre-filled message. You review and manually press Send. The admin will never message you first.</span>
                   </div>
                 </motion.div>
               )}
 
-              {step === 4 && (
-                <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+              {step === 3 && (
+                <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
                   <h4 className="text-[10px] font-mono text-neutral-400 tracking-wider uppercase font-semibold flex items-center gap-2">
-                    <CheckCircle className="h-3.5 w-3.5 text-gold-500" /> REVIEW & SUBMIT
+                    <CheckCircle className="h-3.5 w-3.5 text-gold-500" /> REVIEW BOOKING
                   </h4>
 
-                  <div className="space-y-3">
-                    <div className="p-3 bg-neutral-900/50 border border-neutral-900 rounded-lg space-y-2">
-                      <h5 className="text-[9px] font-mono text-gold-500 uppercase tracking-wider">Personal Info</h5>
-                      <div className="grid grid-cols-2 gap-y-1 text-[11px]">
-                        <span className="text-neutral-500">Name:</span><span className="text-white">{form.fullName}</span>
-                        <span className="text-neutral-500">Email:</span><span className="text-white">{form.email}</span>
-                        <span className="text-neutral-500">Phone:</span><span className="text-white">{form.phone}</span>
-                        <span className="text-neutral-500">Location:</span><span className="text-white">{form.city}, {form.country}</span>
+                  <div className="p-4 bg-neutral-900/50 border border-neutral-900 rounded-lg space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center text-xl">
+                        {experience.image ? (
+                          <img src={experience.image} alt="" className="h-full w-full object-cover rounded-lg" />
+                        ) : (
+                          <Star className="h-5 w-5 text-gold-500" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-white">{experience.title}</p>
+                        <p className="text-[10px] text-neutral-500">{experience.category} — {experience.tier}</p>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="p-3 bg-neutral-900/50 border border-neutral-900 rounded-lg space-y-2">
-                      <h5 className="text-[9px] font-mono text-gold-500 uppercase tracking-wider">Booking Details</h5>
-                      <div className="grid grid-cols-2 gap-y-1 text-[11px]">
-                        <span className="text-neutral-500">Experience:</span><span className="text-white font-semibold">{experience.title}</span>
-                        <span className="text-neutral-500">Date:</span><span className="text-white">{form.preferredDate}</span>
-                        <span className="text-neutral-500">Time:</span><span className="text-white">{form.preferredTime}</span>
-                        <span className="text-neutral-500">Participants:</span><span className="text-white">{form.participants}</span>
-                        <span className="text-neutral-500">Method:</span><span className="text-white capitalize">{form.communicationMethod}</span>
+                  <div className="p-3 bg-neutral-900/50 border border-neutral-900 rounded-lg space-y-2">
+                    <h5 className="text-[9px] font-mono text-gold-500 uppercase tracking-wider">Personal Information</h5>
+                    <div className="grid grid-cols-2 gap-y-1 text-[11px]">
+                      <span className="text-neutral-500">Name:</span><span className="text-white">{personalInfo.fullName}</span>
+                      <span className="text-neutral-500">Email:</span><span className="text-white">{personalInfo.email}</span>
+                      <span className="text-neutral-500">Phone:</span><span className="text-white">{personalInfo.phone || 'Not provided'}</span>
+                      <span className="text-neutral-500">Country:</span><span className="text-white">{personalInfo.country}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-neutral-900/50 border border-neutral-900 rounded-lg space-y-2">
+                    <h5 className="text-[9px] font-mono text-gold-500 uppercase tracking-wider">Booking Details</h5>
+                    <div className="grid grid-cols-2 gap-y-1 text-[11px]">
+                      <span className="text-neutral-500">Preferred Date:</span><span className="text-white">{form.preferredDate}</span>
+                      <span className="text-neutral-500">Preferred Time:</span><span className="text-white">{form.preferredTime}</span>
+                      <span className="text-neutral-500">Number of Guests:</span><span className="text-white">{form.participants}</span>
+                    </div>
+                    {form.specialRequests && (
+                      <div className="pt-2 border-t border-neutral-900/60">
+                        <span className="text-[9px] text-neutral-500 font-mono">SPECIAL REQUESTS:</span>
+                        <p className="text-[11px] text-neutral-300 mt-1">{form.specialRequests}</p>
                       </div>
-                      {form.story && (
-                        <div className="pt-2 border-t border-neutral-900/60">
-                          <span className="text-[9px] text-neutral-500 font-mono">WHY THIS EXPERIENCE:</span>
-                          <p className="text-[11px] text-neutral-300 mt-1 italic">"{form.story}"</p>
-                        </div>
+                    )}
+                  </div>
+
+                  <div className="p-3 bg-neutral-900/50 border border-neutral-900 rounded-lg space-y-2">
+                    <h5 className="text-[9px] font-mono text-gold-500 uppercase tracking-wider">Communication Method</h5>
+                    <div className="flex items-center gap-2 text-[11px]">
+                      {form.communicationMethod === 'whatsapp' ? (
+                        <MessageCircle className="h-4 w-4 text-emerald-400" />
+                      ) : (
+                        <Mail className="h-4 w-4 text-blue-400" />
                       )}
-                      {form.specialRequests && (
-                        <div className="pt-2 border-t border-neutral-900/60">
-                          <span className="text-[9px] text-neutral-500 font-mono">SPECIAL REQUESTS:</span>
-                          <p className="text-[11px] text-neutral-300 mt-1">{form.specialRequests}</p>
-                        </div>
-                      )}
+                      <span className="text-white capitalize">{form.communicationMethod}</span>
                     </div>
                   </div>
 
                   <div className="p-3 bg-neutral-900/40 rounded-lg border border-neutral-900/60 flex items-start gap-2.5 text-[10px] text-neutral-400 leading-relaxed font-mono">
                     <ShieldCheck className="h-4 w-4 text-gold-500 shrink-0 mt-0.5" />
-                    <span>By submitting, you agree to be contacted via {form.communicationMethod === 'whatsapp' ? 'WhatsApp' : 'email'} regarding this booking. Every experience is 100% fan-funded — your contribution makes these unforgettable moments possible.</span>
+                    <span>This booking will be submitted for administrator review. Your {form.communicationMethod === 'whatsapp' ? 'WhatsApp' : 'email'} app will open with a pre-filled message. You must manually send it to complete your request.</span>
                   </div>
                 </motion.div>
               )}
@@ -481,10 +464,10 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[10px] font-mono tracking-wider uppercase text-neutral-400 hover:text-white transition-colors"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
-              {step === 1 ? 'Cancel' : 'Back'}
+              {step === 1 ? 'Cancel' : step === 3 ? 'Back & Edit' : 'Back'}
             </button>
 
-            {step < 4 ? (
+            {step < 3 ? (
               <button
                 onClick={handleNext}
                 className="flex items-center gap-1.5 px-5 py-2.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-[10px] tracking-widest uppercase transition-all"
@@ -503,7 +486,7 @@ export default function BookingModal({ experience, onClose, onSuccess }: Booking
                 ) : (
                   <>
                     <Send className="h-3.5 w-3.5" />
-                    SUBMIT BOOKING
+                    Submit Booking
                   </>
                 )}
               </button>

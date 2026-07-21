@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Experience, ExperienceBooking } from '../types';
 import BookingPage from './BookingPage';
@@ -42,32 +42,26 @@ const CATEGORY_ICONS: Record<string, any> = {
 export default function ExperiencesSection() {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [activeCategory, setActiveCategory] = useState('ALL');
-  const [selectedExp, setSelectedExp] = useState<Experience | null>(null);
   const [detailViewId, setDetailViewId] = useState<string | null>(null);
-  const [showBooking, setShowBooking] = useState(false);
+  const [bookingId, setBookingId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'browse' | 'bookings'>('browse');
   const [bookings, setBookings] = useState<ExperienceBooking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [pendingBookingId, setPendingBookingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [filterFeatured, setFilterFeatured] = useState(false);
   const [filterVirtual, setFilterVirtual] = useState<'all' | 'physical' | 'virtual'>('all');
   const [filterAvailable, setFilterAvailable] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadData = async () => {
       try {
         const [expRes, bookingsRes] = await Promise.all([
           supabase.from('experiences').select('*').order('sort_order').order('title'),
           supabase.from('experience_requests').select('*').order('created_at', { ascending: false }),
         ]);
-        if (!expRes.error && expRes.data) {
-          setExperiences(expRes.data || []);
-        }
-        if (!bookingsRes.error && bookingsRes.data) {
-          setBookings(bookingsRes.data || []);
-        }
+        if (!expRes.error && expRes.data) setExperiences(expRes.data || []);
+        if (!bookingsRes.error && bookingsRes.data) setBookings(bookingsRes.data || []);
       } catch (err) {
         console.error('Failed to load experiences:', err);
       } finally {
@@ -76,91 +70,71 @@ export default function ExperiencesSection() {
     };
     loadData();
 
-    const hash = window.location.hash.replace('#', '').toUpperCase();
-    if (hash.startsWith('EXPERIENCES/BOOK/')) {
-      const expId = hash.split('/')[2];
-      if (expId) setPendingBookingId(expId);
+    const rawHash = window.location.hash.replace('#', '');
+    const upperHash = rawHash.toUpperCase();
+    if (upperHash.startsWith('EXPERIENCES/BOOK/')) {
+      const expId = rawHash.split('/')[2];
+      if (expId) setBookingId(expId);
     }
+  }, []);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      const rawHash = window.location.hash.replace('#', '');
+      const upperHash = rawHash.toUpperCase();
+      if (upperHash.startsWith('EXPERIENCES/BOOK/')) {
+        const expId = rawHash.split('/')[2];
+        if (expId) setBookingId(expId);
+      }
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
 
   const filteredExperiences = useMemo(() => {
     let result = experiences;
-
-    if (activeCategory !== 'ALL') {
-      result = result.filter(e => e.category === activeCategory);
-    }
-
+    if (activeCategory !== 'ALL') result = result.filter(e => e.category === activeCategory);
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(e =>
-        e.title.toLowerCase().includes(q) ||
-        e.description.toLowerCase().includes(q) ||
-        e.category.toLowerCase().includes(q) ||
-        e.location.toLowerCase().includes(q)
-      );
+      result = result.filter(e => e.title.toLowerCase().includes(q) || e.description.toLowerCase().includes(q) || e.category.toLowerCase().includes(q) || e.location.toLowerCase().includes(q));
     }
-
-    if (filterFeatured) {
-      result = result.filter(e => e.featured);
-    }
-
-    if (filterVirtual === 'physical') {
-      result = result.filter(e => !e.is_virtual);
-    } else if (filterVirtual === 'virtual') {
-      result = result.filter(e => e.is_virtual);
-    }
-
-    if (filterAvailable) {
-      result = result.filter(e => (e.spots - e.spotsTaken) > 0);
-    }
-
+    if (filterFeatured) result = result.filter(e => e.featured);
+    if (filterVirtual === 'physical') result = result.filter(e => !e.is_virtual);
+    else if (filterVirtual === 'virtual') result = result.filter(e => e.is_virtual);
+    if (filterAvailable) result = result.filter(e => (e.spots - e.spotsTaken) > 0);
     return result;
   }, [experiences, activeCategory, searchQuery, filterFeatured, filterVirtual, filterAvailable]);
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { ALL: experiences.length };
-    experiences.forEach(e => {
-      counts[e.category] = (counts[e.category] || 0) + 1;
-    });
+    experiences.forEach(e => { counts[e.category] = (counts[e.category] || 0) + 1; });
     return counts;
   }, [experiences]);
 
   const stats = useMemo(() => ({
     total: experiences.length,
     popular: experiences.filter(e => e.popular || e.featured).length,
-    available: experiences.reduce((sum, e) => sum + (e.spots - e.spotsTaken), 0),
+    available: experiences.reduce((sum, e) => sum + ((e.spots || 0) - (e.spotsTaken || 0)), 0),
     categories: new Set(experiences.map(e => e.category)).size,
     featured: experiences.filter(e => e.featured).length,
   }), [experiences]);
 
-  React.useEffect(() => {
-    if (pendingBookingId && experiences.length > 0) {
-      const exp = experiences.find(e => e.id === pendingBookingId);
-      if (exp) {
-        setSelectedExp(exp);
-        setShowBooking(true);
-        setPendingBookingId(null);
-      }
-    }
-  }, [pendingBookingId, experiences]);
-
-  const openDetail = (exp: Experience) => {
-    setDetailViewId(exp.id);
-    setShowBooking(false);
-    setSelectedExp(null);
-  };
+  const openDetail = (exp: Experience) => setDetailViewId(exp.id);
 
   const openBooking = (exp: Experience) => {
-    setSelectedExp(exp);
-    setShowBooking(true);
-    setDetailViewId(null);
+    window.location.hash = `EXPERIENCES/BOOK/${exp.id}`;
+  };
+
+  const closeBooking = () => {
+    window.location.hash = '';
+    setBookingId(null);
   };
 
   const handleBookingSuccess = (booking: ExperienceBooking) => {
     setBookings(prev => [booking, ...prev]);
-    setShowBooking(false);
-    setSelectedExp(null);
+    setBookingId(null);
     setActiveTab('bookings');
+    window.location.hash = '';
   };
 
   const getStatusColor = (status: string) => {
@@ -182,6 +156,21 @@ export default function ExperiencesSection() {
   };
 
   const formatStatus = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+  // Show booking page (navigated via hash)
+  if (bookingId) {
+    return (
+      <section id="experiences-page" className="bg-[#050505] py-12 px-4 md:px-6 relative min-h-[900px]">
+        <div className="mx-auto max-w-3xl">
+          <BookingPage
+            experienceId={bookingId}
+            onBack={closeBooking}
+            onSuccess={handleBookingSuccess}
+          />
+        </div>
+      </section>
+    );
+  }
 
   // Show detail page
   if (detailViewId) {
@@ -247,9 +236,9 @@ export default function ExperiencesSection() {
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => { setActiveTab(tab.id); setShowBooking(false); setSelectedExp(null); }}
+                onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-5 py-2 rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all ${
-                  activeTab === tab.id && !showBooking
+                  activeTab === tab.id
                     ? 'bg-gold-500 text-neutral-950 font-bold'
                     : 'text-neutral-500 hover:text-white'
                 }`}
@@ -455,7 +444,7 @@ export default function ExperiencesSection() {
             ) : filteredExperiences.length > 0 ? (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredExperiences.map((exp) => {
-                  const spotsLeft = exp.spots - exp.spotsTaken;
+                  const spotsLeft = (exp.spots || 0) - (exp.spotsTaken || 0);
                   const isFull = spotsLeft <= 0;
                   return (
                     <motion.div

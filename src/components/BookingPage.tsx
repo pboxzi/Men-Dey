@@ -149,25 +149,32 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
   const handleSubmit = async () => {
     setLoading(true);
     try {
+      const ref = 'REF-' + Date.now().toString(36).toUpperCase();
       const body: any = {
-        experienceId: exp!.id,
-        experienceTitle: exp!.title,
-        fullName: personalInfo.fullName,
+        id: `bk-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        booking_reference: ref,
+        experience_id: exp!.id,
+        experience_title: exp!.title,
+        status: 'pending',
+        full_name: personalInfo.fullName,
         email: personalInfo.email,
         phone: personalInfo.phone,
         country: personalInfo.country,
-        preferredDate: form.preferredDate,
-        preferredTime: form.preferredTime,
+        preferred_date: form.preferredDate,
+        preferred_time: form.preferredTime,
         participants: form.participants,
-        specialRequests: form.specialRequests,
-        communicationMethod: form.communicationMethod,
+        special_requests: form.specialRequests,
+        communication_method: form.communicationMethod,
       };
-      if (user?.id) body.userId = user.id;
+      if (user?.id) body.user_id = user.id;
 
       const { data, error } = await supabase.from('experience_requests').insert(body).select().single();
-      if (error) throw new Error('Failed to submit booking');
+      if (error) {
+        console.error('Supabase insert error:', JSON.stringify(error));
+        throw new Error('Failed to submit booking');
+      }
 
-      setBookingRef(data?.bookingReference || '');
+      setBookingRef(data?.booking_reference || ref);
 
       const message = encodeURIComponent(buildMessage());
       if (form.communicationMethod === 'whatsapp') {
@@ -177,7 +184,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
       }
 
       setSuccess(true);
-      if (data.booking && onSuccess) onSuccess(data.booking);
+      if (onSuccess && data) onSuccess(data as any);
     } catch (err) {
       console.error('Booking failed:', err);
     } finally {
@@ -232,7 +239,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
     );
   }
 
-  const spotsLeft = exp.spots - exp.spotsTaken;
+  const spotsLeft = (exp.spots || 0) - (exp.spotsTaken || 0);
   const isFull = spotsLeft <= 0;
 
   if (isFull) {

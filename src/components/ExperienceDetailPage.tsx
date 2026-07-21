@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Experience, ExperienceBooking } from '../types';
-import BookingModal from './BookingModal';
+import { Experience } from '../types';
+import BookingPage from './BookingPage';
 import { supabase } from '../utils/supabase';
 import {
   ArrowLeft, Calendar, MapPin, Clock, Users, Star, Sparkles,
@@ -103,7 +102,7 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
   }
   if (images.length === 0) images.push(FALLBACK_IMAGE);
 
-  const spotsLeft = exp.spots - exp.spotsTaken;
+  const spotsLeft = (exp.spots || 0) - (exp.spotsTaken || 0);
   const isFull = spotsLeft <= 0;
 
   const relatedFaq = [
@@ -123,10 +122,9 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
       </button>
 
       {showBooking ? (
-        <BookingModal
+        <BookingPage
           experience={exp}
-          onClose={() => setShowBooking(false)}
-          onSuccess={(booking: ExperienceBooking) => { setShowBooking(false); onBack(); }}
+          onBack={() => setShowBooking(false)}
         />
       ) : (
         <>

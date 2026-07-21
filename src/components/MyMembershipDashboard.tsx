@@ -138,8 +138,103 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
     setUpgrading(false);
   };
 
-  const downloadCard = () => {
-    showToast('Download card feature coming soon.', 'info');
+  const downloadCard = async () => {
+    if (!membership) return;
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 760;
+      canvas.height = 480;
+      const ctx = canvas.getContext('2d')!;
+
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      const bgColors: Record<string, [string, string]> = {
+        scully: ['#1a1a2e', '#16213e'],
+        gibson: ['#1c1c1c', '#2d2d2d'],
+        milburn: ['#1a0a0a', '#2d1515'],
+      };
+      const c = bgColors[membership.tier_id] || ['#1a1a1a', '#2a2a2a'];
+      grad.addColorStop(0, c[0]);
+      grad.addColorStop(1, c[1]);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'rgba(212,175,55,0.3)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+
+      ctx.fillStyle = '#d4af37';
+      ctx.font = 'bold 28px serif';
+      ctx.fillText('GA', 40, 60);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '12px monospace';
+      ctx.fillText('OFFICIAL SANCTUARY', 40, 78);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText('MEMBER CARD', canvas.width - 40, 50);
+      ctx.textAlign = 'left';
+
+      ctx.font = 'bold 24px serif';
+      ctx.fillStyle = '#ffffff';
+      const name = membership.card_name || authName || 'Member';
+      ctx.fillText(name, 160, 240);
+
+      ctx.fillStyle = '#d4af37';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.fillText(membership.tier_name, 160, 264);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '10px monospace';
+      ctx.fillText('ISSUED ' + new Date(membership.activation_date).getFullYear(), 160, 282);
+
+      if (membership.profile_photo) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.src = membership.profile_photo;
+        await new Promise(r => { img.onload = r; img.onerror = r; });
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(90, 230, 45, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, 45, 185, 90, 90);
+        ctx.restore();
+        ctx.strokeStyle = 'rgba(212,175,55,0.4)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(90, 230, 45, 0, Math.PI * 2);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = '#333';
+        ctx.beginPath();
+        ctx.arc(90, 230, 45, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#666';
+        ctx.font = '28px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('?', 90, 242);
+        ctx.textAlign = 'left';
+      }
+
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = '9px monospace';
+      ctx.fillText('SERIAL NUMBER', 40, 400);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = 'bold 11px monospace';
+      ctx.fillText(membership.card_serial || membership.membership_number || 'GA-MEMBER', 40, 416);
+
+      const blob = await new Promise<Blob>(r => canvas.toBlob(r!, 'image/png'));
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `GA-Membership-${name.replace(/\s+/g, '_')}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Membership card downloaded!', 'success');
+    } catch {
+      showToast('Could not download card. Try again.', 'error');
+    }
   };
 
   const getTierBenefits = (tierId: string) => {

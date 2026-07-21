@@ -221,6 +221,104 @@ export default function MembershipSection() {
     setUpgrading(false);
   };
 
+  const downloadCard = async () => {
+    if (!activeTier) return;
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 760;
+      canvas.height = 480;
+      const ctx = canvas.getContext('2d')!;
+
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      const bgColors: Record<string, [string, string]> = {
+        scully: ['#1a1a2e', '#16213e'],
+        gibson: ['#1c1c1c', '#2d2d2d'],
+        milburn: ['#1a0a0a', '#2d1515'],
+      };
+      const c = bgColors[activeTier.id] || ['#1a1a1a', '#2a2a2a'];
+      grad.addColorStop(0, c[0]);
+      grad.addColorStop(1, c[1]);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'rgba(212,175,55,0.3)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+
+      ctx.fillStyle = '#d4af37';
+      ctx.font = 'bold 28px serif';
+      ctx.fillText('GA', 40, 60);
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '12px monospace';
+      ctx.fillText('OFFICIAL SANCTUARY', 40, 78);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText('MEMBER CARD', canvas.width - 40, 50);
+      ctx.textAlign = 'left';
+
+      ctx.font = 'bold 24px serif';
+      ctx.fillStyle = '#ffffff';
+      const name = cardName || profile?.name || 'Member';
+      ctx.fillText(name, 160, 240);
+
+      ctx.fillStyle = '#d4af37';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.fillText(activeTier.name, 160, 264);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '10px monospace';
+      ctx.fillText('ISSUED ' + new Date().getFullYear(), 160, 282);
+
+      if (userPhoto) {
+        const img = new Image();
+        img.src = userPhoto;
+        await new Promise(r => { img.onload = r; img.onerror = r; });
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(90, 230, 45, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, 45, 185, 90, 90);
+        ctx.restore();
+        ctx.strokeStyle = 'rgba(212,175,55,0.4)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(90, 230, 45, 0, Math.PI * 2);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = '#333';
+        ctx.beginPath();
+        ctx.arc(90, 230, 45, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#666';
+        ctx.font = '28px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('?', 90, 242);
+        ctx.textAlign = 'left';
+      }
+
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.font = '9px monospace';
+      ctx.fillText('SERIAL NUMBER', 40, 400);
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = 'bold 11px monospace';
+      ctx.fillText(cardSerial || 'GA-MEMBER', 40, 416);
+
+      const blob = await new Promise<Blob>(r => canvas.toBlob(r!, 'image/png'));
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `GA-Membership-${name.replace(/\s+/g, '_')}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Membership card downloaded!', 'success');
+    } catch {
+      showToast('Could not download. Try again.', 'error');
+    }
+  };
+
   const higherTiers = tiers.filter((t: any) => {
     if (!myMembership) return true;
     const currentIdx = TIER_ORDER.indexOf(myMembership.tier_id);
@@ -261,31 +359,127 @@ export default function MembershipSection() {
 
   // ── Active member view with upgrade option ──
   if (user && myMembership?.status === 'active') {
+    const tierStyle = (id: string) => {
+      const t = tiers.find((x: any) => x.id === id);
+      return { bg: t?.bg_color || 'from-neutral-900 via-neutral-950 to-neutral-950', border: t?.border_color || 'border-neutral-800', icon: t?.icon_color || 'text-neutral-400' };
+    };
+    const ts = tierStyle(myMembership.tier_id);
     return (
       <section id="membership-page" className="bg-[#050505] py-20 px-4 md:px-6 relative min-h-[500px]">
-        <div className="mx-auto max-w-2xl text-center space-y-6">
-          <div className="mx-auto max-w-sm">
-            {myMembership.profile_photo ? (
-              <div className="relative w-20 h-20 mx-auto rounded-full overflow-hidden border-2 border-gold-500/40 shadow-lg shadow-gold-500/10">
-                <img src={myMembership.profile_photo} alt="" className="w-full h-full object-cover" />
+        <div className="mx-auto max-w-3xl space-y-10">
+          {/* Header */}
+          <div className="text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[10px] font-mono tracking-widest uppercase">
+              <Crown className="h-3.5 w-3.5" /> ACTIVE MEMBERSHIP
+            </div>
+            <h2 className="font-serif text-3xl md:text-4xl font-extrabold text-white uppercase tracking-tight">
+              Welcome, <span className="text-gold-500">{myMembership.card_name}</span>
+            </h2>
+            <p className="text-xs text-neutral-400 max-w-lg mx-auto font-mono leading-relaxed">
+              You are an official Sanctuary member. Present your digital card for exclusive access.
+            </p>
+          </div>
+
+          {/* Digital Membership Card */}
+          <div className={`relative w-full max-w-[420px] mx-auto aspect-[1.58/1] rounded-2xl border bg-gradient-to-br ${ts.bg} ${ts.border} p-6 flex flex-col justify-between overflow-hidden shadow-2xl`}>
+            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gold-500/5 blur-[60px] pointer-events-none" />
+            <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-gold-500/5 blur-[60px] pointer-events-none" />
+            
+            {/* Top section */}
+            <div className="flex justify-between items-start z-10">
+              <div className="flex items-center gap-1.5">
+                <span className="font-serif text-lg font-bold tracking-widest text-white">GA</span>
+                <div className="h-5 w-px bg-neutral-800" />
+                <div className="flex flex-col">
+                  <span className="font-serif text-[10px] font-bold tracking-wider text-neutral-300">GILLIAN ANDERSON</span>
+                  <span className="font-mono text-[6px] tracking-[0.2em] text-gold-500">OFFICIAL SANCTUARY</span>
+                </div>
               </div>
-            ) : (
-              <div className="w-20 h-20 mx-auto rounded-full bg-neutral-900 border-2 border-gold-500/40 flex items-center justify-center"><User className="h-8 w-8 text-neutral-600" /></div>
-            )}
+              <span className="font-mono text-[9px] font-bold text-neutral-500 tracking-wider">MEMBER CARD</span>
+            </div>
+
+            {/* Middle section with photo */}
+            <div className="flex gap-4 items-center z-10 pt-2">
+              <div className="h-16 w-16 rounded-full border-2 border-gold-500/30 bg-neutral-900 overflow-hidden flex items-center justify-center shrink-0 shadow-lg">
+                {myMembership.profile_photo ? (
+                  <img src={myMembership.profile_photo} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <User className="h-7 w-7 text-neutral-700" />
+                )}
+              </div>
+              <div className="space-y-1 text-left">
+                <span className="text-[9px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>
+                <h5 className="font-serif text-base font-bold text-white tracking-wide truncate max-w-[220px]">{myMembership.card_name}</h5>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[10px] font-mono font-bold uppercase ${ts.icon}`}>{myMembership.tier_name}</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-neutral-800" />
+                  <span className="text-[9px] font-mono text-neutral-400">#{myMembership.membership_number?.split('-').pop() || 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom section */}
+            <div className="flex justify-between items-end border-t border-neutral-900/60 pt-3 z-10">
+              <div className="text-left font-mono text-[8px] text-neutral-500 space-y-0.5">
+                <span className="block">MEMBER SINCE</span>
+                <span className="font-semibold text-neutral-300 text-[10px]">{myMembership.activation_date ? new Date(myMembership.activation_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}</span>
+              </div>
+              <div className="text-right font-mono text-[8px] text-neutral-500 space-y-0.5">
+                <span className="block">EXPIRES</span>
+                <span className={`font-semibold text-[10px] ${myMembership.expiration_date && new Date(myMembership.expiration_date) < new Date() ? 'text-red-400' : 'text-neutral-300'}`}>
+                  {myMembership.expiration_date ? new Date(myMembership.expiration_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Lifetime'}
+                </span>
+              </div>
+              <div className="flex flex-col items-end">
+                <div className="flex items-end gap-0.5 h-3 opacity-60">
+                  {[...Array(6)].map((_, i) => <div key={i} className={`w-0.5 bg-neutral-300 ${i % 3 === 1 ? 'h-2/3' : i % 3 === 2 ? 'h-3/4' : 'h-full'}`} />)}
+                </div>
+                <span className="font-mono text-[5px] text-neutral-500 mt-0.5">SECURE-BAR</span>
+              </div>
+            </div>
           </div>
-          <h2 className="font-serif text-3xl md:text-4xl font-extrabold text-white uppercase tracking-tight">Welcome, Member</h2>
-          <div className="rounded-xl border border-gold-500/30 bg-neutral-950 p-6 space-y-3 text-left">
-            <div className="flex justify-between text-sm"><span className="text-neutral-400">Name</span><span className="text-white font-bold">{myMembership.card_name}</span></div>
-            <div className="flex justify-between text-sm"><span className="text-neutral-400">Tier</span><span className="text-gold-500 font-bold">{myMembership.tier_name}</span></div>
-            <div className="flex justify-between text-sm"><span className="text-neutral-400">Membership Number</span><span className="text-white font-mono">{myMembership.membership_number || 'N/A'}</span></div>
-            <div className="flex justify-between text-sm"><span className="text-neutral-400">Activated</span><span className="text-white">{myMembership.activation_date ? new Date(myMembership.activation_date).toLocaleDateString() : 'N/A'}</span></div>
-            <div className="flex justify-between text-sm"><span className="text-neutral-400">Expires</span><span className="text-white">{myMembership.expiration_date ? new Date(myMembership.expiration_date).toLocaleDateString() : 'Never'}</span></div>
+
+          {/* Details grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-lg mx-auto">
+            {[
+              { label: 'Membership #', value: myMembership.membership_number || 'N/A', mono: true },
+              { label: 'Card Serial', value: myMembership.card_serial || 'N/A', mono: true },
+              { label: 'Activated', value: myMembership.activation_date ? new Date(myMembership.activation_date).toLocaleDateString() : 'N/A', mono: false },
+              { label: 'Expires', value: myMembership.expiration_date ? new Date(myMembership.expiration_date).toLocaleDateString() : 'Lifetime', mono: false },
+            ].map(d => (
+              <div key={d.label} className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-3 text-center space-y-0.5">
+                <p className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">{d.label}</p>
+                <p className={`text-[10px] text-white font-semibold ${d.mono ? 'font-mono' : ''} truncate`}>{d.value}</p>
+              </div>
+            ))}
           </div>
+
+          {/* Benefits */}
+          {tiers.find((t: any) => t.id === myMembership.tier_id)?.benefits?.length > 0 && (
+            <div className="max-w-lg mx-auto w-full space-y-3">
+              <h4 className="text-[10px] font-mono text-gold-500 uppercase tracking-widest font-bold text-center">Your {myMembership.tier_name} Benefits</h4>
+              <div className="grid gap-2">
+                {tiers.find((t: any) => t.id === myMembership.tier_id).benefits.map((b: string, i: number) => (
+                  <div key={i} className="flex items-start gap-2.5 text-xs text-neutral-300 bg-neutral-950/20 border border-neutral-900 rounded-lg px-3.5 py-2.5">
+                    <Check className="h-3.5 w-3.5 text-gold-500 shrink-0 mt-0.5" />
+                    <span>{b}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Actions */}
           <div className="flex flex-wrap gap-3 justify-center">
-            <button onClick={() => window.location.hash = '#PORTAL'} className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">Go to Membership Dashboard</button>
+            <button onClick={() => window.location.hash = '#PORTAL'} className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">
+              Membership Dashboard
+            </button>
+            <button onClick={downloadCard} className="border border-gold-500/40 hover:bg-gold-500/10 text-gold-500 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all flex items-center gap-1.5">
+              <Download className="h-3.5 w-3.5" /> Download Card
+            </button>
             {higherTiers.length > 0 && (
               <button onClick={() => { setUpgradeTier(''); setUpgradeCommMethod(null); setShowUpgradeModal(true); }} className="border border-gold-500/40 hover:bg-gold-500/10 text-gold-500 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all flex items-center gap-1.5">
-                <ArrowUp className="h-3.5 w-3.5" /> Upgrade Membership
+                <ArrowUp className="h-3.5 w-3.5" /> Upgrade
               </button>
             )}
           </div>
@@ -545,7 +739,7 @@ export default function MembershipSection() {
               </div>
             )}
             <div className="flex gap-3">
-              <button onClick={() => showToast('Download simulated.', 'success')}
+              <button onClick={downloadCard}
                 className="inline-flex items-center gap-1.5 px-4 py-2 bg-neutral-950 hover:bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-900 rounded-lg text-xs font-mono font-semibold transition-all">
                 <Download className="h-3.5 w-3.5 text-gold-500" /> DOWNLOAD CARD
               </button>

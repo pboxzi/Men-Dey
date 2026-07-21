@@ -47,7 +47,9 @@ import {
   Upload,
   ThumbsUp,
   Menu,
-  X
+  X,
+  Mail,
+  Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
@@ -593,10 +595,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   // Upgrade Membership inside Portal Modal
   const [showPortalMembershipModal, setShowPortalMembershipModal] = useState(false);
-  const [mType, setMType] = useState('gold');
+  const [mTierId, setMTierId] = useState('');
   const [mReason, setMReason] = useState('');
-  const [mContact, setMContact] = useState<'Website' | 'Email' | 'WhatsApp' | 'Telegram'>('Email');
+  const [mContact, setMContact] = useState<'whatsapp' | 'email'>('email');
   const [mContactVal, setMContactVal] = useState('');
+  const [mUpgrading, setMUpgrading] = useState(false);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -821,33 +824,36 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     } catch {}
   };
 
-  const handlePortalMembershipRequest = (e: React.FormEvent) => {
+  const handlePortalMembershipRequest = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!mReason.trim() || !mContactVal.trim()) return;
-
-    const newReq: RequestDetail = {
-      id: `KR-MEM-${Date.now()}`,
-      type: `Membership Upgrade: ${mType.toUpperCase()}`,
-      preferredDate: 'Immediate Activation',
-      location: authCountry,
-      attendees: '1 Person',
-      whatsappNumber: `${mContact}: ${mContactVal}`,
-      status: 'Submitted',
-      submittedOn: new Date().toLocaleString([], { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      lastUpdated: new Date().toLocaleString([], { month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      sincerity: mReason,
-      member: authName,
-      memberAvatar: authName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2),
-      updated: 'Just now'
-    };
-
-    setUserRequests((prev) => [newReq, ...prev]);
-    showToast('Your membership upgrade request has been submitted successfully!', 'success');
-    setShowPortalMembershipModal(false);
-    setMReason('');
-    setMContactVal('');
-    setSelectedRequestId(newReq.id);
-    setActiveTab('My Requests');
+    if (!mTierId || !mReason.trim() || !mContactVal.trim() || !user) return;
+    setMUpgrading(true);
+    try {
+      const tiers = backendContent?.membershipTiers || [];
+      const t = tiers.find((x: any) => x.id === mTierId);
+      const serial = `GA-MEM-${Date.now().toString(36).toUpperCase()}`;
+      const messageData = {
+        card_serial: serial, comm_method: mContact,
+        tier_price: t?.price || '', tier_name: t?.name || '',
+        tier_id: mTierId, phone: mContactVal, member_name: authName || '',
+      };
+      const { error } = await supabase.from('membership_applications').insert({
+        user_id: user.id, email: profile?.email || user.email || '',
+        full_name: authName || 'Member', country: authCountry || 'Global',
+        tier: mTierId, status: 'pending',
+        message: JSON.stringify(messageData), notes: '',
+      }).select('*').single();
+      if (error) { showToast(error.message || 'Upgrade failed', 'error'); setMUpgrading(false); return; }
+      showToast('Your membership upgrade request has been submitted!', 'success');
+      setShowPortalMembershipModal(false);
+      setMTierId('');
+      setMReason('');
+      setMContactVal('');
+      setActiveTab('Membership');
+    } catch (err: any) {
+      showToast(err.message || 'Network error', 'error');
+    }
+    setMUpgrading(false);
   };
 
   const handleRegisterEvent = async (id: string) => {
@@ -2945,68 +2951,82 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               className="relative w-full max-w-xl overflow-hidden rounded-xl border border-neutral-900 bg-neutral-950 p-6.5 shadow-2xl z-10 text-left space-y-4 max-h-[90vh] overflow-y-auto"
             >
               <h3 className="font-serif text-base tracking-wider text-gold-500 uppercase">
-                Request Membership Upgrade
+                Membership Upgrade
               </h3>
+              <p className="text-[10px] text-neutral-500 font-mono leading-relaxed">
+                Upgrade to a higher tier to unlock more benefits and experiences.
+                {membership?.status === 'active' && (
+                  <> Current tier: <span className="text-gold-500">{membership.tier_name}</span></>
+                )}
+              </p>
 
               <form onSubmit={handlePortalMembershipRequest} className="space-y-4 text-xs">
                 <div className="space-y-1.5">
                   <label className="text-[9px] font-mono text-neutral-400 uppercase">DESIRED TIER</label>
-                  <select
-                    value={mType}
-                    onChange={(e) => setMType(e.target.value)}
-                    className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50"
-                  >
-                    <option value="silver">Silver Guardian ($5/mo dues)</option>
-                    <option value="gold">Gold Ambassador ($15/mo dues)</option>
-                    <option value="platinum">Platinum Visionary ($50/mo dues)</option>
-                    <option value="legend">Legend Patron ($100/mo dues)</option>
-                  </select>
+                  <div className="grid gap-2">
+                    {(backendContent?.membershipTiers || []).filter((t: any) => {
+                      if (!membership) return true;
+                      const order = ['scully', 'gibson', 'milburn'];
+                      return order.indexOf(t.id) > order.indexOf(membership.tier_id);
+                    }).map((t: any) => (
+                      <button key={t.id} type="button" onClick={() => setMTierId(t.id)}
+                        className={`flex items-center justify-between p-3 rounded-lg border transition-all text-left ${mTierId === t.id ? 'border-gold-500/50 bg-gold-500/5' : 'border-neutral-900 hover:border-neutral-800 bg-neutral-950'}`}
+                      >
+                        <div>
+                          <p className="text-xs font-bold text-white">{t.name}</p>
+                          <p className="text-[9px] font-mono text-neutral-500">{t.price}</p>
+                        </div>
+                        {mTierId === t.id && <Check className="h-4 w-4 text-gold-500" />}
+                      </button>
+                    ))}
+                    {(backendContent?.membershipTiers || []).length === 0 && (
+                      <p className="text-[10px] font-mono text-neutral-600 italic">No upgrade tiers available.</p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-400 uppercase">PREFERRED CONTACT METHOD</label>
-                    <select
-                      value={mContact}
-                      onChange={(e) => setMContact(e.target.value as any)}
-                      className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50"
-                    >
-                      <option value="Email">Email</option>
-                      <option value="WhatsApp">WhatsApp</option>
-                      <option value="Telegram">Telegram</option>
-                    </select>
+                    <label className="text-[9px] font-mono text-neutral-400 uppercase">CONTACT METHOD</label>
+                    <div className="flex gap-2">
+                      {(['whatsapp', 'email'] as const).map(m => (
+                        <button key={m} type="button" onClick={() => setMContact(m)}
+                          className={`flex-1 flex items-center justify-center gap-1.5 p-2.5 rounded-lg border transition-all text-[10px] font-mono ${
+                            mContact === m
+                              ? (m === 'whatsapp' ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-400' : 'border-gold-500/50 bg-gold-500/5 text-gold-500')
+                              : 'border-neutral-900 text-neutral-500 hover:text-white'
+                          }`}
+                        >
+                          {m === 'whatsapp' ? <MessageCircle className="h-3.5 w-3.5" /> : <Mail className="h-3.5 w-3.5" />}
+                          {m === 'whatsapp' ? 'WhatsApp' : 'Email'}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[9px] font-mono text-neutral-400 uppercase">CONTACT INFO</label>
-                    <input
-                      type="text"
-                      required
-                      value={mContactVal}
-                      onChange={(e) => setMContactVal(e.target.value)}
-                      placeholder={mContact === 'WhatsApp' ? '+1 (555) 000-0000' : 'john@example.com'}
-                      className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50"
-                    />
+                    <input type="text" required value={mContactVal} onChange={(e) => setMContactVal(e.target.value)}
+                      placeholder={mContact === 'whatsapp' ? '+1 (555) 000-0000' : 'you@example.com'}
+                      className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50" />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="text-[9px] font-mono text-neutral-400 uppercase">WHY DO YOU WISH TO UPGRADE?</label>
-                  <textarea
-                    required
-                    rows={3}
-                    value={mReason}
-                    onChange={(e) => setMReason(e.target.value)}
-                    placeholder="Provide your sincerity coordinates. Dues paid support youth transitions and mentorship programs."
-                    className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50 resize-none leading-relaxed"
-                  />
+                  <textarea required rows={3} value={mReason} onChange={(e) => setMReason(e.target.value)}
+                    placeholder="Tell us why you'd like to upgrade and what benefits you're most excited about."
+                    className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50 resize-none leading-relaxed" />
                 </div>
 
-                <button
-                  type="submit"
-                  className="w-full bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 rounded text-xs tracking-wider transition-colors uppercase"
-                >
-                  Submit Upgrade Request Application
-                </button>
+                <div className="flex gap-3">
+                  <button type="button" onClick={() => setShowPortalMembershipModal(false)}
+                    className="flex-1 py-2.5 rounded border border-neutral-900 text-neutral-400 text-[10px] font-mono font-bold uppercase tracking-widest hover:text-white transition-all">Cancel</button>
+                  <button type="submit" disabled={!mTierId || !mReason.trim() || !mContactVal.trim() || mUpgrading}
+                    className="flex-1 py-2.5 rounded bg-gold-500 text-neutral-950 text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-gold-400 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {mUpgrading ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Submitting...</> : 'Submit Upgrade Request'}
+                  </button>
+                </div>
               </form>
             </motion.div>
           </div>

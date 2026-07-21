@@ -275,16 +275,17 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
   const [selectedOrder, setSelectedOrder] = useState<ShopOrder | null>(null);
 
-  // Membership Applications (fetched from DB)
+  // Membership Applications (fetched from membership_applications)
   const [memberships, setMemberships] = useState<any[]>([]);
 
   useEffect(() => {
     void (async () => {
-      const { data, error } = await supabase.from('memberships').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('membership_applications').select('*').order('created_at', { ascending: false });
       if (!error && data) {
         setMemberships(data.map((r: any) => ({
-          id: r.id, name: r.name, email: r.email, status: r.status,
-          tier: r.tier, appliedOn: r.applied_on
+          id: r.id, name: r.full_name || r.member_name, email: r.email,
+          status: r.status === 'active' ? 'Approved' : r.status === 'cancelled' ? 'Rejected' : 'Pending',
+          tier: r.tier, appliedOn: r.created_at
         })));
       }
     })();
@@ -622,7 +623,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const handleMembershipAction = async (id: string, decision: 'Approved' | 'Rejected') => {
     setMemberships(prev => prev.map(m => m.id === id ? { ...m, status: decision } : m));
     try {
-      await supabase.from('memberships').update({ status: decision, updated_at: new Date().toISOString() }).eq('id', id);
+      await supabase.from('membership_applications').update({ status: decision === 'Approved' ? 'active' : 'cancelled', updated_at: new Date().toISOString() }).eq('id', id);
     } catch {}
     showToast(`Membership Application ${id} has been ${decision}!`, decision === 'Approved' ? 'success' : 'info');
   };

@@ -54,6 +54,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
 import { TermsOfServiceModal, PrivacyPolicyModal } from './LegalModals';
+import FanEvents from './FanEvents';
 
 interface FanPortalProps {
   onBackToHome: () => void;
@@ -74,16 +75,6 @@ interface RequestDetail {
   member?: string;
   memberAvatar?: string;
   updated?: string;
-}
-
-interface EventItem {
-  id: string;
-  title: string;
-  type: string;
-  date: string;
-  location: string;
-  registered: boolean;
-  ticketRef?: string;
 }
 
 interface FanArtItem {
@@ -245,16 +236,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   // Request wizard in portal
   // (request wizard state removed — feature deprecated)
-
-  // Dynamic Event registrations
-  const [portalEvents, setPortalEvents] = useState<EventItem[]>([]);
-
-  useEffect(() => {
-    void (async () => {
-      const { data, error } = await supabase.from('portal_events').select('*').order('created_at', { ascending: false });
-      if (!error && data) setPortalEvents(data);
-    })();
-  }, []);
 
   // Community State
   const [activeCountryClub, setActiveCountryClub] = useState<string>('Global');
@@ -854,24 +835,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       showToast(err.message || 'Network error', 'error');
     }
     setMUpgrading(false);
-  };
-
-  const handleRegisterEvent = async (id: string) => {
-    try {
-      const ticketRef = `GA-TKT-${Math.floor(100000 + Math.random() * 900000)}`;
-      await supabase.from('portal_events').update({ registered: true, ticket_ref: ticketRef }).eq('id', id);
-    } catch {}
-    setPortalEvents((prev) =>
-      prev.map((e) => {
-        if (e.id === id) {
-          return { ...e, registered: true, ticketRef: `KR-TKT-${Date.now()}` };
-        }
-        return e;
-      })
-    );
-    addJourneyMilestone('Registered for Event', `Registered for event ID: ${id}`, 'bg-blue-500');
-    pushNotification('Event registration confirmed! Check your ticket ref.');
-    showToast('Event registered successfully!', 'success');
   };
 
   const handleAddKindnessAct = async (e: React.FormEvent) => {
@@ -1481,7 +1444,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       fallbackName: displayRank.name,
                     },
                     { label: 'Bookings', value: fanStats.bookings.toString(), accent: 'blue', icon: '★' },
-                    { label: 'Events', value: portalEvents.filter(e => e.registered).length.toString(), accent: 'emerald', icon: '●' },
+                    { label: 'Events', value: '0', accent: 'emerald', icon: '●' },
                     { label: 'Orders', value: orders.length.toString(), accent: 'violet', icon: '◆' },
                   ].map((stat: any, i) => {
                     if (stat.isCard) {
@@ -1628,45 +1591,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   {/* RIGHT COL: Events + Community + Quick access (2/5) */}
                   <div className="md:col-span-2 space-y-5">
 
-                    {/* ── Events card ── */}
-                    <motion.div
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.3 }}
-                      className="rounded-2xl border border-neutral-900/70 bg-neutral-950/20 overflow-hidden shadow-xl shadow-black/20 hover:border-gold-500/20 transition-colors duration-500"
-                    >
-                      <div className="flex items-center gap-2.5 px-5 pt-4 pb-3 border-b border-neutral-900/30">
-                        <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                          <Calendar className="h-3 w-3 text-gold-500/70" />
-                        </div>
-                        <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Upcoming</span>
-                      </div>
-                      {portalEvents.filter(e => !e.registered).length > 0 ? (
-                        <button onClick={() => setActiveTab('Events')} className="w-full text-left p-5 group hover:bg-gold-500/[0.02] transition-colors">
-                          <div className="flex items-center gap-4">
-                            <div className="flex flex-col items-center justify-center h-14 w-14 rounded-xl border border-neutral-800/60 bg-neutral-950/60 font-mono shrink-0 shadow-inner shadow-black/30">
-                              <span className="text-lg font-bold text-white leading-none">
-                                {new Date(portalEvents.filter(e => !e.registered)[0].date).getDate()}
-                              </span>
-                              <span className="text-[6px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">
-                                {new Date(portalEvents.filter(e => !e.registered)[0].date).toLocaleString('en', { month: 'short' })}
-                              </span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-elegant text-sm font-bold text-neutral-100 group-hover:text-gold-500/60 transition-colors tracking-wide truncate">{portalEvents.filter(e => !e.registered)[0].title}</p>
-                              <p className="text-[10px] text-neutral-500 font-sans mt-1">{portalEvents.filter(e => !e.registered)[0].location}</p>
-                              <span className="inline-block mt-2 text-[7px] font-mono text-gold-500/50 uppercase tracking-wider group-hover:text-gold-500/70 transition-colors">Register now →</span>
-                            </div>
-                          </div>
-                        </button>
-                      ) : (
-                        <div className="p-6 text-center">
-                          <Calendar className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
-                          <p className="font-elegant text-sm text-neutral-500">All clear on the horizon</p>
-                          <p className="text-[10px] text-neutral-600 mt-0.5 font-sans">New events will appear here when announced.</p>
-                        </div>
-                      )}
-                    </motion.div>
+                    <FanEvents
+                      embedded
+                      onNavigate={setActiveTab as any}
+                      showToast={showToast}
+                      addJourneyMilestone={addJourneyMilestone}
+                      pushNotification={pushNotification}
+                    />
 
                     {/* ── Community chatter ── */}
                     <motion.div
@@ -1817,86 +1748,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {/*             {/* VIEW RENDERING 2: MY REQUESTS (REMOVED - merged into Experiences) */}
 
 
-            {/* VIEW RENDERING 3: EVENTS (Digital ticketing system) */}
+            {/* VIEW RENDERING 3: EVENTS */}
             {activeTab === 'Events' && (
-              <div className="space-y-6 text-left">
-                <div className="space-y-1 border-b border-neutral-900 pb-4">
-                  <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
-                    Official Community Events
-                  </h2>
-                  <p className="text-xs text-neutral-500 font-mono">
-                    Participate in live group Q&As, virtual panels, or request charity dinner tickets.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {portalEvents.map((ev) => (
-                    <div
-                      key={ev.id}
-                      className={`rounded-xl border p-5 space-y-4 bg-neutral-950/40 relative overflow-hidden flex flex-col justify-between ${
-                        ev.registered ? 'border-gold-500/30 bg-gradient-to-b from-gold-500/[0.01] to-transparent' : 'border-neutral-900'
-                      }`}
-                    >
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-start">
-                          <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[8px] font-mono uppercase font-bold border border-gold-800/20">
-                            {ev.type}
-                          </span>
-                          {ev.registered && (
-                            <span className="text-[10px] text-gold-500 font-mono font-bold flex items-center gap-1 uppercase">
-                              <Ticket className="h-3.5 w-3.5" /> Registered
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="font-serif text-base font-bold text-white tracking-wide">{ev.title}</h3>
-                        
-                        <div className="space-y-1 text-xs text-neutral-400 font-mono pt-2">
-                          <p className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-neutral-500 shrink-0" /> {ev.date}</p>
-                          <p className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-neutral-500 shrink-0" /> {ev.location}</p>
-                        </div>
-                      </div>
-
-                      {ev.registered ? (
-                        <div className="border-t border-neutral-900 pt-3.5 mt-3 space-y-3.5">
-                          {/* Ticket pass block */}
-                          <div className="rounded border border-neutral-900 bg-neutral-950 p-3 flex justify-between items-center gap-3">
-                            <div className="text-left space-y-1 font-mono text-[10px]">
-                              <p className="text-neutral-500">TICKET REFERENCE</p>
-                              <p className="text-white font-bold">{ev.ticketRef}</p>
-                              <p className="text-gold-500 font-semibold mt-1">✓ ACCESS GRANTED</p>
-                            </div>
-                            
-                            {/* QR placeholder */}
-                            <div className="h-12 w-12 bg-white border border-neutral-800 rounded p-1 shrink-0 flex items-center justify-center">
-                              <div className="grid grid-cols-5 gap-0.5">
-                                {[...Array(25)].map((_, i) => (
-                                  <div key={i} className={`h-1.5 w-1.5 ${[0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24].includes(i) ? 'bg-black' : 'bg-transparent'}`} />
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex gap-2">
-                            <button onClick={() => showToast('Reminder successfully scheduled for your Calendar!', 'success')} className="flex-1 py-1.5 border border-neutral-800 bg-neutral-900 hover:bg-neutral-850 text-[10px] font-mono text-neutral-300 hover:text-white rounded transition-colors text-center">
-                              Add Reminder
-                            </button>
-                            <button onClick={() => showToast('Downloading digital entry pass PDF...', 'info')} className="px-3 py-1.5 border border-neutral-800 bg-neutral-900 hover:bg-neutral-850 text-neutral-300 hover:text-white rounded transition-colors">
-                              <Download className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => handleRegisterEvent(ev.id)}
-                          className="w-full mt-4 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 rounded text-xs transition-all uppercase tracking-wider active:scale-95 text-center block"
-                        >
-                          Request Event Registration Pass
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <FanEvents
+                showToast={showToast}
+                addJourneyMilestone={addJourneyMilestone}
+                pushNotification={pushNotification}
+              />
             )}
 
             {/* VIEW RENDERING 4: MEMBERSHIP (Status-aware dashboard) */}

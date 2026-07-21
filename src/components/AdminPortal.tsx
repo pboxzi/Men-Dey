@@ -51,6 +51,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
 import AdminMembershipReview from './AdminMembershipReview';
 import AdminExperiences from './AdminExperiences';
+import AdminEventManagement from './AdminEventManagement';
 
 interface AdminPortalProps {
   onBackToHome: () => void;
@@ -276,16 +277,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     })();
   }, []);
 
-  // Upcoming Events (fetched from DB)
-  const [events, setEvents] = useState<any[]>([]);
-
-  useEffect(() => {
-    void (async () => {
-      const { data, error } = await supabase.from('admin_events').select('*').order('created_at', { ascending: false });
-      if (!error && data) setEvents(data);
-    })();
-  }, []);
-
   // Communication Log state (fetched from DB)
   const [commLogs, setCommLogs] = useState<any[]>([]);
 
@@ -421,13 +412,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   }, []);
 
   // Modal forms
-  const [showEventModal, setShowEventModal] = useState(false);
-  const [eventTitle, setEventTitle] = useState('');
-  const [eventDate, setEventDate] = useState('2026-07-15');
-  const [eventLocation, setEventLocation] = useState('');
-  const [eventTime, setEventTime] = useState('02:00 PM');
-  const [eventCapacity, setEventCapacity] = useState('250');
-
   const [showAnnounceModal, setShowAnnounceModal] = useState(false);
   const [announceTitle, setAnnounceTitle] = useState('');
   const [announceText, setAnnounceText] = useState('');
@@ -526,35 +510,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       await supabase.from('communication_logs').insert({
         request_id: requestId, member: reqObj.member, method: manualLogMethod, notes: newLog.notes, next_action: newLog.nextAction
       });
-    } catch {};
-  };
-
-  // Handler for adding upcoming event
-  const handleAddEventSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!eventTitle.trim()) return;
-
-    const dateObj = new Date(eventDate);
-    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    const newEv = {
-      id: `ev-${Date.now()}`,
-      day: dateObj.getDate().toString().padStart(2, '0'),
-      month: months[dateObj.getMonth()],
-      title: eventTitle.trim(),
-      type: eventLocation.trim() || 'Virtual Event',
-      registered: '0',
-      location: eventLocation.trim() || 'Virtual',
-      time: eventTime
-    };
-
-    setEvents(prev => [newEv, ...prev]);
-    setShowEventModal(false);
-    setEventTitle('');
-    setEventLocation('');
-    showToast(`Event "${eventTitle}" created successfully on the platform!`, 'success');
-
-    try {
-      await supabase.from('admin_events').insert(newEv);
     } catch {};
   };
 
@@ -1162,30 +1117,12 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                           onClick={() => setActiveTab('Events')}
                           className="text-[10px] font-mono text-gold-500 hover:text-gold-400 font-semibold"
                         >
-                          View All
+                          Manage
                         </button>
                       </div>
-
-                      <div className="p-4 space-y-3.5">
-                        {events.map((ev) => (
-                          <div key={ev.id} className="flex items-start justify-between gap-3 p-3 rounded-lg border border-neutral-900/60 bg-neutral-950/20 hover:border-neutral-800 transition-colors">
-                            <div className="flex gap-3 items-center">
-                              {/* Date Calendar Graphic */}
-                              <div className="flex flex-col items-center justify-center h-11 w-11 rounded border border-neutral-800 bg-neutral-950 font-mono text-center shrink-0">
-                                <span className="text-[9px] text-red-500 font-semibold">{ev.month}</span>
-                                <span className="text-sm font-bold text-white -mt-0.5">{ev.day}</span>
-                              </div>
-                              <div className="text-left space-y-0.5">
-                                <h4 className="text-xs font-semibold text-white leading-tight">{ev.title}</h4>
-                                <span className="text-[10px] font-mono text-neutral-500 block">{ev.type}</span>
-                              </div>
-                            </div>
-                            <div className="text-right space-y-0.5 shrink-0">
-                              <span className="text-[11px] text-neutral-300 font-bold font-mono">{ev.registered}</span>
-                              <span className="text-[9px] text-neutral-500 font-mono block">Registered</span>
-                            </div>
-                          </div>
-                        ))}
+                      <div className="p-6 text-center">
+                        <Calendar className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
+                        <p className="text-xs text-neutral-500 font-mono">Manage events in the Events tab.</p>
                       </div>
                     </div>
 
@@ -1418,8 +1355,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <Calendar className="h-4 w-4" />
                           </div>
                           <div className="space-y-0.5">
-                            <h5 className="text-xs font-semibold text-white">{events.length} events scheduled</h5>
-                            <p className="text-[10px] text-neutral-400">Action required</p>
+                            <h5 className="text-xs font-semibold text-white">Event Management</h5>
+                            <p className="text-[10px] text-neutral-400">Create & manage events</p>
                           </div>
                         </div>
                         <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-white transition-colors" />
@@ -1581,70 +1518,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
           {/* ACTIVE VIEW: EVENTS */}
           {activeTab === 'Events' && (
-            <div className="space-y-6 text-left">
-              <div className="flex items-center justify-between border-b border-neutral-900 pb-4">
-                <div className="space-y-1">
-                  <h2 className="font-serif text-xl font-bold tracking-wider text-white">
-                    Event Scheduling & Registration Management
-                  </h2>
-                  <p className="text-xs text-neutral-500 leading-normal font-mono">
-                    Schedule online AMA live-streams, screenings, or coordinate physical meetups.
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowEventModal(true)}
-                  className="flex items-center gap-1 bg-red-600 hover:bg-red-500 text-neutral-950 px-4 py-2 rounded text-xs font-bold tracking-wider"
-                >
-                  <Plus className="h-4 w-4" />
-                  Create New Event
-                </button>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2">
-                {events.map((ev) => (
-                  <div key={ev.id} className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 space-y-4 relative">
-                    <div className="flex justify-between items-start">
-                      <div className="flex gap-4 items-center">
-                        <div className="flex flex-col items-center justify-center h-12 w-12 rounded bg-neutral-950 border border-neutral-800 font-mono">
-                          <span className="text-[10px] text-red-500 font-bold">{ev.month}</span>
-                          <span className="text-lg font-bold text-white -mt-0.5">{ev.day}</span>
-                        </div>
-                        <div>
-                          <span className="text-[10px] font-mono text-gold-500 font-bold tracking-widest block uppercase">
-                            {ev.type}
-                          </span>
-                          <h3 className="font-serif text-sm font-semibold text-white leading-tight mt-0.5">
-                            {ev.title}
-                          </h3>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => {
-                          setEvents(prev => prev.filter(e => e.id !== ev.id));
-                          showToast('Event deleted successfully.', 'info');
-                        }}
-                        className="p-1 rounded text-neutral-600 hover:text-red-500 hover:bg-neutral-900 transition-colors"
-                        title="Delete Event"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 text-xs font-mono text-neutral-400 pt-2 border-t border-neutral-900/60">
-                      <div>
-                        <span className="text-[9px] text-neutral-500 block">START TIME</span>
-                        <span>{ev.time}</span>
-                      </div>
-                      <div>
-                        <span className="text-[9px] text-neutral-500 block">TOTAL REGISTERED</span>
-                        <span className="text-white font-bold">{ev.registered} Members</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <AdminEventManagement showToast={showToast} />
           )}
 
           {/* ACTIVE VIEW: COMMUNICATION LOG */}
@@ -1806,101 +1680,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       {/* 3. MODALS AND FORMS AREA */}
       <AnimatePresence>
         
-        {/* ADD EVENT MODAL */}
-        {showEventModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#050505]/80 backdrop-blur-sm">
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-md bg-neutral-950 border border-neutral-900 rounded-xl overflow-hidden shadow-2xl text-left"
-            >
-              <div className="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between">
-                <span className="text-xs font-mono font-bold tracking-widest text-gold-500">SCHEDULE EVENT</span>
-                <button onClick={() => setShowEventModal(false)} className="p-1 rounded text-neutral-500 hover:text-white">
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-
-              <form onSubmit={handleAddEventSubmit} className="p-5 space-y-4 text-xs">
-                <div className="space-y-1.5">
-                  <label className="text-neutral-400 font-mono">EVENT TITLE</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. London Charity Dinner Gala"
-                    value={eventTitle}
-                    onChange={(e) => setEventTitle(e.target.value)}
-                    className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none focus:border-red-500/40"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-neutral-400 font-mono">DATE</label>
-                    <input
-                      type="date"
-                      required
-                      value={eventDate}
-                      onChange={(e) => setEventDate(e.target.value)}
-                      className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none font-mono"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-neutral-400 font-mono">TIME</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. 06:00 PM EST"
-                      value={eventTime}
-                      onChange={(e) => setEventTime(e.target.value)}
-                      className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-neutral-400 font-mono">LOCATION</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. London, UK"
-                      value={eventLocation}
-                      onChange={(e) => setEventLocation(e.target.value)}
-                      className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-neutral-400 font-mono">ATTENDEE CAPACITY</label>
-                    <input
-                      type="number"
-                      value={eventCapacity}
-                      onChange={(e) => setEventCapacity(e.target.value)}
-                      className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-2 justify-end pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowEventModal(false)}
-                    className="px-4 py-2 border border-neutral-800 rounded font-bold hover:bg-neutral-900"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 font-bold rounded shadow-lg shadow-amber-500/10"
-                  >
-                    Confirm Schedule
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-
         {/* SEND ANNOUNCEMENT MODAL */}
         {showAnnounceModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#050505]/80 backdrop-blur-sm">

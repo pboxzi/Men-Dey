@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Experience, ExperienceBooking } from '../types';
-import BookingModal from './BookingModal';
+import BookingPage from './BookingPage';
 import ExperienceDetailPage from './ExperienceDetailPage';
 import { supabase } from '../utils/supabase';
 import {
   Sparkles, Award, CheckCircle, Users, MapPin, Timer, Star, X,
   ChevronRight, Heart, Palette, Compass, BookOpen, Camera, Ticket,
-  Search, Globe, Filter, SlidersHorizontal, Eye,
+  Search, Globe, SlidersHorizontal, Eye, Shield, Clock, Zap,
 } from 'lucide-react';
 
 function formatDate(dateStr: string): string {
@@ -18,33 +18,25 @@ function formatDate(dateStr: string): string {
 }
 
 const CATEGORIES = [
-  'ALL', 'Meet & Greet', 'Private Dinner Experiences', 'Professional Photo Sessions',
-  'Acting Workshops', 'Theatre Masterclasses', 'Script Reading Sessions',
-  'Virtual Coffee Chats', 'Exclusive Q&A Sessions', "Women's Leadership Conversations",
-  'Wellness Experiences', 'Book Discussions', 'Creative Writing Sessions',
-  'Film Screenings', 'Mentorship Experiences', 'Fundraising Experiences',
-  'Studio Tours', 'Fan Appreciation Experiences', 'Charity Experiences',
+  'ALL', 'Meet & Greet', 'Creative', 'Philanthropy', 'Adventure', 'Literary', 'Behind-the-Scenes',
 ];
 
 const CATEGORY_COLORS: Record<string, string> = {
   'Meet & Greet': 'bg-pink-500/10 text-pink-400 border-pink-500/20',
-  'Private Dinner Experiences': 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-  'Professional Photo Sessions': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-  'Acting Workshops': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-  'Theatre Masterclasses': 'bg-violet-500/10 text-violet-400 border-violet-500/20',
-  'Script Reading Sessions': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  'Virtual Coffee Chats': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-  'Exclusive Q&A Sessions': 'bg-teal-500/10 text-teal-400 border-teal-500/20',
-  "Women's Leadership Conversations": 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  'Wellness Experiences': 'bg-green-500/10 text-green-400 border-green-500/20',
-  'Book Discussions': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  'Creative Writing Sessions': 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-  'Film Screenings': 'bg-red-500/10 text-red-400 border-red-500/20',
-  'Mentorship Experiences': 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-  'Fundraising Experiences': 'bg-lime-500/10 text-lime-400 border-lime-500/20',
-  'Studio Tours': 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-  'Fan Appreciation Experiences': 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20',
-  'Charity Experiences': 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+  'Creative': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  'Philanthropy': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  'Adventure': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+  'Literary': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+  'Behind-the-Scenes': 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+};
+
+const CATEGORY_ICONS: Record<string, any> = {
+  'Meet & Greet': Heart,
+  'Creative': Palette,
+  'Philanthropy': Award,
+  'Adventure': Compass,
+  'Literary': BookOpen,
+  'Behind-the-Scenes': Camera,
 };
 
 export default function ExperiencesSection() {
@@ -209,23 +201,27 @@ export default function ExperiencesSection() {
   return (
     <section id="experiences-page" className="bg-[#050505] py-20 px-4 md:px-6 relative min-h-[900px]">
       <div className="absolute right-10 top-1/3 h-96 w-96 rounded-full bg-gold-500/5 blur-[120px] pointer-events-none" />
+      <div className="absolute left-10 bottom-1/3 h-64 w-64 rounded-full bg-purple-500/5 blur-[100px] pointer-events-none" />
 
-      <div className="mx-auto max-w-7xl space-y-10">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[10px] font-mono tracking-widest uppercase">
-            <Award className="h-3.5 w-3.5" />
-            ONCE-IN-A-LIFETIME REVERIES
+      <div className="mx-auto max-w-7xl space-y-12">
+        {/* Hero Header — Cinematic */}
+        <div className="relative text-center space-y-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold-500/20 bg-gold-500/[0.03] text-gold-500 text-[10px] font-mono tracking-[0.2em] uppercase backdrop-blur-sm">
+            <Sparkles className="h-3 w-3" />
+            Once-in-a-Lifetime Reveries
           </div>
-          <h2 className="font-serif text-3xl md:text-5xl font-extrabold text-white uppercase tracking-tight">
-            Exalted <span className="text-gold-500">Experiences</span>
-          </h2>
-          <p className="text-xs md:text-sm text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed">
-            Choose from {stats.total} curated experiences across meet-and-greets, creative workshops, philanthropy, and more.
-          </p>
+          <div className="space-y-3">
+            <h2 className="font-serif text-4xl md:text-6xl font-extrabold text-white uppercase tracking-tight leading-[1.1]">
+              Exalted<br className="md:hidden" />
+              <span className="text-gold-500 bg-gold-500/5 px-3 py-1 inline-block">Experiences</span>
+            </h2>
+            <p className="text-xs md:text-sm text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed">
+              Choose from {stats.total} handcrafted journeys across six extraordinary realms — each designed to bring you closer to the world of Gillian Anderson.
+            </p>
+          </div>
         </div>
 
-        {/* Stats Bar */}
+        {/* Stats Bar — Glass */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 max-w-4xl mx-auto">
           {[
             { icon: Ticket, value: stats.total, label: 'Experiences', color: 'text-gold-500' },
@@ -234,8 +230,8 @@ export default function ExperiencesSection() {
             { icon: Globe, value: experiences.filter(e => e.is_virtual).length, label: 'Virtual', color: 'text-cyan-400' },
             { icon: MapPin, value: experiences.filter(e => !e.is_virtual).length, label: 'In-Person', color: 'text-purple-400' },
           ].map((stat) => (
-            <div key={stat.label} className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-4 text-center space-y-1.5 hover:border-neutral-800 transition-colors">
-              <stat.icon className={`h-4 w-4 ${stat.color} mx-auto`} />
+            <div key={stat.label} className="bg-neutral-950/60 backdrop-blur-sm border border-neutral-900 rounded-xl p-4 text-center space-y-1.5 hover:border-neutral-800 transition-all duration-300 group">
+              <stat.icon className={`h-4 w-4 ${stat.color} mx-auto group-hover:scale-110 transition-transform duration-300`} />
               <span className={`block text-xl font-bold ${stat.color}`}>{stat.value}</span>
               <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
             </div>
@@ -421,24 +417,27 @@ export default function ExperiencesSection() {
               </AnimatePresence>
             </div>
 
-            {/* Category Filters */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5">
+            {/* Category Filters — Pill-shaped with icons */}
+            <div className="flex flex-wrap items-center justify-center gap-2">
               {CATEGORIES.map((cat) => {
                 const count = categoryCounts[cat] || 0;
                 if (count === 0 && cat !== 'ALL') return null;
+                const CatIcon = cat === 'ALL' ? Sparkles : (CATEGORY_ICONS[cat] || Sparkles);
+                const isActive = activeCategory === cat;
                 return (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`px-2.5 py-1 rounded-lg text-[8px] font-mono tracking-wider uppercase border transition-all ${
-                      activeCategory === cat
-                        ? 'bg-gold-500 text-neutral-950 border-gold-500 font-bold'
-                        : 'bg-neutral-950 text-neutral-500 border-neutral-900 hover:text-white hover:border-neutral-700'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[8px] font-mono tracking-wider uppercase border transition-all duration-200 ${
+                      isActive
+                        ? 'bg-gold-500 text-neutral-950 border-gold-500 font-bold shadow-[0_0_12px_-2px_rgba(212,175,55,0.3)]'
+                        : 'bg-neutral-950/40 text-neutral-500 border-neutral-900 hover:text-white hover:border-neutral-700 hover:bg-neutral-900/40'
                     }`}
                   >
+                    {cat !== 'ALL' && <CatIcon className="h-3 w-3" />}
                     {cat === 'ALL' ? 'All' : cat}
-                    <span className={`ml-1 px-1 py-0.5 rounded-full text-[7px] ${
-                      activeCategory === cat ? 'bg-neutral-950/20 text-neutral-950' : 'bg-neutral-900 text-neutral-500'
+                    <span className={`ml-0.5 px-1 py-0.5 rounded-full text-[7px] ${
+                      isActive ? 'bg-neutral-950/20 text-neutral-950' : 'bg-neutral-900 text-neutral-500'
                     }`}>
                       {count}
                     </span>
@@ -488,10 +487,18 @@ export default function ExperiencesSection() {
                             </span>
                           )}
                         </div>
-                        <div className="absolute bottom-2 left-2">
-                          <span className={`px-1.5 py-0.5 rounded text-[7px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || 'bg-neutral-900 text-neutral-400 border-neutral-800'}`}>
-                            {exp.category}
-                          </span>
+                        <div className="absolute bottom-2 left-2 flex items-center gap-1.5">
+                          {CATEGORY_ICONS[exp.category] && (
+                            <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[7px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || 'bg-neutral-900 text-neutral-400 border-neutral-800'}`}>
+                              {React.createElement(CATEGORY_ICONS[exp.category], { className: 'h-2.5 w-2.5' })}
+                              {exp.category}
+                            </span>
+                          )}
+                          {!CATEGORY_ICONS[exp.category] && (
+                            <span className={`px-1.5 py-0.5 rounded text-[7px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || 'bg-neutral-900 text-neutral-400 border-neutral-800'}`}>
+                              {exp.category}
+                            </span>
+                          )}
                         </div>
                       </div>
 

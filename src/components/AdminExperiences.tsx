@@ -14,14 +14,17 @@ interface Props {
 }
 
 const CATEGORIES = [
-  'Meet & Greet', 'VIP Meet & Greet', 'Professional Photo Sessions',
-  'Private Dinner Experiences', 'Theatre Backstage Tours', 'Script Reading Sessions',
-  'Virtual Coffee Chats', 'Charity Experiences', 'Exclusive Q&A Sessions',
-  "Women's Leadership Conversations", 'Wellness Experiences', 'Book Discussions',
-  'Acting Workshops', 'Theatre Masterclasses', 'Creative Writing Sessions',
-  'Film Screenings', 'Mentorship Experiences', 'Fundraising Experiences',
-  'Studio Tours', 'Fan Appreciation Experiences',
+  'Meet & Greet', 'Creative', 'Philanthropy', 'Adventure', 'Literary', 'Behind-the-Scenes',
 ];
+
+const CATEGORY_META: Record<string, { color: string; icon: string }> = {
+  'Meet & Greet': { color: 'bg-pink-500/10 text-pink-400 border-pink-500/20', icon: 'Heart' },
+  'Creative': { color: 'bg-purple-500/10 text-purple-400 border-purple-500/20', icon: 'Palette' },
+  'Philanthropy': { color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', icon: 'Award' },
+  'Adventure': { color: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: 'Compass' },
+  'Literary': { color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20', icon: 'BookOpen' },
+  'Behind-the-Scenes': { color: 'bg-rose-500/10 text-rose-400 border-rose-500/20', icon: 'Camera' },
+};
 
 const DEFAULT_FORM: Record<string, any> = {
   title: '', category: 'Meet & Greet', tier: 'Scully', duration: '',
@@ -525,7 +528,9 @@ function CatalogueTab({ showToast }: Props) {
                   {exp.archived && <span className="px-1.5 py-0.5 rounded text-[7px] font-mono uppercase bg-red-500/10 border border-red-500/20 text-red-400">Archived</span>}
                 </div>
                 <div className="absolute bottom-2 left-2">
-                  <span className="px-1.5 py-0.5 rounded text-[7px] font-mono uppercase bg-neutral-900/80 border border-neutral-800 text-neutral-400">{exp.category}</span>
+                  <span className={`px-1.5 py-0.5 rounded text-[7px] font-mono uppercase border ${(CATEGORY_META[exp.category]?.color) || 'bg-neutral-900/80 border-neutral-800 text-neutral-400'}`}>
+                    {exp.category}
+                  </span>
                 </div>
               </div>
               <div className="p-3 space-y-2">

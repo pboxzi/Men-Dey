@@ -289,6 +289,23 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     }
   }, [backendOrders]);
 
+  // Experience browser state
+  const [expSubTab, setExpSubTab] = useState<'browse' | 'bookings'>('browse');
+  const [fanExperiences, setFanExperiences] = useState<any[]>([]);
+  const [fanExpSearch, setFanExpSearch] = useState('');
+  const [fanExpCategory, setFanExpCategory] = useState('ALL');
+  const [fanExpLoading, setFanExpLoading] = useState(true);
+
+  useEffect(() => {
+    if (expSubTab === 'browse') {
+      setFanExpLoading(true);
+      supabase.from('experiences').select('*').order('sort_order').order('title').then(({ data, error }) => {
+        if (!error && data) setFanExperiences(data || []);
+        setFanExpLoading(false);
+      });
+    }
+  }, [expSubTab]);
+
   // Portal store items from DB
   const [storeItems, setStoreItems] = useState<any[]>([]);
 
@@ -2076,7 +2093,136 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
             {/* VIEW RENDERING 6: EXPERIENCES */}
             {activeTab === 'Experiences' && (
-              <FanExperienceBookings showToast={showToast} />
+              <div className="space-y-6">
+                {/* Sub-tabs */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-900 pb-4">
+                  <div className="space-y-1">
+                    <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
+                      Experiences
+                    </h2>
+                    <p className="text-xs text-neutral-500 font-mono">
+                      Browse the catalogue or manage your bookings.
+                    </p>
+                  </div>
+                  <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-lg p-0.5">
+                    {[
+                      { id: 'browse' as const, label: 'Browse', icon: Compass },
+                      { id: 'bookings' as const, label: 'My Bookings', icon: Ticket },
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setExpSubTab(tab.id)}
+                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded text-[10px] font-mono tracking-widest uppercase transition-all ${
+                          expSubTab === tab.id
+                            ? 'bg-gold-500 text-neutral-950 font-bold'
+                            : 'text-neutral-500 hover:text-white'
+                        }`}
+                      >
+                        <tab.icon className="h-3 w-3" />
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {expSubTab === 'browse' ? (
+                  <div className="space-y-5">
+                    {/* Search + Category Filter */}
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500" />
+                        <input
+                          type="text"
+                          value={fanExpSearch}
+                          onChange={e => setFanExpSearch(e.target.value)}
+                          placeholder="Search experiences..."
+                          className="w-full bg-neutral-950 border border-neutral-900 rounded-lg pl-9 pr-3 py-2 text-xs text-white outline-none focus:border-gold-500/40 transition-colors"
+                        />
+                      </div>
+                      <select
+                        value={fanExpCategory}
+                        onChange={e => setFanExpCategory(e.target.value)}
+                        className="bg-neutral-950 border border-neutral-900 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40"
+                      >
+                        <option value="ALL">All Categories</option>
+                        {['Meet & Greet', 'Creative', 'Philanthropy', 'Adventure', 'Literary', 'Behind-the-Scenes'].map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Grid */}
+                    {fanExpLoading ? (
+                      <div className="text-center py-16">
+                        <div className="h-8 w-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto" />
+                        <p className="text-xs text-neutral-500 mt-4 font-mono">Loading experiences...</p>
+                      </div>
+                    ) : (
+                      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {(fanExpCategory === 'ALL'
+                          ? fanExperiences
+                          : fanExperiences.filter((e: any) => e.category === fanExpCategory)
+                        ).filter((e: any) => {
+                          if (!fanExpSearch.trim()) return true;
+                          const q = fanExpSearch.toLowerCase();
+                          return e.title?.toLowerCase().includes(q) || e.description?.toLowerCase().includes(q);
+                        }).map((exp: any) => {
+                          const spotsLeft = (exp.spots || 10) - (exp.spots_taken || 0);
+                          const isFull = spotsLeft <= 0;
+                          return (
+                            <div key={exp.id} className="group bg-neutral-950/40 border border-neutral-900 rounded-xl overflow-hidden hover:border-gold-500/20 hover:shadow-[0_0_20px_-5px_rgba(212,175,55,0.08)] transition-all duration-300 flex flex-col">
+                              <div className="relative h-32 bg-neutral-900/60 overflow-hidden">
+                                {exp.image ? (
+                                  <img src={exp.image} alt={exp.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center"><Star className="h-8 w-8 text-neutral-700" /></div>
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
+                                <div className="absolute bottom-2 left-2">
+                                  <span className="px-1.5 py-0.5 rounded text-[7px] font-mono uppercase tracking-wider border bg-neutral-900/80 border-neutral-800 text-neutral-400">
+                                    {exp.category}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="p-3 space-y-2 flex-1">
+                                <h3 className="text-xs font-bold text-white leading-snug line-clamp-1">{exp.title}</h3>
+                                <p className="text-[10px] text-neutral-400 line-clamp-2">{exp.description}</p>
+                                <div className="flex items-center gap-2 text-[8px] font-mono text-neutral-500 pt-1.5 border-t border-neutral-900/60">
+                                  <span className="flex items-center gap-1"><MapPin className="h-2.5 w-2.5" />{exp.location}</span>
+                                  <span className="flex items-center gap-1"><Clock className="h-2.5 w-2.5" />{exp.duration}</span>
+                                </div>
+                              </div>
+                              <div className="px-3 pb-3 flex items-center justify-between gap-2">
+                                <span className="text-[10px] font-mono font-bold text-white">{exp.price || 'Complimentary'}</span>
+                                <div className="flex gap-1.5">
+                                  <a
+                                    href={`/experiences#EXPERIENCES/BOOK/${exp.id}`}
+                                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[8px] font-mono tracking-wider uppercase transition-all ${
+                                      isFull
+                                        ? 'bg-neutral-900 text-neutral-600 cursor-not-allowed'
+                                        : 'bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold'
+                                    }`}
+                                  >
+                                    {isFull ? 'Full' : 'Book Now'}
+                                    {!isFull && <ChevronRight className="h-2.5 w-2.5" />}
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                    {!fanExpLoading && fanExperiences.length === 0 && (
+                      <div className="text-center py-16 border border-dashed border-neutral-900 rounded-xl">
+                        <p className="text-sm text-neutral-500">No experiences available yet.</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <FanExperienceBookings showToast={showToast} />
+                )}
+              </div>
             )}
 
             {/* VIEW RENDERING 7: COMMUNITY (Country Clubs and Fan Creativity) */}

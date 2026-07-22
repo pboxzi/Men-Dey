@@ -392,10 +392,10 @@ export default function App() {
               <span className="font-serif text-xs sm:text-sm font-bold text-gold-500">GA</span>
             </div>
             <div className="flex flex-col min-w-0 shrink">
-              <span className="text-[9px] sm:text-[11px] font-bold tracking-[0.12em] text-white leading-tight truncate">
+              <span className="text-[11px] sm:text-[13px] font-bold tracking-[0.12em] text-white leading-tight truncate">
                 GILLIAN ANDERSON
               </span>
-              <span className="text-[7px] sm:text-[8px] font-mono tracking-[0.2em] text-gold-500/70 leading-tight">
+              <span className="text-[7px] sm:text-[9px] font-mono tracking-[0.2em] text-gold-500/70 leading-tight">
                 OFFICIAL
               </span>
             </div>

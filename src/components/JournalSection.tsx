@@ -180,10 +180,9 @@ export default function JournalSection() {
                         {/* Thumbnail */}
                         <div className="aspect-[16/10] overflow-hidden bg-neutral-900 relative">
                           <img
-                            src={entry.image || '/assets/images/gillian_investigator_look_1783349694204.jpg'}
+                            src={entry.image}
                             alt={entry.title}
                             referrerPolicy="no-referrer"
-                            onError={(e) => { (e.target as HTMLImageElement).src = '/assets/images/gillian_investigator_look_1783349694204.jpg'; }}
                             className="h-full w-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
                           />
                         </div>
@@ -258,10 +257,9 @@ export default function JournalSection() {
               {/* Immersive Image */}
               <div className="aspect-[21/9] rounded-xl overflow-hidden border border-neutral-900 bg-neutral-900">
                 <img
-                  src={selectedEntry.image || '/assets/images/gillian_investigator_look_1783349694204.jpg'}
+                  src={selectedEntry.image}
                   alt={selectedEntry.title}
                   referrerPolicy="no-referrer"
-                  onError={(e) => { (e.target as HTMLImageElement).src = '/assets/images/gillian_investigator_look_1783349694204.jpg'; }}
                   className="w-full h-full object-cover grayscale brightness-90 contrast-105"
                 />
               </div>

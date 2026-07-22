@@ -29,7 +29,6 @@ export default function MediaSection() {
   const [embedError, setEmbedError] = useState(false);
   const [videoLoading, setVideoLoading] = useState(true);
 
-  // Video States
   const [selectedVideo, setSelectedVideo] = useState<MediaItem>(FALLBACK_VIDEOS[0]);
   const [videoLikes, setVideoLikes] = useState<{ [id: string]: number }>({
     'media-bts': 1240,
@@ -41,12 +40,11 @@ export default function MediaSection() {
   const [videoSearch, setVideoSearch] = useState<string>('');
   const [videoCategory, setVideoCategory] = useState<string>('All');
   const [showToast, setShowToast] = useState<string | null>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  // Data fetched from API
   const [videos, setVideos] = useState<MediaItem[]>(FALLBACK_VIDEOS);
   const [photos, setPhotos] = useState<PhotoItem[]>(FALLBACK_PHOTOS);
 
-  // Fetch media data from backend API
   useEffect(() => {
     Promise.all([
       supabase.from('videos').select('id, title, duration, youtube_id, subtitles, sort_order').order('sort_order').then(({ data, error }) => error || !data ? FALLBACK_VIDEOS : data.map((v: any) => ({ id: v.id, title: v.title, category: 'Uncategorized', duration: v.duration, youtubeId: v.youtube_id, subtitles: v.subtitles || [], sort_order: v.sort_order, videoPlaceholderText: v.title }))),
@@ -57,7 +55,6 @@ export default function MediaSection() {
     });
   }, []);
 
-  // Photo States
   const [photoSearch, setPhotoSearch] = useState<string>('');
   const [photoCategory, setPhotoCategory] = useState<string>('All');
   const [photoLikes, setPhotoLikes] = useState<{ [id: string]: number }>({});
@@ -66,19 +63,14 @@ export default function MediaSection() {
   const [isSlideshowActive, setIsSlideshowActive] = useState<boolean>(false);
   const [isZoomed, setIsZoomed] = useState<boolean>(false);
 
-  // Initialize photo likes from photos
   useEffect(() => {
     const initialLikes: { [id: string]: number } = {};
-    photos.forEach((p) => {
-      initialLikes[p.id] = p.likes;
-    });
+    photos.forEach((p) => { initialLikes[p.id] = p.likes; });
     setPhotoLikes(initialLikes);
   }, [photos]);
 
-  // Load YouTube IFrame API once
   useEffect(() => {
     if ((window as any).YT || document.getElementById('youtube-iframe-api')) return;
-
     (window as any).onYouTubeIframeAPIReady = () => {
       if (playerContainerRef.current && selectedVideo.youtubeId) {
         setVideoLoading(true);
@@ -86,30 +78,22 @@ export default function MediaSection() {
           videoId: selectedVideo.youtubeId,
           playerVars: { controls: 1, autoplay: 0 },
           events: {
-            onError: (e: any) => {
-              setVideoLoading(false);
-              if (e.data === 101 || e.data === 150) {
-                setEmbedError(true);
-              }
-            },
+            onError: (e: any) => { setVideoLoading(false); if (e.data === 101 || e.data === 150) setEmbedError(true); },
             onReady: () => { setEmbedError(false); setVideoLoading(false); },
           }
         });
       }
     };
-
     const tag = document.createElement('script');
     tag.id = 'youtube-iframe-api';
     tag.src = 'https://www.youtube.com/iframe_api';
     document.head.appendChild(tag);
   }, []);
 
-  // Update player when video changes
   useEffect(() => {
     if (!selectedVideo.youtubeId) return;
     setEmbedError(false);
     setVideoLoading(true);
-
     if (playerRef.current && playerRef.current.loadVideoById) {
       playerRef.current.cueVideoById(selectedVideo.youtubeId);
     } else if ((window as any).YT && (window as any).YT.Player && playerContainerRef.current) {
@@ -117,32 +101,22 @@ export default function MediaSection() {
         videoId: selectedVideo.youtubeId,
         playerVars: { controls: 1, autoplay: 0 },
         events: {
-          onError: (e: any) => {
-            setVideoLoading(false);
-            if (e.data === 101 || e.data === 150) {
-              setEmbedError(true);
-            }
-          },
+          onError: (e: any) => { setVideoLoading(false); if (e.data === 101 || e.data === 150) setEmbedError(true); },
           onReady: () => { setEmbedError(false); setVideoLoading(false); },
         }
       });
     }
   }, [selectedVideo]);
 
-  // Photo Slideshow loop
   useEffect(() => {
     let interval: ReturnType<typeof setTimeout>;
     if (isSlideshowActive && lightboxIndex !== null) {
-      interval = setInterval(() => {
-        handleNextPhoto();
-      }, 4000);
+      interval = setInterval(() => { handleNextPhoto(); }, 4000);
     }
     return () => clearInterval(interval);
   }, [isSlideshowActive, lightboxIndex]);
 
-  useEffect(() => {
-    setIsZoomed(false);
-  }, [lightboxIndex]);
+  useEffect(() => { setIsZoomed(false); }, [lightboxIndex]);
 
   const handleVideoLike = (id: string) => {
     if (hasLikedVideo[id]) {
@@ -176,49 +150,22 @@ export default function MediaSection() {
     });
   };
 
-  // Video Search & Filtering
-  const videoCategories = [
-    'All',
-    'Interviews',
-    'The X-Files',
-    'Sex Education',
-    'The Crown',
-    'Theater Life',
-    'Public Appearances',
-    'Behind The Scenes',
-    'Charity & Speeches'
-  ];
+  const videoCategories = ['All', 'Interviews', 'The X-Files', 'Sex Education', 'The Crown', 'Theater Life', 'Public Appearances', 'Behind The Scenes', 'Charity & Speeches'];
 
   const filteredVideos = videos.filter((video) => {
-    const matchesSearch =
-      video.title.toLowerCase().includes(videoSearch.toLowerCase()) ||
-      video.category.toLowerCase().includes(videoSearch.toLowerCase());
+    const matchesSearch = video.title.toLowerCase().includes(videoSearch.toLowerCase()) || video.category.toLowerCase().includes(videoSearch.toLowerCase());
     const matchesCategory = videoCategory === 'All' || video.category === videoCategory;
     return matchesSearch && matchesCategory;
   });
 
-  // Photo Search & Filtering
-  const photoCategories = [
-    'All',
-    'The X-Files',
-    'Sex Education',
-    'The Crown',
-    'Theater Life',
-    'Photoshoots',
-    'Charity & Public',
-    'Candid Moments',
-    'Fan Art Tributes'
-  ];
+  const photoCategories = ['All', 'The X-Files', 'Sex Education', 'The Crown', 'Theater Life', 'Photoshoots', 'Charity & Public', 'Candid Moments', 'Fan Art Tributes'];
 
   const filteredPhotos = photos.filter((photo) => {
-    const matchesSearch =
-      photo.title.toLowerCase().includes(photoSearch.toLowerCase()) ||
-      photo.description.toLowerCase().includes(photoSearch.toLowerCase());
+    const matchesSearch = photo.title.toLowerCase().includes(photoSearch.toLowerCase()) || photo.description.toLowerCase().includes(photoSearch.toLowerCase());
     const matchesCategory = photoCategory === 'All' || photo.category === photoCategory;
     return matchesSearch && matchesCategory;
   });
 
-  // Lightbox Handlers
   const handlePrevPhoto = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     if (lightboxIndex !== null) {
@@ -253,21 +200,21 @@ export default function MediaSection() {
   const currentPhoto = lightboxIndex !== null ? filteredPhotos[lightboxIndex] : null;
 
   return (
-    <section id="media-page" className="py-12 sm:py-20 px-3 sm:px-4 md:px-6 relative min-h-[900px] border-t border-neutral-900 bg-[#050505]">
+    <section id="media-page" className="py-10 px-3 sm:py-20 sm:px-4 md:px-6 relative min-h-[900px] border-t border-neutral-900 bg-[#050505]">
       <div className="absolute right-1/4 bottom-1/4 h-96 w-96 rounded-full blur-[120px] pointer-events-none bg-gold-500/5" />
       <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full blur-[140px] pointer-events-none bg-gold-500/3" />
 
-      <div className="mx-auto max-w-7xl space-y-8 sm:space-y-12">
+      <div className="mx-auto max-w-7xl space-y-6 sm:space-y-12">
         {/* Page Title */}
-        <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[10px] font-mono tracking-widest uppercase">
-            <Tv className="h-3.5 w-3.5" />
+        <div className="text-center space-y-2 sm:space-y-4">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[9px] sm:text-[10px] font-mono tracking-widest uppercase">
+            <Tv className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             MEDIA THEATER & ARCHIVES
           </div>
-          <h2 className="font-serif text-3xl md:text-5xl font-extrabold text-white uppercase tracking-tight">
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl font-extrabold text-white uppercase tracking-tight">
             Official <span className="text-gold-500">Media</span> Vault
           </h2>
-          <p className="text-xs md:text-sm text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed">
+          <p className="text-[11px] sm:text-xs md:text-sm text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed px-2">
             Step into Gillian Anderson's official theater. Play real YouTube broadcasts, exclusive set interviews, behind-the-scenes clips, and explore over 100 curated portrait archives.
           </p>
         </div>
@@ -280,37 +227,33 @@ export default function MediaSection() {
             { icon: Heart, value: (Object.values(videoLikes) as number[]).reduce((a: number, b: number) => a + b, 0) + (Object.values(photoLikes) as number[]).reduce((a: number, b: number) => a + b, 0), label: 'Total Likes', color: 'text-red-400' },
             { icon: Tv, value: activeTab === 'videos' ? videoCategories.length - 1 : photoCategories.length - 1, label: 'Categories', color: 'text-emerald-400' },
           ].map((stat) => (
-            <div key={stat.label} className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-2.5 sm:p-4 text-center space-y-1 sm:space-y-1.5 hover:border-neutral-800 transition-colors">
-              <stat.icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${stat.color} mx-auto`} />
-              <span className={`block text-base sm:text-xl font-bold ${stat.color}`}>{stat.value}</span>
-              <span className="text-[8px] sm:text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
+            <div key={stat.label} className="bg-neutral-950/60 border border-neutral-900 rounded-lg sm:rounded-xl p-2 sm:p-4 text-center space-y-0.5 sm:space-y-1.5 hover:border-neutral-800 transition-colors">
+              <stat.icon className={`h-3 w-3 sm:h-4 sm:w-4 ${stat.color} mx-auto`} />
+              <span className={`block text-sm sm:text-xl font-bold ${stat.color}`}>{stat.value}</span>
+              <span className="text-[7px] sm:text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
             </div>
           ))}
         </div>
 
-        {/* Section Tab Bar Switcher */}
+        {/* Tab Bar */}
         <div className="flex justify-center">
-          <div className="inline-flex bg-neutral-950 p-1 sm:p-1.5 rounded-xl border border-neutral-900 shadow-2xl">
+          <div className="inline-flex bg-neutral-950 p-1 rounded-lg sm:p-1.5 sm:rounded-xl border border-neutral-900 shadow-2xl">
             <button
               onClick={() => setActiveTab('videos')}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-lg text-[10px] sm:text-xs tracking-widest font-mono uppercase font-bold transition-all ${
-                activeTab === 'videos'
-                  ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/10'
-                  : 'text-neutral-400 hover:text-white'
+              className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-1.5 sm:py-3 rounded-md sm:rounded-lg text-[9px] sm:text-xs tracking-widest font-mono uppercase font-bold transition-all ${
+                activeTab === 'videos' ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/10' : 'text-neutral-400 hover:text-white'
               }`}
             >
-              <Film className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <Film className="h-3 w-3 sm:h-4 sm:w-4" />
               Videos ({videos.length})
             </button>
             <button
               onClick={() => setActiveTab('photos')}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-lg text-[10px] sm:text-xs tracking-widest font-mono uppercase font-bold transition-all ${
-                activeTab === 'photos'
-                  ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/10'
-                  : 'text-neutral-400 hover:text-white'
+              className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-1.5 sm:py-3 rounded-md sm:rounded-lg text-[9px] sm:text-xs tracking-widest font-mono uppercase font-bold transition-all ${
+                activeTab === 'photos' ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/10' : 'text-neutral-400 hover:text-white'
               }`}
             >
-              <Image className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <Image className="h-3 w-3 sm:h-4 sm:w-4" />
               Photos ({photos.length})
             </button>
           </div>
@@ -324,137 +267,192 @@ export default function MediaSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="grid gap-4 sm:gap-6 lg:grid-cols-12 items-start"
+              className="space-y-4 sm:space-y-6"
             >
-              {/* Left Column: YouTube Player */}
-              <div className="lg:col-span-8 space-y-3 sm:space-y-5">
-                <div className="relative rounded-xl overflow-hidden shadow-2xl bg-black ring-1 ring-gold-500/20">
-                  {/* NOW PLAYING indicator */}
-                  <div className="absolute top-3 left-3 z-10 flex items-center gap-2 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1.5">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                    </span>
-                    <span className="text-[9px] font-mono text-white/80 uppercase tracking-widest font-semibold">NOW PLAYING</span>
-                  </div>
-                  <div className="aspect-video relative">
-                    {/* Thumbnail backdrop — always visible behind the player */}
-                    {selectedVideo.thumbnail && (
-                      <img
-                        src={selectedVideo.thumbnail}
-                        alt=""
-                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoLoading ? 'opacity-100' : 'opacity-0'}`}
-                      />
-                    )}
-                    {embedError ? (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-900/95 gap-4 p-6">
-                        <p className="text-xs font-mono text-neutral-400 text-center">
-                          This video cannot be embedded due to the uploader's restrictions
-                        </p>
-                        <a
-                          href={`https://www.youtube.com/watch?v=${selectedVideo.youtubeId}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-mono font-bold transition-colors"
-                        >
-                          Watch on YouTube
-                        </a>
-                      </div>
-                    ) : selectedVideo.youtubeId ? (
-                      <>
-                        <div ref={playerContainerRef} className="w-full h-full relative z-10" />
-                        {/* Loading overlay */}
-                        {videoLoading && (
-                          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40">
-                            <div className="flex flex-col items-center gap-3">
-                              <div className="w-12 h-12 rounded-full border-2 border-gold-500/30 border-t-gold-500 animate-spin" />
-                              <span className="text-[10px] font-mono text-gold-500 uppercase tracking-widest">Loading video...</span>
-                            </div>
+              {/* Video Player */}
+              <div className="relative rounded-lg sm:rounded-xl overflow-hidden shadow-2xl bg-black ring-1 ring-gold-500/20">
+                <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
+                  <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-red-500"></span>
+                  </span>
+                  <span className="text-[7px] sm:text-[9px] font-mono text-white/80 uppercase tracking-widest font-semibold">NOW PLAYING</span>
+                </div>
+                <div className="aspect-video relative">
+                  {selectedVideo.thumbnail && (
+                    <img
+                      src={selectedVideo.thumbnail}
+                      alt=""
+                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoLoading ? 'opacity-100' : 'opacity-0'}`}
+                    />
+                  )}
+                  {embedError ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-900/95 gap-3 p-4">
+                      <p className="text-[10px] sm:text-xs font-mono text-neutral-400 text-center">
+                        This video cannot be embedded due to the uploader's restrictions
+                      </p>
+                      <a
+                        href={`https://www.youtube.com/watch?v=${selectedVideo.youtubeId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-3 py-1.5 sm:px-5 sm:py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-lg text-[10px] sm:text-xs font-mono font-bold transition-colors"
+                      >
+                        Watch on YouTube
+                      </a>
+                    </div>
+                  ) : selectedVideo.youtubeId ? (
+                    <>
+                      <div ref={playerContainerRef} className="w-full h-full relative z-10" />
+                      {videoLoading && (
+                        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40">
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full border-2 border-gold-500/30 border-t-gold-500 animate-spin" />
+                            <span className="text-[8px] sm:text-[10px] font-mono text-gold-500 uppercase tracking-widest">Loading...</span>
                           </div>
-                        )}
-                      </>
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/40 text-neutral-500 text-xs font-mono">
-                        No video source
-                      </div>
-                    )}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/40 text-neutral-500 text-[10px] sm:text-xs font-mono">
+                      No video source
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Subtitle Bar */}
+              {selectedVideo.subtitles && selectedVideo.subtitles.length > 0 && (
+                <div className="bg-neutral-950/80 border border-neutral-900 rounded-lg sm:rounded-xl p-2.5 sm:p-4">
+                  <div className="flex items-center gap-1.5 mb-1.5 sm:mb-2">
+                    <div className="w-0.5 sm:w-1 h-3 sm:h-4 bg-gold-500 rounded-full" />
+                    <span className="text-[8px] sm:text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">SUBTITLES</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedVideo.subtitles.map((sub, i) => (
+                      <span key={i} className="px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded bg-neutral-900/80 border border-neutral-800 text-[8px] sm:text-[10px] font-mono text-neutral-300">
+                        {sub}
+                      </span>
+                    ))}
                   </div>
                 </div>
+              )}
 
-                {/* Subtitle Bar */}
-                {selectedVideo.subtitles && selectedVideo.subtitles.length > 0 && (
-                  <div className="bg-neutral-950/80 border border-neutral-900 rounded-xl p-3 sm:p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-1 h-4 bg-gold-500 rounded-full" />
-                      <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">SUBTITLES</span>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {selectedVideo.subtitles.map((sub, i) => (
-                        <span key={i} className="px-2.5 py-1 rounded bg-neutral-900/80 border border-neutral-800 text-[10px] font-mono text-neutral-300">
-                          {sub}
-                        </span>
-                      ))}
-                    </div>
+              {/* Video Info Card */}
+              <div className="bg-neutral-950/40 border border-neutral-900 p-3 sm:p-6 rounded-lg sm:rounded-xl space-y-2.5 sm:space-y-4 text-left relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-500 via-amber-400 to-gold-500" />
+                <div className="flex items-start sm:items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <span className="text-[9px] sm:text-[10px] font-mono text-gold-500 uppercase tracking-wider font-semibold">
+                      {selectedVideo.category}
+                    </span>
+                    <h3 className="font-serif text-xs sm:text-lg font-bold text-white mt-0.5 truncate">
+                      {selectedVideo.title}
+                    </h3>
                   </div>
-                )}
-
-                {/* Video Info Card */}
-                <div className="bg-neutral-950/40 border border-neutral-900 p-4 sm:p-6 rounded-xl space-y-3 sm:space-y-4 text-left relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-500 via-amber-400 to-gold-500" />
-                  <div className="flex items-start sm:items-center justify-between gap-2">
-                    <div>
-                      <span className="text-[10px] font-mono text-gold-500 uppercase tracking-wider font-semibold">
-                        {selectedVideo.category}
-                      </span>
-                      <h3 className="font-serif text-sm sm:text-lg font-bold text-white mt-0.5 sm:mt-1">
-                        {selectedVideo.title}
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                      <button
-                        onClick={() => handleCopyLink('video', selectedVideo.id)}
-                        className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded border border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white transition-colors text-[9px] sm:text-[10px] font-mono font-bold"
-                      >
-                        <Share2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                        <span>Share</span>
-                      </button>
-                      <button
-                        onClick={() => handleVideoLike(selectedVideo.id)}
-                        className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded border transition-colors text-[9px] sm:text-[10px] font-mono font-bold ${
-                          hasLikedVideo[selectedVideo.id]
-                            ? 'border-red-500/40 bg-red-500/5 text-red-500'
-                            : 'border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white'
-                        }`}
-                      >
-                        <Heart className={`h-3 w-3 sm:h-3.5 sm:w-3.5 ${hasLikedVideo[selectedVideo.id] ? 'fill-red-500 stroke-red-500' : ''}`} />
-                        <span>{videoLikes[selectedVideo.id] || 0}</span>
-                      </button>
-                    </div>
+                  <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                    <button
+                      onClick={() => handleCopyLink('video', selectedVideo.id)}
+                      className="flex items-center gap-1 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded border border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white transition-colors text-[8px] sm:text-[10px] font-mono font-bold"
+                    >
+                      <Share2 className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5" />
+                      <span className="hidden sm:inline">Share</span>
+                    </button>
+                    <button
+                      onClick={() => handleVideoLike(selectedVideo.id)}
+                      className={`flex items-center gap-1 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded border transition-colors text-[8px] sm:text-[10px] font-mono font-bold ${
+                        hasLikedVideo[selectedVideo.id]
+                          ? 'border-red-500/40 bg-red-500/5 text-red-500'
+                          : 'border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white'
+                      }`}
+                    >
+                      <Heart className={`h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 ${hasLikedVideo[selectedVideo.id] ? 'fill-red-500 stroke-red-500' : ''}`} />
+                      <span>{videoLikes[selectedVideo.id] || 0}</span>
+                    </button>
                   </div>
-                  <div className="grid gap-2 sm:gap-3 grid-cols-2 sm:grid-cols-4 pt-1.5 sm:pt-2">
-                    <div className="border border-neutral-900 p-2 sm:p-3 rounded-lg text-center bg-neutral-950/20">
-                      <span className="text-[8px] sm:text-[9px] font-mono text-neutral-500 uppercase block">DURATION</span>
-                      <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">{selectedVideo.duration}</span>
-                    </div>
-                    <div className="border border-neutral-900 p-2 sm:p-3 rounded-lg text-center bg-neutral-950/20">
-                      <span className="text-[8px] sm:text-[9px] font-mono text-neutral-500 uppercase block">REACTIONS</span>
-                      <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">{videoLikes[selectedVideo.id] || 0}</span>
-                    </div>
-                    <div className="border border-neutral-900 p-2 sm:p-3 rounded-lg text-center bg-neutral-950/20">
-                      <span className="text-[8px] sm:text-[9px] font-mono text-neutral-500 uppercase block">SOURCE</span>
-                      <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">YOUTUBE</span>
-                    </div>
-                    <div className="border border-neutral-900 p-2 sm:p-3 rounded-lg text-center bg-neutral-950/20">
-                      <span className="text-[8px] sm:text-[9px] font-mono text-neutral-500 uppercase block">QUALITY</span>
-                      <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">HD</span>
-                    </div>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5 sm:gap-3 pt-1 sm:pt-2">
+                  <div className="border border-neutral-900 p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-neutral-950/20">
+                    <span className="text-[7px] sm:text-[9px] font-mono text-neutral-500 uppercase block">DURATION</span>
+                    <span className="text-[9px] sm:text-xs font-mono text-white font-semibold">{selectedVideo.duration}</span>
+                  </div>
+                  <div className="border border-neutral-900 p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-neutral-950/20">
+                    <span className="text-[7px] sm:text-[9px] font-mono text-neutral-500 uppercase block">REACTIONS</span>
+                    <span className="text-[9px] sm:text-xs font-mono text-white font-semibold">{videoLikes[selectedVideo.id] || 0}</span>
+                  </div>
+                  <div className="border border-neutral-900 p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-neutral-950/20">
+                    <span className="text-[7px] sm:text-[9px] font-mono text-neutral-500 uppercase block">SOURCE</span>
+                    <span className="text-[9px] sm:text-xs font-mono text-white font-semibold">YOUTUBE</span>
+                  </div>
+                  <div className="border border-neutral-900 p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-neutral-950/20">
+                    <span className="text-[7px] sm:text-[9px] font-mono text-neutral-500 uppercase block">QUALITY</span>
+                    <span className="text-[9px] sm:text-xs font-mono text-white font-semibold">HD</span>
                   </div>
                 </div>
               </div>
 
-              {/* Right Column: Video Selection Sidebar */}
-              <div className="lg:col-span-4 space-y-3 sm:space-y-4 flex flex-col h-full">
-                <div className="bg-neutral-950 border border-neutral-900 p-3 sm:p-4 rounded-xl space-y-2.5 sm:space-y-3 text-left">
+              {/* Mobile: Toggle Filters */}
+              <div className="sm:hidden">
+                <button
+                  onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                  className="w-full flex items-center justify-between p-2.5 rounded-lg bg-neutral-950 border border-neutral-900 text-left"
+                >
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-3 w-3 text-gold-500" />
+                    <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider">Filter & Browse</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[8px] font-mono text-gold-500 bg-gold-500/10 border border-gold-500/20 px-2 py-0.5 rounded-full">
+                      {filteredVideos.length}
+                    </span>
+                    <ChevronRight className={`h-3 w-3 text-neutral-500 transition-transform ${mobileFiltersOpen ? 'rotate-90' : ''}`} />
+                  </div>
+                </button>
+                <AnimatePresence>
+                  {mobileFiltersOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pt-2 space-y-2">
+                        <div className="relative">
+                          <Search className="absolute left-2.5 top-2 h-3 w-3 text-neutral-600" />
+                          <input
+                            type="text"
+                            placeholder="Search videos..."
+                            value={videoSearch}
+                            onChange={(e) => setVideoSearch(e.target.value)}
+                            className="w-full bg-neutral-900/60 border border-neutral-800 rounded-lg pl-7 pr-3 py-1.5 text-[10px] text-white placeholder-neutral-500 focus:outline-none focus:border-gold-500/50"
+                          />
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {videoCategories.map((cat) => {
+                            const count = cat === 'All' ? videos.length : videos.filter(v => v.category === cat).length;
+                            return (
+                              <button
+                                key={cat}
+                                onClick={() => setVideoCategory(cat)}
+                                className={`px-1.5 py-0.5 rounded text-[8px] font-mono uppercase border transition-all ${
+                                  videoCategory === cat
+                                    ? 'bg-gold-500/10 border-gold-500 text-gold-500 font-bold'
+                                    : 'bg-neutral-900 border-neutral-800/80 text-neutral-400 hover:text-white'
+                                }`}
+                              >
+                                {cat} ({count})
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Desktop: Sidebar */}
+              <div className="hidden sm:block space-y-3 lg:space-y-4">
+                <div className="bg-neutral-950 border border-neutral-900 p-3 lg:p-4 rounded-xl space-y-2.5 lg:space-y-3 text-left">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400 uppercase tracking-wider">
                       <Filter className="h-3.5 w-3.5 text-gold-500" />
@@ -493,8 +491,7 @@ export default function MediaSection() {
                     })}
                   </div>
                 </div>
-
-                <div className="space-y-1.5 sm:space-y-2 max-h-[300px] sm:max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+                <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
                   {filteredVideos.length === 0 ? (
                     <div className="text-center py-10 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/20 text-neutral-500 text-xs font-mono">
                       No videos match criteria
@@ -506,14 +503,13 @@ export default function MediaSection() {
                         <button
                           key={item.id}
                           onClick={() => setSelectedVideo(item)}
-                          className={`w-full p-2 sm:p-3 rounded-lg sm:rounded-xl border text-left transition-all flex items-center gap-2 sm:gap-3 group cursor-pointer ${
+                          className={`w-full p-3 rounded-xl border text-left transition-all flex items-center gap-3 group cursor-pointer ${
                             isCurrent
                               ? 'bg-gold-500/5 border-gold-500/40 shadow-lg'
                               : 'bg-neutral-950/30 border-neutral-900 hover:border-neutral-800 hover:bg-neutral-950/80'
                           }`}
                         >
-                          {/* Thumbnail */}
-                          <div className="h-10 w-14 sm:h-14 sm:w-20 rounded-lg overflow-hidden border border-neutral-800/80 shrink-0 bg-neutral-900 relative">
+                          <div className="h-14 w-20 rounded-lg overflow-hidden border border-neutral-800/80 shrink-0 bg-neutral-900 relative">
                             {item.thumbnail ? (
                               <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
                             ) : (
@@ -531,22 +527,66 @@ export default function MediaSection() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
-                              <span className="text-[8px] font-mono text-gold-500/80 uppercase font-semibold">
-                                {item.category}
-                              </span>
-                              <span className="text-[8px] font-mono text-neutral-500">
-                                {item.duration}
-                              </span>
+                              <span className="text-[8px] font-mono text-gold-500/80 uppercase font-semibold">{item.category}</span>
+                              <span className="text-[8px] font-mono text-neutral-500">{item.duration}</span>
                             </div>
-                            <h4 className={`text-[11px] font-bold truncate mt-0.5 ${isCurrent ? 'text-gold-500' : 'text-white'}`}>
-                              {item.title}
-                            </h4>
+                            <h4 className={`text-[11px] font-bold truncate mt-0.5 ${isCurrent ? 'text-gold-500' : 'text-white'}`}>{item.title}</h4>
                           </div>
                         </button>
                       );
                     })
                   )}
                 </div>
+              </div>
+
+              {/* Mobile: Horizontal Scroll Video List */}
+              <div className="sm:hidden">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">{filteredVideos.length} videos</span>
+                </div>
+                {filteredVideos.length === 0 ? (
+                  <div className="text-center py-8 border border-dashed border-neutral-900 rounded-lg bg-neutral-950/20 text-neutral-500 text-[10px] font-mono">
+                    No videos match criteria
+                  </div>
+                ) : (
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-3 px-3">
+                    {filteredVideos.map((item) => {
+                      const isCurrent = item.id === selectedVideo.id;
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => setSelectedVideo(item)}
+                          className={`shrink-0 w-[100px] rounded-lg border text-left transition-all overflow-hidden cursor-pointer ${
+                            isCurrent
+                              ? 'border-gold-500/40 bg-gold-500/5 shadow-lg ring-1 ring-gold-500/20'
+                              : 'border-neutral-900 bg-neutral-950/30 hover:border-neutral-800'
+                          }`}
+                        >
+                          <div className="aspect-video relative bg-neutral-900">
+                            {item.thumbnail ? (
+                              <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Play className="h-5 w-5 text-neutral-600" />
+                              </div>
+                            )}
+                            {isCurrent && (
+                              <div className="absolute inset-0 bg-gold-500/15 flex items-center justify-center">
+                                <div className="w-6 h-6 rounded-full bg-gold-500/90 flex items-center justify-center">
+                                  <Play className="h-2.5 w-2.5 text-neutral-950 fill-neutral-950" />
+                                </div>
+                              </div>
+                            )}
+                            <span className="absolute bottom-0.5 right-0.5 text-[7px] font-mono text-white/70 bg-black/60 px-1 rounded">{item.duration}</span>
+                          </div>
+                          <div className="p-1.5">
+                            <h4 className={`text-[8px] font-bold leading-tight line-clamp-2 ${isCurrent ? 'text-gold-500' : 'text-white'}`}>{item.title}</h4>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </motion.div>
           ) : (
@@ -556,31 +596,29 @@ export default function MediaSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="space-y-4 sm:space-y-6"
+              className="space-y-3 sm:space-y-6"
             >
-              <div className="bg-neutral-950 border border-neutral-900 p-3 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 text-left">
+              {/* Photo Filter Bar */}
+              <div className="bg-neutral-950 border border-neutral-900 p-2.5 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-4 text-left">
                 <div className="flex items-center gap-2">
-                  <Filter className="h-4 w-4 text-gold-500" />
-                  <span className="text-xs font-mono text-neutral-400 uppercase tracking-widest font-bold">
-                    Filter Galleries ({filteredPhotos.length} / {photos.length})
+                  <Filter className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-gold-500" />
+                  <span className="text-[10px] sm:text-xs font-mono text-neutral-400 uppercase tracking-widest font-bold">
+                    Filter ({filteredPhotos.length}/{photos.length})
                   </span>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3 md:w-2/3 items-stretch sm:items-center">
+                <div className="flex flex-col sm:flex-row gap-2 md:w-2/3 items-stretch sm:items-center">
                   <div className="relative flex-1">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-neutral-600" />
+                    <Search className="absolute left-2.5 sm:left-3 top-2 h-3 sm:h-4 w-3 sm:w-4 text-neutral-600" />
                     <input
                       type="text"
-                      placeholder="Search photo titles & archives..."
+                      placeholder="Search photos..."
                       value={photoSearch}
                       onChange={(e) => setPhotoSearch(e.target.value)}
-                      className="w-full bg-neutral-900/60 border border-neutral-800 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-gold-500/50"
+                      className="w-full bg-neutral-900/60 border border-neutral-800 rounded-lg pl-7 sm:pl-9 pr-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-gold-500/50"
                     />
                     {photoSearch && (
-                      <button
-                        onClick={() => setPhotoSearch('')}
-                        className="absolute right-3 top-2.5 text-neutral-400 hover:text-white"
-                      >
-                        <X className="h-4 w-4" />
+                      <button onClick={() => setPhotoSearch('')} className="absolute right-2.5 sm:right-3 top-2 text-neutral-400 hover:text-white">
+                        <X className="h-3 sm:h-4 w-3 sm:w-4" />
                       </button>
                     )}
                   </div>
@@ -588,19 +626,18 @@ export default function MediaSection() {
                     <select
                       value={photoCategory}
                       onChange={(e) => setPhotoCategory(e.target.value)}
-                      className="bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-gold-500/50 cursor-pointer pr-8 appearance-none"
+                      className="bg-neutral-900 border border-neutral-800 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-white focus:outline-none focus:border-gold-500/50 cursor-pointer pr-7 sm:pr-8 appearance-none"
                     >
                       {photoCategories.map((cat) => (
-                        <option key={cat} value={cat}>
-                          {cat === 'All' ? 'All Galleries' : cat}
-                        </option>
+                        <option key={cat} value={cat}>{cat === 'All' ? 'All Galleries' : cat}</option>
                       ))}
                     </select>
-                    <span className="absolute right-3 top-3 pointer-events-none text-neutral-500 border-l border-neutral-800 pl-1.5 text-[8px] font-mono">▼</span>
+                    <span className="absolute right-2.5 sm:right-3 top-1.5 sm:top-3 pointer-events-none text-neutral-500 border-l border-neutral-800 pl-1 sm:pl-1.5 text-[7px] sm:text-[8px] font-mono">▼</span>
                   </div>
                 </div>
               </div>
 
+              {/* Desktop category pills */}
               <div className="hidden md:flex flex-wrap gap-2 justify-center pb-2">
                 {photoCategories.map((cat) => {
                   const count = cat === 'All' ? photos.length : photos.filter(p => p.category === cat).length;
@@ -620,22 +657,20 @@ export default function MediaSection() {
                 })}
               </div>
 
+              {/* Photo Grid */}
               {filteredPhotos.length === 0 ? (
-                <div className="text-center py-20 border border-dashed border-neutral-900 rounded-2xl bg-neutral-950/10">
-                  <Image className="h-8 w-8 text-neutral-700 mx-auto mb-3" />
-                  <p className="text-xs font-mono text-neutral-500">No portrait records match criteria.</p>
+                <div className="text-center py-12 sm:py-20 border border-dashed border-neutral-900 rounded-2xl bg-neutral-950/10">
+                  <Image className="h-6 sm:h-8 text-neutral-700 mx-auto mb-2 sm:mb-3" />
+                  <p className="text-[10px] sm:text-xs font-mono text-neutral-500">No portrait records match criteria.</p>
                   <button
-                    onClick={() => {
-                      setPhotoSearch('');
-                      setPhotoCategory('All');
-                    }}
-                    className="mt-4 text-[10px] font-mono text-gold-500 border border-gold-500/30 hover:bg-gold-500/5 px-4 py-1.5 rounded"
+                    onClick={() => { setPhotoSearch(''); setPhotoCategory('All'); }}
+                    className="mt-3 sm:mt-4 text-[9px] sm:text-[10px] font-mono text-gold-500 border border-gold-500/30 hover:bg-gold-500/5 px-3 sm:px-4 py-1 sm:py-1.5 rounded"
                   >
                     Clear Filter
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 auto-rows-[140px] sm:auto-rows-[180px] gap-2.5 sm:gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 auto-rows-[120px] sm:auto-rows-[180px] gap-2 sm:gap-4">
                   {filteredPhotos.map((photo, index) => {
                     const isLiked = hasLikedPhoto[photo.id];
                     const count = photoLikes[photo.id] !== undefined ? photoLikes[photo.id] : photo.likes;
@@ -645,7 +680,7 @@ export default function MediaSection() {
                         key={photo.id}
                         layoutId={`photo-card-${photo.id}`}
                         onClick={() => setLightboxIndex(index)}
-                        className={`group relative bg-neutral-950 rounded-xl border border-neutral-900 overflow-hidden cursor-pointer hover:border-gold-500/40 shadow-lg hover:shadow-2xl hover:shadow-black/60 transition-all flex flex-col justify-end ${
+                        className={`group relative bg-neutral-950 rounded-lg sm:rounded-xl border border-neutral-900 overflow-hidden cursor-pointer hover:border-gold-500/40 shadow-lg hover:shadow-2xl hover:shadow-black/60 transition-all flex flex-col justify-end ${
                           isLarge ? 'sm:col-span-2 sm:row-span-2' : ''
                         }`}
                         whileHover={{ y: -4 }}
@@ -659,34 +694,32 @@ export default function MediaSection() {
                             className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/5 opacity-80 z-1" />
-                          {/* Cinematic hover overlay */}
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-500 z-[2] flex items-center justify-center">
                             <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
-                              <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-gold-500/90 flex items-center justify-center">
-                                <Image className="h-4 w-4 sm:h-5 sm:w-5 text-neutral-950" />
+                              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gold-500/90 flex items-center justify-center">
+                                <Image className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-neutral-950" />
                               </div>
                             </div>
                           </div>
                         </div>
-                        {/* Category badge - slides in on hover */}
-                        <div className="absolute top-3 left-3 z-10 opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-                          <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-black/80 backdrop-blur-sm text-[7px] sm:text-[8px] font-mono text-gold-500 border border-gold-500/20">
+                        <div className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-300">
+                          <span className="px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded bg-black/80 backdrop-blur-sm text-[6px] sm:text-[8px] font-mono text-gold-500 border border-gold-500/20">
                             {photo.category}
                           </span>
                         </div>
-                        <div className="relative z-10 p-2 sm:p-3 space-y-0.5 sm:space-y-1 bg-gradient-to-t from-black/95 to-transparent text-left">
-                          <h4 className={`font-bold text-white tracking-wide truncate group-hover:text-gold-500 transition-colors ${isLarge ? 'text-[11px] sm:text-sm' : 'text-[10px] sm:text-[11px]'}`}>
+                        <div className="relative z-10 p-1.5 sm:p-3 space-y-0 bg-gradient-to-t from-black/95 to-transparent text-left">
+                          <h4 className={`font-bold text-white tracking-wide truncate group-hover:text-gold-500 transition-colors text-[9px] sm:text-[11px] ${isLarge ? 'sm:text-sm' : ''}`}>
                             {photo.title.split(' (Archive')[0]}
                           </h4>
                           <div className="flex items-center justify-between">
-                            <span className="text-[8px] font-mono text-neutral-500 uppercase">
+                            <span className="text-[6px] sm:text-[8px] font-mono text-neutral-500 uppercase">
                               #{photo.id.replace('photo-', '')}
                             </span>
                             <button
                               onClick={(e) => handlePhotoLike(photo.id, e)}
-                              className="flex items-center gap-1 text-[9px] font-mono text-neutral-400 hover:text-red-500 transition-colors"
+                              className="flex items-center gap-0.5 text-[7px] sm:text-[9px] font-mono text-neutral-400 hover:text-red-500 transition-colors"
                             >
-                              <Heart className={`h-3 w-3 ${isLiked ? 'fill-red-500 stroke-red-500 text-red-500' : ''}`} />
+                              <Heart className={`h-2 w-2 sm:h-3 sm:w-3 ${isLiked ? 'fill-red-500 stroke-red-500 text-red-500' : ''}`} />
                               <span className={isLiked ? 'text-red-500 font-bold' : ''}>{count}</span>
                             </button>
                           </div>
@@ -701,55 +734,42 @@ export default function MediaSection() {
         </AnimatePresence>
       </div>
 
-      {/* Fullscreen Lightbox Modal */}
+      {/* Lightbox */}
       <AnimatePresence>
         {lightboxIndex !== null && currentPhoto && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/98 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6"
-            onClick={() => {
-              setLightboxIndex(null);
-              setIsSlideshowActive(false);
-            }}
+            className="fixed inset-0 z-[100] bg-black/98 backdrop-blur-md flex flex-col justify-between p-2 sm:p-6"
+            onClick={() => { setLightboxIndex(null); setIsSlideshowActive(false); }}
           >
-            <div className="w-full flex items-center justify-between pb-2 sm:pb-4" onClick={(e) => e.stopPropagation()}>
-              <div className="text-left flex items-center gap-2 sm:gap-3 flex-wrap">
-                <span className="text-[8px] sm:text-[10px] font-mono bg-neutral-900 text-gold-500 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded border border-neutral-800 uppercase tracking-widest font-semibold">
+            <div className="w-full flex items-center justify-between pb-1.5 sm:pb-4" onClick={(e) => e.stopPropagation()}>
+              <div className="text-left flex items-center gap-1.5 sm:gap-3 flex-wrap">
+                <span className="text-[7px] sm:text-[10px] font-mono bg-neutral-900 text-gold-500 px-1.5 sm:px-2.5 py-0.5 rounded border border-neutral-800 uppercase tracking-widest font-semibold">
                   {currentPhoto.category}
                 </span>
-                <span className="text-[10px] font-mono text-neutral-500">
-                  PORTRAIT #{currentPhoto.id.replace('photo-', '')} of {photos.length}
+                <span className="text-[8px] sm:text-[10px] font-mono text-neutral-500">
+                  #{currentPhoto.id.replace('photo-', '')} of {photos.length}
                 </span>
               </div>
-              <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex items-center gap-1 sm:gap-3">
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsSlideshowActive(!isSlideshowActive);
-                  }}
+                  onClick={(e) => { e.stopPropagation(); setIsSlideshowActive(!isSlideshowActive); }}
                   className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-[10px] font-mono font-bold cursor-pointer ${
-                    isSlideshowActive
-                      ? 'bg-gold-500/20 border-gold-500 text-gold-500 animate-pulse'
-                      : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
+                    isSlideshowActive ? 'bg-gold-500/20 border-gold-500 text-gold-500 animate-pulse' : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
                   }`}
                 >
                   <Play className={`h-3 w-3 ${isSlideshowActive ? 'fill-gold-500 text-gold-500' : 'fill-current'}`} />
-                  <span>{isSlideshowActive ? 'Slideshow Active' : 'Autoplay'}</span>
+                  <span>{isSlideshowActive ? 'Active' : 'Autoplay'}</span>
                 </button>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsZoomed(!isZoomed);
-                  }}
+                  onClick={(e) => { e.stopPropagation(); setIsZoomed(!isZoomed); }}
                   className={`p-1.5 sm:p-2 rounded-full border transition-all cursor-pointer ${
-                    isZoomed
-                      ? 'bg-gold-500 border-gold-400 text-neutral-950'
-                      : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
+                    isZoomed ? 'bg-gold-500 border-gold-400 text-neutral-950' : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
                   }`}
                 >
-                  {isZoomed ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                  {isZoomed ? <Minimize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <Maximize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 </button>
                 <a
                   href={`${currentPhoto.url}&dl=gillian_archive.jpg`}
@@ -760,10 +780,7 @@ export default function MediaSection() {
                   <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </a>
                 <button
-                  onClick={() => {
-                    setLightboxIndex(null);
-                    setIsSlideshowActive(false);
-                  }}
+                  onClick={() => { setLightboxIndex(null); setIsSlideshowActive(false); }}
                   className="p-1.5 sm:p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors cursor-pointer"
                 >
                   <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -774,41 +791,35 @@ export default function MediaSection() {
             <div className="flex-1 flex items-center justify-between w-full relative max-h-[70vh]">
               <button
                 onClick={handlePrevPhoto}
-                className="p-2.5 sm:p-3.5 rounded-full bg-neutral-900/65 border border-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all absolute left-0 sm:left-4 z-50 cursor-pointer"
+                className="p-2 sm:p-3.5 rounded-full bg-neutral-900/65 border border-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all absolute left-0.5 sm:left-4 z-50 cursor-pointer"
               >
                 <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
-
               <div
-                className={`mx-auto max-w-4xl max-h-full rounded-xl border border-neutral-900 overflow-hidden shadow-2xl bg-neutral-950 flex items-center justify-center relative transition-all duration-500 ${
+                className={`mx-auto max-w-4xl max-h-full rounded-lg sm:rounded-xl border border-neutral-900 overflow-hidden shadow-2xl bg-neutral-950 flex items-center justify-center relative transition-all duration-500 ${
                   isZoomed ? 'scale-110 md:scale-125 overflow-auto max-h-[85vh] cursor-zoom-out' : 'cursor-zoom-in'
                 }`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsZoomed(!isZoomed);
-                }}
+                onClick={(e) => { e.stopPropagation(); setIsZoomed(!isZoomed); }}
               >
                 <img
                   src={currentPhoto.url.replace('&w=600&q=80', '&w=1200&q=95')}
                   alt={currentPhoto.title}
                   referrerPolicy="no-referrer"
-                  className={`max-w-full max-h-[70vh] object-contain transition-transform duration-500 ${
+                  className={`max-w-full max-h-[65vh] sm:max-h-[70vh] object-contain transition-transform duration-500 ${
                     isZoomed ? 'scale-110' : 'scale-100'
                   }`}
                 />
               </div>
-
               <button
                 onClick={handleNextPhoto}
-                className="p-2.5 sm:p-3.5 rounded-full bg-neutral-900/65 border border-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all absolute right-0 sm:right-4 z-50 cursor-pointer"
+                className="p-2 sm:p-3.5 rounded-full bg-neutral-900/65 border border-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all absolute right-0.5 sm:right-4 z-50 cursor-pointer"
               >
                 <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
             </div>
 
-            {/* Filmstrip Thumbnail Navigation */}
-            <div className="w-full max-w-4xl mx-auto px-10 sm:px-12 pb-2" onClick={(e) => e.stopPropagation()}>
-              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide py-2 justify-center">
+            <div className="w-full max-w-4xl mx-auto px-8 sm:px-12 pb-1.5 sm:pb-2" onClick={(e) => e.stopPropagation()}>
+              <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide py-1.5 sm:py-2 justify-center">
                 {filteredPhotos.slice(Math.max(0, lightboxIndex - 3), Math.min(filteredPhotos.length, lightboxIndex + 4)).map((photo, i) => {
                   const actualIndex = Math.max(0, lightboxIndex - 3) + i;
                   const isActive = actualIndex === lightboxIndex;
@@ -816,17 +827,11 @@ export default function MediaSection() {
                     <button
                       key={photo.id}
                       onClick={() => setLightboxIndex(actualIndex)}
-                      className={`shrink-0 w-12 h-8 sm:w-16 sm:h-12 rounded-md sm:rounded-lg overflow-hidden border-2 transition-all ${
-                        isActive
-                          ? 'border-gold-500 ring-2 ring-gold-500/30 scale-110'
-                          : 'border-neutral-700 opacity-50 hover:opacity-80 hover:border-neutral-500'
+                      className={`shrink-0 w-10 h-7 sm:w-16 sm:h-12 rounded-md sm:rounded-lg overflow-hidden border-2 transition-all ${
+                        isActive ? 'border-gold-500 ring-1 sm:ring-2 ring-gold-500/30 scale-110' : 'border-neutral-700 opacity-50 hover:opacity-80 hover:border-neutral-500'
                       }`}
                     >
-                      <img
-                        src={photo.url}
-                        alt={photo.title}
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={photo.url} alt={photo.title} className="w-full h-full object-cover" />
                     </button>
                   );
                 })}
@@ -834,35 +839,35 @@ export default function MediaSection() {
             </div>
 
             <div
-              className="w-full max-w-4xl mx-auto bg-neutral-950/80 backdrop-blur-sm border border-neutral-900 p-3 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-5 text-left z-10"
+              className="w-full max-w-4xl mx-auto bg-neutral-950/80 backdrop-blur-sm border border-neutral-900 p-2.5 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-5 text-left z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex-1 space-y-1 sm:space-y-1.5">
-                <h3 className="font-serif text-base sm:text-xl font-extrabold text-white uppercase tracking-tight">
+              <div className="flex-1 space-y-0.5 sm:space-y-1.5 min-w-0">
+                <h3 className="font-serif text-sm sm:text-xl font-extrabold text-white uppercase tracking-tight truncate">
                   {currentPhoto.title}
                 </h3>
-                <p className="text-[11px] sm:text-xs text-neutral-400 leading-relaxed max-w-2xl font-sans">
+                <p className="text-[10px] sm:text-xs text-neutral-400 leading-relaxed max-w-2xl font-sans line-clamp-2">
                   {currentPhoto.description}
                 </p>
               </div>
-              <div className="flex items-center gap-2 sm:gap-3 shrink-0 border-t border-neutral-900 pt-2.5 sm:pt-3 md:border-0 md:pt-0">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0 border-t border-neutral-900 pt-2 sm:pt-3 sm:border-0 sm:pt-0">
                 <button
                   onClick={() => handleCopyLink('photo', currentPhoto.id)}
-                  className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all text-[11px] sm:text-xs font-mono font-bold cursor-pointer"
+                  className="flex items-center gap-1 sm:gap-2 px-2.5 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl border border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all text-[10px] sm:text-xs font-mono font-bold cursor-pointer"
                 >
-                  <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span>Share</span>
                 </button>
                 <button
                   onClick={(e) => handlePhotoLike(currentPhoto.id, e)}
-                  className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border transition-all text-[11px] sm:text-xs font-mono font-bold cursor-pointer ${
+                  className={`flex items-center gap-1 sm:gap-2 px-2.5 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl border transition-all text-[10px] sm:text-xs font-mono font-bold cursor-pointer ${
                     hasLikedPhoto[currentPhoto.id]
                       ? 'border-red-500 bg-red-500/10 text-red-500 font-extrabold'
                       : 'border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white hover:border-neutral-700'
                   }`}
                 >
-                  <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${hasLikedPhoto[currentPhoto.id] ? 'fill-red-500 stroke-red-500' : ''}`} />
-                  <span>{photoLikes[currentPhoto.id] !== undefined ? photoLikes[currentPhoto.id] : currentPhoto.likes} Likes</span>
+                  <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${hasLikedPhoto[currentPhoto.id] ? 'fill-red-500 stroke-red-500' : ''}`} />
+                  <span>{photoLikes[currentPhoto.id] !== undefined ? photoLikes[currentPhoto.id] : currentPhoto.likes}</span>
                 </button>
               </div>
             </div>
@@ -870,7 +875,7 @@ export default function MediaSection() {
         )}
       </AnimatePresence>
 
-      {/* Floating Interactive Toast */}
+      {/* Toast */}
       <AnimatePresence>
         {showToast && (
           <motion.div
@@ -878,9 +883,9 @@ export default function MediaSection() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 z-[110] bg-gold-500 text-neutral-950 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-mono text-[10px] sm:text-[11px] font-bold shadow-2xl flex items-center gap-2 border border-gold-400"
+            className="fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 z-[110] bg-gold-500 text-neutral-950 px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-mono text-[9px] sm:text-[11px] font-bold shadow-2xl flex items-center gap-1.5 sm:gap-2 border border-gold-400 max-w-[90vw]"
           >
-            <Sparkles className="h-4 w-4 animate-pulse shrink-0" />
+            <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-pulse shrink-0" />
             <span>{showToast}</span>
           </motion.div>
         )}

@@ -1141,7 +1141,8 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      {/* 6. Footer (Stay Connected, email subscribe, socials) */}
+      {/* 6. Footer — only on HOME */}
+      {activeNav === 'HOME' && (
       <footer className="border-t border-neutral-900 bg-[#030303] py-12">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
           <div className="grid gap-8 md:grid-cols-12 items-center">
@@ -1258,6 +1259,7 @@ export default function App() {
           </div>
         </div>
       </footer>
+      )}
 
       {/* --- ALL INTERACTIVE MODALS INJECTED HERE --- */}
 

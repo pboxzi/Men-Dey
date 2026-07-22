@@ -58,6 +58,7 @@ import AdminAskGillian from './AdminAskGillian';
 import AdminRewards from './AdminRewards';
 import AdminUsers from './AdminUsers';
 import AdminSettings from './AdminSettings';
+import AdminMessages from './AdminMessages';
 
 interface AdminPortalProps {
   onBackToHome: () => void;
@@ -731,6 +732,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
               <nav className="space-y-0.5">
                 {[
                   { name: 'Users', icon: Users, count: null },
+                  { name: 'Messages', icon: MessageCircle, count: null },
                   { name: 'Notifications', icon: Bell, count: null },
                   { name: 'Settings', icon: Settings, count: null }
                 ].map((item) => {
@@ -1257,6 +1259,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
           {/* ACTIVE VIEW: USERS */}
           {activeTab === 'Users' && <AdminUsers showToast={showToast} />}
+
+          {/* ACTIVE VIEW: MESSAGES */}
+          {activeTab === 'Messages' && <AdminMessages showToast={showToast} adminUserId={user?.id} />}
 
 
 

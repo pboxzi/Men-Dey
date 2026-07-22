@@ -59,6 +59,7 @@ import { PaletteType, applyTheme } from '../utils/theme';
 import { TermsOfServiceModal, PrivacyPolicyModal } from './LegalModals';
 import FanEvents from './FanEvents';
 import AskGillianChat from './AskGillianChat';
+import FanAdminChat from './FanAdminChat';
 
 interface FanPortalProps {
   onBackToHome: () => void;
@@ -2291,51 +2292,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             )}
 
             {/* VIEW RENDERING 7: MESSAGES */}
-            {activeTab === 'Messages' && (
-              <div className="space-y-6 text-left">
-                <div className="space-y-1 border-b border-neutral-900 pb-4">
-                  <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
-                    Direct Liaison Support Chat
-                  </h2>
-                  <p className="text-xs text-neutral-500 font-mono">
-                    Direct secure line to Sarah from Gillian's coordination staff.
-                  </p>
-                </div>
-
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-4 flex flex-col h-[450px]">
-                  <div className="flex-1 overflow-y-auto space-y-4 pr-1 mb-4 text-xs">
-                    {channelMessages.map((msg) => (
-                      <div key={msg.id} className={`flex gap-3 text-left ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                        <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[9px] ${
-                          msg.sender === 'user' ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-950 border-gold-800/35 text-gold-500'
-                        }`}>
-                          {msg.sender === 'user' ? 'JS' : 'MGT'}
-                        </div>
-                        <div className="max-w-[75%] space-y-1">
-                          <div className={`rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
-                            msg.sender === 'user' ? 'bg-gold-500 text-neutral-950 font-bold' : 'bg-neutral-900 text-neutral-200'
-                          }`}>
-                            {msg.text}
-                          </div>
-                          <p className="text-[9px] text-neutral-600 font-mono">{msg.timestamp}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <form onSubmit={handleSendMessage} className="flex gap-2 border-t border-neutral-900 pt-3">
-                    <input
-                      type="text"
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      placeholder="Type a message to Sarah..."
-                      className="flex-1 rounded border border-neutral-900 bg-neutral-950 px-4 py-2 text-xs text-white placeholder-neutral-600 outline-none focus:border-gold-500/40"
-                    />
-                    <button type="submit" disabled={!newMessage.trim()} className="h-9 w-9 flex items-center justify-center rounded bg-gold-500 text-neutral-950 hover:bg-gold-400 active:scale-95 disabled:opacity-50 transition-all">
-                      <Send className="h-4 w-4" />
-                    </button>
-                  </form>
-                </div>
-              </div>
+            {activeTab === 'Messages' && user && (
+              <FanAdminChat userId={user.id} showToast={showToast} />
             )}
 
             {/* VIEW RENDERING 7b: ASK GILLIAN */}

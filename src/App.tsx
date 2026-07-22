@@ -528,7 +528,7 @@ export default function App() {
               
               {/* Left: Interactive Slide Visualizer */}
               <motion.div variants={heroScaleVariants} className="lg:col-span-4 relative group flex flex-col items-center order-2 lg:order-none">
-                <div className="relative aspect-[3/4] w-full max-w-[220px] sm:max-w-[260px] lg:max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
+                <div className="relative aspect-[3/4] w-full max-w-[300px] sm:max-w-[340px] lg:max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
                   {/* Visual filter transitions on slide change */}
                   <motion.div
                     key={currentSlideIdx}
@@ -637,9 +637,34 @@ export default function App() {
                 </div>
               </motion.div>
 
-              {/* Center: Hero Welcome and Quotes */}
-              <div className="lg:col-span-5 text-center lg:text-left space-y-5 sm:space-y-7 order-1 lg:order-none">
+              {/* Name — mobile only as separate grid item */}
+              <div className="lg:hidden text-center space-y-5 sm:space-y-7 order-1">
                 <motion.div variants={heroItemVariants} className="space-y-2">
+                  <div className="flex items-center gap-2 justify-center">
+                    <span className="h-[1px] w-5 bg-gold-500/40" />
+                    <span className="text-[10px] font-mono tracking-[0.3em] text-gold-500 uppercase font-bold">
+                      THE ARCHIVE SANCTUARY
+                    </span>
+                    <span className="h-[1px] w-5 bg-gold-500/40" />
+                  </div>
+                  {userName ? (
+                    <h1 className="font-serif text-[28px] sm:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-white to-neutral-400 leading-[1.1] uppercase">
+                      Welcome back,
+                      <span className="text-white hover:text-gold-500 transition-colors duration-500">{userName}</span>
+                    </h1>
+                  ) : (
+                    <h1 className="font-serif text-[28px] sm:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
+                      GILLIAN
+                      <span className="text-white hover:text-gold-500 transition-colors duration-500">ANDERSON</span>
+                    </h1>
+                  )}
+                </motion.div>
+              </div>
+
+              {/* Quote, Buttons, Achievements — mobile order-3, desktop has name+rest */}
+              <div className="lg:col-span-5 text-center lg:text-left space-y-5 sm:space-y-7 order-3 lg:order-none">
+                {/* Name — desktop only inside this container */}
+                <motion.div variants={heroItemVariants} className="hidden lg:block space-y-2">
                   <div className="flex items-center gap-2 justify-center lg:justify-start">
                     <span className="h-[1px] w-5 bg-gold-500/40" />
                     <span className="text-[10px] font-mono tracking-[0.3em] text-gold-500 uppercase font-bold">
@@ -648,13 +673,13 @@ export default function App() {
                     <span className="h-[1px] w-5 bg-gold-500/40" />
                   </div>
                   {userName ? (
-                    <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-white to-neutral-400 leading-[1.1] uppercase">
-                      Welcome back, <br className="hidden lg:block" />
+                    <h1 className="font-serif text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-white to-neutral-400 leading-[1.1] uppercase">
+                      Welcome back, <br />
                       <span className="text-white hover:text-gold-500 transition-colors duration-500">{userName}</span>
                     </h1>
                   ) : (
-                    <h1 className="font-serif text-[28px] sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
-                      GILLIAN <br className="hidden lg:block" />
+                    <h1 className="font-serif text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
+                      GILLIAN <br />
                       <span className="text-white hover:text-gold-500 transition-colors duration-500">ANDERSON</span>
                     </h1>
                   )}

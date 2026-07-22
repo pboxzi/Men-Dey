@@ -143,6 +143,7 @@ export default function App() {
 
   // Mobile navigation collapsible menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
 
   // Scroll progress indicator state for long-form content navigation
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -431,55 +432,40 @@ export default function App() {
           </nav>
 
           {/* Right Header Actions */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Auth Buttons (when logged out) or Profile Menu (when logged in) */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Auth Buttons (logged out) or Profile Menu (logged in) */}
             {!user ? (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => navigate('/portal?mode=login')}
-                  className="hidden sm:flex items-center gap-1.5 px-4 py-2 text-[10px] font-bold tracking-widest text-neutral-300 hover:text-white border border-neutral-800 hover:border-gold-500/30 rounded-lg transition-all"
-                >
-                  <User className="h-3 w-3" />
+              <div className="flex items-center gap-1.5">
+                <button onClick={() => navigate('/portal?mode=login')}
+                  className="px-3 py-1.5 text-[9px] font-bold tracking-widest text-neutral-300 hover:text-white border border-neutral-800 hover:border-gold-500/30 rounded-lg transition-all">
                   SIGN IN
                 </button>
-                <button
-                  onClick={() => navigate('/portal?mode=register')}
-                  className="flex items-center gap-1.5 px-4 py-2 text-[10px] font-bold tracking-widest text-neutral-950 bg-gold-500 hover:bg-gold-400 rounded-lg transition-all shadow-sm shadow-gold-500/10"
-                >
-                  <Sparkles className="h-3 w-3" />
+                <button onClick={() => navigate('/portal?mode=register')}
+                  className="px-3 py-1.5 text-[9px] font-bold tracking-widest text-neutral-950 bg-gold-500 hover:bg-gold-400 rounded-lg transition-all">
                   JOIN
                 </button>
               </div>
             ) : (
               <div className="relative">
-                <button
-                  onClick={() => setProfileOpen(!profileOpen)}
-                  className="flex items-center gap-1.5 p-1.5 rounded-full border border-neutral-800 hover:border-gold-500/40 bg-neutral-900/50 hover:bg-neutral-900 transition-all active:scale-95 relative"
-                  aria-label="Profile menu"
-                >
+                <button onClick={() => setProfileOpen(!profileOpen)}
+                  className="flex items-center gap-1.5 p-1.5 rounded-full border border-neutral-800 hover:border-gold-500/40 bg-neutral-900/50 transition-all active:scale-95 relative">
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-600/10 flex items-center justify-center">
                     <User className="h-3.5 w-3.5 text-gold-500" />
                   </div>
-                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-gold-500 rounded-full border-2 border-[#050505] animate-pulse" />
+                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-gold-500 rounded-full border-2 border-[#050505]" />
                 </button>
                 <AnimatePresence>
                   {profileOpen && (
                     <>
                       <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
-                      <motion.div
-                        initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                      <motion.div initial={{ opacity: 0, y: -8, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8, scale: 0.95 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-2 w-52 bg-[#0a0a0a] border border-neutral-800 rounded-lg shadow-2xl shadow-black/60 z-50 overflow-hidden"
-                      >
-                        <div className="p-2">
-                          {profile?.role === 'admin' ? null : (
-                            <button
-                              onClick={() => { navigateTo('portal'); setProfileOpen(false); }}
-                              className="w-full flex items-center gap-3 px-3 py-3 rounded-md text-left border border-gold-500/30 bg-gold-500/5 hover:bg-gold-500/10 transition-colors group"
-                            >
-                              <div className="w-9 h-9 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center group-hover:border-gold-500/50 transition-colors">
+                        className="absolute right-0 top-full mt-2 w-52 bg-[#0a0a0a] border border-neutral-800 rounded-lg shadow-2xl shadow-black/60 z-50 overflow-hidden">
+                        {profile?.role !== 'admin' && (
+                          <div className="p-2">
+                            <button onClick={() => { navigate('/portal'); setProfileOpen(false); }}
+                              className="w-full flex items-center gap-3 px-3 py-3 rounded-md text-left border border-gold-500/30 bg-gold-500/5 hover:bg-gold-500/10 transition-colors">
+                              <div className="w-9 h-9 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center">
                                 <Star className="h-4 w-4 text-gold-500" />
                               </div>
                               <div>
@@ -487,14 +473,12 @@ export default function App() {
                                 <p className="text-[9px] text-neutral-400 tracking-wide">Your personal sanctuary</p>
                               </div>
                             </button>
-                          )}
-                        </div>
+                          </div>
+                        )}
                         <div className="border-t border-neutral-800 p-2">
-                          <button
-                            onClick={() => { signOut(); setProfileOpen(false); }}
-                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left hover:bg-neutral-900 transition-colors group"
-                          >
-                            <div className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center group-hover:border-neutral-600 transition-colors">
+                          <button onClick={() => { signOut(); setProfileOpen(false); }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left hover:bg-neutral-900 transition-colors">
+                            <div className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center">
                               <User className="h-3.5 w-3.5 text-neutral-400" />
                             </div>
                             <div>
@@ -509,102 +493,8 @@ export default function App() {
                 </AnimatePresence>
               </div>
             )}
-
-            {/* Hamburger Menu Toggler */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex lg:hidden p-2 text-neutral-400 hover:text-white transition-colors rounded border border-neutral-900 bg-neutral-950 active:scale-95"
-              aria-label="Toggle Navigation Menu"
-            >
-              {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </button>
           </div>
         </div>
-
-        {/* Mobile Dropdown Menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="lg:hidden w-full border-t border-neutral-900 bg-[#050505]/98 backdrop-blur-md overflow-hidden"
-            >
-              <div className="px-4 py-5 space-y-4 max-h-[75vh] overflow-y-auto">
-                <nav className="flex flex-col gap-0.5">
-                  {[
-                    'HOME',
-                    'ABOUT',
-                    'JOURNAL',
-                    'MEDIA',
-                    'COMMUNITY',
-                    'EXPERIENCES',
-                    'MEMBERSHIP',
-                    'EVENTS',
-                    'FAQ',
-                  ].map((link) => (
-                    <button
-                      key={link}
-                      onClick={() => handleNavClick(link)}
-                      className={`w-full text-left px-4 py-3 text-[10px] font-semibold tracking-[0.15em] transition-all rounded-lg min-h-[44px] flex items-center gap-3 ${
-                        activeNav === link
-                          ? 'text-gold-500 bg-gold-500/5'
-                          : 'text-neutral-500 hover:text-white hover:bg-neutral-900/30'
-                      }`}
-                    >
-                      {activeNav === link && <span className="w-1.5 h-1.5 rounded-full bg-gold-500 shrink-0" />}
-                      {link}
-                    </button>
-                  ))}
-                </nav>
-
-                <div className="pt-4 border-t border-neutral-900 flex flex-col gap-2.5">
-                  <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest block">
-                    Account
-                  </span>
-                  <div className="flex flex-col gap-1">
-                    {!user ? (
-                      <>
-                        <button
-                          onClick={() => { navigate('/portal?mode=login'); setMobileMenuOpen(false); }}
-                          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-neutral-800 bg-neutral-900/50 hover:bg-neutral-900 text-left min-h-[44px] transition-colors"
-                        >
-                          <User className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
-                          <span className="text-[10px] font-bold tracking-[0.15em] text-neutral-300">SIGN IN</span>
-                        </button>
-                        <button
-                          onClick={() => { navigate('/portal?mode=register'); setMobileMenuOpen(false); }}
-                          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gold-500 hover:bg-gold-400 text-left min-h-[44px] transition-colors"
-                        >
-                          <Sparkles className="h-3.5 w-3.5 text-neutral-950 shrink-0" />
-                          <span className="text-[10px] font-bold tracking-[0.15em] text-neutral-950">JOIN</span>
-                        </button>
-                      </>
-                    ) : profile?.role === 'admin' ? null : (
-                      <button
-                        onClick={() => { navigateTo('portal'); setMobileMenuOpen(false); }}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded border border-gold-500/30 bg-gold-500/5 hover:bg-gold-500/10 text-left min-h-[44px] transition-colors"
-                      >
-                        <Star className="h-4 w-4 text-gold-500 shrink-0" />
-                        <span className="text-xs font-bold tracking-widest text-gold-500">MY PORTAL</span>
-                      </button>
-                    )}
-                    {user && (
-                      <button
-                        onClick={() => { signOut(); setMobileMenuOpen(false); }}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded border border-neutral-800 bg-neutral-900/50 hover:bg-neutral-900 text-left min-h-[44px] transition-colors"
-                      >
-                        <User className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
-                        <span className="text-[11px] font-semibold tracking-widest text-neutral-300">SIGN OUT</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Subtle global scroll progress indicator */}
         <div className="absolute bottom-0 left-0 w-full h-[2px] bg-neutral-900/40 pointer-events-none z-50 overflow-hidden">
@@ -1292,67 +1182,101 @@ export default function App() {
         />
       )}
 
-      {/* Mobile Bottom (Down) Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-neutral-900 bg-[#050505]/95 backdrop-blur-md px-4 py-2.5 flex items-center justify-around shadow-2xl shadow-black/80 pb-safe">
-        {/* Home Button */}
-        <button
-          onClick={() => {
-            navigateTo('landing', 'HOME');
-          }}
-          className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
-            viewMode === 'landing' && activeNav === 'HOME'
-              ? 'text-gold-500 scale-105'
-              : 'text-neutral-400 hover:text-white'
-          }`}
-        >
-          <Home className="h-4.5 w-4.5" />
-          <span className="text-[9px] font-mono tracking-widest uppercase">Home</span>
+      {/* Mobile Bottom Navigation — 5 tabs */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-neutral-900 bg-[#050505]/98 backdrop-blur-md flex items-stretch justify-around shadow-2xl shadow-black/80" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        {/* Home */}
+        <button onClick={() => { navigateTo('landing', 'HOME'); setMobileExploreOpen(false); }}
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${activeNav === 'HOME' && viewMode === 'landing' ? 'text-gold-500' : 'text-neutral-500'}`}>
+          <Home className="h-5 w-5" strokeWidth={activeNav === 'HOME' && viewMode === 'landing' ? 2.5 : 1.5} />
+          <span className="text-[8px] font-bold tracking-widest uppercase">Home</span>
         </button>
 
-        {/* Journal Button */}
-        <button
-          onClick={() => {
-            navigateTo('landing', 'JOURNAL');
-          }}
-          className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
-            viewMode === 'landing' && activeNav === 'JOURNAL'
-              ? 'text-gold-500 scale-105'
-              : 'text-neutral-400 hover:text-white'
-          }`}
-        >
-          <BookOpen className="h-4.5 w-4.5" />
-          <span className="text-[9px] font-mono tracking-widest uppercase">Journal</span>
+        {/* Explore */}
+        <button onClick={() => setMobileExploreOpen(!mobileExploreOpen)}
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${mobileExploreOpen ? 'text-gold-500' : 'text-neutral-500'}`}>
+          <Compass className="h-5 w-5" strokeWidth={mobileExploreOpen ? 2.5 : 1.5} />
+          <span className="text-[8px] font-bold tracking-widest uppercase">Explore</span>
         </button>
 
-        {/* Fan Portal Button */}
-        <button
-          onClick={() => navigateTo('portal')}
-          className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
-            location.pathname === '/portal'
-              ? 'text-gold-500 scale-105'
-              : 'text-neutral-400 hover:text-white'
-          }`}
-        >
-          <Sparkles className="h-4.5 w-4.5" />
-          <span className="text-[9px] font-mono tracking-widest uppercase">Portal</span>
+        {/* Portal */}
+        <button onClick={() => { if (!user) { navigate('/portal?mode=login'); } else { navigate('/portal'); } setMobileExploreOpen(false); }}
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${location.pathname === '/portal' ? 'text-gold-500' : 'text-neutral-500'}`}>
+          <Sparkles className="h-5 w-5" strokeWidth={location.pathname === '/portal' ? 2.5 : 1.5} />
+          <span className="text-[8px] font-bold tracking-widest uppercase">Portal</span>
         </button>
 
-        {/* More/Menu Button */}
-        <button
-          onClick={() => {
-            navigateTo('landing');
-            setMobileMenuOpen(!mobileMenuOpen);
-          }}
-          className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
-            mobileMenuOpen && viewMode === 'landing'
-              ? 'text-gold-500 scale-105'
-              : 'text-neutral-400 hover:text-white'
-          }`}
-        >
-          {mobileMenuOpen && viewMode === 'landing' ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
-          <span className="text-[9px] font-mono tracking-widest uppercase">More</span>
+        {/* Events */}
+        <button onClick={() => { handleNavClick('EVENTS'); setMobileExploreOpen(false); }}
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${activeNav === 'EVENTS' ? 'text-gold-500' : 'text-neutral-500'}`}>
+          <Calendar className="h-5 w-5" strokeWidth={activeNav === 'EVENTS' ? 2.5 : 1.5} />
+          <span className="text-[8px] font-bold tracking-widest uppercase">Events</span>
+        </button>
+
+        {/* Profile */}
+        <button onClick={() => { if (!user) { navigate('/portal?mode=login'); } else { navigate('/portal'); } setMobileExploreOpen(false); }}
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${location.pathname === '/portal' ? 'text-gold-500' : 'text-neutral-500'}`}>
+          <User className="h-5 w-5" strokeWidth={location.pathname === '/portal' ? 2.5 : 1.5} />
+          <span className="text-[8px] font-bold tracking-widest uppercase">Profile</span>
         </button>
       </div>
+
+      {/* Mobile Explore Sheet */}
+      <AnimatePresence>
+        {mobileExploreOpen && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => setMobileExploreOpen(false)} />
+            <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-[#0a0a0a] border-t border-neutral-800 rounded-t-2xl max-h-[80vh] overflow-y-auto"
+              style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+              {/* Handle bar */}
+              <div className="flex justify-center pt-3 pb-2">
+                <div className="w-10 h-1 rounded-full bg-neutral-700" />
+              </div>
+              {/* Header */}
+              <div className="px-5 pb-3 flex items-center justify-between">
+                <h3 className="text-sm font-bold text-white tracking-wide">Explore</h3>
+                <button onClick={() => setMobileExploreOpen(false)} className="p-1.5 rounded-full hover:bg-neutral-800 transition-colors">
+                  <X className="h-4 w-4 text-neutral-400" />
+                </button>
+              </div>
+              {/* Navigation Grid */}
+              <div className="px-5 pb-6 grid grid-cols-3 gap-3">
+                {[
+                  { icon: <Star className="h-5 w-5" />, label: 'About', nav: 'ABOUT' },
+                  { icon: <BookOpen className="h-5 w-5" />, label: 'Journal', nav: 'JOURNAL' },
+                  { icon: <Play className="h-5 w-5" />, label: 'Media', nav: 'MEDIA' },
+                  { icon: <MessageSquare className="h-5 w-5" />, label: 'Community', nav: 'COMMUNITY' },
+                  { icon: <Compass className="h-5 w-5" />, label: 'Experiences', nav: 'EXPERIENCES' },
+                  { icon: <Crown className="h-5 w-5" />, label: 'Membership', nav: 'MEMBERSHIP' },
+                  { icon: <HelpCircle className="h-5 w-5" />, label: 'FAQ', nav: 'FAQ' },
+                  { icon: <Heart className="h-5 w-5" />, label: 'Advocacy', nav: 'ABOUT' },
+                ].map((item) => (
+                  <button key={item.label} onClick={() => { handleNavClick(item.nav); setMobileExploreOpen(false); }}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all min-h-[80px] ${activeNav === item.nav ? 'border-gold-500/30 bg-gold-500/5 text-gold-500' : 'border-neutral-800/60 bg-neutral-900/30 text-neutral-400 hover:text-white hover:border-neutral-700'}`}>
+                    {item.icon}
+                    <span className="text-[9px] font-bold tracking-widest uppercase">{item.label}</span>
+                  </button>
+                ))}
+              </div>
+              {/* Auth CTA at bottom */}
+              {!user && (
+                <div className="px-5 pb-6 pt-2 border-t border-neutral-800/60 space-y-2.5">
+                  <button onClick={() => { navigate('/portal?mode=register'); setMobileExploreOpen(false); }}
+                    className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-neutral-950 text-[11px] font-bold tracking-widest uppercase transition-colors">
+                    JOIN THE COMMUNITY
+                  </button>
+                  <button onClick={() => { navigate('/portal?mode=login'); setMobileExploreOpen(false); }}
+                    className="w-full py-3 rounded-xl border border-neutral-800 bg-neutral-900/50 hover:bg-neutral-900 text-neutral-300 text-[11px] font-bold tracking-widest uppercase transition-colors">
+                    SIGN IN
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

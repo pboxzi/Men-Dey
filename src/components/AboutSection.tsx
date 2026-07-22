@@ -182,7 +182,7 @@ export default function AboutSection() {
                 <div className="lg:col-span-5 relative">
                   <div className="aspect-[4/5] rounded-xl overflow-hidden border border-neutral-900 bg-neutral-900 relative">
                     <img
-                      src="/src/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg"
+                      src="/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg"
                       alt="Gillian Anderson Looking Reflective"
                       referrerPolicy="no-referrer"
                       className="h-full w-full object-cover grayscale brightness-90"
@@ -437,7 +437,7 @@ export default function AboutSection() {
                 <div className="lg:col-span-5 relative">
                   <div className="aspect-[4/3] rounded-xl overflow-hidden border border-neutral-900 bg-neutral-900 relative">
                     <img
-                      src="/src/assets/images/gillian_mentoring_warmth_1783349719383.jpg"
+                      src="/assets/images/gillian_mentoring_warmth_1783349719383.jpg"
                       alt="Gillian Anderson Advocacy"
                       referrerPolicy="no-referrer"
                       className="h-full w-full object-cover grayscale brightness-75 contrast-125"

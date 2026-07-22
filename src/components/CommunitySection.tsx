@@ -171,9 +171,9 @@ export default function CommunitySection() {
       : `@${uploaderName.toLowerCase().replace(/\s+/g, '')}`;
 
     const fallbackImages = [
-      '/src/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg',
-      '/src/assets/images/gillian_theatre_rehearsal_1783349680324.jpg',
-      '/src/assets/images/iceland_landscape_1782919139830.jpg'
+      '/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg',
+      '/assets/images/gillian_theatre_rehearsal_1783349680324.jpg',
+      '/assets/images/iceland_landscape_1782919139830.jpg'
     ];
     const imageToUse = postImage || fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
 

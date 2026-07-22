@@ -12,35 +12,35 @@ export const HERO_SLIDES: Slide[] = [
     number: '01',
     quote: "Just remember that we are here to support and lift each other up. Connection is everything.",
     author: "Gillian Anderson",
-    image: "/src/assets/images/gillian_hero_one_1783349664739.jpg"
+    image: "/assets/images/gillian_hero_one_1783349664739.jpg"
   },
   {
     id: 'slide-2',
     number: '02',
     quote: "If we don't explore the margins of our curiosity, we never truly learn who we are.",
     author: "Gillian Anderson",
-    image: "/src/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg"
+    image: "/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg"
   },
   {
     id: 'slide-3',
     number: '03',
     quote: "There is immense strength in vulnerability. Allowing yourself to be seen is a profound act of courage.",
     author: "Gillian Anderson",
-    image: "/src/assets/images/gillian_speaking_event_1783349739126.jpg"
+    image: "/assets/images/gillian_speaking_event_1783349739126.jpg"
   },
   {
     id: 'slide-4',
     number: '04',
     quote: "I've always believed that the truth is something we choose to pursue, not something handed to us.",
     author: "Gillian Anderson",
-    image: "/src/assets/images/gillian_studio_portrait_1783349751129.jpg"
+    image: "/assets/images/gillian_studio_portrait_1783349751129.jpg"
   },
   {
     id: 'slide-5',
     number: '05',
     quote: "We are all complex, beautifully flawed creatures. Embrace your depth and celebrate your journey.",
     author: "Gillian Anderson",
-    image: "/src/assets/images/gillian_mentoring_warmth_1783349719383.jpg"
+    image: "/assets/images/gillian_mentoring_warmth_1783349719383.jpg"
   }
 ];
 
@@ -50,7 +50,7 @@ export const JOURNAL_ENTRIES: JournalEntry[] = [
     title: "Reflecting on Scully, Seeking Truth, and Female Strength",
     category: "X-Files Retrospective",
     date: "June 24, 2024",
-    image: "/src/assets/images/gillian_investigator_look_1783349694204.jpg",
+    image: "/assets/images/gillian_investigator_look_1783349694204.jpg",
     excerpt: "Looking back at Agent Dana Scully, the 'Scully Effect', and how seeking the truth shaped generations.",
     readTime: "4 min read",
     content: "It's hard to believe how many years have passed since I first put on Dana Scully's trench coat. At the time, I didn't fully comprehend the impact she would have. She wasn't just a character; she became a symbol for women in science, technology, engineering, and math—what became known as the 'Scully Effect'.\n\nScully was analytical, strong, and skeptical, but she also had a deep capacity for empathy. She taught me so much about quiet strength and standing your ground in rooms where your voice is questioned.\n\n> \"The truth is out there, but so is the courage to look for it. Every step of investigation is a step of self-discovery.\"\n\nI'm incredibly grateful to the fans who have kept the search for truth alive. Thank you for walking this mysterious, beautiful path with me. Keep asking questions. Keep seeking."
@@ -60,7 +60,7 @@ export const JOURNAL_ENTRIES: JournalEntry[] = [
     title: "On theater, the stage, and creative courage",
     category: "Theater Life",
     date: "June 15, 2024",
-    image: "/src/assets/images/gillian_theatre_rehearsal_1783349680324.jpg",
+    image: "/assets/images/gillian_theatre_rehearsal_1783349680324.jpg",
     excerpt: "The raw adrenaline of the stage, character transformation, and my deep love for live performance.",
     readTime: "5 min read",
     content: "There is nothing quite like the feeling of standing in the wings of a theater, hearing the audience's quiet chatter fade, and stepping into the light. Theater is raw, unforgiving, and completely immediate. There are no retakes, no edits, and no hiding.\n\nPlaying Blanche DuBois in 'A Streetcar Named Desire' or Margo Channing in 'All About Eve' was both terrifying and exhilarating. It demands every ounce of your emotional and physical presence.\n\n> \"The stage is a sacred space of absolute truth. It forces you to be vulnerable, to crack open your chest, and to share a piece of your soul with strangers.\"\n\nFor me, acting has always been about curiosity and empathy—trying to inhabit another person's psyche, to understand their pain, their joy, and their complexities. It's an honor to share these stories in real time with an audience. If you have a creative passion, never let fear keep you from stepping onto your own stage."
@@ -70,7 +70,7 @@ export const JOURNAL_ENTRIES: JournalEntry[] = [
     title: "Embracing complex women: From Stella Gibson to Margaret Thatcher",
     category: "Behind The Scenes",
     date: "June 02, 2024",
-    image: "/src/assets/images/gillian_mentoring_warmth_1783349719383.jpg",
+    image: "/assets/images/gillian_mentoring_warmth_1783349719383.jpg",
     excerpt: "Exploring the layers of powerful, controversial, and multifaceted characters on television.",
     readTime: "6 min read",
     content: "In recent years, I've had the privilege of playing characters who are incredibly distinct, powerful, and sometimes highly divisive. From the cool, methodical Detective Superintendent Stella Gibson in 'The Fall', to the liberating Dr. Jean Milburn in 'Sex Education', to the formidable Margaret Thatcher in 'The Crown'.\n\nEach of these women represents a unique facet of female power. Stella is unapologetically herself, completely in control of her sexuality and intellect. Jean is warm, open, and hilariously boundary-free. Margaret was a force of nature, shaped by rigid determination.\n\n> \"I'm interested in the contradictions. Nobody is just one thing. It's the friction between a person's public face and private struggles where the real drama lies.\"\n\nExploring these contradictions is what keeps me in love with acting. I want to thank the brilliant directors, writers, and crews who build these worlds. And thank you, the community, for joining me in exploring these complex souls."
@@ -115,7 +115,7 @@ export const INITIAL_COMMUNITY_HIGHLIGHTS: CommunityHighlight[] = [
     username: 'ScullySkeptic',
     handle: '@ScullySkeptic',
     avatarText: 'SS',
-    image: "/src/assets/images/iceland_landscape_1782919139830.jpg",
+    image: "/assets/images/iceland_landscape_1782919139830.jpg",
     content: "Took this scenic shot during my trip. It had that moody, mysterious X-Files atmosphere. Breathtaking and peaceful. 🌲🛸",
     likes: 342,
     replies: 24,
@@ -148,7 +148,7 @@ export const INITIAL_COMMUNITY_HIGHLIGHTS: CommunityHighlight[] = [
     username: 'ArtByMonica',
     handle: '@ArtByMonica',
     avatarText: 'AM',
-    image: "/src/assets/images/gillian_pencil_sketch_1783350359030.jpg",
+    image: "/assets/images/gillian_pencil_sketch_1783350359030.jpg",
     content: "Gillian inspires me every single day. Here is my latest portrait drawing of her. 🎨 Graphite and charcoal on textured paper. Hope you like it!",
     likes: 521,
     replies: 33,
@@ -180,7 +180,7 @@ export const INITIAL_COMMUNITY_HIGHLIGHTS: CommunityHighlight[] = [
     username: 'StageDoorDreamer',
     handle: '@StageDoorDreamer',
     avatarText: 'SD',
-    image: "/src/assets/images/gillian_theatre_rehearsal_1783349680324.jpg",
+    image: "/assets/images/gillian_theatre_rehearsal_1783349680324.jpg",
     content: "A quick photo from the theater production set. Breathtaking to see how the stage magic is built layer by layer! 🎭🎬",
     likes: 298,
     replies: 18,

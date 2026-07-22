@@ -205,10 +205,10 @@ export default function App() {
     // 3. Preload core section images after a short delay (non-blocking)
     const timer = setTimeout(() => {
       const otherImages = [
-        '/src/assets/images/pillar_ask_gillian_1784103625430.jpg',
-        '/src/assets/images/pillar_events_1784103610855.jpg',
-        '/src/assets/images/pillar_experiences_1784103582190.jpg',
-        '/src/assets/images/pillar_membership_1784103595657.jpg',
+        '/assets/images/pillar_ask_gillian_1784103625430.jpg',
+        '/assets/images/pillar_events_1784103610855.jpg',
+        '/assets/images/pillar_experiences_1784103582190.jpg',
+        '/assets/images/pillar_membership_1784103595657.jpg',
       ];
       otherImages.forEach((src) => {
         const img = new Image();
@@ -766,7 +766,7 @@ export default function App() {
                   {/* Video Image Container */}
                   <div className="relative aspect-video rounded-xl overflow-hidden border border-neutral-900 bg-neutral-900 group">
                     <img
-                      src="/src/assets/images/gillian_theatre_rehearsal_1783349680324.jpg"
+                      src="/assets/images/gillian_theatre_rehearsal_1783349680324.jpg"
                       alt="Monthly Video Message Thumbnail"
                       referrerPolicy="no-referrer"
                       className="h-full w-full object-cover brightness-75 group-hover:scale-105 transition-transform duration-700"
@@ -863,7 +863,7 @@ export default function App() {
                           {/* Rich Background Visual */}
                           <div className="absolute inset-0 z-0 overflow-hidden">
                             <img
-                              src="/src/assets/images/pillar_experiences_1784103582190.jpg"
+                              src="/assets/images/pillar_experiences_1784103582190.jpg"
                               alt="Experiences Background"
                               referrerPolicy="no-referrer"
                               className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
@@ -900,7 +900,7 @@ export default function App() {
                           {/* Rich Background Visual */}
                           <div className="absolute inset-0 z-0 overflow-hidden">
                             <img
-                              src="/src/assets/images/pillar_membership_1784103595657.jpg"
+                              src="/assets/images/pillar_membership_1784103595657.jpg"
                               alt="Membership Background"
                               referrerPolicy="no-referrer"
                               className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
@@ -937,7 +937,7 @@ export default function App() {
                           {/* Rich Background Visual */}
                           <div className="absolute inset-0 z-0 overflow-hidden">
                             <img
-                              src="/src/assets/images/pillar_events_1784103610855.jpg"
+                              src="/assets/images/pillar_events_1784103610855.jpg"
                               alt="Events Background"
                               referrerPolicy="no-referrer"
                               className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"

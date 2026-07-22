@@ -415,7 +415,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     const { data, error } = await supabase.from('posts').insert({
       id, username: username || 'GillianFan', handle: handle || '@GillianFan',
       avatar_text: username ? username.substring(0, 2).toUpperCase() : 'GF',
-      image: image || '/src/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg',
+      image: image || '/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg',
       content, likes: 0, replies_count: 0, liked: false, category,
     }).select('*').single();
     if (error) throw new Error('Failed to share community post');

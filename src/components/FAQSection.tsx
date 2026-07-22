@@ -80,6 +80,66 @@ const FAQ_DATA_FALLBACK: FAQItem[] = [
     question: "How does the community support Gillian's advocacy work?",
     answer: "A portion of all Co-op membership fees and event proceeds goes directly to Gillian's chosen charities, including SA-YES (South African Youth Education for AIDS) and the Children's Tumor Foundation. Community fundraising galas and exclusive charity events are organized regularly. Members can also volunteer for advocacy campaigns and earn special badges for their contributions.",
     category: "advocacy"
+  },
+  {
+    id: 'faq-events-cancel',
+    question: "What happens if an event is cancelled or rescheduled?",
+    answer: "If an event is cancelled, all registered members receive a full refund within 5-7 business days and a notification through the portal. If rescheduled, you'll be automatically transferred to the new date with the option to cancel for a full refund. Priority registration for the new date is given to existing registrants.",
+    category: "events"
+  },
+  {
+    id: 'faq-events-group',
+    question: "Can I register for events as a group?",
+    answer: "Yes. During registration you can specify the number of attendees (up to 6 per registration). Each attendee must have a valid Co-op account. Group registrations receive a single confirmation with individual ticket references for each member. Group discounts apply for 4+ attendees on select events.",
+    category: "events"
+  },
+  {
+    id: 'faq-events-virtual',
+    question: "Are events available virtually or only in-person?",
+    answer: "Most Conclaves and Q&A sessions are available as live-streamed virtual events for Co-op Members worldwide. Some exclusive experiences and galas are in-person only, with location details provided upon registration. Virtual attendees receive the same interactive features including live chat and Q&A participation.",
+    category: "events"
+  },
+  {
+    id: 'faq-exp-cancel',
+    question: "Can I cancel or reschedule a booked Experience?",
+    answer: "Experiences can be cancelled or rescheduled up to 48 hours before the scheduled time for a full refund. Cancellations within 48 hours receive a 50% refund. Rescheduling is subject to availability. Use the 'My Bookings' section in your Fan Portal to manage your Experience bookings.",
+    category: "experiences"
+  },
+  {
+    id: 'faq-exp-types',
+    question: "What types of Experiences are available?",
+    answer: "Current Experience types include: Virtual Coffee Chat (15-minute one-on-one video call), Signed Book Consultation (personalized book recommendation with signed copy), Script Reading (Gillian reads and discusses a scene of your choice), Personalized Video Message (custom video for yourself or as a gift), and Group Workshop (small group masterclass on acting, advocacy, or creative writing). New Experience types are added regularly.",
+    category: "experiences"
+  },
+  {
+    id: 'faq-exp-availability',
+    question: "How often are new Experience slots released?",
+    answer: "New Experience slots are released on the first Monday of each month at 12:00 PM EST. Co-op Members get 24-hour early access before slots open to the public. Patrons get 48-hour early access. Popular slots fill quickly, so enable portal notifications to get alerted when new slots become available.",
+    category: "experiences"
+  },
+  {
+    id: 'faq-portal-app',
+    question: "Is there a mobile app for the Fan Portal?",
+    answer: "The Fan Portal is fully responsive and works seamlessly on any mobile browser — no app download required. Simply visit the site on your phone and sign in. You'll have full access to all features including messaging, event registration, and experience booking. Push notifications for events and messages are supported through your browser.",
+    category: "portal"
+  },
+  {
+    id: 'faq-portal-profile',
+    question: "Can I update my profile information after registration?",
+    answer: "Yes. Go to your Fan Portal dashboard and click 'Edit Profile' to update your name, profile picture, bio, contact preferences, and notification settings. Changes take effect immediately. Your display name and avatar are visible to other community members in forums and chat.",
+    category: "portal"
+  },
+  {
+    id: 'faq-advocacy-nf',
+    question: "What is Gillian's work with Neurofibromatosis (NF)?",
+    answer: "Gillian has been a dedicated patron of the Children's Tumor Foundation (CTF) for over two decades, inspired by her late brother Aaron who lived with NF. She has testified before the U.S. Congress to advocate for federal research funding, hosts annual fundraising events, and continues to raise visibility for families affected by NF through the Co-op Community.",
+    category: "advocacy"
+  },
+  {
+    id: 'faq-advocacy-contribute',
+    question: "How can I contribute to Gillian's charitable causes?",
+    answer: "You can contribute by: attending Co-op fundraising events (proceeds go to charity), donating directly through the portal's charity page, volunteering for advocacy campaigns, purchasing official merchandise where a percentage goes to SA-YES and CTF, and participating in community challenges that unlock bonus charity donations from Gillian's partners.",
+    category: "advocacy"
   }
 ];
 

@@ -1290,10 +1290,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={onBackToHome}
-                className="p-1.5 rounded-lg bg-neutral-950/60 border border-neutral-800/50 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all"
-                aria-label="Go to homepage"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-neutral-950/60 border border-neutral-800/50 text-neutral-400 hover:text-white hover:border-gold-500/30 transition-all"
               >
                 <Home className="h-3.5 w-3.5" />
+                <span className="text-[9px] font-bold tracking-wider uppercase">Home</span>
               </button>
 
               <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gold-500/5 border border-gold-500/15 text-[10px] font-mono text-gold-400/80 font-medium">

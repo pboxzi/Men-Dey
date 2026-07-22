@@ -382,10 +382,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-24 lg:pb-0 overflow-x-hidden w-full max-w-full">
+    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-24 lg:pb-0">
       {/* 1. Header (Navbar) */}
-      <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md overflow-hidden">
-        <div className="mx-auto flex items-center px-3 py-2.5 sm:px-4 md:px-6 gap-2 sm:gap-4">
+      <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1440px] items-center px-4 py-3 md:px-6 gap-4">
           {/* Logo */}
           <a href="/" className="flex items-center gap-2.5 group shrink-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center group-hover:border-gold-500/40 transition-colors">
@@ -516,7 +516,7 @@ export default function App() {
           <div className="absolute bottom-12 right-20 h-96 w-96 rounded-full bg-amber-500/3 blur-[140px] pointer-events-none" />
 
           {/* Simulated Slow Moving Spotlight Beam */}
-          <div className="absolute -top-40 left-1/3 w-[300px] sm:w-[500px] h-[600px] bg-gradient-to-b from-gold-500/3 via-transparent to-transparent -rotate-12 blur-3xl pointer-events-none" />
+          <div className="absolute -top-40 left-1/3 w-[500px] h-[600px] bg-gradient-to-b from-gold-500/3 via-transparent to-transparent -rotate-12 blur-3xl pointer-events-none" />
 
           <div className="mx-auto max-w-7xl px-4 md:px-6 relative z-10">
             <motion.div 

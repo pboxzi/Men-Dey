@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
+import { notifyExperienceStatus } from '../utils/notifications';
 import { Experience, ExperienceBooking, TimelineEntry } from '../types';
 import {
   Search, Plus, Edit3, Trash2, Copy, Eye, ArrowUp, ArrowDown,
@@ -700,6 +701,12 @@ function BookingsTab({ showToast }: Props) {
       } else {
         showToast('Booking updated!', 'success');
         loadBookings();
+
+        // Notify the fan if status changed
+        if (editStatus !== selectedBooking!.status) {
+          const expTitle = experiences.find(e => e.id === selectedBooking!.experienceId)?.title || 'Experience';
+          notifyExperienceStatus(selectedBooking!.userId, editStatus, expTitle);
+        }
       }
     } catch (err) {
       showToast('Failed to update booking.', 'error');

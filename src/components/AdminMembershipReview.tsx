@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
+import { notifyMembershipStatus } from '../utils/notifications';
 import {
   Check, X, Search, Loader2, User, Mail, RefreshCw,
   Crown, Calendar, Ban, ChevronRight, AlertTriangle, PauseCircle, Play, Trash2
@@ -120,6 +121,9 @@ export default function AdminMembershipReview() {
         const norm = normalizeMembership(data);
         setRequests(prev => prev.map(req => req.id === id ? norm : req));
         if (selectedRequest?.id === id) setSelectedRequest(norm);
+
+        // Notify the fan
+        notifyMembershipStatus(data.user_id, status, data.tier || 'Membership');
       }
     } catch {}
     setActionLoading(null);

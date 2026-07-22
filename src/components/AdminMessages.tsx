@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../utils/supabase';
+import { notifyAdminResponse } from '../utils/notifications';
 import {
   MessageSquare, Send, Loader2, Clock, CheckCircle, Users,
   Search, RefreshCw, X
@@ -230,6 +231,10 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
         .eq('id', selectedConv.id);
       await fetchMessages(selectedConv.id);
       await fetchConversations();
+
+      // Notify the fan
+      notifyAdminResponse(selectedConv.user_id, 'Admin', msgText);
+
       showToast('Message sent', 'success');
     }
 

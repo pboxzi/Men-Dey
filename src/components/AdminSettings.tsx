@@ -74,6 +74,7 @@ export default function AdminSettings({ showToast }: Props) {
     { id: 'social', label: 'Social Links', icon: Share2 },
     { id: 'contact', label: 'Contact', icon: Mail },
     { id: 'features', label: 'Features', icon: ToggleRight },
+    { id: 'email', label: 'Email (Resend)', icon: Mail },
     { id: 'system', label: 'System', icon: Shield },
   ];
 
@@ -257,6 +258,38 @@ export default function AdminSettings({ showToast }: Props) {
                 onChange={(v) => updateSetting('events_enabled', String(v))}
                 icon={<Calendar className="h-4 w-4" />}
               />
+            </div>
+          )}
+
+          {activeGroup === 'email' && (
+            <div className="space-y-5">
+              <SettingToggle
+                label="Email Notifications"
+                description="Enable email notifications via Resend (membership, events, messages)"
+                value={getSetting('email_notifications_enabled')?.value === 'true'}
+                onChange={(v) => updateSetting('email_notifications_enabled', String(v))}
+                icon={<Mail className="h-4 w-4" />}
+              />
+              <SettingInput
+                label="Resend API Key"
+                description="Your Resend API key (re_xxxxx). Get it from resend.com/api-keys"
+                value={getSetting('resend_api_key')?.value || ''}
+                onChange={(v) => updateSetting('resend_api_key', v)}
+              />
+              <SettingInput
+                label="Sender Email"
+                description="Must be verified in your Resend account (e.g. notifications@yourdomain.com)"
+                value={getSetting('resend_sender_email')?.value || ''}
+                onChange={(v) => updateSetting('resend_sender_email', v)}
+                icon={<Mail className="h-3.5 w-3.5 text-gold-500" />}
+              />
+              <div className="rounded-lg bg-neutral-900/30 border border-neutral-900 p-3">
+                <p className="text-[9px] text-neutral-500 leading-relaxed">
+                  Emails are sent automatically when: membership status changes, experience requests are updated,
+                  event registrations are confirmed, and admin responds to fan messages.
+                  Fans receive notifications in-app and via email if enabled.
+                </p>
+              </div>
             </div>
           )}
 

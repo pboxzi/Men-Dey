@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { supabase } from '../utils/supabase';
+import { notifyEventRegistration } from '../utils/notifications';
 import { Calendar, Clock, MapPin, Users, Trash2, RefreshCw, Plus, X, Check, Search, ArrowLeft, LayoutGrid, List, AlertTriangle, ChevronRight, MessageCircle, Mail, Copy, Ban } from 'lucide-react';
 
 interface AdminEvent {
@@ -295,6 +296,9 @@ function RegistrationsTab({ showToast }: Props) {
     setRegistrations(prev => prev.map(r => r.id === selectedReg.id ? { ...r, status: editStatus, confirmed_date: editDate, confirmed_time: editTime, confirmed_location: editLocation, admin_notes: editNotes } : r));
     setSaving(false);
     showToast?.('Registration updated!', 'success');
+
+    // Notify the fan
+    notifyEventRegistration(selectedReg.user_id, selectedReg.event_title || 'Event', selectedReg.ticket_ref || '');
   };
 
   const getBadge = (status: string) => {

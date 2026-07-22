@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useGlobalState } from '../utils/StateContext';
 import { useAuth } from '../utils/AuthContext';
 import { supabase } from '../utils/supabase';
+import { notifyRewardRedeemed } from '../utils/notifications';
 import NotificationBell from './NotificationBell';
 import MyMembershipDashboard from './MyMembershipDashboard';
 import ProfileSection from './ProfileSection';
@@ -439,15 +440,21 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   // (request wizard step removed — feature deprecated)
 
-  // Notifications State
+  // Notifications State (per-user from notifications table)
   const [notifications, setNotifications] = useState<any[]>([]);
 
   useEffect(() => {
+    if (!user?.id) return;
     void (async () => {
-      const { data, error } = await supabase.from('fan_notifications').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
       if (!error && data) setNotifications(data);
     })();
-  }, []);
+  }, [user]);
 
   // Helper helper to generate dynamic portal notifications
   const pushNotification = (text: string) => {
@@ -955,6 +962,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       await supabase.from('loyalty_points').upsert({ user_id: user?.id, total: loyaltyPoints - item.cost, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
       await supabase.from('journey_log').insert({ title: journeyMilestone.title, description: journeyMilestone.description, color: journeyMilestone.color });
       await supabase.from('fan_notifications').insert({ text: `Successfully redeemed loyalty reward: ${item.title}. Check your unlocked badges!` });
+
+      // Create notification
+      if (user?.id) notifyRewardRedeemed(user.id, item.title, item.cost);
     } catch {}
   };
 
@@ -1275,7 +1285,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   { name: 'Settings', icon: Settings }
                 ].map((item) => {
                   const Icon = item.icon;
-                  const isUnread = item.name === 'Notifications' && notifications.some(n => n.unread);
+                  const isUnread = item.name === 'Notifications' && notifications.some(n => !n.is_read);
                   const isSelected = activeTab === item.name;
 
                   return (
@@ -2517,20 +2527,21 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       <div
                         key={notif.id}
                         className={`p-4 rounded-xl border text-xs text-left flex justify-between items-center gap-4 transition-all ${
-                          notif.unread
+                          !notif.is_read
                             ? 'border-gold-500/30 bg-gold-500/[0.01]'
                             : 'border-neutral-900 bg-neutral-950/40'
                         }`}
                       >
                         <div className="space-y-1 flex-1">
-                          <p className="text-white font-medium leading-normal">{notif.text}</p>
+                          <p className="text-white font-bold text-[11px]">{notif.title}</p>
+                          <p className="text-neutral-400 leading-normal">{notif.message}</p>
                           <div className="flex items-center gap-3">
-                            <p className="text-[9px] font-mono text-neutral-500">{notif.time}</p>
-                            {notif.unread && (
+                            <p className="text-[9px] font-mono text-neutral-500">{new Date(notif.created_at).toLocaleString()}</p>
+                            {!notif.is_read && (
                               <button
-                                onClick={() => {
-                                  setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, unread: false } : n));
-                                  showToast('Notification marked as read.', 'info');
+                                onClick={async () => {
+                                  await supabase.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', notif.id);
+                                  setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: true } : n));
                                 }}
                                 className="text-[9px] font-mono text-gold-500/70 hover:text-gold-500 cursor-pointer"
                               >
@@ -2540,7 +2551,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          {notif.unread && (
+                          {!notif.is_read && (
                             <span className="h-2 w-2 rounded-full bg-gold-500 shrink-0" />
                           )}
                           <button

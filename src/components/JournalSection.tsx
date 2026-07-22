@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { JournalEntry } from '../types';
 import { useGlobalState } from '../utils/StateContext';
+import { JOURNAL_ENTRIES as STATIC_JOURNAL_ENTRIES } from '../data';
 import {
   BookOpen,
   ArrowLeft,
@@ -57,7 +58,8 @@ export default function JournalSection() {
     ...e,
     image: LOCAL_IMAGES[(articleEntries.length + i) % LOCAL_IMAGES.length],
   }))];
-  const JOURNAL_ENTRIES = allEntries.length > 0 ? allEntries : [];
+  const isLoading = allEntries.length === 0 && (content.journalArticles === undefined || content.journalEntries === undefined);
+  const JOURNAL_ENTRIES = allEntries.length > 0 ? allEntries : STATIC_JOURNAL_ENTRIES;
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [claps, setClaps] = useState<{ [id: string]: number }>({
     'journal-1': 342,
@@ -183,7 +185,23 @@ export default function JournalSection() {
               </div>
 
               {/* Entries Grid */}
-              {filteredEntries.length > 0 ? (
+              {isLoading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {[1, 2, 3].map((n) => (
+                    <div key={n} className="rounded-xl border border-neutral-900 bg-neutral-950/40 overflow-hidden animate-pulse">
+                      <div className="aspect-[16/10] bg-neutral-900" />
+                      <div className="p-6 space-y-3">
+                        <div className="h-2 w-24 bg-neutral-800 rounded" />
+                        <div className="h-4 w-3/4 bg-neutral-800 rounded" />
+                        <div className="space-y-1.5">
+                          <div className="h-2 w-full bg-neutral-800 rounded" />
+                          <div className="h-2 w-2/3 bg-neutral-800 rounded" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : filteredEntries.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {filteredEntries.map((entry) => (
                     <div

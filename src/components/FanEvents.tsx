@@ -293,7 +293,15 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
         <div className="flex flex-wrap gap-3 pt-2 border-t border-neutral-900/60">
           {(ev.regStatus === 'pending' || ev.regStatus === 'confirmed') && (
             <>
-              <button onClick={() => { openCommApp(); }}
+              <button onClick={() => {
+                if (!ev.ticketRef) return;
+                const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${ev.ticketRef}\nEvent: ${ev.title}\nDate: ${ev.month} ${ev.day}, 2026\nAttendees: ${ev.attendees || 1}\n\n--- MESSAGE ---\n${ev.specialRequests ? ev.specialRequests + '\n\n' : ''}`;
+                if (ev.commMethod === 'whatsapp') {
+                  window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+                } else {
+                  window.open(`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Event Registration - ' + ev.ticketRef)}&body=${encodeURIComponent(msg)}`, '_blank');
+                }
+              }}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-[10px] tracking-widest uppercase transition-all"
               >{ev.commMethod === 'whatsapp' ? <MessageCircle className="h-3 w-3" /> : <Mail className="h-3 w-3" />} Continue Conversation</button>
               <button onClick={() => showToast?.('Reminder scheduled!', 'success')}

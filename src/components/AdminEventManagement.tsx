@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { supabase } from '../utils/supabase';
-import { Calendar, Clock, MapPin, Users, Trash2, RefreshCw, Plus, X, Check, Search, ArrowLeft, LayoutGrid, List, AlertTriangle, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Trash2, RefreshCw, Plus, X, Check, Search, ArrowLeft, LayoutGrid, List, AlertTriangle, ChevronRight, MessageCircle, Mail, Copy, Ban } from 'lucide-react';
 
 interface AdminEvent {
   id: string; title: string; type: string; description: string;
@@ -20,6 +20,8 @@ interface Props {
 }
 
 const REG_STATUS_OPTIONS = ['pending', 'confirmed', 'active', 'attended', 'cancelled'];
+const WHATSAPP_NUMBER = '+447700000000';
+const ADMIN_EMAIL = 'events@gilliananderson.com';
 
 function formatDate(d: string) {
   if (!d) return 'N/A';
@@ -372,6 +374,41 @@ function RegistrationsTab({ showToast }: Props) {
               {saving ? <span className="h-3 w-3 border-2 border-neutral-950 border-t-transparent rounded-full animate-spin" /> : <Check className="h-3 w-3" />}
               Update
             </button>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-3">
+          <h4 className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Quick Actions</h4>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => {
+              setEditStatus('cancelled');
+              setEditNotes(`Cancelled by admin — ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`);
+              setTimeout(() => handleUpdate(), 0);
+            }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-red-800/30 bg-red-950/10 text-red-400 hover:bg-red-950/20 text-[10px] font-mono transition-all"
+            ><Ban className="h-3 w-3" /> Cancel Registration</button>
+
+            <button onClick={() => {
+              const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${r.ticket_ref}\nEvent: ${r.event_title}\nStatus: ${r.status}\n\n--- ADMIN MESSAGE ---\n`;
+              window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+            }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-emerald-800/30 bg-emerald-950/10 text-emerald-400 hover:bg-emerald-950/20 text-[10px] font-mono transition-all"
+            ><MessageCircle className="h-3 w-3" /> Contact via WhatsApp</button>
+
+            <button onClick={() => {
+              const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${r.ticket_ref}\nEvent: ${r.event_title}\nStatus: ${r.status}\n\n--- ADMIN MESSAGE ---\n`;
+              window.open(`mailto:${r.member_email}?subject=${encodeURIComponent('Event Registration - ' + r.ticket_ref)}&body=${encodeURIComponent(msg)}`, '_blank');
+            }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-blue-800/30 bg-blue-950/10 text-blue-400 hover:bg-blue-950/20 text-[10px] font-mono transition-all"
+            ><Mail className="h-3 w-3" /> Contact via Email</button>
+
+            <button onClick={() => {
+              const details = `Registration: ${r.ticket_ref}\nEvent: ${r.event_title}\nFan: ${r.member_name} <${r.member_email}>\nStatus: ${r.status}\nTicket: ${r.ticket_type} × ${r.ticket_qty}\nRegistered: ${r.created_at}`;
+              navigator.clipboard.writeText(details).then(() => showToast?.('Copied!', 'success'));
+            }}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white text-[10px] font-mono transition-all"
+            ><Copy className="h-3 w-3" /> Copy Details</button>
           </div>
         </div>
       </div>

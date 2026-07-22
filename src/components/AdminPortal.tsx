@@ -45,7 +45,8 @@ import {
   Flame,
   Filter,
   CheckSquare,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
@@ -266,6 +267,14 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   }, [backendOrders]);
 
   const [selectedOrder, setSelectedOrder] = useState<ShopOrder | null>(null);
+  const [confirmDeleteOrder, setConfirmDeleteOrder] = useState<string | null>(null);
+
+  const deleteOrder = async (id: string) => {
+    await supabase.from('orders').delete().eq('id', id);
+    setOrders(prev => prev.filter(o => o.id !== id));
+    setConfirmDeleteOrder(null);
+    showToast('Order deleted', 'info');
+  };
 
   // Membership pending count (for dashboard alert)
   const [pendingMemberships, setPendingMemberships] = useState(0);
@@ -360,6 +369,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     subscriberCount: 0,
     totalRevenue: 0,
   });
+  const [dashboardEvents, setDashboardEvents] = useState<any[]>([]);
 
   const [bookingStatusCounts, setBookingStatusCounts] = useState({ confirmed: 0, pending: 0, cancelled: 0 });
 
@@ -373,6 +383,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       { count: cancelledB },
       { count: subsCount },
       { data: ordersData },
+      { data: eventsData },
     ] = await Promise.all([
       supabase.from('profiles').select('*', { count: 'exact', head: true }),
       supabase.from('experiences').select('*', { count: 'exact', head: true }),
@@ -382,6 +393,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('status', 'cancelled'),
       supabase.from('subscribers').select('*', { count: 'exact', head: true }),
       supabase.from('orders').select('price'),
+      supabase.from('admin_events').select('*').order('created_at', { ascending: false }),
     ]);
     const revenue = (ordersData || []).reduce((sum, o: any) => sum + (parseFloat(o.price) || 0), 0);
     setDashboardStats({
@@ -397,6 +409,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       pending: pendingB ?? 0,
       cancelled: cancelledB ?? 0,
     });
+    if (eventsData) setDashboardEvents(eventsData);
   };
 
   useEffect(() => {
@@ -1111,7 +1124,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden text-left">
                       <div className="px-5 py-4 border-b border-neutral-900 flex items-center justify-between">
                         <h3 className="text-xs font-mono font-bold tracking-wider text-white uppercase">
-                          Upcoming Events
+                          Upcoming Events <span className="text-neutral-500 font-normal">({dashboardEvents.length})</span>
                         </h3>
                         <button
                           onClick={() => setActiveTab('Events')}
@@ -1120,9 +1133,33 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                           Manage
                         </button>
                       </div>
-                      <div className="p-6 text-center">
-                        <Calendar className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
-                        <p className="text-xs text-neutral-500 font-mono">Manage events in the Events tab.</p>
+                      <div className="p-3 space-y-2">
+                        {dashboardEvents.length === 0 ? (
+                          <div className="p-4 text-center">
+                            <Calendar className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
+                            <p className="text-xs text-neutral-500 font-mono">No events scheduled yet.</p>
+                          </div>
+                        ) : (
+                          dashboardEvents.slice(0, 5).map((ev: any) => (
+                            <div key={ev.id} className="flex items-start gap-3 p-3 rounded-lg border border-neutral-900/60 bg-neutral-950/20 hover:border-neutral-800 transition-colors group">
+                              <div className="h-9 w-9 rounded-lg bg-neutral-950 border border-neutral-900 flex flex-col items-center justify-center shrink-0">
+                                <span className="text-xs font-bold text-white leading-none">{ev.day || '--'}</span>
+                                <span className="text-[7px] font-mono text-gold-500 uppercase">{ev.month?.slice(0, 3) || '---'}</span>
+                              </div>
+                              <div className="flex-1 min-w-0 text-left">
+                                <p className="text-xs font-semibold text-white truncate group-hover:text-gold-500/80 transition-colors">{ev.title}</p>
+                                <div className="flex items-center gap-2 mt-0.5">
+                                  <span className="text-[9px] font-mono text-neutral-500">{ev.event_time || ev.time}</span>
+                                  <span className="h-1 w-1 rounded-full bg-neutral-800" />
+                                  <span className="text-[9px] font-mono text-neutral-500 truncate">{ev.location || 'TBA'}</span>
+                                </div>
+                              </div>
+                              <span className="shrink-0 self-center text-[8px] font-mono px-1.5 py-0.5 rounded border border-neutral-800 text-neutral-500">
+                                {ev.event_type || ev.type || 'Event'}
+                              </span>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
 
@@ -1469,7 +1506,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                         <th className="px-4 py-3 font-semibold">Total Price</th>
                         <th className="px-4 py-3 font-semibold">Updated</th>
                         <th className="px-4 py-3 font-semibold">Status</th>
-                        <th className="px-5 py-3 font-semibold text-right">Update Status</th>
+                        <th className="px-4 py-3 font-semibold text-right">Update Status</th>
+                        <th className="px-4 py-3 font-semibold text-center w-16">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-900/40">
@@ -1491,7 +1529,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                               {ord.status}
                             </span>
                           </td>
-                          <td className="px-5 py-3.5 text-right">
+                          <td className="px-4 py-3.5 text-right">
                             <select
                               value={ord.status}
                               onChange={(e) => {
@@ -1506,6 +1544,23 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                               <option value="Shipped">Shipped</option>
                               <option value="Delivered">Delivered</option>
                             </select>
+                          </td>
+                          <td className="px-4 py-3.5 text-center">
+                            {confirmDeleteOrder === ord.id ? (
+                              <div className="flex items-center justify-center gap-1">
+                                <button onClick={() => deleteOrder(ord.id)}
+                                  className="px-2 py-1 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[9px] font-mono uppercase tracking-widest transition-all"
+                                >Yes</button>
+                                <button onClick={() => setConfirmDeleteOrder(null)}
+                                  className="px-2 py-1 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[9px] font-mono uppercase transition-all"
+                                >No</button>
+                              </div>
+                            ) : (
+                              <button onClick={() => setConfirmDeleteOrder(ord.id)}
+                                title="Delete order"
+                                className="text-red-500/50 hover:text-red-400 transition-colors"
+                              ><Trash2 className="h-3.5 w-3.5" /></button>
+                            )}
                           </td>
                         </tr>
                       ))}

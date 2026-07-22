@@ -147,13 +147,13 @@ export default function AdminMembershipReview() {
 
   const deleteRequest = async (id: string) => {
     setActionLoading(id);
-    try {
-      const { error } = await supabase.from('membership_applications').delete().eq('id', id);
-      if (!error) {
-        setRequests(prev => prev.filter(r => r.id !== id));
-        if (selectedRequest?.id === id) setShowDetail(false);
-      }
-    } catch {}
+    const { error } = await supabase.from('membership_applications').delete().eq('id', id);
+    if (!error) {
+      setRequests(prev => prev.filter(r => r.id !== id));
+      if (selectedRequest?.id === id) setShowDetail(false);
+    } else {
+      alert('Failed to delete: ' + error.message);
+    }
     setActionLoading(null);
     setConfirmDelete(null);
   };

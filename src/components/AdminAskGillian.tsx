@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../utils/supabase';
+import { createNotification } from '../utils/notifications';
 import {
   MessageCircle, Send, Loader2, Clock, CheckCircle, Users,
   Wifi, WifiOff, RefreshCw, Search
@@ -194,6 +195,17 @@ export default function AdminAskGillian({ showToast, adminUserId }: Props) {
     } else {
       await fetchMessages(selectedConv.id);
       showToast('Message sent', 'success');
+
+      // Notify the fan that Gillian replied
+      createNotification({
+        userId: selectedConv.user_id,
+        type: 'message',
+        title: 'Gillian replied to your question',
+        message: msgText.slice(0, 200),
+        sendEmail: true,
+        emailSubject: 'Gillian replied to your question',
+        emailBody: `<p>Gillian has replied to your question:</p><blockquote>${msgText}</blockquote><p><a href="${window.location.origin}">View in portal</a></p>`,
+      });
     }
 
     setSending(false);

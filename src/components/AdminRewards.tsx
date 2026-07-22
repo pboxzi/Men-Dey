@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
+import { createNotification } from '../utils/notifications';
 import {
   Gift, Award, TrendingUp, Plus, Trash2, Edit3, Save, X,
   Loader2, Star, Users, Search, Crown
@@ -203,6 +204,15 @@ export default function AdminRewards({ showToast }: Props) {
     setAdjustAmount(0);
     setAdjustReason('');
     await fetchPoints();
+
+    // Notify the fan
+    createNotification({
+      userId: adjustUserId.trim(),
+      type: 'reward',
+      title: adjustAmount > 0 ? 'Points Added' : 'Points Deducted',
+      message: `${adjustAmount > 0 ? '+' : ''}${adjustAmount} points ${adjustAmount > 0 ? 'added to' : 'deducted from'} your account. ${adjustReason ? 'Reason: ' + adjustReason : ''}`.trim(),
+      sendEmail: false,
+    });
   };
 
   const resetForm = () => {

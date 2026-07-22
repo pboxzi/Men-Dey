@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Experience, ExperienceBooking } from '../types';
 import { useAuth } from '../utils/AuthContext';
 import { supabase } from '../utils/supabase';
+import { createNotification, notifyAdmins } from '../utils/notifications';
 import {
   ChevronRight, ChevronLeft, CheckCircle, AlertCircle,
   MessageCircle, Mail, Send, ShieldCheck, Calendar,
@@ -178,6 +179,20 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
       }
 
       setBookingRef(data?.booking_reference || ref);
+
+      // Notify fan + admin
+      if (user?.id) {
+        createNotification({
+          userId: user.id,
+          type: 'experience',
+          title: 'Experience Booking Submitted',
+          message: `Your request for "${exp!.title}" has been submitted. Reference: ${ref}`,
+          sendEmail: true,
+          emailSubject: `Booking Request Submitted: ${exp!.title}`,
+          emailBody: `<p>Your experience request for <strong>${exp!.title}</strong> has been submitted successfully.</p><p>Reference: <code>${ref}</code></p><p>We'll review your request and get back to you soon.</p>`,
+        });
+      }
+      notifyAdmins('experience', 'New Experience Booking', `New booking request for "${exp!.title}" from ${profile?.name || personalInfo.fullName}. Reference: ${ref}`);
 
       const message = buildMessage();
       if (form.communicationMethod === 'whatsapp') {

@@ -59,6 +59,7 @@ import AdminRewards from './AdminRewards';
 import AdminUsers from './AdminUsers';
 import AdminSettings from './AdminSettings';
 import AdminMessages from './AdminMessages';
+import { notifyAnnouncement, broadcastNotification } from '../utils/notifications';
 
 interface AdminPortalProps {
   onBackToHome: () => void;
@@ -474,6 +475,14 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       showToast('Failed to send announcement: ' + error.message, 'error');
       return;
     }
+
+    // Fan-out notification to all non-admin users
+    const { data: fans } = await supabase.from('profiles').select('id').neq('role', 'admin');
+    if (fans && fans.length > 0) {
+      const fanIds = fans.map((f: { id: string }) => f.id);
+      await notifyAnnouncement(fanIds, announceTitle.trim(), announceText.trim());
+    }
+
     showToast(`Announcement "${announceTitle}" sent successfully to ${announceScope}!`, 'success');
     setShowAnnounceModal(false);
     setAnnounceTitle('');

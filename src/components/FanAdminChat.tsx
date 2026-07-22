@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../utils/supabase';
+import { notifyAdmins } from '../utils/notifications';
 import {
   Send, Loader2, MessageSquare, Clock, CheckCircle, Wifi, WifiOff, Plus
 } from 'lucide-react';
@@ -169,6 +170,12 @@ export default function FanAdminChat({ userId, showToast }: Props) {
       await fetchMessages(convIdRef.current);
       await fetchConversations();
       setTimeout(scrollToBottom, 100);
+
+      // Notify admin of new fan message (only on first message)
+      const userMsgCount = messages.filter(m => m.sender === 'user').length;
+      if (userMsgCount === 0) {
+        notifyAdmins('message', 'New Fan Message', `A fan has started a new conversation: "${msgText.slice(0, 100)}..."`);
+      }
     }
 
     setSending(false);

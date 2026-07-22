@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../utils/supabase';
+import { notifyAdmins } from '../utils/notifications';
 import {
   Send, Loader2, MessageCircle, Clock, CheckCircle, Wifi, WifiOff
 } from 'lucide-react';
@@ -187,6 +188,9 @@ export default function AskGillianChat({ userId, showToast }: Props) {
       // Fetch real messages
       await fetchMessages();
       setTimeout(scrollToBottom, 100);
+
+      // Notify admin of new fan question
+      notifyAdmins('message', 'New Fan Question', `A fan asked Gillian: "${msgText.slice(0, 100)}..."`);
     }
 
     setSending(false);

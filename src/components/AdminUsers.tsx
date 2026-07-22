@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
+import { createNotification } from '../utils/notifications';
 import {
   Users, Search, Loader2, Crown, Shield, Mail, MapPin, Calendar,
   ChevronRight, X, Award, Star, MessageCircle, TrendingUp, Ban, CheckCircle, Trash2
@@ -108,6 +109,15 @@ export default function AdminUsers({ showToast }: Props) {
       if (selectedUser?.id === userId) {
         setSelectedUser(prev => prev ? { ...prev, role: newRole } : null);
       }
+
+      // Notify the user
+      createNotification({
+        userId,
+        type: 'system',
+        title: 'Role Updated',
+        message: `Your role has been updated to ${newRole}.`,
+        sendEmail: false,
+      });
     }
   };
 

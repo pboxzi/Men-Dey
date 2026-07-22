@@ -43,7 +43,7 @@ export async function createNotification(opts: CreateNotificationOpts): Promise<
     return;
   }
 
-  // Send email if requested
+  // Send email via Edge Function if requested
   if (sendEmail && emailSubject && emailBody) {
     await sendNotificationEmail(userId, emailSubject, emailBody);
   }
@@ -68,52 +68,55 @@ export async function broadcastNotification(
 
   await supabase.from('notifications').insert(notifications);
 
-  // TODO: batch email via Resend API
+  // Send emails to all users if enabled
+  if (sendEmail) {
+    for (const userId of userIds) {
+      await sendNotificationEmail(userId, title, message);
+    }
+  }
 }
 
-// ─── Send email via Resend ───
+// ─── Send email via Supabase Edge Function (Resend API) ───
 async function sendNotificationEmail(userId: string, subject: string, body: string): Promise<void> {
   try {
-    // Get user email
+    // Get user email from profiles
     const { data: profile } = await supabase
       .from('profiles')
       .select('email')
       .eq('id', userId)
       .maybeSingle();
 
-    if (!profile?.email) return;
-
-    // Get Resend API key from settings
-    const { data: keyData } = await supabase
-      .from('site_settings')
-      .select('value')
-      .eq('key', 'resend_api_key')
-      .maybeSingle();
-
-    if (!keyData?.value) {
-      console.warn('No Resend API key configured');
+    if (!profile?.email) {
+      console.warn('No email found for user:', userId);
       return;
     }
 
-    // Get sender email from settings
-    const { data: senderData } = await supabase
+    // Check if email notifications are enabled
+    const { data: enabledSetting } = await supabase
       .from('site_settings')
-      .select('value')
-      .eq('key', 'resend_sender_email')
+      .select('setting_value')
+      .eq('setting_key', 'email_notifications_enabled')
       .maybeSingle();
 
-    const senderEmail = senderData?.value || 'notifications@gilliananderson.com';
+    if (enabledSetting?.setting_value === 'false') {
+      console.log('Email notifications disabled');
+      return;
+    }
 
-    // Call Resend API
-    const response = await fetch('https://api.resend.com/emails', {
+    // Call the Edge Function which handles Resend API
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://wmhndjdxvxtozeyesvsy.supabase.co';
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+    const { data: { session } } = await supabase.auth.getSession();
+
+    const response = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${keyData.value}`,
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token || supabaseAnonKey}`,
+        'apikey': supabaseAnonKey,
       },
       body: JSON.stringify({
-        from: senderEmail,
-        to: [profile.email],
+        to: profile.email,
         subject,
         html: body,
       }),
@@ -121,27 +124,29 @@ async function sendNotificationEmail(userId: string, subject: string, body: stri
 
     const result = await response.json();
 
+    if (!response.ok) {
+      console.error('Edge Function email error:', result);
+      return;
+    }
+
     // Log the email
     await supabase.from('email_logs').insert({
       user_id: userId,
-      email_to: profile.email,
+      recipient_email: profile.email,
       subject,
-      body,
-      status: response.ok ? 'sent' : 'failed',
+      body_preview: body.replace(/<[^>]*>/g, '').slice(0, 500),
+      status: 'sent',
       resend_id: result.id || null,
-      error: response.ok ? null : result.message || 'Unknown error',
     });
 
     // Mark notification as email_sent
-    if (response.ok) {
-      await supabase
-        .from('notifications')
-        .update({ email_sent: true })
-        .eq('user_id', userId)
-        .eq('title', subject)
-        .order('created_at', { ascending: false })
-        .limit(1);
-    }
+    await supabase
+      .from('notifications')
+      .update({ email_sent: true })
+      .eq('user_id', userId)
+      .eq('title', subject)
+      .order('created_at', { ascending: false })
+      .limit(1);
   } catch (e) {
     console.error('Email send failed:', e);
   }
@@ -228,6 +233,33 @@ export async function notifyAnnouncement(userIds: string[], title: string, body:
     type: 'announcement' as NotificationType,
     title,
     message: body.slice(0, 500),
+    data: {},
+    email_sent: false,
+  }));
+
+  await supabase.from('notifications').insert(notifications);
+
+  // Send emails to all users
+  for (const userId of userIds) {
+    await sendNotificationEmail(userId, title, body);
+  }
+}
+
+// ─── Notify admin of fan action (finds admin users) ───
+export async function notifyAdmins(type: NotificationType, title: string, message: string) {
+  // Get all admin user IDs
+  const { data: admins } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('role', 'admin');
+
+  if (!admins || admins.length === 0) return;
+
+  const notifications = admins.map((admin: { id: string }) => ({
+    user_id: admin.id,
+    type,
+    title,
+    message,
     data: {},
     email_sent: false,
   }));

@@ -5,6 +5,7 @@ import { openWhatsApp, openEmail } from '../utils/contactSettings';
 import { useAuth } from '../utils/AuthContext';
 import { useGlobalState } from '../utils/StateContext';
 import { supabase } from '../utils/supabase';
+import { createNotification, notifyAdmins } from '../utils/notifications';
 
 interface MembershipData {
   id: string; user_id: string; status: string;
@@ -150,6 +151,18 @@ export default function MembershipSection() {
       setSubmitDone(true);
       showToast('Membership request submitted successfully!', 'success');
 
+      // Notify fan + admin
+      createNotification({
+        userId: user.id,
+        type: 'membership',
+        title: 'Membership Application Submitted',
+        message: `Your ${activeTier.name} membership application has been submitted. We'll review it shortly.`,
+        sendEmail: true,
+        emailSubject: `Membership Application Received: ${activeTier.name}`,
+        emailBody: `<p>Your <strong>${activeTier.name}</strong> membership application has been submitted successfully.</p><p>We'll review your application and get back to you soon.</p>`,
+      });
+      notifyAdmins('membership', 'New Membership Application', `New ${activeTier.name} membership application from ${profile?.name || user.email}.`);
+
       const msg = encodeURIComponent(
         `Hello, I'd like to apply for the ${activeTier.name} membership.\n\n` +
         `Name: ${cardName || profile?.name}\n` +
@@ -201,6 +214,19 @@ export default function MembershipSection() {
       setMyMembership(normalizeMembership(data));
       setShowUpgradeModal(false);
       showToast('Upgrade request submitted!', 'success');
+
+      // Notify fan + admin
+      createNotification({
+        userId: user.id,
+        type: 'membership',
+        title: 'Membership Upgrade Requested',
+        message: `Your upgrade to ${t?.name} has been submitted.`,
+        sendEmail: true,
+        emailSubject: `Upgrade Request: ${t?.name}`,
+        emailBody: `<p>Your membership upgrade to <strong>${t?.name}</strong> has been submitted.</p><p>We'll process your upgrade request shortly.</p>`,
+      });
+      notifyAdmins('membership', 'Membership Upgrade Request', `Upgrade request to ${t?.name} from ${profile?.name || user.email}.`);
+
       const msg = encodeURIComponent(
         `Hello, I'd like to upgrade my membership to ${t?.name}.\n\n` +
         `Name: ${myMembership?.card_name || profile?.name}\n` +

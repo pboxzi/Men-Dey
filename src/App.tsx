@@ -30,13 +30,11 @@ import {
   Pause,
   Sparkles,
   Home,
-  BookOpen,
-  Users
+  BookOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from './utils/theme';
 import { useAuth } from './utils/AuthContext';
-import { useGlobalState } from './utils/StateContext';
 
 // Import Types
 import { JournalEntry, MediaItem } from './types';
@@ -140,7 +138,6 @@ export default function App() {
 
   // User Authentication & Profile States (Landing Page level)
   const { user, profile, loading: authLoading, signOut } = useAuth();
-  const { content } = useGlobalState();
   const isLoggedIn = !!user;
   const userName = profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || '';
 
@@ -974,120 +971,22 @@ export default function App() {
                   </section>
                 </ScrollReveal>
 
-                {/* Journal Preview */}
+                {/* Journal Section */}
                 <ScrollReveal>
-                  <section className="py-12 sm:py-16 bg-[#050505] border-t border-neutral-900/60">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-8">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <BookOpen className="h-4 w-4 text-gold-500" />
-                            <span className="text-[9px] font-mono tracking-widest text-gold-500 uppercase font-bold">Latest from Gillian</span>
-                          </div>
-                          <h2 className="font-serif text-xl sm:text-2xl font-bold text-white uppercase tracking-tight">Journal</h2>
-                        </div>
-                        <button onClick={() => handleNavClick('JOURNAL')} className="text-[10px] font-mono text-gold-500 hover:text-gold-400 tracking-widest uppercase flex items-center gap-1 transition-colors">
-                          VIEW ALL <ArrowRight className="h-3 w-3" />
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {(content.journalArticles || []).filter((a: any) => a.status === 'published').slice(0, 2).map((article: any) => (
-                          <button key={article.id} onClick={() => handleNavClick('JOURNAL')}
-                            className="flex gap-4 p-4 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-gold-500/20 hover:bg-neutral-950/80 transition-all text-left group">
-                            {article.cover_image_url && (
-                              <div className="w-20 h-20 rounded-lg overflow-hidden border border-neutral-800 shrink-0 bg-neutral-900">
-                                <img src={article.cover_image_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                              </div>
-                            )}
-                            <div className="flex flex-col justify-center min-w-0 space-y-1">
-                              <h3 className="text-xs font-bold text-white truncate group-hover:text-gold-500 transition-colors">{article.title}</h3>
-                              <p className="text-[10px] text-neutral-500 line-clamp-2">{article.excerpt}</p>
-                              <span className="text-[9px] font-mono text-neutral-600">{article.created_at ? new Date(article.created_at).toLocaleDateString() : ''}</span>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </section>
+                  <JournalSection />
                 </ScrollReveal>
 
-                {/* Media Preview */}
+                {/* Media Section */}
                 <ScrollReveal>
-                  <section className="py-12 sm:py-16 border-t border-neutral-900/60">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-8">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Play className="h-4 w-4 text-gold-500" />
-                            <span className="text-[9px] font-mono tracking-widest text-gold-500 uppercase font-bold">Watch & Discover</span>
-                          </div>
-                          <h2 className="font-serif text-xl sm:text-2xl font-bold text-white uppercase tracking-tight">Media</h2>
-                        </div>
-                        <button onClick={() => handleNavClick('MEDIA')} className="text-[10px] font-mono text-gold-500 hover:text-gold-400 tracking-widest uppercase flex items-center gap-1 transition-colors">
-                          VIEW ALL <ArrowRight className="h-3 w-3" />
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        {MEDIA_ITEMS.slice(0, 4).map((item) => (
-                          <button key={item.id} onClick={() => { handleNavClick('MEDIA'); }}
-                            className="relative aspect-video rounded-xl overflow-hidden border border-neutral-900 bg-neutral-900 group">
-                            <img src={item.thumbnail} alt="" className="w-full h-full object-cover brightness-75 group-hover:scale-105 group-hover:brightness-100 transition-all" />
-                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-100">
-                              <div className="p-2 rounded-full bg-gold-500/90 text-neutral-950">
-                                <Play className="h-4 w-4 fill-neutral-950" />
-                              </div>
-                            </div>
-                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
-                              <p className="text-[9px] font-bold text-white truncate">{item.title}</p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </section>
+                  <MediaSection />
                 </ScrollReveal>
 
-                {/* Community Preview */}
+                {/* Community Section */}
                 <ScrollReveal>
-                  <section className="py-12 sm:py-16 border-t border-neutral-900/60">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-8">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-gold-500" />
-                            <span className="text-[9px] font-mono tracking-widest text-gold-500 uppercase font-bold">Fan Highlights</span>
-                          </div>
-                          <h2 className="font-serif text-xl sm:text-2xl font-bold text-white uppercase tracking-tight">Community</h2>
-                        </div>
-                        <button onClick={() => handleNavClick('COMMUNITY')} className="text-[10px] font-mono text-gold-500 hover:text-gold-400 tracking-widest uppercase flex items-center gap-1 transition-colors">
-                          JOIN NOW <ArrowRight className="h-3 w-3" />
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {(content.posts || []).slice(0, 2).map((post: any) => (
-                          <div key={post.id} className="p-4 rounded-xl border border-neutral-900 bg-neutral-950/40 space-y-2">
-                            <div className="flex items-center gap-2">
-                              <div className="w-7 h-7 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                                <span className="text-[8px] font-bold text-gold-500">{(post.author || 'U')[0]}</span>
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-bold text-white">{post.author}</p>
-                                <p className="text-[8px] text-neutral-600">{post.time}</p>
-                              </div>
-                            </div>
-                            <p className="text-[11px] text-neutral-300 line-clamp-2">{post.text}</p>
-                            <div className="flex items-center gap-3 text-[9px] text-neutral-500">
-                              <span className="flex items-center gap-1"><Heart className="h-3 w-3" /> {post.likes || 0}</span>
-                              <span className="flex items-center gap-1"><MessageSquare className="h-3 w-3" /> {post.comments || 0}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </section>
+                  <CommunitySection />
                 </ScrollReveal>
 
-                {/* FAQ Section — kept as-is (already compact) */}
+                {/* FAQ Section */}
                 <ScrollReveal>
                   <FAQSection />
                 </ScrollReveal>

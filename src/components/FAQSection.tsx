@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useGlobalState } from '../utils/StateContext';
 import {
   HelpCircle,
   Search,
@@ -144,8 +143,7 @@ const FAQ_DATA_FALLBACK: FAQItem[] = [
 ];
 
 export default function FAQSection() {
-  const { content } = useGlobalState();
-  const FAQ_DATA = content.faqEntries.length > 0 ? content.faqEntries : FAQ_DATA_FALLBACK;
+  const FAQ_DATA = FAQ_DATA_FALLBACK;
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<'all' | 'community' | 'membership' | 'events' | 'experiences' | 'portal' | 'advocacy'>('all');
   const [expandedId, setExpandedId] = useState<string | null>('faq-what-is');

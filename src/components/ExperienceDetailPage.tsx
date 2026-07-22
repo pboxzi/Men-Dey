@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Experience } from '../types';
 import BookingPage from './BookingPage';
+import { useAuth } from '../utils/AuthContext';
 import { supabase } from '../utils/supabase';
 import {
   ArrowLeft, Calendar, MapPin, Clock, Users, Star, Sparkles,
   Shield, Info, ChevronRight, Image as ImageIcon, CheckCircle,
   X, Heart, Award, Ticket, Globe, Palette, Compass, BookOpen,
-  Camera, Zap,
+  Camera, Zap, Lock,
 } from 'lucide-react';
 
 interface Props {
@@ -27,6 +29,8 @@ const CATEGORY_ICONS: Record<string, any> = {
 };
 
 export default function ExperienceDetailPage({ experienceId, onBack, onBook }: Props) {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [exp, setExp] = useState<Experience | null>(null);
   const [loading, setLoading] = useState(true);
   const [showBooking, setShowBooking] = useState(false);
@@ -314,21 +318,34 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
                 <div className="h-px bg-gradient-to-r from-transparent via-gold-500/20 to-transparent" />
 
                 <button
-                  onClick={() => setShowBooking(true)}
+                  onClick={() => {
+                    if (!user) {
+                      navigate('/portal?mode=login');
+                      return;
+                    }
+                    setShowBooking(true);
+                  }}
                   disabled={isFull}
                   className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-lg text-xs font-bold tracking-widest uppercase transition-all duration-200 ${
                     isFull
                       ? 'bg-neutral-900 text-neutral-600 cursor-not-allowed'
-                      : 'bg-gold-500 hover:bg-gold-400 text-neutral-950 shadow-[0_0_15px_-3px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_-3px_rgba(212,175,55,0.4)]'
+                      : user
+                        ? 'bg-gold-500 hover:bg-gold-400 text-neutral-950 shadow-[0_0_15px_-3px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_-3px_rgba(212,175,55,0.4)]'
+                        : 'bg-neutral-900 border border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:text-white'
                   }`}
                 >
-                  {isFull ? 'Fully Booked' : 'Book Experience'}
+                  {isFull ? 'Fully Booked' : user ? 'Book Experience' : (
+                    <>
+                      <Lock className="h-3.5 w-3.5" />
+                      Sign in to Book
+                    </>
+                  )}
                   {!isFull && <ChevronRight className="h-3.5 w-3.5" />}
                 </button>
 
                 <div className="flex items-center gap-2 text-[9px] font-mono text-neutral-500 justify-center">
                   <Info className="h-3 w-3" />
-                  <span>Requires admin confirmation</span>
+                  <span>{user ? 'Requires admin confirmation' : 'Sign in required to book this experience'}</span>
                 </div>
               </div>
 

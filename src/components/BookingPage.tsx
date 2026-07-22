@@ -9,7 +9,7 @@ import {
   ChevronRight, ChevronLeft, CheckCircle, AlertCircle,
   MessageCircle, Mail, Send, ShieldCheck, Calendar,
   Info, Users, MapPin, Clock, Star, Heart, Sparkles,
-  ArrowLeft, Sun, Camera, Gift,
+  ArrowLeft, Sun, Camera, Gift, Lock,
 } from 'lucide-react';
 import { openWhatsApp, openEmail } from '../utils/contactSettings';
 
@@ -49,6 +49,38 @@ const JOYFUL_MESSAGES = [
 export default function BookingPage({ experienceId, experience: passedExp, onBack, onSuccess }: Props) {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
+
+  // Redirect to login if not signed in
+  if (!user) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center space-y-4 max-w-sm mx-auto px-4">
+          <div className="h-16 w-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto">
+            <Lock className="h-7 w-7 text-gold-500" />
+          </div>
+          <h2 className="font-serif text-xl font-bold text-white">Sign In Required</h2>
+          <p className="text-xs text-neutral-400 leading-relaxed">
+            You need to be signed in to book this experience. Your details will be auto-filled from your profile.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => navigate('/portal?mode=login')}
+              className="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={onBack}
+              className="px-6 py-2.5 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const [exp, setExp] = useState<Experience | null>(passedExp || null);
   const [loadingExp, setLoadingExp] = useState(!passedExp && !!experienceId);
   const [joyfulMessage] = useState(() => JOYFUL_MESSAGES[Math.floor(Math.random() * JOYFUL_MESSAGES.length)]);

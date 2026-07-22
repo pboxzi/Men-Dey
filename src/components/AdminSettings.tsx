@@ -265,20 +265,14 @@ export default function AdminSettings({ showToast }: Props) {
             <div className="space-y-5">
               <SettingToggle
                 label="Email Notifications"
-                description="Enable email notifications via Resend (membership, events, messages)"
+                description="Enable email notifications (membership, events, messages)"
                 value={getSetting('email_notifications_enabled')?.value === 'true'}
                 onChange={(v) => updateSetting('email_notifications_enabled', String(v))}
                 icon={<Mail className="h-4 w-4" />}
               />
               <SettingInput
-                label="Resend API Key"
-                description="Your Resend API key (re_xxxxx). Get it from resend.com/api-keys"
-                value={getSetting('resend_api_key')?.value || ''}
-                onChange={(v) => updateSetting('resend_api_key', v)}
-              />
-              <SettingInput
                 label="Sender Email"
-                description="Must be verified in your Resend account (e.g. notifications@yourdomain.com)"
+                description="Email address that notifications are sent from (must be verified in Resend)"
                 value={getSetting('resend_sender_email')?.value || ''}
                 onChange={(v) => updateSetting('resend_sender_email', v)}
                 icon={<Mail className="h-3.5 w-3.5 text-gold-500" />}

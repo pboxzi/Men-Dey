@@ -848,7 +848,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     {/* Hover menu */}
                     <div className="absolute right-0 top-full mt-1.5 w-52 bg-neutral-950 border border-neutral-900 rounded-lg shadow-xl py-1 z-30 hidden group-hover:block">
                       <button
-                        onClick={() => setShowEventModal(true)}
+                        onClick={() => { setActiveTab('Events'); }}
                         className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center gap-2"
                       >
                         <Plus className="h-3.5 w-3.5 text-amber-500" />

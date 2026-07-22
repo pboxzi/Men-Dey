@@ -68,7 +68,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
       setLoading(false);
       return;
     }
-    const regMap = new Map<string, EventItem>();
+    const regMap = new Map<string, Partial<EventItem>>();
     if (regRes.data) regRes.data.forEach((r: any) => regMap.set(r.event_id, {
       regId: r.id, ticketRef: r.ticket_ref || '', regStatus: r.status || 'pending', created_at: r.created_at,
       attendees: r.ticket_qty, specialRequests: r.special_requests, commMethod: r.communication_method,

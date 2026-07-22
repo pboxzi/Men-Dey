@@ -1342,6 +1342,53 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           {/* ACTIVE VIEW: EVENTS */}
           {activeTab === 'Events' && <AdminEventManagement showToast={showToast} />}
 
+          {/* ACTIVE VIEW: NOTIFICATIONS */}
+          {activeTab === 'Notifications' && (
+            <div className="space-y-6">
+              <div className="space-y-1">
+                <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">Notifications</h2>
+                <p className="text-xs text-neutral-500 font-mono">Platform notifications and announcements.</p>
+              </div>
+              <div className="space-y-3">
+                {notifications.length === 0 ? (
+                  <div className="rounded-xl border border-neutral-900 p-12 text-center text-neutral-500 text-xs font-mono">
+                    No notifications yet.
+                  </div>
+                ) : (
+                  notifications.map((n: any) => (
+                    <div key={n.id} className={`p-4 rounded-xl border text-xs text-left flex justify-between items-start gap-4 transition-all ${
+                      n.status === 'unread' ? 'border-gold-500/30 bg-gold-500/[0.02]' : 'border-neutral-900 bg-neutral-950/40'
+                    }`}>
+                      <div className="space-y-1 flex-1">
+                        <p className="text-white font-bold text-[11px]">{n.title}</p>
+                        <p className="text-neutral-400 leading-relaxed">{n.message}</p>
+                        <div className="flex items-center gap-3">
+                          <p className="text-[9px] font-mono text-neutral-500">{new Date(n.created_at).toLocaleString()}</p>
+                          {n.scope && <span className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-neutral-900 text-neutral-400">{n.scope}</span>}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {n.status === 'unread' && (
+                          <span className="h-2 w-2 rounded-full bg-gold-500" />
+                        )}
+                        <button
+                          onClick={async () => {
+                            await supabase.from('admin_notifications').update({ status: 'read' }).eq('id', n.id);
+                            setNotifications(prev => prev.map((x: any) => x.id === n.id ? { ...x, status: 'read' } : x));
+                            setNotificationCount(prev => Math.max(0, prev - 1));
+                          }}
+                          className="text-[9px] font-mono text-gold-500/70 hover:text-gold-500 cursor-pointer"
+                        >
+                          Mark Read
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
           {/* ACTIVE VIEW: COMMUNITY MANAGEMENT */}
           {activeTab === 'Community' && <AdminCommunityManagement showToast={showToast} />}
 

@@ -2508,8 +2508,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     </p>
                   </div>
                   <button
-                    onClick={() => {
-                      setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+                    onClick={async () => {
+                      await supabase.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('user_id', user?.id).eq('is_read', false);
+                      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
                     }}
                     className="text-[10px] font-mono text-gold-500 hover:text-white"
                   >

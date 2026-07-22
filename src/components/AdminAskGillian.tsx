@@ -81,11 +81,6 @@ export default function AdminAskGillian({ showToast, adminUserId }: Props) {
       .select('*')
       .order('last_message_at', { ascending: false });
 
-    // Filter out admin's own conversation
-    if (adminUserId) {
-      query = query.neq('user_id', adminUserId);
-    }
-
     const { data: convs } = await query;
 
     if (convs) {

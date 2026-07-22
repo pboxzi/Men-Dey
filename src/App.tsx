@@ -388,14 +388,14 @@ export default function App() {
         <div className="flex items-center px-2 py-2.5 sm:px-4 md:px-6 gap-2 sm:gap-4">
           {/* Logo */}
           <a href="/" className="flex items-center gap-2 group shrink-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center group-hover:border-gold-500/40 transition-colors">
-              <span className="font-serif text-sm font-bold text-gold-500">GA</span>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center group-hover:border-gold-500/40 transition-colors">
+              <span className="font-serif text-xs sm:text-sm font-bold text-gold-500">GA</span>
             </div>
-            <div className="hidden sm:flex flex-col">
-              <span className="text-[11px] font-bold tracking-[0.12em] text-white leading-tight">
+            <div className="flex flex-col">
+              <span className="text-[9px] sm:text-[11px] font-bold tracking-[0.12em] text-white leading-tight">
                 GILLIAN ANDERSON
               </span>
-              <span className="text-[8px] font-mono tracking-[0.2em] text-gold-500/70 leading-tight">
+              <span className="text-[7px] sm:text-[8px] font-mono tracking-[0.2em] text-gold-500/70 leading-tight">
                 OFFICIAL
               </span>
             </div>
@@ -432,7 +432,7 @@ export default function App() {
           </nav>
 
           {/* Right Header Actions */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 ml-auto">
             {/* Auth Buttons (logged out) or Profile Menu (logged in) */}
             {!user ? (
               <div className="flex items-center gap-1.5">

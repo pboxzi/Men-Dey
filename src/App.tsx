@@ -1267,6 +1267,7 @@ export default function App() {
                   { icon: <MessageSquare className="h-5 w-5" />, label: 'Community', nav: 'COMMUNITY' },
                   { icon: <Compass className="h-5 w-5" />, label: 'Experiences', nav: 'EXPERIENCES' },
                   { icon: <Crown className="h-5 w-5" />, label: 'Membership', nav: 'MEMBERSHIP' },
+                  { icon: <Calendar className="h-5 w-5" />, label: 'Events', nav: 'EVENTS' },
                   { icon: <HelpCircle className="h-5 w-5" />, label: 'FAQ', nav: 'FAQ' },
                   { icon: <Heart className="h-5 w-5" />, label: 'Advocacy', nav: 'ABOUT' },
                 ].map((item) => (

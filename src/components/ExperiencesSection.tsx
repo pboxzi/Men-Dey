@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Experience, ExperienceBooking } from '../types';
 import BookingPage from './BookingPage';
@@ -40,6 +41,8 @@ const CATEGORY_ICONS: Record<string, any> = {
 };
 
 export default function ExperiencesSection() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [detailViewId, setDetailViewId] = useState<string | null>(null);
@@ -70,26 +73,20 @@ export default function ExperiencesSection() {
     };
     loadData();
 
-    const rawHash = window.location.hash.replace('#', '');
-    const upperHash = rawHash.toUpperCase();
-    if (upperHash.startsWith('EXPERIENCES/BOOK/')) {
-      const expId = rawHash.split('/')[2];
-      if (expId) setBookingId(expId);
+    const pathParts = location.pathname.split('/');
+    if (pathParts[1] === 'experiences' && pathParts[2] === 'book' && pathParts[3]) {
+      setBookingId(pathParts[3]);
     }
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
-    const onHashChange = () => {
-      const rawHash = window.location.hash.replace('#', '');
-      const upperHash = rawHash.toUpperCase();
-      if (upperHash.startsWith('EXPERIENCES/BOOK/')) {
-        const expId = rawHash.split('/')[2];
-        if (expId) setBookingId(expId);
-      }
-    };
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
-  }, []);
+    const pathParts = location.pathname.split('/');
+    if (pathParts[1] === 'experiences' && pathParts[2] === 'book' && pathParts[3]) {
+      setBookingId(pathParts[3]);
+    } else {
+      setBookingId(null);
+    }
+  }, [location.pathname]);
 
   const filteredExperiences = useMemo(() => {
     let result = experiences;
@@ -122,11 +119,11 @@ export default function ExperiencesSection() {
   const openDetail = (exp: Experience) => setDetailViewId(exp.id);
 
   const openBooking = (exp: Experience) => {
-    window.location.hash = `EXPERIENCES/BOOK/${exp.id}`;
+    navigate(`/experiences/book/${exp.id}`);
   };
 
   const closeBooking = () => {
-    window.location.hash = '';
+    navigate('/experiences');
     setBookingId(null);
   };
 
@@ -134,7 +131,7 @@ export default function ExperiencesSection() {
     setBookings(prev => [booking, ...prev]);
     setBookingId(null);
     setActiveTab('bookings');
-    window.location.hash = '';
+    navigate('/experiences');
   };
 
   const getStatusColor = (status: string) => {

@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useGlobalState } from '../utils/StateContext';
 import { useAuth } from '../utils/AuthContext';
 import { supabase } from '../utils/supabase';
@@ -159,10 +160,14 @@ const getLoyaltyRank = (points: number) => {
 
 export default function FanPortal({ onBackToHome }: FanPortalProps) {
   // Authentication
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, session, profile, loading: sessionLoading, signIn, signUp, signOut, updateProfile } = useAuth();
   const isLoggedIn = !!user;
 
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('register');
+  const [authMode, setAuthMode] = useState<'login' | 'register'>(
+    searchParams.get('mode') === 'login' ? 'login' : 'register'
+  );
   const [authName, setAuthName] = useState('');
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
@@ -170,6 +175,14 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
+
+  // Sync auth mode with URL params
+  useEffect(() => {
+    const mode = searchParams.get('mode');
+    if (mode === 'login' || mode === 'register') {
+      setAuthMode(mode);
+    }
+  }, [searchParams]);
 
   // Sync profile data into local state when logged in
   useEffect(() => {
@@ -985,7 +998,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
           setAuthError(error);
           return;
         }
-        setActiveTab('Dashboard');
+        setShowWelcome(true);
       } else {
         const { error, user: newUser } = await signUp(authEmail, authPassword, authName);
         if (error) {
@@ -994,12 +1007,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         }
         if (newUser) {
           setShowWelcome(true);
-          setTimeout(() => {
-            setShowWelcome(false);
-            if (authCountry) {
-              updateProfile({ country: authCountry });
-            }
-          }, 2000);
         }
       }
     } finally {
@@ -1007,11 +1014,17 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     }
   };
 
+  // Admin users cannot access fan portal
+  if (!sessionLoading && profile?.role === 'admin') {
+    navigate('/admin', { replace: true });
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 flex flex-col justify-between overflow-x-hidden">
       
       {/* 1. AUTHENTICATION GATE SCREEN */}
-      {!isLoggedIn ? (
+      {!isLoggedIn || !profile ? (
         <div className="flex-1 flex items-center justify-center py-16 px-4">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(223,186,137,0.03),transparent)] pointer-events-none" />
           
@@ -1021,28 +1034,31 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 key="welcome-panel"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-md rounded-xl border border-neutral-900 bg-neutral-950 p-8 shadow-2xl text-center space-y-6"
+                className="w-full max-w-md rounded-xl border border-gold-500/20 bg-neutral-950 p-8 shadow-2xl text-center space-y-6"
               >
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gold-500/10 text-gold-500 border border-gold-500/25">
-                  <Sparkles className="h-6 w-6 animate-pulse" />
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold-500/10 text-gold-500 border border-gold-500/30">
+                  <Star className="h-7 w-7" />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest block font-bold">
-                    REGISTRATION SENT
+                    WELCOME TO YOUR SANCTUARY
                   </span>
-                  <h4 className="font-serif text-lg font-bold tracking-wider text-white">
-                    CHECK YOUR EMAIL
+                  <h4 className="font-serif text-xl font-bold tracking-wider text-white">
+                    You're All Set!
                   </h4>
                   <p className="text-xs text-neutral-400 max-w-xs mx-auto leading-relaxed">
-                    A confirmation link has been sent to <span className="text-white font-bold">{authEmail}</span>. Please check your inbox and confirm your email to activate your sanctuary access.
+                    Your account is ready. Access your personal portal to manage your profile, connect with the community, and explore exclusive experiences.
                   </p>
                 </div>
-                <div className="rounded border border-neutral-900 bg-neutral-900/40 p-4">
-                  <p className="text-xs italic text-gold-500 font-serif leading-relaxed">
-                    "It's a wonderful thing when we can connect with transparency and sincerity. Welcome. Let's do some good."
-                  </p>
-                  <p className="text-[8px] text-neutral-500 font-mono mt-2 uppercase tracking-widest">— GILLIAN ANDERSON</p>
-                </div>
+                <button
+                  onClick={() => { setShowWelcome(false); setActiveTab('Dashboard'); }}
+                  className="w-full py-3 rounded-lg bg-gradient-to-r from-gold-500 to-amber-500 text-neutral-950 font-bold text-sm tracking-wider hover:from-gold-400 hover:to-amber-400 transition-all"
+                >
+                  ENTER MY PORTAL
+                </button>
+                <p className="text-[8px] text-neutral-600 font-mono uppercase tracking-widest">
+                  Find your portal anytime in the profile menu above
+                </p>
               </motion.div>
             ) : (
               <motion.div
@@ -1050,110 +1066,119 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.97 }}
-                className="w-full max-w-md rounded-xl border border-neutral-900 bg-[#0a0a0c] p-6.5 shadow-2xl relative overflow-hidden text-left space-y-6"
+                className="w-full max-w-sm rounded-2xl border border-neutral-800/60 bg-[#0a0a0c] p-8 shadow-2xl relative overflow-hidden text-left"
               >
-                <div className="absolute top-0 right-0 h-20 w-20 bg-[radial-gradient(circle_at_top_right,rgba(223,186,137,0.07),transparent)] pointer-events-none" />
-                <div className="absolute bottom-0 left-0 h-20 w-20 bg-[radial-gradient(circle_at_bottom_left,rgba(223,186,137,0.02),transparent)] pointer-events-none" />
+                <div className="absolute top-0 right-0 h-32 w-32 bg-[radial-gradient(circle_at_top_right,rgba(223,186,137,0.06),transparent)] pointer-events-none" />
 
-                <div className="text-center space-y-2">
-                  <span className="font-serif text-2xl font-bold tracking-widest text-white block">GA</span>
-                  <p className="font-serif text-xs font-bold tracking-widest text-neutral-300 uppercase">Gillian Anderson Sanctuary</p>
-                  <p className="font-mono text-[8px] tracking-[0.25em] text-gold-500/70 uppercase">Official Communication Bridge</p>
+                {/* Header */}
+                <div className="text-center mb-8">
+                  <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center mb-4">
+                    <Star className="h-6 w-6 text-gold-500" />
+                  </div>
+                  <h2 className="font-serif text-lg font-bold text-white tracking-wide">
+                    {authMode === 'register' ? 'Join the Sanctuary' : 'Welcome Back'}
+                  </h2>
+                  <p className="text-[10px] text-neutral-500 mt-1.5 font-mono tracking-wider">
+                    {authMode === 'register' ? 'Create your account to get started' : 'Sign in to your portal'}
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-1 border-b border-neutral-900 pb-1.5">
+                {/* Tab Switcher */}
+                <div className="flex bg-neutral-900/50 rounded-lg p-1 mb-6">
                   <button
                     onClick={() => setAuthMode('register')}
-                    className={`pb-2 text-xs font-mono font-bold tracking-wider text-center transition-all ${
-                      authMode === 'register' ? 'text-gold-500 border-b-2 border-gold-500' : 'text-neutral-500 hover:text-white'
+                    className={`flex-1 py-2 text-[10px] font-bold tracking-widest rounded-md transition-all ${
+                      authMode === 'register' ? 'bg-gold-500 text-neutral-950' : 'text-neutral-500 hover:text-white'
                     }`}
                   >
-                    REGISTER ACCOUNT
+                    SIGN UP
                   </button>
                   <button
                     onClick={() => setAuthMode('login')}
-                    className={`pb-2 text-xs font-mono font-bold tracking-wider text-center transition-all ${
-                      authMode === 'login' ? 'text-gold-500 border-b-2 border-gold-500' : 'text-neutral-500 hover:text-white'
+                    className={`flex-1 py-2 text-[10px] font-bold tracking-widest rounded-md transition-all ${
+                      authMode === 'login' ? 'bg-gold-500 text-neutral-950' : 'text-neutral-500 hover:text-white'
                     }`}
                   >
-                    LOGIN PORTAL
+                    SIGN IN
                   </button>
                 </div>
 
+                {/* Error */}
                 {authError && (
-                  <div className="border border-red-900/50 bg-red-950/20 rounded p-3 text-center">
-                    <p className="text-[10px] font-mono text-red-400 font-semibold">{authError}</p>
+                  <div className="mb-4 border border-red-900/40 bg-red-950/20 rounded-lg p-3">
+                    <p className="text-[10px] font-mono text-red-400">{authError}</p>
                   </div>
                 )}
 
-                <form onSubmit={handleAuthSubmit} className="space-y-4">
+                {/* Form */}
+                <form onSubmit={handleAuthSubmit} className="space-y-3.5">
                   {authMode === 'register' && (
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-wider">FULL NAME</label>
+                    <div>
+                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Full Name</label>
                       <input
                         type="text"
                         required
                         value={authName}
                         onChange={(e) => setAuthName(e.target.value)}
-                        placeholder="John Smith"
-                        className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-gold-500/50"
+                        placeholder="Your full name"
+                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
                       />
                     </div>
                   )}
 
-                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-wider">EMAIL ADDRESS</label>
+                  <div>
+                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Email</label>
                     <input
                       type="email"
                       required
                       value={authEmail}
                       onChange={(e) => setAuthEmail(e.target.value)}
-                      placeholder="john.smith@gmail.com"
-                      className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-gold-500/50"
+                      placeholder="you@example.com"
+                      className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-wider">PASSWORD</label>
+                  <div>
+                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Password</label>
                     <input
                       type="password"
                       required
                       value={authPassword}
                       onChange={(e) => setAuthPassword(e.target.value)}
-                      placeholder="••••••••••••"
-                      className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-gold-500/50"
+                      placeholder="Enter your password"
+                      className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
                     />
                   </div>
 
                   {authMode === 'register' && (
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-mono text-neutral-400 uppercase tracking-wider">COUNTRY RESIDENCE</label>
+                    <div>
+                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Country</label>
                       <select
                         value={authCountry}
                         onChange={(e) => setAuthCountry(e.target.value)}
-                        className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-xs text-neutral-300 outline-none focus:border-gold-500/50"
+                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-neutral-300 outline-none focus:border-gold-500/50 transition-colors"
                       >
-                        <option value="USA">USA 🇺🇸</option>
-                        <option value="Canada">Canada 🇨🇦</option>
-                        <option value="UK">United Kingdom 🇬🇧</option>
-                        <option value="Australia">Australia 🇦🇺</option>
-                        <option value="New Zealand">New Zealand 🇳🇿</option>
-                        <option value="Japan">Japan 🇯🇵</option>
-                        <option value="Germany">Germany 🇩🇪</option>
-                        <option value="Brazil">Brazil 🇧🇷</option>
-                        <option value="France">France 🇫🇷</option>
-                        <option value="India">India 🇮🇳</option>
-                        <option value="Mexico">Mexico 🇲🇽</option>
-                        <option value="South Africa">South Africa 🇿🇦</option>
-                        <option value="South Korea">South Korea 🇰🇷</option>
-                        <option value="Italy">Italy 🇮🇹</option>
-                        <option value="Spain">Spain 🇪🇸</option>
-                        <option value="Argentina">Argentina 🇦🇷</option>
-                        <option value="Philippines">Philippines 🇵🇭</option>
-                        <option value="Singapore">Singapore 🇸🇬</option>
-                        <option value="Ireland">Ireland 🇮🇪</option>
-                        <option value="Netherlands">Netherlands 🇳🇱</option>
-                        <option value="Global">Other Country (Global)</option>
+                        <option value="USA">United States</option>
+                        <option value="Canada">Canada</option>
+                        <option value="UK">United Kingdom</option>
+                        <option value="Australia">Australia</option>
+                        <option value="New Zealand">New Zealand</option>
+                        <option value="Japan">Japan</option>
+                        <option value="Germany">Germany</option>
+                        <option value="Brazil">Brazil</option>
+                        <option value="France">France</option>
+                        <option value="India">India</option>
+                        <option value="Mexico">Mexico</option>
+                        <option value="South Africa">South Africa</option>
+                        <option value="South Korea">South Korea</option>
+                        <option value="Italy">Italy</option>
+                        <option value="Spain">Spain</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Ireland">Ireland</option>
+                        <option value="Netherlands">Netherlands</option>
+                        <option value="Global">Other</option>
                       </select>
                     </div>
                   )}
@@ -1161,22 +1186,19 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <button
                     type="submit"
                     disabled={authLoading}
-                    className="w-full flex items-center justify-center gap-1.5 bg-gold-500 hover:bg-gold-400 disabled:bg-neutral-700 disabled:text-neutral-500 text-neutral-950 font-bold py-2.5 rounded text-xs transition-all active:scale-95 uppercase tracking-wider shadow-md shadow-gold-500/10 mt-6"
+                    className="w-full bg-gold-500 hover:bg-gold-400 disabled:bg-neutral-800 disabled:text-neutral-500 text-neutral-950 font-bold py-3 rounded-lg text-xs tracking-widest transition-all active:scale-[0.98] mt-2"
                   >
-                    {authLoading ? (
-                      <span className="animate-pulse">Processing...</span>
-                    ) : (
-                      <><Lock className="h-3.5 w-3.5" />{authMode === 'register' ? 'Authorize Registration' : 'Establish Connection'}</>
-                    )}
+                    {authLoading ? 'PLEASE WAIT...' : authMode === 'register' ? 'CREATE ACCOUNT' : 'SIGN IN'}
                   </button>
                 </form>
 
-                <div className="text-center">
+                {/* Footer */}
+                <div className="text-center mt-6">
                   <button
                     onClick={onBackToHome}
-                    className="text-[10px] font-mono text-neutral-500 hover:text-gold-500 transition-colors"
+                    className="text-[10px] text-neutral-600 hover:text-gold-500 transition-colors font-mono tracking-wider"
                   >
-                    ← Back to Landing Page
+                    ← Back to Home
                   </button>
                 </div>
               </motion.div>
@@ -1880,7 +1902,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                 <span className="text-[10px] font-mono font-bold text-white">{exp.price || 'Complimentary'}</span>
                                 <div className="flex gap-1.5">
                                   <button
-                                    onClick={() => !isFull && (window.location.hash = `EXPERIENCES/BOOK/${exp.id}`)}
+                                    onClick={() => !isFull && navigate(`/experiences/book/${exp.id}`)}
                                     disabled={isFull}
                                     className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[8px] font-mono tracking-wider uppercase transition-all ${
                                       isFull

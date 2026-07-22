@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Crown, Clock, CheckCircle2, XCircle, RefreshCw, ShieldAlert, AlertTriangle, Loader2, Download, Copy, User, ArrowUp, MessageCircle, Mail, Check } from 'lucide-react';
 import { supabase } from '../utils/supabase';
@@ -57,6 +58,7 @@ function normalizeMembership(row: any): MembershipData | null {
 }
 
 export default function MyMembershipDashboard({ userId, authName, rank, progressPercent, content }: Props) {
+  const navigate = useNavigate();
   const [membership, setMembership] = useState<MembershipData | null>(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
@@ -265,7 +267,7 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
           <Crown className="h-10 w-10 text-neutral-700 mx-auto" />
           <h3 className="font-serif text-lg font-bold text-white">You don't have a membership yet.</h3>
           <p className="text-xs text-neutral-500">Explore the membership tiers and apply to become an official member.</p>
-          <button onClick={() => window.location.hash = '#MEMBERSHIP'}
+          <button onClick={() => navigate('/membership')}
             className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all"
           >Explore Membership</button>
         </div>

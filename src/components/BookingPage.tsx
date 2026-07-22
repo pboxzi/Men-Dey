@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Experience, ExperienceBooking } from '../types';
 import { useAuth } from '../utils/AuthContext';
@@ -46,6 +47,7 @@ const JOYFUL_MESSAGES = [
 ];
 
 export default function BookingPage({ experienceId, experience: passedExp, onBack, onSuccess }: Props) {
+  const navigate = useNavigate();
   const { user, profile } = useAuth();
   const [exp, setExp] = useState<Experience | null>(passedExp || null);
   const [loadingExp, setLoadingExp] = useState(!passedExp && !!experienceId);
@@ -334,7 +336,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                 Browse More Experiences
               </button>
               <button
-                onClick={() => window.location.hash = '#PORTAL'}
+                onClick={() => navigate('/portal')}
                 className="px-6 py-2.5 border border-gold-500/30 hover:border-gold-500/60 text-gold-500 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
               >
                 Track in My Bookings

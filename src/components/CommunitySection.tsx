@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { CommunityHighlight } from '../types';
 import { useGlobalState } from '../utils/StateContext';
@@ -25,6 +26,7 @@ import {
 } from 'lucide-react';
 
 export default function CommunitySection() {
+  const navigate = useNavigate();
   const { posts: highlights, likePost, addPost, deletePost, commentPost, replyComment } = useGlobalState();
   const { user } = useAuth();
   const displayName = user?.user_metadata?.name || user?.email?.split('@')[0] || '';
@@ -66,6 +68,7 @@ export default function CommunitySection() {
   }, [displayName, uploaderName]);
 
   const handleLikeHighlight = async (id: string) => {
+    if (!user) { navigate('/portal?mode=login'); return; }
     try {
       await likePost(id);
     } catch (err) {
@@ -75,6 +78,7 @@ export default function CommunitySection() {
 
   const handleAddComment = async (e: React.FormEvent, highlightId: string) => {
     e.preventDefault();
+    if (!user) { navigate('/portal?mode=login'); return; }
     const commentText = newCommentTexts[highlightId];
     if (!commentText || !commentText.trim()) return;
 
@@ -89,6 +93,7 @@ export default function CommunitySection() {
 
   const handleAddReply = async (e: React.FormEvent, highlightId: string, commentId: string) => {
     e.preventDefault();
+    if (!user) { navigate('/portal?mode=login'); return; }
     const replyText = newReplyTexts[commentId];
     if (!replyText || !replyText.trim()) return;
 
@@ -153,6 +158,10 @@ export default function CommunitySection() {
 
   const handleCreatePostSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      navigate('/portal?mode=login');
+      return;
+    }
     if (!uploaderName || !postContent) return;
 
     const cleanHandle = uploaderHandle.startsWith('@')

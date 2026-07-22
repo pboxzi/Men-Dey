@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Crown, IdCard, Check, Upload, User, ShieldCheck, Download, Copy, MessageCircle, Mail, Loader2, ArrowUp, Clock } from 'lucide-react';
 import { openWhatsApp, openEmail } from '../utils/contactSettings';
@@ -52,6 +53,7 @@ function normalizeMembership(row: any): MembershipData | null {
 }
 
 export default function MembershipSection() {
+  const navigate = useNavigate();
   const { user, profile } = useAuth();
   const { content } = useGlobalState();
 
@@ -378,7 +380,7 @@ export default function MembershipSection() {
             <div className="flex justify-between text-xs"><span className="text-neutral-500">Submitted</span><span className="text-white">{new Date(myMembership.created_at).toLocaleDateString()}</span></div>
             <div className="flex justify-between text-xs"><span className="text-neutral-500">Communication</span><span className="text-white capitalize">{myMembership.comm_method}</span></div>
           </div>
-          <button onClick={() => window.location.hash = '#PORTAL'} className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">Go to Membership Dashboard</button>
+          <button onClick={() => navigate('/portal')} className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">Go to Membership Dashboard</button>
         </div>
       </section>
     );
@@ -498,7 +500,7 @@ export default function MembershipSection() {
 
           {/* Actions */}
           <div className="flex flex-wrap gap-3 justify-center">
-            <button onClick={() => window.location.hash = '#PORTAL'} className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">
+            <button onClick={() => navigate('/portal')} className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">
               Membership Dashboard
             </button>
             <button onClick={downloadCard} className="border border-gold-500/40 hover:bg-gold-500/10 text-gold-500 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all flex items-center gap-1.5">
@@ -594,7 +596,7 @@ export default function MembershipSection() {
             <div className="flex justify-between text-xs"><span className="text-neutral-500">Submitted</span><span className="text-white">{new Date(myMembership.created_at).toLocaleDateString()}</span></div>
             <div className="flex justify-between text-xs"><span className="text-neutral-500">Communication</span><span className="text-white capitalize">{myMembership.comm_method}</span></div>
           </div>
-          <button onClick={() => window.location.hash = '#PORTAL'} className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">Go to Membership Dashboard</button>
+          <button onClick={() => navigate('/portal')} className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">Go to Membership Dashboard</button>
         </div>
       </section>
     );
@@ -613,7 +615,7 @@ export default function MembershipSection() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-500/20 bg-blue-500/5 text-blue-500 text-xs font-mono">
             <Clock className="h-3.5 w-3.5" /> Upgrade Pending
           </div>
-          <button onClick={() => window.location.hash = '#PORTAL'} className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">Go to Membership Dashboard</button>
+          <button onClick={() => navigate('/portal')} className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">Go to Membership Dashboard</button>
         </div>
       </section>
     );

@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useGlobalState } from '../utils/StateContext';
 import { useAuth } from '../utils/AuthContext';
 import { supabase } from '../utils/supabase';
@@ -44,7 +45,8 @@ import {
   Flame,
   Filter,
   CheckSquare,
-  FileSpreadsheet
+  FileSpreadsheet,
+  LogOut
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
@@ -91,7 +93,8 @@ interface CommunicationLogItem {
 }
 
 export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
-  const { user, profile, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const { user, profile, loading: authLoading, signOut } = useAuth();
   const isAdmin = profile?.role === 'admin';
 
   // Admin auth gate
@@ -124,7 +127,18 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-[#070709] text-neutral-200 flex items-center justify-center">
-        <div className="animate-pulse text-gold-500 font-mono text-xs tracking-widest">Loading...</div>
+        <div className="text-center space-y-6 animate-pulse">
+          <div className="mx-auto w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+            <Shield className="h-7 w-7 text-red-400" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="font-serif text-xl font-bold text-white tracking-widest">WELCOME, ADMIN</h1>
+            <p className="text-xs font-mono text-neutral-500 tracking-wider">Preparing your command center...</p>
+          </div>
+          <div className="w-48 h-1 mx-auto bg-neutral-900 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-red-500 to-amber-500 rounded-full" style={{ animation: 'shimmer 1.5s ease-in-out infinite', width: '60%' }} />
+          </div>
+        </div>
       </div>
     );
   }
@@ -146,16 +160,21 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   // Search input
   const [showNotifications, setShowNotifications] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
         setShowNotifications(false);
       }
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setShowProfileMenu(false);
+      }
     };
-    if (showNotifications) document.addEventListener('mousedown', handleClick);
+    if (showNotifications || showProfileMenu) document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, [showNotifications]);
+  }, [showNotifications, showProfileMenu]);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
 
@@ -564,9 +583,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
         {/* Left: Brand logo & name */}
         <div className="flex items-center gap-3">
           <button
-            onClick={onBackToHome}
+            onClick={() => { signOut(); navigate('/'); }}
             className="p-1.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors"
-            aria-label="Back to home"
+            aria-label="Sign out"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>
@@ -682,15 +701,34 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           <div className="h-5 w-[1px] bg-neutral-800" />
 
           {/* Super Administrator Menu */}
-          <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-full border-2 border-red-500 bg-neutral-900 overflow-hidden shrink-0 flex items-center justify-center relative">
-              <div className="text-xs font-mono font-bold text-white">{((profile?.name || user?.email?.split('@')[0] || 'Admin').match(/\b\w/g) || []).join('').toUpperCase().slice(0, 2) || 'AD'}</div>
-            </div>
-            <div className="hidden sm:flex flex-col text-left">
-              <span className="text-xs font-semibold text-white leading-tight">{profile?.name || user?.email?.split('@')[0] || 'Admin'}</span>
-              <span className="text-[9px] font-mono font-bold text-red-400 leading-none">Super Administrator</span>
-            </div>
-            <ChevronDown className="h-3.5 w-3.5 text-neutral-500" />
+          <div className="relative" ref={profileMenuRef}>
+            <button
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="flex items-center gap-2.5 hover:bg-neutral-900/50 rounded-lg px-2 py-1.5 transition-colors cursor-pointer"
+            >
+              <div className="h-8 w-8 rounded-full border-2 border-red-500 bg-neutral-900 overflow-hidden shrink-0 flex items-center justify-center relative">
+                <div className="text-xs font-mono font-bold text-white">{((profile?.name || user?.email?.split('@')[0] || 'Admin').match(/\b\w/g) || []).join('').toUpperCase().slice(0, 2) || 'AD'}</div>
+              </div>
+              <div className="hidden sm:flex flex-col text-left">
+                <span className="text-xs font-semibold text-white leading-tight">{profile?.name || user?.email?.split('@')[0] || 'Admin'}</span>
+                <span className="text-[9px] font-mono font-bold text-red-400 leading-none">Super Administrator</span>
+              </div>
+              <ChevronDown className={`h-3.5 w-3.5 text-neutral-500 transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showProfileMenu && (
+              <div className="absolute right-0 top-full mt-2 w-48 bg-neutral-950 border border-neutral-900 rounded-lg shadow-2xl z-50 overflow-hidden">
+                <div className="p-1">
+                  <button
+                    onClick={() => { signOut(); navigate('/'); setShowProfileMenu(false); }}
+                    className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-md text-left hover:bg-red-500/10 transition-colors group"
+                  >
+                    <LogOut className="h-3.5 w-3.5 text-red-400" />
+                    <span className="text-[11px] font-semibold text-neutral-300 group-hover:text-red-400">Sign Out</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Mobile hamburger menu button */}

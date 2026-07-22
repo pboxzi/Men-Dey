@@ -7,9 +7,7 @@ import {
   Calendar, Users, MessageCircle, Mail, X, Eye, Star, Download,
   ExternalLink, HelpCircle, Shield, AlertCircle,
 } from 'lucide-react';
-
-const WHATSAPP_NUMBER = '+447700000000';
-const ADMIN_EMAIL = 'bookings@gilliananderson.com';
+import { openWhatsApp, openEmail } from '../utils/contactSettings';
 
 interface Props {
   showToast: (msg: string, type?: 'success' | 'info' | 'error') => void;
@@ -135,9 +133,9 @@ export default function FanExperienceBookings({ showToast }: Props) {
     const experienceTitle = booking.experienceTitle || experiences[booking.experienceId]?.title || 'Experience';
     const message = `EXPERIENCE BOOKING FOLLOW-UP\n\nBooking Ref: ${booking.bookingReference}\nExperience: ${experienceTitle}\n\n--- MESSAGE ---\n`;
     if (booking.communicationMethod === 'whatsapp') {
-      window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`, '_blank');
+      openWhatsApp(message);
     } else {
-      window.open(`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Experience Booking Follow-Up - ' + booking.bookingReference)}&body=${encodeURIComponent(message)}`, '_blank');
+      openEmail('Experience Booking Follow-Up - ' + booking.bookingReference, message);
     }
   };
 

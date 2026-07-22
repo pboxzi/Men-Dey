@@ -6,9 +6,7 @@ import {
   Calendar, Clock, MapPin, Ticket, Download, CheckCircle, ChevronRight, ArrowLeft, X,
   MessageCircle, Mail, Send, Loader2, FileText, Users, Star, AlertTriangle, RefreshCw,
 } from 'lucide-react';
-
-const WHATSAPP_NUMBER = '+447700000000';
-const ADMIN_EMAIL = 'events@gilliananderson.com';
+import { openWhatsApp, openEmail } from '../utils/contactSettings';
 
 interface EventItem {
   id: string; title: string; type: string; day: string; month: string;
@@ -149,9 +147,9 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
 
     const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${ref}\nEvent: ${registeringEvent.title}\nDate: ${registeringEvent.month} ${registeringEvent.day}, 2026\nAttendees: ${form.attendees}\n\n--- MESSAGE ---\n${form.specialRequests ? form.specialRequests + '\n\n' : ''}`;
     if (form.commMethod === 'whatsapp') {
-      window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+      openWhatsApp(msg);
     } else {
-      window.open(`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Event Registration - ' + ref)}&body=${encodeURIComponent(msg)}`, '_blank');
+      openEmail('Event Registration - ' + ref, msg);
     }
   };
 
@@ -159,9 +157,9 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
     if (!registeringEvent || !ticketRef) return;
     const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${ticketRef}\nEvent: ${registeringEvent.title}\nDate: ${registeringEvent.month} ${registeringEvent.day}, 2026\nAttendees: ${form.attendees}\n\n--- MESSAGE ---\n${form.specialRequests ? form.specialRequests + '\n\n' : ''}`;
     if (form.commMethod === 'whatsapp') {
-      window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+      openWhatsApp(msg);
     } else {
-      window.open(`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Event Registration - ' + ticketRef)}&body=${encodeURIComponent(msg)}`, '_blank');
+      openEmail('Event Registration - ' + ticketRef, msg);
     }
   };
 
@@ -297,9 +295,9 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                 if (!ev.ticketRef) return;
                 const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${ev.ticketRef}\nEvent: ${ev.title}\nDate: ${ev.month} ${ev.day}, 2026\nAttendees: ${ev.attendees || 1}\n\n--- MESSAGE ---\n${ev.specialRequests ? ev.specialRequests + '\n\n' : ''}`;
                 if (ev.commMethod === 'whatsapp') {
-                  window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+                  openWhatsApp(msg);
                 } else {
-                  window.open(`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Event Registration - ' + ev.ticketRef)}&body=${encodeURIComponent(msg)}`, '_blank');
+                  openEmail('Event Registration - ' + ev.ticketRef, msg);
                 }
               }}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-[10px] tracking-widest uppercase transition-all"

@@ -8,9 +8,7 @@ const MONTH_LOOKUP: Record<string, number> = {
   JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5,
   JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11,
 };
-
-const WHATSAPP_NUMBER = '+447700000000';
-const ADMIN_EMAIL = 'events@gilliananderson.com';
+import { openWhatsApp, openEmail } from '../utils/contactSettings';
 
 function countdown(target: Date) {
   const d = target.getTime() - Date.now();
@@ -143,9 +141,9 @@ export default function EventsSection() {
 
     const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${ref}\nEvent: ${selectedEvent.title}\nDate: ${selectedEvent.month} ${selectedEvent.day}, 2026\nAttendees: ${form.attendees}\n\n--- MESSAGE ---\n${form.specialRequests ? form.specialRequests + '\n\n' : ''}`;
     if (form.commMethod === 'whatsapp') {
-      window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+      openWhatsApp(msg);
     } else {
-      window.open(`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Event Registration - ' + ref)}&body=${encodeURIComponent(msg)}`, '_blank');
+      openEmail('Event Registration - ' + ref, msg);
     }
   };
   
@@ -154,9 +152,9 @@ export default function EventsSection() {
     if (!selectedEvent || !ticketRef) return;
     const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${ticketRef}\nEvent: ${selectedEvent.title}\nDate: ${selectedEvent.month} ${selectedEvent.day}, 2026\nAttendees: ${form.attendees}\n\n--- MESSAGE ---\n${form.specialRequests ? form.specialRequests + '\n\n' : ''}`;
     if (form.commMethod === 'whatsapp') {
-      window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+      openWhatsApp(msg);
     } else {
-      window.open(`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Event Registration - ' + ticketRef)}&body=${encodeURIComponent(msg)}`, '_blank');
+      openEmail('Event Registration - ' + ticketRef, msg);
     }
   };
 

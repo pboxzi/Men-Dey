@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Crown, Clock, CheckCircle2, XCircle, RefreshCw, ShieldAlert, AlertTriangle, Loader2, Download, Copy, User, ArrowUp, MessageCircle, Mail, Check } from 'lucide-react';
 import { supabase } from '../utils/supabase';
+import { openWhatsApp, openEmail } from '../utils/contactSettings';
 
 interface MembershipData {
   id: string; user_id: string; status: string;
@@ -127,9 +128,9 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
       );
       setTimeout(() => {
         if (upgradeCommMethod === 'whatsapp') {
-          window.open(`https://wa.me/?text=${msg}`, '_blank');
+          openWhatsApp(msg);
         } else {
-          window.open(`mailto:?subject=${encodeURIComponent('Membership Upgrade - ' + t?.name)}&body=${msg}`, '_blank');
+          openEmail('Membership Upgrade - ' + (t?.name || ''), msg);
         }
       }, 800);
     } catch (err: any) {

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Crown, IdCard, Check, Upload, User, ShieldCheck, Download, Copy, MessageCircle, Mail, Loader2, ArrowUp, Clock } from 'lucide-react';
+import { openWhatsApp, openEmail } from '../utils/contactSettings';
 import { useAuth } from '../utils/AuthContext';
 import { useGlobalState } from '../utils/StateContext';
 import { supabase } from '../utils/supabase';
@@ -159,9 +160,9 @@ export default function MembershipSection() {
       );
       setTimeout(() => {
         if (commMethod === 'whatsapp') {
-          window.open(`https://wa.me/?text=${msg}`, '_blank');
+          openWhatsApp(msg);
         } else {
-          window.open(`mailto:?subject=${encodeURIComponent('Membership Application - ' + activeTier.name)}&body=${msg}`, '_blank');
+          openEmail('Membership Application - ' + activeTier.name, msg);
         }
       }, 800);
     } catch (err: any) {
@@ -210,9 +211,9 @@ export default function MembershipSection() {
       );
       setTimeout(() => {
         if (upgradeCommMethod === 'whatsapp') {
-          window.open(`https://wa.me/?text=${msg}`, '_blank');
+          openWhatsApp(msg);
         } else {
-          window.open(`mailto:?subject=${encodeURIComponent('Membership Upgrade - ' + t?.name)}&body=${msg}`, '_blank');
+          openEmail('Membership Upgrade - ' + (t?.name || ''), msg);
         }
       }, 800);
     } catch (err: any) {

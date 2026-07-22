@@ -9,9 +9,7 @@ import {
   Info, Users, MapPin, Clock, Star, Heart, Sparkles,
   ArrowLeft, Sun, Camera, Gift,
 } from 'lucide-react';
-
-const WHATSAPP_NUMBER = '+447700000000';
-const ADMIN_EMAIL = 'bookings@gilliananderson.com';
+import { openWhatsApp, openEmail } from '../utils/contactSettings';
 
 interface Props {
   experienceId?: string;
@@ -181,11 +179,11 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
 
       setBookingRef(data?.booking_reference || ref);
 
-      const message = encodeURIComponent(buildMessage());
+      const message = buildMessage();
       if (form.communicationMethod === 'whatsapp') {
-        window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${message}`, '_blank');
+        openWhatsApp(message);
       } else {
-        window.open(`mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent('Experience Booking Request - ' + exp?.title)}&body=${message}`, '_blank');
+        openEmail('Experience Booking Request - ' + (exp?.title || ''), message);
       }
 
       setSuccess(true);

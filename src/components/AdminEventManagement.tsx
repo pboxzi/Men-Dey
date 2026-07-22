@@ -19,9 +19,9 @@ interface Props {
   showToast?: (msg: string, type?: 'success' | 'info' | 'error') => void;
 }
 
+import { openWhatsApp, openEmail } from '../utils/contactSettings';
+
 const REG_STATUS_OPTIONS = ['pending', 'confirmed', 'active', 'attended', 'cancelled'];
-const WHATSAPP_NUMBER = '+447700000000';
-const ADMIN_EMAIL = 'events@gilliananderson.com';
 
 function formatDate(d: string) {
   if (!d) return 'N/A';
@@ -391,14 +391,14 @@ function RegistrationsTab({ showToast }: Props) {
 
             <button onClick={() => {
               const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${r.ticket_ref}\nEvent: ${r.event_title}\nStatus: ${r.status}\n\n--- ADMIN MESSAGE ---\n`;
-              window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+              openWhatsApp(msg);
             }}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-emerald-800/30 bg-emerald-950/10 text-emerald-400 hover:bg-emerald-950/20 text-[10px] font-mono transition-all"
             ><MessageCircle className="h-3 w-3" /> Contact via WhatsApp</button>
 
             <button onClick={() => {
               const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${r.ticket_ref}\nEvent: ${r.event_title}\nStatus: ${r.status}\n\n--- ADMIN MESSAGE ---\n`;
-              window.open(`mailto:${r.member_email}?subject=${encodeURIComponent('Event Registration - ' + r.ticket_ref)}&body=${encodeURIComponent(msg)}`, '_blank');
+              openEmail(`Event Registration - ${r.ticket_ref}`, msg, r.member_email);
             }}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-blue-800/30 bg-blue-950/10 text-blue-400 hover:bg-blue-950/20 text-[10px] font-mono transition-all"
             ><Mail className="h-3 w-3" /> Contact via Email</button>

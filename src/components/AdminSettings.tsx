@@ -204,6 +204,13 @@ export default function AdminSettings({ showToast }: Props) {
                 icon={<Mail className="h-3.5 w-3.5 text-gold-500" />}
               />
               <SettingInput
+                label="WhatsApp Number"
+                description="WhatsApp number for fan contact (include country code, e.g. +447700900000)"
+                value={getSetting('contact_whatsapp')?.value || ''}
+                onChange={(v) => updateSetting('contact_whatsapp', v)}
+                icon={<MessageCircle className="h-3.5 w-3.5 text-emerald-500" />}
+              />
+              <SettingInput
                 label="Contact Phone"
                 description="Phone number (optional)"
                 value={getSetting('contact_phone')?.value || ''}

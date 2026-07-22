@@ -25,6 +25,7 @@ export default function MediaSection() {
   const [activeTab, setActiveTab] = useState<'videos' | 'photos'>('videos');
 
   const playerContainerRef = useRef<HTMLDivElement>(null);
+  const videoPlayerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<any>(null);
   const [embedError, setEmbedError] = useState(false);
   const [videoLoading, setVideoLoading] = useState(true);
@@ -117,6 +118,23 @@ export default function MediaSection() {
   }, [isSlideshowActive, lightboxIndex]);
 
   useEffect(() => { setIsZoomed(false); }, [lightboxIndex]);
+
+  const scrollToPlayer = () => {
+    if (videoPlayerRef.current) {
+      videoPlayerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Lock body scroll when lightbox is open
+  useEffect(() => {
+    if (lightboxIndex !== null) {
+      document.body.style.overflow = 'hidden';
+      window.scrollTo(0, 0);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [lightboxIndex]);
 
   const handleVideoLike = (id: string) => {
     if (hasLikedVideo[id]) {
@@ -270,7 +288,7 @@ export default function MediaSection() {
               className="space-y-4 sm:space-y-6"
             >
               {/* Video Player */}
-              <div className="relative rounded-lg sm:rounded-xl overflow-hidden shadow-2xl bg-black ring-1 ring-gold-500/20">
+              <div ref={videoPlayerRef} className="relative rounded-lg sm:rounded-xl overflow-hidden shadow-2xl bg-black ring-1 ring-gold-500/20">
                 <div className="absolute top-2 left-2 z-10 flex items-center gap-1.5 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
                   <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -555,7 +573,7 @@ export default function MediaSection() {
                       return (
                         <button
                           key={item.id}
-                          onClick={() => setSelectedVideo(item)}
+                          onClick={() => { setSelectedVideo(item); scrollToPlayer(); }}
                           className={`shrink-0 w-[100px] rounded-lg border text-left transition-all overflow-hidden cursor-pointer ${
                             isCurrent
                               ? 'border-gold-500/40 bg-gold-500/5 shadow-lg ring-1 ring-gold-500/20'

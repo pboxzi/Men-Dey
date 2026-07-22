@@ -22,39 +22,63 @@ interface FAQItem {
 
 const FAQ_DATA_FALLBACK: FAQItem[] = [
   {
-    id: 'faq-sayes',
-    question: "What is SA-YES and how does Gillian support it?",
-    answer: "SA-YES (South African Youth Education for AIDS) was co-founded by Gillian Anderson in 2005. It is a charity dedicated to mentoring marginalized youth transitioning out of children's homes in South Africa, providing them with guidance, resources, and pathways to independent adult lives. 100% of the net proceeds from specific official campaign items support SA-YES programs directly.",
-    category: "advocacy"
-  },
-  {
-    id: 'faq-scully',
-    question: "What is 'The Scully Effect' and how did it impact society?",
-    answer: "The Scully Effect refers to the real-world phenomenon where the character of Special Agent Dana Scully on 'The X-Files' inspired a significant increase in women pursuing degrees and careers in science, technology, engineering, and mathematics (STEM). A 2018 study confirmed that women who watched the show regularly were 50% more likely to work in STEM fields, highlighting the immense power of authentic representation on television.",
-    category: "career"
-  },
-  {
-    id: 'faq-want',
-    question: "Tell us more about her book 'Want' and the letters within it.",
-    answer: "Gillian's groundbreaking book 'Want' is a curated collection of hundreds of anonymous letters submitted by women from all corners of the globe. These letters candidly explore their private desires, relationships, fantasies, and hidden experiences. It creates an intimate, liberating, and judgment-free archive designed to dismantle historic taboos and empower open conversation about feminine sexuality.",
+    id: 'faq-what-is',
+    question: "What is the Gillian Anderson Co-op Community?",
+    answer: "The Co-op Community is an official fan cooperative and mentorship platform created by Gillian Anderson. It brings fans together through shared interests, exclusive events, and collaborative projects. Members can access private conclaves, group chats, journal entries, and contribute to community-driven initiatives — all in a safe, moderated space.",
     category: "community"
-  },
-  {
-    id: 'faq-gspot',
-    question: "What are 'G-Spot' functional soft drinks and their active ingredients?",
-    answer: "G-Spot is Gillian's official range of functional soft drinks, formulated using natural botanicals, adaptogens, and active extracts. The drinks come in four functional blends—Lift (for cognitive focus and mental energy), Soothe (for stress-relief and calm), Purify (for daily body rejuvenation and digestion support), and Arouse (for sensory awakening and elevation). They are crafted without artificial preservatives or refined sugars.",
-    category: "g-spot"
   },
   {
     id: 'faq-membership',
-    question: "How can I participate in official community experiences and events?",
-    answer: "Co-op members and community tier subscribers can apply directly for digital and offline Experiences, private live-streamed conclaves, and interactive group chats with Gillian. All applications are managed through the official digital Fan Portal, where users can also participate in forums, read exclusive journal entries, and track their community contributions.",
+    question: "What membership tiers are available and what do they include?",
+    answer: "We offer three tiers: Community (free) gives you access to the public forum, journal entries, and event announcements. Co-op Member (annual subscription) unlocks exclusive conclaves, private live-streamed events, priority booking for experiences, and the ability to earn and redeem community points. Patron tier adds direct access to Gillian's Ask Gillian chat, exclusive merchandise, and VIP event invitations.",
+    category: "membership"
+  },
+  {
+    id: 'faq-events',
+    question: "How do I register for Co-op Conclaves and events?",
+    answer: "Browse upcoming events in the Events section and click 'Register Now'. You'll need a Co-op account to register. After registration, you'll receive a confirmation with your ticket reference. Events include live-streamed Q&As, panel screenings, fundraising galas, and intimate group chats with Gillian. Priority registration is given to Co-op Members and Patrons.",
+    category: "events"
+  },
+  {
+    id: 'faq-experiences',
+    question: "What are Experiences and how can I book one?",
+    answer: "Experiences are curated one-on-one or small group sessions with Gillian — including virtual coffee chats, signed book consultations, script readings, and personalized video messages. Browse available experiences, select a time slot, and complete your booking through the portal. Co-op Members receive priority scheduling and discounted rates.",
+    category: "experiences"
+  },
+  {
+    id: 'faq-portal',
+    question: "How do I access and use the Fan Portal?",
+    answer: "Click 'ENTER YOUR PORTAL' or 'SIGN IN' on the site header to access the Fan Portal. From there you can manage your profile, view your membership dashboard, track community points, book experiences, register for events, chat with other fans, and access your Ask Gillian conversations. The portal is your central hub for all community activity.",
+    category: "portal"
+  },
+  {
+    id: 'faq-points',
+    question: "How do community points work and what can I redeem them for?",
+    answer: "You earn points by participating in community activities: posting in forums, commenting on journal entries, registering for events, attending conclaves, and referring friends. Points unlock badge levels (Newcomer → Regular → Contributor → VIP → Legend) and can be redeemed for exclusive merchandise, priority event access, and special experiences. Your current tier and points are shown in your membership dashboard.",
     category: "community"
   },
   {
-    id: 'faq-nf',
-    question: "What is Gillian's advocacy role with Neurofibromatosis (NF)?",
-    answer: "For decades, Gillian has been a committed, active patron of the Children's Tumor Foundation (CTF) and Neurofibromatosis Association. Inspired by her late brother Aaron, who lived with NF, she has testified before the United States Congress to advocate for federal research funding and continues to lead campaigns that provide support and visibility for families affected by the condition.",
+    id: 'faq-ask-gillian',
+    question: "What is Ask Gillian and how do I get a response?",
+    answer: "Ask Gillian is a private chat feature where Co-op Members and Patrons can send messages directly to Gillian. She personally reviews and responds to select messages during dedicated response windows. Messages should be thoughtful and respectful — keep them concise. Response times vary, but Patrons receive priority. All conversations are private and stored securely in your portal.",
+    category: "membership"
+  },
+  {
+    id: 'faq-safety',
+    question: "How does the community ensure a safe and respectful environment?",
+    answer: "All community interactions are moderated by our admin team. We enforce a strict code of conduct: no harassment, hate speech, spam, or inappropriate content. Users can report posts, and moderators review all flagged content within 24 hours. Repeat violations result in warnings, temporary suspension, or permanent removal. Your safety and comfort are our top priority.",
+    category: "community"
+  },
+  {
+    id: 'faq-contact',
+    question: "How can I contact the admin team for support?",
+    answer: "You can reach the admin team through the Contact page, via the Fan Portal messaging system, or by emailing support through the official contact form. For urgent matters related to your account, membership, or event registration, use the portal's direct messaging for the fastest response. Admin response times are typically within 24-48 hours.",
+    category: "portal"
+  },
+  {
+    id: 'faq-advocacy',
+    question: "How does the community support Gillian's advocacy work?",
+    answer: "A portion of all Co-op membership fees and event proceeds goes directly to Gillian's chosen charities, including SA-YES (South African Youth Education for AIDS) and the Children's Tumor Foundation. Community fundraising galas and exclusive charity events are organized regularly. Members can also volunteer for advocacy campaigns and earn special badges for their contributions.",
     category: "advocacy"
   }
 ];
@@ -63,18 +87,20 @@ export default function FAQSection() {
   const { content } = useGlobalState();
   const FAQ_DATA = content.faqEntries.length > 0 ? content.faqEntries : FAQ_DATA_FALLBACK;
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<'all' | 'advocacy' | 'career' | 'community' | 'g-spot'>('all');
-  const [expandedId, setExpandedId] = useState<string | null>('faq-sayes'); // Default first expanded
+  const [activeCategory, setActiveCategory] = useState<'all' | 'community' | 'membership' | 'events' | 'experiences' | 'portal' | 'advocacy'>('all');
+  const [expandedId, setExpandedId] = useState<string | null>('faq-what-is');
   
   // Interactive "helpful" counts stored locally
   const [helpfulVotes, setHelpfulVotes] = useState<Record<string, 'yes' | 'no' | null>>({});
 
   const categories = [
     { value: 'all', label: 'ALL QUESTIONS' },
-    { value: 'advocacy', label: 'ADVOCACY & CHARITY' },
-    { value: 'career', label: 'STAGE & SCREEN' },
-    { value: 'community', label: 'CO-OP & BOOKS' },
-    { value: 'g-spot', label: 'G-SPOT WELLNESS' }
+    { value: 'community', label: 'COMMUNITY' },
+    { value: 'membership', label: 'MEMBERSHIP' },
+    { value: 'events', label: 'EVENTS' },
+    { value: 'experiences', label: 'EXPERIENCES' },
+    { value: 'portal', label: 'PORTAL' },
+    { value: 'advocacy', label: 'ADVOCACY' }
   ];
 
   const handleVote = (id: string, voteType: 'yes' | 'no') => {
@@ -93,14 +119,18 @@ export default function FAQSection() {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
+      case 'community':
+        return <Award className="h-3.5 w-3.5 text-gold-500/80" />;
+      case 'membership':
+        return <Sparkles className="h-3.5 w-3.5 text-gold-500/80" />;
+      case 'events':
+        return <BookOpen className="h-3.5 w-3.5 text-gold-500/80" />;
+      case 'experiences':
+        return <MessageSquare className="h-3.5 w-3.5 text-gold-500/80" />;
+      case 'portal':
+        return <HelpCircle className="h-3.5 w-3.5 text-gold-500/80" />;
       case 'advocacy':
         return <Award className="h-3.5 w-3.5 text-gold-500/80" />;
-      case 'career':
-        return <Sparkles className="h-3.5 w-3.5 text-gold-500/80" />;
-      case 'community':
-        return <BookOpen className="h-3.5 w-3.5 text-gold-500/80" />;
-      case 'g-spot':
-        return <MessageSquare className="h-3.5 w-3.5 text-gold-500/80" />;
       default:
         return <HelpCircle className="h-3.5 w-3.5 text-gold-500/80" />;
     }
@@ -125,7 +155,7 @@ export default function FAQSection() {
           </h2>
           <div className="h-[1px] w-20 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto" />
           <p className="text-xs text-neutral-400 max-w-xl mx-auto font-sans leading-relaxed">
-            Discover detailed insights about Gillian’s co-operative mentorship programs, official product details, and advocacy works.
+            Everything you need to know about the Co-op Community, membership tiers, events, experiences, and more.
           </p>
         </div>
 

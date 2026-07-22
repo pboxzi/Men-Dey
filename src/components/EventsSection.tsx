@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabase';
 import { useAuth } from '../utils/AuthContext';
 import { createNotification, notifyAdmins } from '../utils/notifications';
@@ -35,6 +36,7 @@ interface RegistrationForm {
 }
 
 export default function EventsSection() {
+  const navigate = useNavigate();
   const { user, profile } = useAuth();
   const [dbEvents, setDbEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,20 +76,6 @@ export default function EventsSection() {
     return () => clearInterval(id);
   }, [nextEvent]);
 
-  const STORAGE_KEY = 'ga_event_registrant';
-
-  const loadSaved = () => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return {};
-  };
-
-  const saveForm = () => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ name: form.name, email: form.email, phone: form.phone, country: form.country })); } catch {}
-  };
-
   const resetFlow = () => {
     setStep('idle');
     setSelectedEvent(null);
@@ -97,13 +85,16 @@ export default function EventsSection() {
   };
 
   const startRegistration = (evt: any) => {
+    if (!user) {
+      navigate('/portal?mode=login');
+      return;
+    }
     setSelectedEvent(evt);
-    const saved = loadSaved();
     setForm({
-      name: profile?.full_name || user?.user_metadata?.name || saved.name || '',
-      email: user?.email || saved.email || '',
-      phone: profile?.phone || user?.user_metadata?.phone || saved.phone || '',
-      country: profile?.country || user?.user_metadata?.country || saved.country || '',
+      name: profile?.full_name || user?.user_metadata?.name || '',
+      email: user?.email || '',
+      phone: profile?.phone || user?.user_metadata?.phone || '',
+      country: profile?.country || user?.user_metadata?.country || '',
       attendees: 1, specialRequests: '', commMethod: 'email',
     });
     setStep('form');
@@ -138,7 +129,6 @@ export default function EventsSection() {
     setTicketRef(ref);
     setSaving(false);
     setStep('submitted');
-    saveForm();
 
     // Notify fan + admin
     if (user?.id) {

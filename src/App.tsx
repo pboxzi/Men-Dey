@@ -30,13 +30,11 @@ import {
   Pause,
   Sparkles,
   Home,
-  BookOpen,
-  Users
+  BookOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from './utils/theme';
 import { useAuth } from './utils/AuthContext';
-import { useGlobalState } from './utils/StateContext';
 
 // Import Types
 import { JournalEntry, MediaItem } from './types';
@@ -140,7 +138,6 @@ export default function App() {
 
   // User Authentication & Profile States (Landing Page level)
   const { user, profile, loading: authLoading, signOut } = useAuth();
-  const { content } = useGlobalState();
   const isLoggedIn = !!user;
   const userName = profile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || '';
 
@@ -385,10 +382,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-24 lg:pb-0 overflow-x-hidden w-full max-w-full">
+    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-24 lg:pb-0">
       {/* 1. Header (Navbar) */}
-      <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md overflow-hidden">
-        <div className="mx-auto flex items-center px-3 py-2.5 sm:px-4 md:px-6 gap-2 sm:gap-4">
+      <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1440px] items-center px-4 py-3 md:px-6 gap-4">
           {/* Logo */}
           <a href="/" className="flex items-center gap-2.5 group shrink-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center group-hover:border-gold-500/40 transition-colors">
@@ -519,43 +516,19 @@ export default function App() {
           <div className="absolute bottom-12 right-20 h-96 w-96 rounded-full bg-amber-500/3 blur-[140px] pointer-events-none" />
 
           {/* Simulated Slow Moving Spotlight Beam */}
-          <div className="absolute -top-40 left-1/3 w-[300px] sm:w-[500px] h-[600px] bg-gradient-to-b from-gold-500/3 via-transparent to-transparent -rotate-12 blur-3xl pointer-events-none" />
+          <div className="absolute -top-40 left-1/3 w-[500px] h-[600px] bg-gradient-to-b from-gold-500/3 via-transparent to-transparent -rotate-12 blur-3xl pointer-events-none" />
 
           <div className="mx-auto max-w-7xl px-4 md:px-6 relative z-10">
             <motion.div 
               variants={heroContainerVariants}
               initial="hidden"
               animate="visible"
-              className="flex flex-col lg:grid lg:gap-12 lg:grid-cols-12 items-center gap-8"
+              className="grid gap-8 lg:gap-12 lg:grid-cols-12 items-center"
             >
               
-              {/* Name — first on mobile, center on desktop */}
-              <motion.div variants={heroItemVariants} className="lg:col-span-5 text-center lg:text-left space-y-5 sm:space-y-7 order-1 w-full">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 justify-center lg:justify-start">
-                    <span className="h-[1px] w-5 bg-gold-500/40" />
-                    <span className="text-[10px] font-mono tracking-[0.3em] text-gold-500 uppercase font-bold">
-                      THE ARCHIVE SANCTUARY
-                    </span>
-                    <span className="h-[1px] w-5 bg-gold-500/40" />
-                  </div>
-                  {userName ? (
-                    <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-white to-neutral-400 leading-[1.1] uppercase">
-                      Welcome back, <br className="hidden lg:block" />
-                      <span className="text-white hover:text-gold-500 transition-colors duration-500">{userName}</span>
-                    </h1>
-                  ) : (
-                    <h1 className="font-serif text-[28px] sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
-                      GILLIAN <br className="hidden lg:block" />
-                      <span className="text-white hover:text-gold-500 transition-colors duration-500">ANDERSON</span>
-                    </h1>
-                  )}
-                </div>
-              </motion.div>
-
-              {/* Image — second on mobile, left on desktop */}
-              <motion.div variants={heroScaleVariants} className="lg:col-span-4 relative group flex flex-col items-center order-2 w-full">
-                <div className="relative aspect-[3/4] w-full max-w-[300px] sm:max-w-[320px] lg:max-w-[340px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
+              {/* Left: Interactive Slide Visualizer */}
+              <motion.div variants={heroScaleVariants} className="lg:col-span-4 relative group flex flex-col items-center order-2 lg:order-none">
+                <div className="relative aspect-[3/4] w-full max-w-[220px] sm:max-w-[260px] lg:max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
                   {/* Visual filter transitions on slide change */}
                   <motion.div
                     key={currentSlideIdx}
@@ -564,7 +537,7 @@ export default function App() {
                     transition={{ duration: 0.6 }}
                     className="h-full w-full relative"
                   >
-                    {/* Premium Shimmer Skeleton Loader */}
+                    {/* Premium Shimmer Skeleton Loader (Only visible while image is loading) */}
                     {!loadedImages[activeSlide.image] && (
                       <div className="absolute inset-0 bg-neutral-950 flex flex-col items-center justify-center z-10">
                         <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-900/40 to-neutral-950 animate-pulse" />
@@ -599,14 +572,20 @@ export default function App() {
                   {/* Left/Right Slider Controls */}
                   <div className="absolute bottom-5 right-5 flex gap-1.5 z-10">
                     <button
-                      onClick={() => { handlePrevSlide(); setIsPlayingSlide(false); }}
+                      onClick={() => {
+                        handlePrevSlide();
+                        setIsPlayingSlide(false); // Pause on manual action
+                      }}
                       className="p-2 rounded-full border border-neutral-800/80 bg-black/80 text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors"
                       aria-label="Previous slide"
                     >
                       <ChevronLeft className="h-3.5 w-3.5" />
                     </button>
                     <button
-                      onClick={() => { handleNextSlide(); setIsPlayingSlide(false); }}
+                      onClick={() => {
+                        handleNextSlide();
+                        setIsPlayingSlide(false); // Pause on manual action
+                      }}
                       className="p-2 rounded-full border border-neutral-800/80 bg-black/80 text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors"
                       aria-label="Next slide"
                     >
@@ -631,7 +610,10 @@ export default function App() {
                   {HERO_SLIDES.map((slide, idx) => (
                     <button
                       key={slide.id}
-                      onClick={() => { setCurrentSlideIdx(idx); setIsPlayingSlide(false); }}
+                      onClick={() => {
+                        setCurrentSlideIdx(idx);
+                        setIsPlayingSlide(false);
+                      }}
                       className={`h-1.5 rounded-full transition-all duration-300 ${
                         currentSlideIdx === idx
                           ? 'w-6 bg-gold-500'
@@ -646,15 +628,40 @@ export default function App() {
                     className="p-1 rounded text-neutral-500 hover:text-gold-500 transition-colors"
                     title={isPlayingSlide ? "Pause Autoplay" : "Resume Autoplay"}
                   >
-                    {isPlayingSlide ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3 fill-current" />}
+                    {isPlayingSlide ? (
+                      <Pause className="h-3 w-3" />
+                    ) : (
+                      <Play className="h-3 w-3 fill-current" />
+                    )}
                   </button>
                 </div>
               </motion.div>
 
-              {/* Quote + Buttons + Achievements + Social — third on mobile, right on desktop */}
-              <div className="lg:col-span-3 space-y-5 order-3 w-full">
-                {/* Quote */}
-                <motion.div variants={heroItemVariants} className="min-h-[80px] flex flex-col justify-center text-center lg:text-left">
+              {/* Center: Hero Welcome and Quotes */}
+              <div className="lg:col-span-5 text-center lg:text-left space-y-5 sm:space-y-7 order-1 lg:order-none">
+                <motion.div variants={heroItemVariants} className="space-y-2">
+                  <div className="flex items-center gap-2 justify-center lg:justify-start">
+                    <span className="h-[1px] w-5 bg-gold-500/40" />
+                    <span className="text-[10px] font-mono tracking-[0.3em] text-gold-500 uppercase font-bold">
+                      THE ARCHIVE SANCTUARY
+                    </span>
+                    <span className="h-[1px] w-5 bg-gold-500/40" />
+                  </div>
+                  {userName ? (
+                    <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-white to-neutral-400 leading-[1.1] uppercase">
+                      Welcome back, <br className="hidden lg:block" />
+                      <span className="text-white hover:text-gold-500 transition-colors duration-500">{userName}</span>
+                    </h1>
+                  ) : (
+                    <h1 className="font-serif text-[28px] sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
+                      GILLIAN <br className="hidden lg:block" />
+                      <span className="text-white hover:text-gold-500 transition-colors duration-500">ANDERSON</span>
+                    </h1>
+                  )}
+                </motion.div>
+
+                {/* Slider Quote Container */}
+                <motion.div variants={heroItemVariants} className="min-h-[110px] flex flex-col justify-center">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentSlideIdx}
@@ -662,14 +669,14 @@ export default function App() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 10 }}
                       transition={{ duration: 0.4 }}
-                      className="space-y-3"
+                      className="space-y-4"
                     >
-                      <p className="font-serif italic text-sm md:text-base text-neutral-300 leading-relaxed">
+                      <p className="font-serif italic text-base md:text-lg text-neutral-300 leading-relaxed max-w-md">
                         "{activeSlide.quote}"
                       </p>
                       <div className="flex items-center gap-2 justify-center lg:justify-start">
                         <div className="h-[1px] w-5 bg-gold-500/50" />
-                        <span className="font-serif text-[11px] font-semibold tracking-wider text-gold-500 italic">
+                        <span className="font-serif text-xs font-semibold tracking-wider text-gold-500 italic">
                           {activeSlide.author}
                         </span>
                       </div>
@@ -678,10 +685,10 @@ export default function App() {
                 </motion.div>
 
                 {/* Primary Buttons */}
-                <motion.div variants={heroItemVariants} className="flex flex-wrap items-center gap-2 justify-center lg:justify-start">
+                <motion.div variants={heroItemVariants} className="flex flex-wrap items-center gap-2 sm:gap-3.5 justify-center lg:justify-start pt-1">
                   <button
                     onClick={() => navigate('/portal?mode=register')}
-                    className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold px-5 py-2.5 rounded-lg text-[11px] tracking-widest transition-all active:scale-95 shadow-lg shadow-gold-500/10"
+                    className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold px-6 py-3 rounded-lg text-xs tracking-widest transition-all hover:shadow-[0_0_20px_rgba(212,163,89,0.3)] active:scale-95 shadow-lg shadow-gold-500/10"
                   >
                     JOIN THE COMMUNITY
                   </button>
@@ -690,46 +697,62 @@ export default function App() {
                       const videoItem = MEDIA_ITEMS.find((m) => m.id === 'media-bts') || MEDIA_ITEMS[0];
                       setSelectedMedia(videoItem);
                     }}
-                    className="border border-neutral-800 hover:border-gold-500/60 bg-neutral-950 hover:bg-gold-500/5 text-gold-500 hover:text-white font-semibold px-4 py-2.5 rounded-lg text-[11px] tracking-widest transition-all active:scale-95 flex items-center gap-2"
+                    className="border border-neutral-800 hover:border-gold-500/60 bg-neutral-950 hover:bg-gold-500/5 text-gold-500 hover:text-white font-semibold px-5 py-3 rounded-lg text-xs tracking-widest transition-all active:scale-95 flex items-center gap-2"
                   >
-                    <Play className="h-3 w-3 fill-gold-500 hover:fill-white" />
-                    WATCH
+                    <Play className="h-3.5 w-3.5 fill-gold-500 hover:fill-white" />
+                    WATCH MESSAGE
                   </button>
                 </motion.div>
 
-                {/* Achievements */}
-                <motion.div variants={heroItemVariants} className="grid grid-cols-3 gap-2">
-                  <div className="p-2 sm:p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 flex flex-col text-left">
-                    <span className="font-serif text-sm sm:text-lg font-bold text-gold-500 tracking-tight">30+</span>
-                    <span className="text-[7px] sm:text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-0.5">Years on Screen</span>
+                {/* Achievements Bento Badge */}
+                <motion.div variants={heroItemVariants} className="grid grid-cols-3 gap-2 sm:gap-3 max-w-md pt-2">
+                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
+                    <span className="font-serif text-base sm:text-lg font-bold text-gold-500 tracking-tight flex items-center gap-1">
+                      30+
+                      <Compass className="h-3 w-3 text-gold-500/60 group-hover:rotate-45 transition-transform" />
+                    </span>
+                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Years on Stage & Screen</span>
                   </div>
-                  <div className="p-2 sm:p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 flex flex-col text-left">
-                    <span className="font-serif text-sm sm:text-lg font-bold text-white tracking-tight">2x</span>
-                    <span className="text-[7px] sm:text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-0.5">Emmys & Globes</span>
+                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
+                    <span className="font-serif text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-1">
+                      2x
+                      <Award className="h-3 w-3 text-amber-500/60 group-hover:scale-110 transition-transform animate-pulse" />
+                    </span>
+                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Emmys & Golden Globes</span>
                   </div>
-                  <div className="p-2 sm:p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 flex flex-col text-left">
-                    <span className="font-serif text-sm sm:text-lg font-bold text-gold-500 tracking-tight">100%</span>
-                    <span className="text-[7px] sm:text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-0.5">Empowering All</span>
+                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
+                    <span className="font-serif text-base sm:text-lg font-bold text-gold-500 tracking-tight flex items-center gap-1">
+                      100%
+                      <Sparkles className="h-3 w-3 text-gold-500/60 group-hover:scale-110 transition-transform" />
+                    </span>
+                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Empowering Advocacy</span>
                   </div>
                 </motion.div>
 
-                {/* Social Proof */}
-                <motion.div variants={heroItemVariants} className="flex items-center gap-2 pt-3 justify-center lg:justify-start border-t border-neutral-900">
+                {/* Social Proof fans banner */}
+                <motion.div variants={heroItemVariants} className="flex items-center gap-3 pt-4 justify-center lg:justify-start border-t border-neutral-900 max-w-sm">
                   <div className="flex -space-x-2">
-                    {['AM', 'JW', 'ND', 'KR'].map((initials) => (
-                      <div key={initials} className="h-6 w-6 rounded-full border border-neutral-950 bg-neutral-900 flex items-center justify-center text-[8px] font-mono font-bold text-neutral-300">
-                        {initials}
+                    {[1, 2, 3, 4].map((num) => (
+                      <div
+                        key={num}
+                        className="h-7 w-7 rounded-full border border-neutral-950 bg-neutral-900 flex items-center justify-center text-[9px] font-mono font-bold text-neutral-300 overflow-hidden shadow-inner"
+                      >
+                        {['AM', 'JW', 'ND', 'KR'][num - 1]}
                       </div>
                     ))}
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest">24.2M+ Subscribers</span>
-                    <span className="text-[8px] font-mono text-gold-500/80 font-bold">Worldwide Community</span>
+                    <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
+                      24.2M+ Subscribers & Followers
+                    </span>
+                    <span className="text-[9px] font-mono text-gold-500/80 font-bold">
+                      Worldwide Community
+                    </span>
                   </div>
                 </motion.div>
               </div>
 
-              {/* Monthly Video Box — desktop only */}
+              {/* Right: Monthly Video Box — hidden on mobile */}
               <motion.div variants={heroScaleVariants} className="hidden lg:block lg:col-span-3">
                 <div className="rounded-2xl border border-neutral-900/80 bg-neutral-950/80 p-5 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-neutral-800 transition-all">
                   <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-widest pb-2 border-b border-neutral-900">
@@ -948,120 +971,22 @@ export default function App() {
                   </section>
                 </ScrollReveal>
 
-                {/* Journal Preview */}
+                {/* Journal Section */}
                 <ScrollReveal>
-                  <section className="py-12 sm:py-16 bg-[#050505] border-t border-neutral-900/60">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-8">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <BookOpen className="h-4 w-4 text-gold-500" />
-                            <span className="text-[9px] font-mono tracking-widest text-gold-500 uppercase font-bold">Latest from Gillian</span>
-                          </div>
-                          <h2 className="font-serif text-xl sm:text-2xl font-bold text-white uppercase tracking-tight">Journal</h2>
-                        </div>
-                        <button onClick={() => handleNavClick('JOURNAL')} className="text-[10px] font-mono text-gold-500 hover:text-gold-400 tracking-widest uppercase flex items-center gap-1 transition-colors">
-                          VIEW ALL <ArrowRight className="h-3 w-3" />
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {(content.journalArticles || []).filter((a: any) => a.status === 'published').slice(0, 2).map((article: any) => (
-                          <button key={article.id} onClick={() => handleNavClick('JOURNAL')}
-                            className="flex gap-4 p-4 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-gold-500/20 hover:bg-neutral-950/80 transition-all text-left group">
-                            {article.cover_image_url && (
-                              <div className="w-20 h-20 rounded-lg overflow-hidden border border-neutral-800 shrink-0 bg-neutral-900">
-                                <img src={article.cover_image_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                              </div>
-                            )}
-                            <div className="flex flex-col justify-center min-w-0 space-y-1">
-                              <h3 className="text-xs font-bold text-white truncate group-hover:text-gold-500 transition-colors">{article.title}</h3>
-                              <p className="text-[10px] text-neutral-500 line-clamp-2">{article.excerpt}</p>
-                              <span className="text-[9px] font-mono text-neutral-600">{article.created_at ? new Date(article.created_at).toLocaleDateString() : ''}</span>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </section>
+                  <JournalSection />
                 </ScrollReveal>
 
-                {/* Media Preview */}
+                {/* Media Section */}
                 <ScrollReveal>
-                  <section className="py-12 sm:py-16 border-t border-neutral-900/60">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-8">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Play className="h-4 w-4 text-gold-500" />
-                            <span className="text-[9px] font-mono tracking-widest text-gold-500 uppercase font-bold">Watch & Discover</span>
-                          </div>
-                          <h2 className="font-serif text-xl sm:text-2xl font-bold text-white uppercase tracking-tight">Media</h2>
-                        </div>
-                        <button onClick={() => handleNavClick('MEDIA')} className="text-[10px] font-mono text-gold-500 hover:text-gold-400 tracking-widest uppercase flex items-center gap-1 transition-colors">
-                          VIEW ALL <ArrowRight className="h-3 w-3" />
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        {MEDIA_ITEMS.slice(0, 4).map((item) => (
-                          <button key={item.id} onClick={() => { handleNavClick('MEDIA'); }}
-                            className="relative aspect-video rounded-xl overflow-hidden border border-neutral-900 bg-neutral-900 group">
-                            <img src={item.thumbnail} alt="" className="w-full h-full object-cover brightness-75 group-hover:scale-105 group-hover:brightness-100 transition-all" />
-                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-100">
-                              <div className="p-2 rounded-full bg-gold-500/90 text-neutral-950">
-                                <Play className="h-4 w-4 fill-neutral-950" />
-                              </div>
-                            </div>
-                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
-                              <p className="text-[9px] font-bold text-white truncate">{item.title}</p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </section>
+                  <MediaSection />
                 </ScrollReveal>
 
-                {/* Community Preview */}
+                {/* Community Section */}
                 <ScrollReveal>
-                  <section className="py-12 sm:py-16 border-t border-neutral-900/60">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-8">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-gold-500" />
-                            <span className="text-[9px] font-mono tracking-widest text-gold-500 uppercase font-bold">Fan Highlights</span>
-                          </div>
-                          <h2 className="font-serif text-xl sm:text-2xl font-bold text-white uppercase tracking-tight">Community</h2>
-                        </div>
-                        <button onClick={() => handleNavClick('COMMUNITY')} className="text-[10px] font-mono text-gold-500 hover:text-gold-400 tracking-widest uppercase flex items-center gap-1 transition-colors">
-                          JOIN NOW <ArrowRight className="h-3 w-3" />
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {(content.posts || []).slice(0, 2).map((post: any) => (
-                          <div key={post.id} className="p-4 rounded-xl border border-neutral-900 bg-neutral-950/40 space-y-2">
-                            <div className="flex items-center gap-2">
-                              <div className="w-7 h-7 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                                <span className="text-[8px] font-bold text-gold-500">{(post.author || 'U')[0]}</span>
-                              </div>
-                              <div>
-                                <p className="text-[10px] font-bold text-white">{post.author}</p>
-                                <p className="text-[8px] text-neutral-600">{post.time}</p>
-                              </div>
-                            </div>
-                            <p className="text-[11px] text-neutral-300 line-clamp-2">{post.text}</p>
-                            <div className="flex items-center gap-3 text-[9px] text-neutral-500">
-                              <span className="flex items-center gap-1"><Heart className="h-3 w-3" /> {post.likes || 0}</span>
-                              <span className="flex items-center gap-1"><MessageSquare className="h-3 w-3" /> {post.comments || 0}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </section>
+                  <CommunitySection />
                 </ScrollReveal>
 
-                {/* FAQ Section — kept as-is (already compact) */}
+                {/* FAQ Section */}
                 <ScrollReveal>
                   <FAQSection />
                 </ScrollReveal>

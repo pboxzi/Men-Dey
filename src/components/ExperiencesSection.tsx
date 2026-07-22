@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Experience, ExperienceBooking } from '../types';
-import { useAuth } from '../utils/AuthContext';
+import { Experience } from '../types';
 import BookingPage from './BookingPage';
 import ExperienceDetailPage from './ExperienceDetailPage';
 import { supabase } from '../utils/supabase';
@@ -11,13 +10,6 @@ import {
   ChevronRight, Heart, Palette, Compass, BookOpen, Camera, Ticket,
   Search, Globe, SlidersHorizontal, Eye, Shield, Clock, Zap,
 } from 'lucide-react';
-
-function formatDate(dateStr: string): string {
-  if (!dateStr) return 'N/A';
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return 'N/A';
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
 
 const CATEGORIES = [
   'ALL', 'Meet & Greet', 'Creative', 'Philanthropy', 'Adventure', 'Literary', 'Behind-the-Scenes',
@@ -44,13 +36,10 @@ const CATEGORY_ICONS: Record<string, any> = {
 export default function ExperiencesSection() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [detailViewId, setDetailViewId] = useState<string | null>(null);
   const [bookingId, setBookingId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'browse' | 'bookings'>('browse');
-  const [bookings, setBookings] = useState<ExperienceBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -63,15 +52,6 @@ export default function ExperiencesSection() {
       try {
         const expRes = await supabase.from('experiences').select('*').order('sort_order').order('title');
         if (!expRes.error && expRes.data) setExperiences(expRes.data || []);
-
-        if (user?.id) {
-          const bookingsRes = await supabase
-            .from('experience_requests')
-            .select('*')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false });
-          if (!bookingsRes.error && bookingsRes.data) setBookings(bookingsRes.data || []);
-        }
       } catch (err) {
         console.error('Failed to load experiences:', err);
       } finally {
@@ -134,32 +114,10 @@ export default function ExperiencesSection() {
     setBookingId(null);
   };
 
-  const handleBookingSuccess = (booking: ExperienceBooking) => {
-    setBookings(prev => [booking, ...prev]);
+  const handleBookingSuccess = () => {
     setBookingId(null);
-    setActiveTab('bookings');
     navigate('/experiences');
   };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'text-emerald-500';
-      case 'completed': return 'text-blue-500';
-      case 'cancelled': return 'text-red-400';
-      default: return 'text-amber-500';
-    }
-  };
-
-  const getStatusDot = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-emerald-500';
-      case 'completed': return 'bg-blue-500';
-      case 'cancelled': return 'bg-red-400';
-      default: return 'bg-amber-500';
-    }
-  };
-
-  const formatStatus = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
   // Show booking page (navigated via hash)
   if (bookingId) {
@@ -231,92 +189,8 @@ export default function ExperiencesSection() {
           ))}
         </div>
 
-        {/* Tab Switch: Browse / My Bookings */}
-        <div className="flex justify-center">
-          <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-xl p-1">
-            {[
-              { id: 'browse' as const, label: 'Browse Experiences', icon: Sparkles },
-              { id: 'bookings' as const, label: `My Bookings (${bookings.length})`, icon: Ticket },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-5 py-2 rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-gold-500 text-neutral-950 font-bold'
-                    : 'text-neutral-500 hover:text-white'
-                }`}
-              >
-                <tab.icon className="h-3.5 w-3.5" />
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {activeTab === 'bookings' ? (
-          <div className="space-y-4">
-            {bookings.length > 0 ? (
-              bookings.map((booking) => (
-                <div
-                  key={booking.id}
-                  className="p-5 rounded-xl border border-neutral-900 bg-neutral-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-neutral-800 transition-all"
-                >
-                  <div className="space-y-1.5 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-bold text-white tracking-wide">{booking.experienceTitle}</span>
-                      <span className="text-[8px] font-mono bg-neutral-900 border border-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded">
-                        {formatDate(booking.createdAt)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3 text-[10px] text-neutral-400">
-                      <span>{booking.fullName}</span>
-                      <span className="text-neutral-700">|</span>
-                      <span className="capitalize">{booking.communicationMethod}</span>
-                      {booking.bookingReference && (
-                        <>
-                          <span className="text-neutral-700">|</span>
-                          <span className="font-mono text-neutral-500">{booking.bookingReference}</span>
-                        </>
-                      )}
-                    </div>
-                    {booking.specialRequests && (
-                      <p className="text-[11px] text-neutral-500 italic line-clamp-1 max-w-xl">
-                        "{booking.specialRequests}"
-                      </p>
-                    )}
-                    {booking.confirmedDate && (
-                      <div className="flex items-center gap-2 text-[10px] text-emerald-500 font-mono">
-                        <CheckCircle className="h-3 w-3" />
-                        Confirmed: {booking.confirmedDate} at {booking.confirmedTime}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="relative flex h-2 w-2">
-                      <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${getStatusDot(booking.status)}`} />
-                      <span className={`relative inline-flex rounded-full h-2 w-2 ${getStatusDot(booking.status)}`} />
-                    </span>
-                    <span className={`text-[10px] font-mono font-bold tracking-wider uppercase ${getStatusColor(booking.status)}`}>
-                      {formatStatus(booking.status)}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-20 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10 space-y-3">
-                <div className="h-12 w-12 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto">
-                  <Ticket className="h-5 w-5 text-neutral-600" />
-                </div>
-                <p className="text-sm text-neutral-500">No bookings yet.</p>
-                <p className="text-[10px] text-neutral-600 font-mono">Browse experiences and submit your first booking request.</p>
-              </div>
-            )}
-          </div>
-        ) : (
-          <>
+        {/* Browse Experiences */}
             {/* Search + Filters */}
-            <div className="space-y-4">
               {/* Search Bar */}
               <div className="relative max-w-2xl mx-auto">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
@@ -408,7 +282,6 @@ export default function ExperiencesSection() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
 
             {/* Category Filters — Pill-shaped with icons */}
             <div className="flex flex-wrap items-center justify-center gap-2">
@@ -569,8 +442,6 @@ export default function ExperiencesSection() {
                 </button>
               </div>
             )}
-          </>
-        )}
       </div>
     </section>
   );

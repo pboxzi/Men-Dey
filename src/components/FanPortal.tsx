@@ -424,7 +424,22 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     if (!user) return;
     void (async () => {
       const { data, error } = await supabase.from('journey_log').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
-      if (!error && data) setJourneyLog(data);
+      if (!error && data) {
+        // Also pull existing bookings as journey entries if not already logged
+        const { data: bookings } = await supabase.from('experience_requests').select('id, experience_title, created_at, submitted_date').eq('user_id', user.id).order('created_at', { ascending: false });
+        const loggedTitles = new Set(data.map((l: any) => l.title));
+        const bookingEntries = (bookings || [])
+          .filter((b: any) => !loggedTitles.has(`Booked: ${b.experience_title}`))
+          .map((b: any) => ({
+            id: `bk-${b.id}`,
+            title: `Booked: ${b.experience_title}`,
+            description: `Booking submitted for "${b.experience_title}"`,
+            color: 'bg-blue-500',
+            user_id: user.id,
+            created_at: b.submitted_date || b.created_at,
+          }));
+        setJourneyLog([...bookingEntries, ...data]);
+      }
     })();
   }, [user]);
 
@@ -930,7 +945,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     pushNotification('Your act of kindness has been logged to your sanctuary timeline!');
     showToast('Your act of kindness has been logged to your sanctuary timeline!', 'success');
     try {
-      await supabase.from('journey_log').insert({ title: newLog.title, description: newLog.description, color: newLog.color });
+      await supabase.from('journey_log').insert({ title: newLog.title, description: newLog.description, color: newLog.color, user_id: user?.id });
     } catch {}
   };
 
@@ -980,7 +995,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     try {
       await supabase.from('user_badges').insert({ user_id: user?.id, title: newBadge.title, description: newBadge.desc, icon: newBadge.icon });
       await supabase.from('loyalty_points').upsert({ user_id: user?.id, total: loyaltyPoints - item.cost, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
-      await supabase.from('journey_log').insert({ title: journeyMilestone.title, description: journeyMilestone.description, color: journeyMilestone.color });
+      await supabase.from('journey_log').insert({ title: journeyMilestone.title, description: journeyMilestone.description, color: journeyMilestone.color, user_id: user?.id });
       await supabase.from('fan_notifications').insert({ text: `Successfully redeemed loyalty reward: ${item.title}. Check your unlocked badges!` });
 
       // Create notification

@@ -326,10 +326,18 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     experienceBookings: 0,
     pendingBookings: 0,
     subscriberCount: 0,
+    eventRegistrations: 0,
+    pendingMemberships: 0,
+    activeConversations: 0,
+    notificationsSent: 0,
+    totalRewardsRedeemed: 0,
   });
   const [dashboardEvents, setDashboardEvents] = useState<any[]>([]);
 
   const [bookingStatusCounts, setBookingStatusCounts] = useState({ confirmed: 0, pending: 0, cancelled: 0 });
+
+  // Recent activity feed
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
   const fetchDashboardStats = async () => {
     const [
@@ -340,7 +348,13 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       { count: confirmedB },
       { count: cancelledB },
       { count: subsCount },
+      { count: eventRegCount },
+      { count: pendingMemCount },
+      { count: activeConvCount },
+      { count: notifCount },
+      { count: rewardsCount },
       { data: eventsData },
+      { data: activityData },
     ] = await Promise.all([
       supabase.from('profiles').select('*', { count: 'exact', head: true }),
       supabase.from('experiences').select('*', { count: 'exact', head: true }),
@@ -349,7 +363,13 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       supabase.from('experience_requests').select('*', { count: 'exact', head: true }).in('status', ['discussion', 'active', 'completed']),
       supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('status', 'cancelled'),
       supabase.from('subscribers').select('*', { count: 'exact', head: true }),
+      supabase.from('event_registrations').select('*', { count: 'exact', head: true }),
+      supabase.from('membership_applications').select('*', { count: 'exact', head: true }).in('status', ['pending', 'upgrade_pending']),
+      supabase.from('fan_admin_conversations').select('*', { count: 'exact', head: true }).neq('status', 'closed'),
+      supabase.from('notifications').select('*', { count: 'exact', head: true }),
+      supabase.from('user_badges').select('*', { count: 'exact', head: true }),
       supabase.from('admin_events').select('*').order('created_at', { ascending: false }),
+      supabase.from('notifications').select('id, title, message, type, created_at, is_read').order('created_at', { ascending: false }).limit(8),
     ]);
     setDashboardStats({
       totalMembers: profileCount ?? 0,
@@ -357,6 +377,11 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       experienceBookings: expBookings ?? 0,
       pendingBookings: pendingB ?? 0,
       subscriberCount: subsCount ?? 0,
+      eventRegistrations: eventRegCount ?? 0,
+      pendingMemberships: pendingMemCount ?? 0,
+      activeConversations: activeConvCount ?? 0,
+      notificationsSent: notifCount ?? 0,
+      totalRewardsRedeemed: rewardsCount ?? 0,
     });
     setBookingStatusCounts({
       confirmed: confirmedB ?? 0,
@@ -364,6 +389,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       cancelled: cancelledB ?? 0,
     });
     if (eventsData) setDashboardEvents(eventsData);
+    if (activityData) setRecentActivity(activityData);
+    setPendingMemberships(pendingMemCount ?? 0);
   };
 
   useEffect(() => {
@@ -862,15 +889,15 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   </p>
                 </div>
 
-                {/* Experiences */}
+                {/* Event Registrations */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Experiences</span>
-                    <Star className="h-4 w-4 text-neutral-600" />
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Event Regs</span>
+                    <Calendar className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalExperiences}</h3>
-                  <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>Published offerings</span>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.eventRegistrations}</h3>
+                  <p className="text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
+                    <span>Total registrations</span>
                   </p>
                 </div>
 
@@ -878,35 +905,47 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Bookings</span>
-                    <Calendar className="h-4 w-4 text-neutral-600" />
+                    <Star className="h-4 w-4 text-neutral-600" />
                   </div>
                   <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.experienceBookings}</h3>
                   <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>Total bookings</span>
+                    <span>Experience requests</span>
                   </p>
                 </div>
 
-                {/* Pending Bookings */}
+                {/* Pending Memberships */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Pending</span>
                     <Clock className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-amber-500">{dashboardStats.pendingBookings}</h3>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-amber-500">{dashboardStats.pendingMemberships + dashboardStats.pendingBookings}</h3>
                   <p className="text-[10px] font-mono text-amber-500 flex items-center gap-0.5">
-                    <span>Awaiting confirmation</span>
+                    <span>Awaiting review</span>
                   </p>
                 </div>
 
-                {/* Subscribers */}
+                {/* Active Conversations */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Subscribers</span>
-                    <Mail className="h-4 w-4 text-neutral-600" />
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Conversations</span>
+                    <MessageCircle className="h-4 w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.subscriberCount}</h3>
-                  <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>Newsletter</span>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.activeConversations}</h3>
+                  <p className="text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
+                    <span>Active chats</span>
+                  </p>
+                </div>
+
+                {/* Rewards Redeemed */}
+                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Rewards</span>
+                    <Award className="h-4 w-4 text-neutral-600" />
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalRewardsRedeemed}</h3>
+                  <p className="text-[10px] font-mono text-purple-500 flex items-center gap-0.5">
+                    <span>Badges earned</span>
                   </p>
                 </div>
 
@@ -1054,7 +1093,50 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       </div>
                     </div>
 
-
+                    {/* Recent Activity Feed */}
+                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden text-left">
+                      <div className="px-5 py-4 border-b border-neutral-900 flex items-center justify-between">
+                        <h3 className="text-xs font-mono font-bold tracking-wider text-white uppercase">
+                          Recent Activity
+                        </h3>
+                        <span className="text-[8px] font-mono bg-green-500/10 text-green-500 px-1.5 py-0.5 rounded font-bold uppercase">
+                          LIVE
+                        </span>
+                      </div>
+                      <div className="p-3 space-y-1">
+                        {recentActivity.length === 0 ? (
+                          <div className="p-4 text-center">
+                            <Bell className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
+                            <p className="text-xs text-neutral-500 font-mono">No activity yet.</p>
+                          </div>
+                        ) : (
+                          recentActivity.map((act: any) => {
+                            const typeIcon: Record<string, string> = {
+                              membership: '👤', experience: '⭐', event: '📅',
+                              message: '💬', reward: '🏆', announcement: '📢', system: '⚙️',
+                            };
+                            const typeColor: Record<string, string> = {
+                              membership: 'border-green-500/20', experience: 'border-blue-500/20',
+                              event: 'border-purple-500/20', message: 'border-amber-500/20',
+                              reward: 'border-pink-500/20', announcement: 'border-red-500/20',
+                              system: 'border-neutral-700',
+                            };
+                            return (
+                              <div key={act.id} className={`flex items-start gap-3 p-2.5 rounded-lg border ${typeColor[act.type] || 'border-neutral-900/60'} bg-neutral-950/20 transition-colors`}>
+                                <span className="text-sm mt-0.5 shrink-0">{typeIcon[act.type] || '📌'}</span>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-[11px] font-semibold text-white truncate">{act.title}</p>
+                                  <p className="text-[10px] text-neutral-500 truncate">{act.message}</p>
+                                </div>
+                                <span className="text-[8px] font-mono text-neutral-600 shrink-0 mt-0.5">
+                                  {new Date(act.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
 
                   </div>
 
@@ -1149,25 +1231,42 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <Award className="h-4 w-4" />
                           </div>
                           <div className="space-y-0.5">
-                            <h5 className="text-xs font-semibold text-white">{pendingMemberships} membership applications</h5>
+                            <h5 className="text-xs font-semibold text-white">{dashboardStats.pendingMemberships} membership applications</h5>
                             <p className="text-[10px] text-neutral-400">Pending approval</p>
                           </div>
                         </div>
                         <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-white transition-colors" />
                       </button>
 
-                      {/* Alert 3 */}
+                      {/* Alert 3 - Conversations */}
                       <button
-                        onClick={() => setActiveTab('Events')}
+                        onClick={() => setActiveTab('Messages')}
                         className="w-full flex items-center justify-between p-2.5 rounded-lg border border-blue-500/20 bg-blue-500/[0.02] hover:bg-blue-500/[0.04] text-left transition-all group"
                       >
                         <div className="flex gap-2 items-center">
                           <div className="p-1.5 rounded bg-blue-500/10 text-blue-500 shrink-0">
+                            <MessageCircle className="h-4 w-4" />
+                          </div>
+                          <div className="space-y-0.5">
+                            <h5 className="text-xs font-semibold text-white">{dashboardStats.activeConversations} active conversations</h5>
+                            <p className="text-[10px] text-neutral-400">Fan messages awaiting response</p>
+                          </div>
+                        </div>
+                        <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-white transition-colors" />
+                      </button>
+
+                      {/* Alert 4 */}
+                      <button
+                        onClick={() => setActiveTab('Events')}
+                        className="w-full flex items-center justify-between p-2.5 rounded-lg border border-purple-500/20 bg-purple-500/[0.02] hover:bg-purple-500/[0.04] text-left transition-all group"
+                      >
+                        <div className="flex gap-2 items-center">
+                          <div className="p-1.5 rounded bg-purple-500/10 text-purple-500 shrink-0">
                             <Calendar className="h-4 w-4" />
                           </div>
                           <div className="space-y-0.5">
-                            <h5 className="text-xs font-semibold text-white">Event Management</h5>
-                            <p className="text-[10px] text-neutral-400">Create & manage events</p>
+                            <h5 className="text-xs font-semibold text-white">{dashboardStats.eventRegistrations} event registrations</h5>
+                            <p className="text-[10px] text-neutral-400">Total across all events</p>
                           </div>
                         </div>
                         <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-white transition-colors" />

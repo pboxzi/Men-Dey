@@ -54,6 +54,7 @@ import AdminEventManagement from './AdminEventManagement';
 import AdminCommunityManagement from './AdminCommunityManagement';
 import AdminMediaLibrary from './AdminMediaLibrary';
 import AdminJournalCMS from './AdminJournalCMS';
+import AdminAskGillian from './AdminAskGillian';
 
 interface AdminPortalProps {
   onBackToHome: () => void;
@@ -1366,6 +1367,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
           {/* ACTIVE VIEW: JOURNAL CMS */}
           {activeTab === 'Journal CMS' && <AdminJournalCMS showToast={showToast} />}
+
+          {/* ACTIVE VIEW: ASK GILLIAN */}
+          {activeTab === 'Ask Gillian' && <AdminAskGillian showToast={showToast} />}
 
           {/* ACTIVE VIEW: COMMUNICATION LOG */}
           {activeTab === 'Communication Log' && (

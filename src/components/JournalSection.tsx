@@ -26,7 +26,23 @@ interface JournalComment {
 
 export default function JournalSection() {
   const { journalComments: comments, addJournalComment, content } = useGlobalState();
-  const JOURNAL_ENTRIES = content.journalEntries.length > 0 ? content.journalEntries : [];
+  
+  // Map journal_articles to JournalEntry format for display
+  const articleEntries: JournalEntry[] = (content.journalArticles || [])
+    .filter((a: any) => a.status === 'published')
+    .map((a: any) => ({
+      id: a.id,
+      title: a.title,
+      category: 'JOURNAL',
+      date: a.created_at ? new Date(a.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '',
+      image: a.cover_image_url || '',
+      excerpt: a.excerpt || '',
+      content: a.content || '',
+      readTime: a.reading_time ? `${a.reading_time} min read` : '',
+    }));
+  
+  const allEntries = [...articleEntries, ...(content.journalEntries || [])];
+  const JOURNAL_ENTRIES = allEntries.length > 0 ? allEntries : [];
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [claps, setClaps] = useState<{ [id: string]: number }>({
     'journal-1': 342,

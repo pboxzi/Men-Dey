@@ -58,6 +58,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
 import { TermsOfServiceModal, PrivacyPolicyModal } from './LegalModals';
 import FanEvents from './FanEvents';
+import AskGillianChat from './AskGillianChat';
 
 interface FanPortalProps {
   onBackToHome: () => void;
@@ -182,7 +183,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   }, [profile, user]);
 
   // Portal State
-  const [activeTab, setActiveTab] = useState<'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Events' | 'Experiences' | 'Membership' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'>('Dashboard');
+  const [activeTab, setActiveTab] = useState<'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Ask Gillian' | 'Events' | 'Experiences' | 'Membership' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'>('Dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // Selected single request detail expansion
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
@@ -1261,6 +1262,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   { name: 'Profile', icon: User },
                   { name: 'Community', icon: Users },
                   { name: 'Messages', icon: MessageSquare },
+                  { name: 'Ask Gillian', icon: MessageCircle },
                   { name: 'Experiences', icon: Star },
                   { name: 'Events', icon: Calendar },
                   { name: 'Membership', icon: Award },
@@ -2332,6 +2334,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   </form>
                 </div>
               </div>
+            )}
+
+            {/* VIEW RENDERING 7b: ASK GILLIAN */}
+            {activeTab === 'Ask Gillian' && user && (
+              <AskGillianChat userId={user.id} showToast={showToast} />
             )}
 
             {/* VIEW RENDERING 8: PROFILE */}

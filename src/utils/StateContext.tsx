@@ -98,6 +98,7 @@ export interface PortalNotification {
 export interface ContentState {
   heroSlides: any[];
   journalEntries: any[];
+  journalArticles: any[];
   upcomingEvents: any[];
   shopProducts: any[];
   faqEntries: any[];
@@ -152,7 +153,7 @@ const StateContext = createContext<StateContextType | undefined>(undefined);
 export function StateProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [content, setContent] = useState<ContentState>({
-    heroSlides: [], journalEntries: [], upcomingEvents: [], shopProducts: [],
+    heroSlides: [], journalEntries: [], journalArticles: [], upcomingEvents: [], shopProducts: [],
     faqEntries: [], charityCauses: [], charityPartners: [], membershipTiers: [],
     experiences: [], filmsData: [], literaryWorks: [], kindnessLog: [],
     quizQuestions: [], sitePillars: [], requestTypes: [],
@@ -294,7 +295,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
 
       // ─── Content data ───────────────────────────────────
       const [
-        { data: heroRes }, { data: journalRes }, { data: eventsRes },
+        { data: heroRes }, { data: journalRes }, { data: journalArticlesRes }, { data: eventsRes },
         { data: shopRes }, { data: faqRes }, { data: causesRes },
         { data: partnersRes }, { data: tiersRes }, { data: expRes },
         { data: filmsRes }, { data: litRes }, { data: kindnessRes },
@@ -302,6 +303,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       ] = await Promise.all([
         supabase.from('hero_slides').select('*').order('sort_order'),
         supabase.from('journal_entries').select('*').order('created_at', { ascending: false }),
+        supabase.from('journal_articles').select('*').order('created_at', { ascending: false }),
         supabase.from('upcoming_events').select('*'),
         supabase.from('shop_products').select('*'),
         supabase.from('faq_entries').select('*').order('sort_order'),
@@ -320,6 +322,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       setContent({
         heroSlides: heroRes || [],
         journalEntries: journalRes || [],
+        journalArticles: journalArticlesRes || [],
         upcomingEvents: eventsRes || [],
         shopProducts: shopRes || [],
         faqEntries: faqRes || [],

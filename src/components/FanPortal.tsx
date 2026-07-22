@@ -2845,7 +2845,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {[
               { tab: 'Dashboard' as const, icon: LayoutGrid, label: 'Home' },
               { tab: 'Community' as const, icon: Users, label: 'Connect' },
-              { tab: 'Rewards' as const, icon: Gift, label: 'Explore' },
               { tab: 'Experiences' as const, icon: Star, label: 'Book' },
             ].map((item) => {
               const Icon = item.icon;
@@ -2861,6 +2860,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 </button>
               );
             })}
+            <button
+              onClick={() => navigate('/')}
+              className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all text-neutral-500`}
+            >
+              <Home className="h-5 w-5" strokeWidth={1.5} />
+              <span className="text-[8px] font-bold tracking-widest uppercase">Home</span>
+            </button>
             <button
               onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
               className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${isMoreMenuOpen ? 'text-gold-500' : 'text-neutral-500'}`}
@@ -2896,6 +2902,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       { icon: Calendar, label: 'Events', nav: 'Events' },
                       { icon: Award, label: 'Membership', nav: 'Membership' },
                       { icon: Compass, label: 'Journey', nav: 'My Journey' },
+                      { icon: Gift, label: 'Rewards', nav: 'Rewards' },
                       { icon: MessageSquare, label: 'Messages', nav: 'Messages' },
                       { icon: Bell, label: 'Alerts', nav: 'Notifications' },
                       { icon: Settings, label: 'Settings', nav: 'Settings' },

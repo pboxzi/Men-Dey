@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../utils/supabase';
-import { motion, AnimatePresence } from 'motion/react';
 import {
-  Send, Loader2, MessageCircle, Clock, CheckCircle, Circle, Wifi, WifiOff
+  Send, Loader2, MessageCircle, Clock, CheckCircle, Wifi, WifiOff
 } from 'lucide-react';
 
 interface Props {
@@ -42,65 +41,94 @@ export default function AskGillianChat({ userId, showToast }: Props) {
   const [gillianTyping, setGillianTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isUserScrolling = useRef(false);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!isUserScrolling.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, gillianTyping]);
+  // Track if user is manually scrolling
+  const handleScroll = () => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 50;
+    isUserScrolling.current = !atBottom;
+  };
 
   // Fetch Gillian's status
   const fetchStatus = async () => {
-    const { data } = await supabase.from('ask_gillian_status').select('*').limit(1).single();
-    if (data) setGillianStatus(data);
+    try {
+      const { data } = await supabase.from('ask_gillian_status').select('*').limit(1).maybeSingle();
+      if (data) setGillianStatus(data);
+    } catch (e) {
+      console.error('Failed to fetch status:', e);
+    }
   };
 
   // Fetch or create conversation
   const fetchConversation = async () => {
-    let { data: conv } = await supabase
-      .from('ask_gillian_conversations')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+    try {
+      // First, check if user already has any conversations
+      const { data: existingConvs } = await supabase
+        .from('ask_gillian_conversations')
+        .select('id')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
 
-    if (!conv) {
+      if (existingConvs && existingConvs.length > 0) {
+        // Use the most recent conversation
+        setConversation(existingConvs[0] as Conversation);
+        return existingConvs[0].id;
+      }
+
+      // No conversation exists, create one
       const { data: newConv } = await supabase
         .from('ask_gillian_conversations')
         .insert({ user_id: userId, status: 'waiting' })
         .select()
-        .single();
-      conv = newConv;
-    }
+        .maybeSingle();
 
-    if (conv) {
-      setConversation(conv);
-      return conv.id;
+    if (newConv) {
+      setConversation(newConv);
+      return newConv.id;
     }
     return null;
+    } catch (e) {
+      console.error('Failed to fetch conversation:', e);
+      return null;
+    }
   };
 
   // Fetch messages for conversation
   const fetchMessages = async (convId: string) => {
-    const { data } = await supabase
-      .from('ask_gillian_messages')
-      .select('*')
-      .eq('conversation_id', convId)
-      .order('created_at', { ascending: true });
+    try {
+      const { data } = await supabase
+        .from('ask_gillian_messages')
+        .select('*')
+        .eq('conversation_id', convId)
+        .order('created_at', { ascending: true });
 
-    if (data) setMessages(data);
+      if (data) setMessages(data);
+    } catch (e) {
+      console.error('Failed to fetch messages:', e);
+    }
   };
 
   // Initial load
   useEffect(() => {
     const init = async () => {
-      await fetchStatus();
-      const convId = await fetchConversation();
-      if (convId) await fetchMessages(convId);
-      setLoading(false);
+      try {
+        await fetchStatus();
+        const convId = await fetchConversation();
+        if (convId) await fetchMessages(convId);
+      } catch (e) {
+        console.error('Init failed:', e);
+      } finally {
+        setLoading(false);
+      }
     };
     init();
   }, [userId]);
@@ -118,7 +146,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
         .from('ask_gillian_conversations')
         .select('status')
         .eq('id', conversation.id)
-        .single();
+        .maybeSingle();
       if (conv) setConversation(prev => prev ? { ...prev, status: conv.status } : prev);
     }, 4000);
 
@@ -144,6 +172,10 @@ export default function AskGillianChat({ userId, showToast }: Props) {
       created_at: new Date().toISOString(),
     };
     setMessages(prev => [...prev, tempMsg]);
+
+    // Scroll to bottom when user sends a message
+    isUserScrolling.current = false;
+    setTimeout(scrollToBottom, 50);
 
     // Update conversation status to active if waiting
     if (conversation.status === 'waiting') {
@@ -172,6 +204,10 @@ export default function AskGillianChat({ userId, showToast }: Props) {
 
       // Refetch to get real ID
       await fetchMessages(conversation.id);
+
+      // Scroll to bottom after sending
+      isUserScrolling.current = false;
+      setTimeout(scrollToBottom, 100);
     }
 
     setSending(false);
@@ -183,18 +219,16 @@ export default function AskGillianChat({ userId, showToast }: Props) {
     if (gillianStatus.status !== 'available' || messages.length === 0) return;
 
     const lastMsg = messages[messages.length - 1];
-    if (lastMsg?.sender === 'user' && lastMsg.id.startsWith('temp-')) return;
+    // Only trigger typing indicator for real user messages (not temp or gillian messages)
+    if (lastMsg?.sender !== 'user' || lastMsg.id.startsWith('temp-')) return;
 
-    // Check if last message is from user and last gillian message is older
     const lastGillianMsg = [...messages].reverse().find(m => m.sender === 'gillian');
-    if (lastMsg?.sender === 'user') {
-      if (!lastGillianMsg || new Date(lastMsg.created_at) > new Date(lastGillianMsg.created_at)) {
-        setGillianTyping(true);
-        const timeout = setTimeout(() => setGillianTyping(false), 5000);
-        return () => clearTimeout(timeout);
-      }
+    if (!lastGillianMsg || new Date(lastMsg.created_at) > new Date(lastGillianMsg.created_at)) {
+      setGillianTyping(true);
+      const timeout = setTimeout(() => setGillianTyping(false), 5000);
+      return () => clearTimeout(timeout);
     }
-  }, [messages]);
+  }, [messages.length]);
 
   const statusConfig = {
     available: { color: 'bg-emerald-500', label: 'Online', textColor: 'text-emerald-400', borderColor: 'border-emerald-500/30' },
@@ -257,7 +291,11 @@ export default function AskGillianChat({ userId, showToast }: Props) {
         </div>
 
         {/* Messages Area */}
-        <div className="h-[400px] overflow-y-auto px-4 py-4 space-y-4">
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="h-[400px] overflow-y-auto px-4 py-4 space-y-4"
+        >
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-3">
               <div className="h-16 w-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center">
@@ -272,15 +310,11 @@ export default function AskGillianChat({ userId, showToast }: Props) {
             </div>
           )}
 
-          <AnimatePresence>
-            {messages.map((msg) => (
-              <motion.div
-                key={msg.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                className={`flex gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
-              >
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`flex gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+            >
                 <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[9px] ${
                   msg.sender === 'user'
                     ? 'bg-neutral-900 border-neutral-800 text-white'
@@ -303,32 +337,24 @@ export default function AskGillianChat({ userId, showToast }: Props) {
                     )}
                   </p>
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+            </div>
+          ))}
 
           {/* Typing indicator */}
-          <AnimatePresence>
-            {gillianTyping && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="flex gap-3"
-              >
-                <div className="h-8 w-8 rounded-full border bg-neutral-950 border-gold-800/35 text-gold-500 flex items-center justify-center shrink-0 font-mono font-medium text-[9px]">
-                  GA
+          {gillianTyping && (
+            <div className="flex gap-3">
+              <div className="h-8 w-8 rounded-full border bg-neutral-950 border-gold-800/35 text-gold-500 flex items-center justify-center shrink-0 font-mono font-medium text-[9px]">
+                GA
+              </div>
+              <div className="bg-neutral-900 rounded-2xl px-4 py-3 flex items-center gap-1.5">
+                <div className="flex gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60 animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60 animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60 animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
-                <div className="bg-neutral-900 rounded-2xl px-4 py-3 flex items-center gap-1.5">
-                  <div className="flex gap-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60 animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60 animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60 animate-bounce" style={{ animationDelay: '300ms' }} />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div>
+            </div>
+          )}
 
           <div ref={messagesEndRef} />
         </div>

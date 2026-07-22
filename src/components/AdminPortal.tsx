@@ -1369,7 +1369,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           {activeTab === 'Journal CMS' && <AdminJournalCMS showToast={showToast} />}
 
           {/* ACTIVE VIEW: ASK GILLIAN */}
-          {activeTab === 'Ask Gillian' && <AdminAskGillian showToast={showToast} />}
+          {activeTab === 'Ask Gillian' && <AdminAskGillian showToast={showToast} adminUserId={user?.id} />}
 
           {/* ACTIVE VIEW: COMMUNICATION LOG */}
           {activeTab === 'Communication Log' && (

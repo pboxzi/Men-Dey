@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../utils/supabase';
-import { motion, AnimatePresence } from 'motion/react';
 import {
-  MessageCircle, Send, Loader2, Clock, CheckCircle, Circle, Users,
-  Wifi, WifiOff, ChevronRight, RefreshCw, Eye, Search, Wifi as WifiIcon
+  MessageCircle, Send, Loader2, Clock, CheckCircle, Users,
+  Wifi, WifiOff, RefreshCw, Search
 } from 'lucide-react';
 
 interface Props {
   showToast: (msg: string, type: 'success' | 'info' | 'error') => void;
+  adminUserId?: string;
 }
 
 interface Message {
@@ -31,12 +31,13 @@ interface Conversation {
 }
 
 interface GillianStatus {
+  id: string;
   status: 'available' | 'busy' | 'away';
   message: string;
 }
 
-export default function AdminAskGillian({ showToast }: Props) {
-  const [gillianStatus, setGillianStatus] = useState<GillianStatus>({ status: 'available', message: '' });
+export default function AdminAskGillian({ showToast, adminUserId }: Props) {
+  const [gillianStatus, setGillianStatus] = useState<GillianStatus>({ id: '', status: 'available', message: '' });
   const [statusMessage, setStatusMessage] = useState('');
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
@@ -48,18 +49,25 @@ export default function AdminAskGillian({ showToast }: Props) {
   const [filter, setFilter] = useState<'all' | 'unread' | 'active'>('all');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isUserScrolling = useRef(false);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!isUserScrolling.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const handleScroll = () => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 50;
+    isUserScrolling.current = !atBottom;
+  };
 
   // Fetch Gillian's status
   const fetchStatus = async () => {
-    const { data } = await supabase.from('ask_gillian_status').select('*').limit(1).single();
+    const { data } = await supabase.from('ask_gillian_status').select('*').limit(1).maybeSingle();
     if (data) {
       setGillianStatus(data);
       setStatusMessage(data.message || '');
@@ -68,10 +76,17 @@ export default function AdminAskGillian({ showToast }: Props) {
 
   // Fetch all conversations with user info
   const fetchConversations = async () => {
-    const { data: convs } = await supabase
+    let query = supabase
       .from('ask_gillian_conversations')
       .select('*')
       .order('last_message_at', { ascending: false });
+
+    // Filter out admin's own conversation
+    if (adminUserId) {
+      query = query.neq('user_id', adminUserId);
+    }
+
+    const { data: convs } = await query;
 
     if (convs) {
       // Get user profiles for each conversation
@@ -195,21 +210,14 @@ export default function AdminAskGillian({ showToast }: Props) {
     const { error } = await supabase
       .from('ask_gillian_status')
       .update({ status: newStatus, message: statusMessage, updated_at: new Date().toISOString() })
-      .eq('id', gillianStatus.status ? '1' : '1');
+      .eq('id', gillianStatus.id);
 
     if (error) {
-      // Try insert if update fails
-      const { error: insertError } = await supabase
-        .from('ask_gillian_status')
-        .upsert({ id: '00000000-0000-0000-0000-000000000001', status: newStatus, message: statusMessage, updated_at: new Date().toISOString() });
-
-      if (insertError) {
-        showToast('Failed to update status', 'error');
-        return;
-      }
+      showToast('Failed to update status', 'error');
+      return;
     }
 
-    setGillianStatus({ status: newStatus, message: statusMessage });
+    setGillianStatus(prev => ({ ...prev, status: newStatus }));
     showToast(`Status updated to ${newStatus}`, 'success');
   };
 
@@ -217,7 +225,8 @@ export default function AdminAskGillian({ showToast }: Props) {
   const handleSaveStatusMessage = async () => {
     const { error } = await supabase
       .from('ask_gillian_status')
-      .upsert({ id: '00000000-0000-0000-0000-000000000001', status: gillianStatus.status, message: statusMessage, updated_at: new Date().toISOString() });
+      .update({ message: statusMessage, updated_at: new Date().toISOString() })
+      .eq('id', gillianStatus.id);
 
     if (error) {
       showToast('Failed to update status message', 'error');
@@ -423,7 +432,11 @@ export default function AdminAskGillian({ showToast }: Props) {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-[300px]">
+              <div
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-[300px]"
+              >
                 {messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
                     <p className="text-[10px] text-neutral-600 font-mono">No messages yet. Send the first response!</p>

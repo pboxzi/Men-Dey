@@ -654,6 +654,7 @@ export default function CommunitySection() {
                           src={hl.image}
                           alt="Community Highlight Visual"
                           referrerPolicy="no-referrer"
+                          onError={(e) => { (e.target as HTMLImageElement).src = '/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg'; }}
                           className="h-full w-full object-cover brightness-[0.85] saturate-[0.9] group-hover/img:brightness-100 group-hover/img:saturate-100 group-hover/img:scale-[1.02] transition-all duration-700"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-500" />

@@ -27,35 +27,21 @@ interface JournalComment {
 export default function JournalSection() {
   const { journalComments: comments, addJournalComment, content } = useGlobalState();
   
-  const JOURNAL_FALLBACK_IMAGES = [
-    '/assets/images/gillian_investigator_look_1783349694204.jpg',
-    '/assets/images/gillian_theatre_rehearsal_1783349680324.jpg',
-    '/assets/images/gillian_mentoring_warmth_1783349719383.jpg',
-    '/assets/images/gillian_speaking_event_1783349739126.jpg',
-    '/assets/images/gillian_studio_portrait_1783349751129.jpg',
-    '/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg',
-    '/assets/images/gillian_hero_one_1783349664739.jpg',
-    '/assets/images/gillian_pencil_sketch_1783350359030.jpg',
-  ];
-
   // Map journal_articles to JournalEntry format for display
   const articleEntries: JournalEntry[] = (content.journalArticles || [])
     .filter((a: any) => a.status === 'published')
-    .map((a: any, i: number) => ({
+    .map((a: any) => ({
       id: a.id,
       title: a.title,
       category: 'JOURNAL',
       date: a.created_at ? new Date(a.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '',
-      image: a.cover_image_url || JOURNAL_FALLBACK_IMAGES[i % JOURNAL_FALLBACK_IMAGES.length],
+      image: a.cover_image_url || '',
       excerpt: a.excerpt || '',
       content: a.content || '',
       readTime: a.reading_time ? `${a.reading_time} min read` : '',
     }));
   
-  const allEntries = [...articleEntries, ...(content.journalEntries || []).map((e: any, i: number) => ({
-    ...e,
-    image: e.image || JOURNAL_FALLBACK_IMAGES[(articleEntries.length + i) % JOURNAL_FALLBACK_IMAGES.length],
-  }))];
+  const allEntries = [...articleEntries, ...(content.journalEntries || [])];
   const JOURNAL_ENTRIES = allEntries.length > 0 ? allEntries : [];
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [claps, setClaps] = useState<{ [id: string]: number }>({
@@ -194,9 +180,10 @@ export default function JournalSection() {
                         {/* Thumbnail */}
                         <div className="aspect-[16/10] overflow-hidden bg-neutral-900 relative">
                           <img
-                            src={entry.image}
+                            src={entry.image || '/assets/images/gillian_investigator_look_1783349694204.jpg'}
                             alt={entry.title}
                             referrerPolicy="no-referrer"
+                            onError={(e) => { (e.target as HTMLImageElement).src = '/assets/images/gillian_investigator_look_1783349694204.jpg'; }}
                             className="h-full w-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
                           />
                         </div>
@@ -271,9 +258,10 @@ export default function JournalSection() {
               {/* Immersive Image */}
               <div className="aspect-[21/9] rounded-xl overflow-hidden border border-neutral-900 bg-neutral-900">
                 <img
-                  src={selectedEntry.image}
+                  src={selectedEntry.image || '/assets/images/gillian_investigator_look_1783349694204.jpg'}
                   alt={selectedEntry.title}
                   referrerPolicy="no-referrer"
+                  onError={(e) => { (e.target as HTMLImageElement).src = '/assets/images/gillian_investigator_look_1783349694204.jpg'; }}
                   className="w-full h-full object-cover grayscale brightness-90 contrast-105"
                 />
               </div>

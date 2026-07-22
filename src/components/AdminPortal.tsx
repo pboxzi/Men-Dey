@@ -57,6 +57,7 @@ import AdminJournalCMS from './AdminJournalCMS';
 import AdminAskGillian from './AdminAskGillian';
 import AdminRewards from './AdminRewards';
 import AdminUsers from './AdminUsers';
+import AdminSettings from './AdminSettings';
 
 interface AdminPortalProps {
   onBackToHome: () => void;
@@ -388,9 +389,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const [journalContent, setJournalContent] = useState('');
 
   // Settings State
-  const [platformName, setPlatformName] = useState('Gillian Anderson Official Fan Platform');
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
-  const [allowRegistration, setAllowRegistration] = useState(true);
+
 
   // Handler for updating a Request status
   const handleUpdateStatus = async (id: string, newStatus: RequestDetail['status']) => {
@@ -1262,101 +1261,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
 
           {/* ACTIVE VIEW: SETTINGS */}
-          {activeTab === 'Settings' && (
-            <div className="space-y-6 text-left">
-              <div className="border-b border-neutral-900 pb-4">
-                <h2 className="font-serif text-xl font-bold tracking-wider text-white">
-                  Platform Parameter Control Center
-                </h2>
-                <p className="text-xs text-neutral-500 leading-normal font-mono">
-                  Configure visual title descriptors, toggles, and security firewalls.
-                </p>
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 space-y-4">
-                  <h3 className="text-xs font-mono font-bold text-neutral-400 uppercase pb-2 border-b border-neutral-900">
-                    GENERAL CONFIGURATIONS
-                  </h3>
-
-                  <div className="space-y-4 text-xs">
-                    <div className="space-y-1.5">
-                      <label className="text-neutral-400 font-mono uppercase">PLATFORM PUBLIC NAME</label>
-                      <input
-                        type="text"
-                        value={platformName}
-                        onChange={(e) => setPlatformName(e.target.value)}
-                        className="w-full bg-neutral-950 border border-neutral-900 rounded px-3 py-2 text-white outline-none focus:border-red-500/30 font-semibold"
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between p-3 rounded bg-neutral-950 border border-neutral-900">
-                      <div className="space-y-0.5">
-                        <span className="font-bold text-white block">Maintenance System Mode</span>
-                        <p className="text-[10px] text-neutral-500">Temporarily block fan request submissions.</p>
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={maintenanceMode}
-                        onChange={(e) => setMaintenanceMode(e.target.checked)}
-                        className="h-4 w-4 bg-neutral-950 text-red-500 border-neutral-800"
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between p-3 rounded bg-neutral-950 border border-neutral-900">
-                      <div className="space-y-0.5">
-                        <span className="font-bold text-white block">Allow Gold Registrations</span>
-                        <p className="text-[10px] text-neutral-500">Enable credit token upgrades online.</p>
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={allowRegistration}
-                        onChange={(e) => setAllowRegistration(e.target.checked)}
-                        className="h-4 w-4 bg-neutral-950 text-red-500 border-neutral-800"
-                      />
-                    </div>
-
-                    <button
-                      onClick={() => showToast('Platform configurations updated!', 'success')}
-                      className="w-full py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold rounded"
-                    >
-                      Save Configuration Metrics
-                    </button>
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 space-y-4">
-                  <h3 className="text-xs font-mono font-bold text-neutral-400 uppercase pb-2 border-b border-neutral-900">
-                    PLATFORM SYSTEM UTILITIES
-                  </h3>
-
-                  <div className="space-y-3.5 text-xs text-neutral-400">
-                    <p className="leading-relaxed text-xs">
-                      Perform global database audits, backup state registries, and confirm coordination sync structures.
-                    </p>
-
-                    <div className="grid grid-cols-2 gap-3.5">
-                      <div className="p-4 rounded border border-neutral-900 bg-neutral-950 flex flex-col items-center justify-center text-center gap-2 group transition-all">
-                        <Database className="h-5 w-5 text-amber-500" />
-                        <span className="font-bold text-white font-mono text-[10px]">DB STORED ON SUPABASE</span>
-                        <span className="text-[8px] font-mono text-neutral-500">Automatic backups managed</span>
-                      </div>
-
-                      <button
-                        onClick={() => {
-                          showToast('Synchronizing coordination state tables... Alignment completed.', 'success');
-                        }}
-                        className="p-4 rounded border border-neutral-900 hover:border-neutral-800 bg-neutral-950 flex flex-col items-center justify-center text-center gap-2 group transition-all"
-                      >
-                        <RefreshCw className="h-5 w-5 text-blue-500 group-hover:rotate-180 transition-transform duration-500" />
-                        <span className="font-bold text-white font-mono text-[10px]">SYNC CORES</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {activeTab === 'Settings' && <AdminSettings showToast={showToast} />}
 
         </main>
 

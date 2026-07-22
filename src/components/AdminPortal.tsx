@@ -260,15 +260,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     })();
   }, []);
 
-  // Communication Log state (fetched from DB)
-  const [commLogs, setCommLogs] = useState<any[]>([]);
-
-  useEffect(() => {
-    void (async () => {
-      const { data, error } = await supabase.from('communication_logs').select('*').order('created_at', { ascending: false });
-      if (!error && data) setCommLogs(data);
-    })();
-  }, []);
 
   // Platform Activity (daily aggregates)
   const [activityData, setActivityData] = useState<{
@@ -412,16 +403,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       if (targetReq) {
         const nextAction = newStatus === 'In Discussion' ? 'Discuss security and schedules' : newStatus === 'Offer Made' ? 'Awaiting offer acceptance' : newStatus === 'Payment Requested' ? 'Awaiting voluntary payment' : 'Follow up standard processing';
         const notes = `Status updated to ${newStatus}.`;
-        setCommLogs(prev => [{
-          id: `COM-000${Date.now().toString().slice(-3)}`,
-          requestId: id,
-          member: targetReq.member,
-          method: 'WhatsApp',
-          lastContact: 'Just now',
-          by: 'Admin',
-          notes,
-          nextAction,
-        }, ...prev]);
         await supabase.from('communication_logs').insert({
           request_id: id,
           member: targetReq.member,
@@ -463,25 +444,17 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     const reqObj = requests.find(r => r.id === requestId);
     if (!reqObj || !manualLogNote.trim()) return;
 
-    const newLog: CommunicationLogItem = {
-      id: `COM-000${Date.now().toString().slice(-3)}`,
-      requestId,
-      member: reqObj.member,
-      method: manualLogMethod,
-      lastContact: 'Just now',
-      by: 'Admin',
-      notes: manualLogNote.trim(),
-      nextAction: manualLogAction.trim() || 'Awaiting response'
-    };
-
-    setCommLogs(prev => [newLog, ...prev]);
     setManualLogNote('');
     setManualLogAction('');
     showToast('Communication log added successfully!', 'success');
 
     try {
       await supabase.from('communication_logs').insert({
-        request_id: requestId, member: reqObj.member, method: manualLogMethod, notes: newLog.notes, next_action: newLog.nextAction
+        request_id: requestId,
+        member: reqObj.member,
+        method: manualLogMethod,
+        notes: manualLogNote.trim(),
+        next_action: manualLogAction.trim() || 'Awaiting response'
       });
     } catch {};
   };
@@ -760,9 +733,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 {[
                   { name: 'Users', icon: Users, count: null },
                   { name: 'Notifications', icon: Bell, count: null },
-                  { name: 'Communication Log', icon: MessageCircle, count: null },
-                  { name: 'Analytics', icon: Activity, count: null },
-                  { name: 'Reports', icon: FileBarChart2, count: null },
                   { name: 'Settings', icon: Settings, count: null }
                 ].map((item) => {
                   const Icon = item.icon;
@@ -790,38 +760,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                           {item.count}
                         </span>
                       )}
-                    </button>
-                  );
-                })}
-              </nav>
-            </div>
-
-            <div>
-              <span className="text-[10px] font-mono font-bold tracking-widest text-neutral-600 uppercase block pl-2 mb-2">
-                SUPPORT
-              </span>
-              <nav className="space-y-0.5">
-                {[
-                  { name: 'Help Center', icon: HelpCircle },
-                  { name: 'System Status', icon: Shield }
-                ].map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activeTab === item.name;
-                  return (
-                    <button
-                      key={item.name}
-                      onClick={() => {
-                        setActiveTab(item.name);
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all ${
-                        isActive
-                          ? 'bg-neutral-900 text-white font-semibold'
-                          : 'text-neutral-400 hover:text-white hover:bg-neutral-900/40'
-                      }`}
-                    >
-                      <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-red-400' : 'text-neutral-500'}`} />
-                      <span>{item.name}</span>
                     </button>
                   );
                 })}
@@ -1110,64 +1048,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
                   </div>
 
-                  {/* Centralized Communication Log Panel (Matching exact bottom list) */}
-                  <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden text-left">
-                    <div className="px-5 py-4 border-b border-neutral-900 flex items-center justify-between">
-                      <h3 className="text-xs font-mono font-bold tracking-wider text-white uppercase">
-                        Communication Log (Recent)
-                      </h3>
-                      <button
-                        onClick={() => setActiveTab('Communication Log')}
-                        className="text-[10px] font-mono text-gold-500 hover:text-gold-400 font-semibold"
-                      >
-                        View All
-                      </button>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs border-collapse">
-                        <thead>
-                          <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[9px] uppercase">
-                            <th className="px-5 py-2.5 font-semibold">ID</th>
-                            <th className="px-4 py-2.5 font-semibold">Request ID</th>
-                            <th className="px-4 py-2.5 font-semibold">Member</th>
-                            <th className="px-4 py-2.5 font-semibold">Method</th>
-                            <th className="px-4 py-2.5 font-semibold">Last Contact</th>
-                            <th className="px-4 py-2.5 font-semibold">By</th>
-                            <th className="px-4 py-2.5 font-semibold">Notes</th>
-                            <th className="px-5 py-2.5 font-semibold text-right">Next Action</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-neutral-900/40 text-[11px]">
-                          {commLogs.map((log) => (
-                            <tr key={log.id} className="hover:bg-neutral-950/40 transition-colors">
-                              <td className="px-5 py-3 font-mono text-neutral-400">{log.id}</td>
-                              <td className="px-4 py-3 font-mono font-semibold text-neutral-300">{log.requestId}</td>
-                              <td className="px-4 py-3 font-medium text-white">{log.member}</td>
-                              <td className="px-4 py-3">
-                                <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold ${
-                                  log.method === 'WhatsApp' ? 'bg-green-500/10 text-green-500' :
-                                  log.method === 'Email' ? 'bg-blue-500/10 text-blue-500' :
-                                  'bg-cyan-500/10 text-cyan-500'
-                                }`}>
-                                  {log.method}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 text-neutral-400 font-mono">{log.lastContact}</td>
-                              <td className="px-4 py-3 font-semibold text-red-400 font-mono">{log.by}</td>
-                              <td className="px-4 py-3 text-neutral-300 leading-relaxed truncate max-w-[140px]" title={log.notes}>
-                                {log.notes}
-                              </td>
-                              <td className="px-5 py-3 text-right text-gold-500 font-medium font-mono leading-none">
-                                {log.nextAction}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
                 </div>
 
                 {/* Right Column (3 cols): Pie donut chart, System alerts, Platform activity line chart */}
@@ -1379,60 +1259,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           {/* ACTIVE VIEW: USERS */}
           {activeTab === 'Users' && <AdminUsers showToast={showToast} />}
 
-          {/* ACTIVE VIEW: COMMUNICATION LOG */}
-          {activeTab === 'Communication Log' && (
-            <div className="space-y-6 text-left">
-              <div className="border-b border-neutral-900 pb-4">
-                <h2 className="font-serif text-xl font-bold tracking-wider text-white">
-                  Centralized Communication Feed & Logs
-                </h2>
-                <p className="text-xs text-neutral-500 leading-normal font-mono">
-                  Full historical archive of outbound contacts, automated SMS status dispatches, and WhatsApp chat history.
-                </p>
-              </div>
 
-              <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[10px] uppercase">
-                        <th className="px-5 py-3 font-semibold">Log ID</th>
-                        <th className="px-4 py-3 font-semibold">Target Proposal</th>
-                        <th className="px-4 py-3 font-semibold">Recipient</th>
-                        <th className="px-4 py-3 font-semibold">Channel</th>
-                        <th className="px-4 py-3 font-semibold">Dispatched</th>
-                        <th className="px-4 py-3 font-semibold">Agent Dispatcher</th>
-                        <th className="px-4 py-3 font-semibold">Message Transcript</th>
-                        <th className="px-5 py-3 font-semibold text-right">Required Next Steps</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-neutral-900/40 leading-relaxed">
-                      {commLogs.map((log) => (
-                        <tr key={log.id} className="hover:bg-neutral-950/20 transition-all">
-                          <td className="px-5 py-3.5 font-mono text-neutral-400">{log.id}</td>
-                          <td className="px-4 py-3.5 font-mono font-semibold text-neutral-300">{log.requestId}</td>
-                          <td className="px-4 py-3.5 font-semibold text-white">{log.member}</td>
-                          <td className="px-4 py-3.5">
-                            <span className="px-2 py-0.5 rounded text-[10px] bg-green-500/10 text-green-500 border border-green-500/20 font-mono">
-                              {log.method}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3.5 font-mono text-neutral-400">{log.lastContact}</td>
-                          <td className="px-4 py-3.5 font-mono text-red-400 font-bold">{log.by}</td>
-                          <td className="px-4 py-3.5 text-neutral-300 max-w-sm truncate" title={log.notes}>
-                            {log.notes}
-                          </td>
-                          <td className="px-5 py-3.5 text-right font-mono text-gold-500 font-semibold text-[10px]">
-                            {log.nextAction}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* ACTIVE VIEW: SETTINGS */}
           {activeTab === 'Settings' && (

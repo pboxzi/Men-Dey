@@ -94,11 +94,11 @@ async function sendNotificationEmail(userId: string, subject: string, body: stri
     // Check if email notifications are enabled
     const { data: enabledSetting } = await supabase
       .from('site_settings')
-      .select('setting_value')
-      .eq('setting_key', 'email_notifications_enabled')
+      .select('value')
+      .eq('key', 'email_notifications_enabled')
       .maybeSingle();
 
-    if (enabledSetting?.setting_value === 'false') {
+    if (enabledSetting?.value === 'false') {
       console.log('Email notifications disabled');
       return;
     }

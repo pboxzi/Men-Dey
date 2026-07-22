@@ -28,25 +28,25 @@ serve(async (req: Request) => {
     // Fetch Resend API key and sender email from site_settings
     const { data: settings } = await supabase
       .from("site_settings")
-      .select("setting_value")
-      .eq("setting_key", "resend_api_key")
+      .select("value")
+      .eq("key", "resend_api_key")
       .single()
 
     const { data: senderSettings } = await supabase
       .from("site_settings")
-      .select("setting_value")
-      .eq("setting_key", "resend_sender_email")
+      .select("value")
+      .eq("key", "resend_sender_email")
       .single()
 
     const { data: enabledSettings } = await supabase
       .from("site_settings")
-      .select("setting_value")
-      .eq("setting_key", "email_notifications_enabled")
+      .select("value")
+      .eq("key", "email_notifications_enabled")
       .single()
 
-    const resendApiKey = settings?.setting_value
-    const senderEmail = senderSettings?.setting_value || "noreply@gillianandersonfan.com"
-    const emailEnabled = enabledSettings?.setting_value !== "false"
+    const resendApiKey = Deno.env.get("RESEND_API_KEY") || settings?.value
+    const senderEmail = senderSettings?.value || "noreply@cmagency.me"
+    const emailEnabled = enabledSettings?.value !== "false"
 
     if (!resendApiKey) {
       return new Response(

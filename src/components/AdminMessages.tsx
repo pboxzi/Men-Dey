@@ -40,10 +40,16 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'unread' | 'active'>('all');
+  const [showNewChat, setShowNewChat] = useState(false);
+  const [users, setUsers] = useState<{ id: string; name: string; email: string }[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [newSubject, setNewSubject] = useState('');
+  const [newFirstMsg, setNewFirstMsg] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isUserScrolling = useRef(false);
+  const convIdRef = useRef<string | null>(null);
 
   const scrollToBottom = () => {
     if (!isUserScrolling.current) {
@@ -120,9 +126,62 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
     }
   }, [fetchConversations]);
 
+  // Fetch all users for admin-initiated conversations
+  const fetchUsers = async () => {
+    const { data } = await supabase.from('profiles').select('id, name, email').order('name');
+    if (data) setUsers(data);
+  };
+
+  // Admin creates a new conversation with a fan
+  const handleCreateConvAsAdmin = async () => {
+    if (!selectedUserId || !newSubject.trim() || !newFirstMsg.trim()) {
+      showToast('Select a user, subject, and message', 'error');
+      return;
+    }
+
+    const { data: convData, error: convError } = await supabase
+      .from('fan_admin_conversations')
+      .insert({ user_id: selectedUserId, subject: newSubject.trim() })
+      .select('id')
+      .maybeSingle();
+
+    if (convError || !convData) {
+      showToast('Failed to create conversation', 'error');
+      return;
+    }
+
+    // Send the first message
+    await supabase.from('fan_admin_messages').insert({
+      conversation_id: convData.id,
+      sender: 'admin',
+      text: newFirstMsg.trim(),
+    });
+
+    showToast('Conversation started', 'success');
+    setShowNewChat(false);
+    setSelectedUserId('');
+    setNewSubject('');
+    setNewFirstMsg('');
+    await fetchConversations();
+
+    // Select the new conversation
+    const newConv: Conversation = {
+      id: convData.id,
+      user_id: selectedUserId,
+      subject: newSubject.trim(),
+      status: 'active',
+      last_message_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    };
+    setSelectedConv(newConv);
+    convIdRef.current = convData.id;
+    await fetchMessages(convData.id);
+    setTimeout(scrollToBottom, 100);
+  };
+
   useEffect(() => {
     const init = async () => {
-      await fetchConversations();
+      await Promise.all([fetchConversations(), fetchUsers()]);
       setLoading(false);
     };
     init();
@@ -142,6 +201,7 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
 
   const handleSelectConv = async (conv: Conversation) => {
     setSelectedConv(conv);
+    convIdRef.current = conv.id;
     isUserScrolling.current = false;
     await fetchMessages(conv.id);
     setTimeout(scrollToBottom, 100);
@@ -238,11 +298,50 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 rounded-xl border border-neutral-900 bg-neutral-950 overflow-hidden min-h-[500px]">
         {/* Conversations List */}
         <div className="lg:col-span-1 border-b lg:border-b-0 lg:border-r border-neutral-900 flex flex-col">
-          <div className="p-3 border-b border-neutral-900">
+          <div className="p-3 border-b border-neutral-900 flex justify-between items-center">
             <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
               Conversations ({filteredConversations.length})
             </p>
+            <button
+              onClick={() => { setShowNewChat(true); fetchUsers(); }}
+              className="flex items-center gap-1 px-2 py-1 rounded text-[9px] font-mono text-gold-500 hover:bg-neutral-900 transition-all"
+            >+ New</button>
           </div>
+
+          {showNewChat && (
+            <div className="p-3 border-b border-neutral-900 space-y-2">
+              <select
+                value={selectedUserId}
+                onChange={e => setSelectedUserId(e.target.value)}
+                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40"
+              >
+                <option value="">Select a fan...</option>
+                {users.filter(u => u.id !== adminUserId).map(u => (
+                  <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                value={newSubject}
+                onChange={e => setNewSubject(e.target.value)}
+                placeholder="Subject"
+                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40"
+              />
+              <textarea
+                value={newFirstMsg}
+                onChange={e => setNewFirstMsg(e.target.value)}
+                placeholder="Your message..."
+                rows={2}
+                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40 resize-none"
+              />
+              <div className="flex gap-2">
+                <button onClick={handleCreateConvAsAdmin}
+                  className="flex-1 py-1.5 rounded bg-gold-500 text-neutral-950 text-[9px] font-mono font-bold uppercase">Send</button>
+                <button onClick={() => { setShowNewChat(false); setSelectedUserId(''); setNewSubject(''); setNewFirstMsg(''); }}
+                  className="px-3 py-1.5 rounded border border-neutral-800 text-neutral-500 text-[9px] font-mono uppercase">Cancel</button>
+              </div>
+            </div>
+          )}
           <div className="flex-1 overflow-y-auto">
             {filteredConversations.length === 0 ? (
               <div className="p-6 text-center">

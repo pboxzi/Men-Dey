@@ -385,9 +385,9 @@ export default function App() {
       <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-24 lg:pb-0 w-full max-w-full">
       {/* 1. Header (Navbar) */}
       <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md">
-        <div className="mx-auto flex items-center px-3 py-2.5 sm:px-4 md:px-6 gap-2 sm:gap-4">
+        <div className="flex items-center px-2 py-2.5 sm:px-4 md:px-6 gap-2 sm:gap-4">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2.5 group shrink-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
+          <a href="/" className="flex items-center gap-2 group shrink-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center group-hover:border-gold-500/40 transition-colors">
               <span className="font-serif text-sm font-bold text-gold-500">GA</span>
             </div>
@@ -1208,7 +1208,7 @@ export default function App() {
       )}
 
       {/* Mobile Bottom Navigation — 5 tabs */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-neutral-900 bg-[#050505]/98 backdrop-blur-md flex items-stretch justify-around shadow-2xl shadow-black/80" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-neutral-900 bg-[#050505]/98 backdrop-blur-md flex items-stretch justify-around shadow-2xl shadow-black/80 overflow-hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         {/* Home */}
         <button onClick={() => { navigateTo('landing', 'HOME'); setMobileExploreOpen(false); }}
           className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${activeNav === 'HOME' && viewMode === 'landing' ? 'text-gold-500' : 'text-neutral-500'}`}>

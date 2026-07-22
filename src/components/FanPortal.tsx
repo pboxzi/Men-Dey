@@ -1301,10 +1301,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="flex flex-col">
                   <span className="text-xs sm:text-sm font-bold tracking-wider text-white leading-tight">
-                    Fan Portal
+                    Gillian Anderson
                   </span>
                   <span className="font-mono text-[7px] tracking-[0.2em] text-gold-500/60 font-semibold uppercase leading-none">
-                    Member Workspace
+                    Fan Portal
                   </span>
                 </div>
             </div>

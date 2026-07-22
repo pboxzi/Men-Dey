@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
 import {
   Users, Search, Loader2, Crown, Shield, Mail, MapPin, Calendar,
-  ChevronRight, X, Award, Star, MessageCircle, TrendingUp, Ban, CheckCircle
+  ChevronRight, X, Award, Star, MessageCircle, TrendingUp, Ban, CheckCircle, Trash2
 } from 'lucide-react';
 
 interface Props {
@@ -109,6 +109,26 @@ export default function AdminUsers({ showToast }: Props) {
         setSelectedUser(prev => prev ? { ...prev, role: newRole } : null);
       }
     }
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    if (!confirm(`Delete user "${userName}"? This cannot be undone.`)) return;
+
+    const { error } = await supabase
+      .rpc('admin_delete_user', { target_user_id: userId });
+
+    if (error) {
+      // Fallback: try direct delete
+      const { error: delError } = await supabase.from('profiles').delete().eq('id', userId);
+      if (delError) {
+        showToast('Failed to delete user', 'error');
+        return;
+      }
+    }
+
+    showToast('User deleted', 'success');
+    setUsers(prev => prev.filter(u => u.id !== userId));
+    if (selectedUser?.id === userId) setSelectedUser(null);
   };
 
   const filteredUsers = users.filter(u => {
@@ -344,6 +364,12 @@ export default function AdminUsers({ showToast }: Props) {
                   ) : (
                     <><Crown className="h-3.5 w-3.5" /> Promote to Admin</>
                   )}
+                </button>
+                <button
+                  onClick={() => handleDeleteUser(selectedUser.id, selectedUser.name)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 text-[10px] font-mono uppercase tracking-widest transition-all"
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Delete User
                 </button>
                 <div className="rounded-lg bg-neutral-900/30 border border-neutral-900 p-3">
                   <p className="text-[9px] text-neutral-500 leading-relaxed">

@@ -384,7 +384,7 @@ export default function App() {
   return (
       <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-24 lg:pb-0 w-full max-w-full">
       {/* 1. Header (Navbar) */}
-      <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md overflow-hidden">
+      <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md">
         <div className="flex items-center px-2 py-2.5 sm:px-4 md:px-6 gap-2 sm:gap-4 w-full min-w-0">
           {/* Logo */}
           <a href="/" className="flex items-center gap-2 group shrink-0 min-w-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>

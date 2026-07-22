@@ -371,11 +371,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [badges, setBadges] = useState([]);
 
   useEffect(() => {
+    if (!user?.id) return;
     void (async () => {
-      const { data, error } = await supabase.from('user_badges').select('*');
+      const { data, error } = await supabase.from('user_badges').select('*').eq('user_id', user.id);
       if (!error && data) setBadges(data);
     })();
-  }, []);
+  }, [user]);
 
   // Additional dashboard stats
   const [fanStats, setFanStats] = useState({ bookings: 0, events: 0, memberSince: '' });
@@ -949,7 +950,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     showToast(`Successfully redeemed: ${item.title}!`, 'success');
 
     try {
-      await supabase.from('user_badges').insert({ title: newBadge.title, description: newBadge.desc, icon: newBadge.icon });
+      await supabase.from('user_badges').insert({ user_id: user?.id, title: newBadge.title, description: newBadge.desc, icon: newBadge.icon });
+      await supabase.from('loyalty_points').upsert({ user_id: user?.id, total: loyaltyPoints - item.cost, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
       await supabase.from('journey_log').insert({ title: journeyMilestone.title, description: journeyMilestone.description, color: journeyMilestone.color });
       await supabase.from('fan_notifications').insert({ text: `Successfully redeemed loyalty reward: ${item.title}. Check your unlocked badges!` });
     } catch {}

@@ -27,21 +27,36 @@ interface JournalComment {
 export default function JournalSection() {
   const { journalComments: comments, addJournalComment, content } = useGlobalState();
   
+  const LOCAL_IMAGES = [
+    '/assets/images/gillian_investigator_look_1783349694204.jpg',
+    '/assets/images/gillian_theatre_rehearsal_1783349680324.jpg',
+    '/assets/images/gillian_mentoring_warmth_1783349719383.jpg',
+    '/assets/images/gillian_speaking_event_1783349739126.jpg',
+    '/assets/images/gillian_studio_portrait_1783349751129.jpg',
+    '/assets/images/gillian_thoughtful_outdoor_1783349709080.jpg',
+    '/assets/images/gillian_hero_one_1783349664739.jpg',
+    '/assets/images/gillian_pencil_sketch_1783350359030.jpg',
+    '/assets/images/iceland_landscape_1782919139830.jpg',
+  ];
+
   // Map journal_articles to JournalEntry format for display
   const articleEntries: JournalEntry[] = (content.journalArticles || [])
     .filter((a: any) => a.status === 'published')
-    .map((a: any) => ({
+    .map((a: any, i: number) => ({
       id: a.id,
       title: a.title,
       category: 'JOURNAL',
       date: a.created_at ? new Date(a.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '',
-      image: a.cover_image_url || '',
+      image: LOCAL_IMAGES[i % LOCAL_IMAGES.length],
       excerpt: a.excerpt || '',
       content: a.content || '',
       readTime: a.reading_time ? `${a.reading_time} min read` : '',
     }));
   
-  const allEntries = [...articleEntries, ...(content.journalEntries || [])];
+  const allEntries = [...articleEntries, ...(content.journalEntries || []).map((e: any, i: number) => ({
+    ...e,
+    image: LOCAL_IMAGES[(articleEntries.length + i) % LOCAL_IMAGES.length],
+  }))];
   const JOURNAL_ENTRIES = allEntries.length > 0 ? allEntries : [];
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [claps, setClaps] = useState<{ [id: string]: number }>({
@@ -265,19 +280,10 @@ export default function JournalSection() {
               </div>
 
               {/* Body Content */}
-              <div className="prose prose-invert max-w-none text-neutral-300 font-sans text-sm leading-relaxed space-y-6 pt-4 border-b border-neutral-900 pb-8">
-                {selectedEntry.content.split('\n\n').map((para, i) => {
-                  if (para.startsWith('>')) {
-                    const blockquoteText = para.replace('>', '').replace(/"/g, '').trim();
-                    return (
-                      <blockquote key={i} className="border-l-2 border-gold-500 pl-4 py-2 italic font-serif text-lg text-neutral-200 bg-gold-500/5 rounded-r">
-                        "{blockquoteText}"
-                      </blockquote>
-                    );
-                  }
-                  return <p key={i}>{para}</p>;
-                })}
-              </div>
+              <div
+                className="prose prose-invert max-w-none text-neutral-300 font-sans text-sm leading-relaxed space-y-6 pt-4 border-b border-neutral-900 pb-8 [&_p]:leading-relaxed [&_p]:mb-4 [&_blockquote]:border-l-2 [&_blockquote]:border-gold-500 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_blockquote]:font-serif [&_blockquote]:text-lg [&_blockquote]:text-neutral-200 [&_blockquote]:bg-gold-500/5 [&_blockquote]:rounded-r [&_blockquote]:my-6"
+                dangerouslySetInnerHTML={{ __html: selectedEntry.content }}
+              />
 
               {/* Quick Actions Panel */}
               <div className="flex items-center justify-between py-4 border-b border-neutral-900">

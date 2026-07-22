@@ -21,10 +21,9 @@ export default function JournalModal({ isOpen, onClose, entry }: JournalModalPro
         {/* Banner with absolute gradient overlay */}
         <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-neutral-900 bg-neutral-900">
           <img
-            src={entry.image || '/assets/images/gillian_investigator_look_1783349694204.jpg'}
+            src={entry.image}
             alt={entry.title}
             referrerPolicy="no-referrer"
-            onError={(e) => { (e.target as HTMLImageElement).src = '/assets/images/gillian_investigator_look_1783349694204.jpg'; }}
             className="h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent" />

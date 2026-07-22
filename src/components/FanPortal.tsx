@@ -171,10 +171,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [authName, setAuthName] = useState('');
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
+  const [authConfirmPassword, setAuthConfirmPassword] = useState('');
   const [authCountry, setAuthCountry] = useState('USA');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
 
   // Sync auth mode with URL params
   useEffect(() => {
@@ -1001,13 +1003,21 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         }
         setShowWelcome(true);
       } else {
+        if (authPassword !== authConfirmPassword) {
+          setAuthError('Passwords do not match.');
+          return;
+        }
+        if (authPassword.length < 6) {
+          setAuthError('Password must be at least 6 characters.');
+          return;
+        }
         const { error, user: newUser } = await signUp(authEmail, authPassword, authName);
         if (error) {
           setAuthError(error);
           return;
         }
         if (newUser) {
-          setShowWelcome(true);
+          setShowEmailVerification(true);
         }
       }
     } finally {
@@ -1030,7 +1040,43 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(223,186,137,0.03),transparent)] pointer-events-none" />
           
           <AnimatePresence mode="wait">
-            {showWelcome ? (
+            {showEmailVerification ? (
+              <motion.div
+                key="email-verification-panel"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="w-full max-w-md rounded-xl border border-gold-500/20 bg-neutral-950 p-8 shadow-2xl text-center space-y-6"
+              >
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold-500/10 text-gold-500 border border-gold-500/30">
+                  <Mail className="h-7 w-7" />
+                </div>
+                <div className="space-y-2">
+                  <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest block font-bold">
+                    CHECK YOUR INBOX
+                  </span>
+                  <h4 className="font-serif text-xl font-bold tracking-wider text-white">
+                    Verify Your Email
+                  </h4>
+                  <p className="text-xs text-neutral-400 max-w-xs mx-auto leading-relaxed">
+                    We've sent a verification link to <span className="text-gold-500 font-medium">{authEmail}</span>. Please check your inbox (and spam folder) and click the link to activate your account.
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => { setShowEmailVerification(false); setAuthMode('login'); }}
+                    className="w-full py-3 rounded-lg bg-gradient-to-r from-gold-500 to-amber-500 text-neutral-950 font-bold text-sm tracking-wider hover:from-gold-400 hover:to-amber-400 transition-all"
+                  >
+                    GO TO SIGN IN
+                  </button>
+                  <button
+                    onClick={() => setShowEmailVerification(false)}
+                    className="text-[10px] text-neutral-500 hover:text-gold-500 transition-colors font-mono tracking-wider"
+                  >
+                    ← Back to Registration
+                  </button>
+                </div>
+              </motion.div>
+            ) : showWelcome ? (
               <motion.div
                 key="welcome-panel"
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -1150,6 +1196,20 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
                     />
                   </div>
+
+                  {authMode === 'register' && (
+                    <div>
+                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Confirm Password</label>
+                      <input
+                        type="password"
+                        required
+                        value={authConfirmPassword}
+                        onChange={(e) => setAuthConfirmPassword(e.target.value)}
+                        placeholder="Re-enter your password"
+                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
+                      />
+                    </div>
+                  )}
 
                   {authMode === 'register' && (
                     <div>

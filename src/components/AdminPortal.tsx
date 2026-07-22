@@ -55,6 +55,7 @@ import AdminCommunityManagement from './AdminCommunityManagement';
 import AdminMediaLibrary from './AdminMediaLibrary';
 import AdminJournalCMS from './AdminJournalCMS';
 import AdminAskGillian from './AdminAskGillian';
+import AdminRewards from './AdminRewards';
 
 interface AdminPortalProps {
   onBackToHome: () => void;
@@ -1370,6 +1371,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
           {/* ACTIVE VIEW: ASK GILLIAN */}
           {activeTab === 'Ask Gillian' && <AdminAskGillian showToast={showToast} adminUserId={user?.id} />}
+
+          {/* ACTIVE VIEW: REWARDS & BADGES */}
+          {activeTab === 'Rewards & Badges' && <AdminRewards showToast={showToast} />}
 
           {/* ACTIVE VIEW: COMMUNICATION LOG */}
           {activeTab === 'Communication Log' && (

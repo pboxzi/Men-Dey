@@ -552,7 +552,7 @@ export default function App() {
                       referrerPolicy="no-referrer"
                       loading="eager"
                       // @ts-ignore
-                      fetchpriority="high"
+                      fetchPriority="high"
                       onLoad={() => handleImageLoad(activeSlide.image)}
                       className={`h-full w-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:scale-[1.02] transition-all duration-700 ${
                         loadedImages[activeSlide.image] ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-105 blur-md'

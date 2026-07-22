@@ -1339,6 +1339,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           {activeTab === 'Memberships' && <AdminMembershipReview />}
           {activeTab === 'Experiences' && <AdminExperiences showToast={showToast} />}
 
+          {/* ACTIVE VIEW: EVENTS */}
+          {activeTab === 'Events' && <AdminEventManagement showToast={showToast} />}
+
           {/* ACTIVE VIEW: COMMUNITY MANAGEMENT */}
           {activeTab === 'Community' && <AdminCommunityManagement showToast={showToast} />}
 

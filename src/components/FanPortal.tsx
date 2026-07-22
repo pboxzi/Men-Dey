@@ -200,6 +200,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   // Portal State
   const [activeTab, setActiveTab] = useState<'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Ask Gillian' | 'Events' | 'Experiences' | 'Membership' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'>('Dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   // Selected single request detail expansion
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
 
@@ -1021,7 +1022,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 flex flex-col justify-between overflow-x-hidden">
+    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 flex flex-col justify-between overflow-x-clip">
       
       {/* 1. AUTHENTICATION GATE SCREEN */}
       {!isLoggedIn || !profile ? (
@@ -1211,32 +1212,26 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
           <div className="flex flex-col min-h-screen bg-[#050505]">
           
           {/* STICKY HEADER */}
-          <header className="sticky top-0 z-40 w-full border-b border-neutral-900/80 bg-[#050505]/95 backdrop-blur-md px-4 md:px-8 flex items-center justify-between h-16 shrink-0">
-            <div className="flex items-center gap-4">
+          <header className="sticky top-0 z-40 w-full border-b border-neutral-900/80 bg-[#050505]/95 backdrop-blur-md px-3 sm:px-4 md:px-8 flex items-center justify-between h-14 md:h-16 shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3">
               <button
                 onClick={onBackToHome}
-                className="p-1.5 rounded-lg bg-neutral-950/60 border border-neutral-800/50 text-neutral-500 hover:text-neutral-100 hover:border-neutral-700 transition-all"
+                className="p-1.5 rounded-lg bg-neutral-950/60 border border-neutral-800/50 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all"
                 aria-label="Back to landing"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
               </button>
-              <div className="flex items-center gap-3">
-                <span className="font-serif text-lg font-bold tracking-widest text-gold-500 leading-none">
-                  GA
-                </span>
-                <div className="h-4 w-px bg-neutral-800/60" />
-                <div className="flex flex-col">
-                  <span className="font-serif text-[10px] font-semibold tracking-wider text-neutral-200 leading-tight">
-                    Co-op
+              <div className="flex flex-col">
+                  <span className="text-xs sm:text-sm font-bold tracking-wider text-white leading-tight">
+                    Fan Portal
                   </span>
                   <span className="font-mono text-[7px] tracking-[0.2em] text-gold-500/60 font-semibold uppercase leading-none">
                     Member Workspace
                   </span>
                 </div>
-              </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gold-500/5 border border-gold-500/15 text-[10px] font-mono text-gold-400/80 font-medium">
                 <span className="text-gold-500/60">✦</span>
                 <span>{loyaltyPoints.toLocaleString()} pts</span>
@@ -1244,48 +1239,20 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
               <NotificationBell />
 
-              <div className="flex items-center gap-2 pl-2 border-l border-neutral-800/60">
-                <div className="h-7 w-7 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-500/5 border border-gold-500/25 flex items-center justify-center text-[9px] font-bold text-gold-500 font-serif">
-                  {authName.slice(0, 1).toUpperCase()}
-                </div>
-                <div className="hidden md:flex flex-col leading-none">
-                  <span className="text-xs font-medium text-neutral-100">{authName}</span>
-                  <span className="text-[7px] font-mono text-neutral-500 uppercase tracking-wider">{displayRank.name}</span>
-                </div>
+              <div className="h-7 w-7 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-500/5 border border-gold-500/25 flex items-center justify-center text-[9px] font-bold text-gold-500 font-serif">
+                {authName.slice(0, 1).toUpperCase()}
               </div>
-
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-1.5 rounded-lg bg-neutral-950/60 border border-neutral-800/50 text-neutral-500 hover:text-neutral-100 transition-all"
-                aria-label="Toggle navigation"
-              >
-                {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-              </button>
             </div>
           </header>
 
-          <div className="flex flex-1 relative">
-            <AnimatePresence>
-              {isMobileMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                />
-              )}
-            </AnimatePresence>
+          <div className="flex flex-1 relative overflow-hidden">
 
-            {/* FIXED SIDEBAR */}
+            {/* FIXED SIDEBAR — desktop only */}
             <aside
               className={`
                 bg-[#0a0a0c] border-r border-neutral-900/60 flex flex-col justify-between transition-all duration-300 z-30
-                ${isMobileMenuOpen
-                  ? 'fixed inset-y-0 left-0 w-64 shadow-2xl translate-x-0 pt-16'
-                  : 'fixed inset-y-0 left-0 w-64 -translate-x-full md:translate-x-0 md:pt-16'
-                }
+                hidden md:flex
+                fixed inset-y-0 left-0 w-64 md:translate-x-0 pt-16
               `}
             >
               <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5 scrollbar-thin">
@@ -1372,7 +1339,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             </aside>
 
             {/* MAIN CONTENT */}
-            <main className="flex-1 md:ml-64 min-h-[calc(100vh-4rem)] overflow-y-auto bg-[#050505] p-4 md:p-8 lg:p-10 space-y-6 md:space-y-8">
+            <main className="flex-1 md:ml-64 min-h-[calc(100vh-4rem)] overflow-y-auto overflow-x-clip bg-[#050505] p-4 md:p-8 lg:p-10 space-y-6 md:space-y-8 pb-24 lg:pb-8">
             
             {/* VIEW RENDERING 1: DASHBOARD — Cinematic Rebuild */}
             {activeTab === 'Dashboard' && (
@@ -1429,7 +1396,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.35 }}
-                        className="pl-[4.25rem] space-y-3"
+                        className="pl-0 sm:pl-[4.25rem] space-y-3"
                       >
                         <p className="text-sm text-neutral-400 font-elegant leading-relaxed max-w-xl">
                           {new Date().getHours() < 12
@@ -2808,8 +2775,95 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       </div>
     )}
 
+      {/* MOBILE BOTTOM NAV BAR */}
+      {isLoggedIn && profile && (
+        <>
+          <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-neutral-900 bg-[#050505]/98 backdrop-blur-md flex items-stretch justify-around shadow-2xl shadow-black/80 overflow-hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+            {[
+              { tab: 'Dashboard' as const, icon: LayoutGrid, label: 'Home' },
+              { tab: 'Community' as const, icon: Users, label: 'Connect' },
+              { tab: 'Experiences' as const, icon: Star, label: 'Explore' },
+              { tab: 'Rewards' as const, icon: Gift, label: 'Status' },
+            ].map((item) => {
+              const Icon = item.icon;
+              const isSelected = activeTab === item.tab;
+              return (
+                <button
+                  key={item.tab}
+                  onClick={() => { setActiveTab(item.tab); setSelectedRequestId(null); }}
+                  className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${isSelected ? 'text-gold-500' : 'text-neutral-500'}`}
+                >
+                  <Icon className="h-5 w-5" strokeWidth={isSelected ? 2.5 : 1.5} />
+                  <span className="text-[8px] font-bold tracking-widest uppercase">{item.label}</span>
+                </button>
+              );
+            })}
+            <button
+              onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
+              className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${isMoreMenuOpen ? 'text-gold-500' : 'text-neutral-500'}`}
+            >
+              <Menu className="h-5 w-5" strokeWidth={isMoreMenuOpen ? 2.5 : 1.5} />
+              <span className="text-[8px] font-bold tracking-widest uppercase">More</span>
+            </button>
+          </div>
+
+          {/* MOBILE MORE SHEET */}
+          <AnimatePresence>
+            {isMoreMenuOpen && (
+              <>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden" onClick={() => setIsMoreMenuOpen(false)} />
+                <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+                  transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                  className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#0a0a0a] border-t border-neutral-800 rounded-t-2xl max-h-[80vh] overflow-y-auto"
+                  style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+                  <div className="flex justify-center pt-3 pb-2">
+                    <div className="w-10 h-1 rounded-full bg-neutral-700" />
+                  </div>
+                  <div className="px-5 pb-3 flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-white tracking-wide">More</h3>
+                    <button onClick={() => setIsMoreMenuOpen(false)} className="p-1.5 rounded-full hover:bg-neutral-800 transition-colors">
+                      <X className="h-4 w-4 text-neutral-400" />
+                    </button>
+                  </div>
+                  <div className="px-5 pb-6 grid grid-cols-3 gap-3">
+                    {[
+                      { icon: User, label: 'Profile', nav: 'Profile' },
+                      { icon: MessageCircle, label: 'Ask Gillian', nav: 'Ask Gillian' },
+                      { icon: Calendar, label: 'Events', nav: 'Events' },
+                      { icon: Award, label: 'Membership', nav: 'Membership' },
+                      { icon: Compass, label: 'Journey', nav: 'My Journey' },
+                      { icon: MessageSquare, label: 'Messages', nav: 'Messages' },
+                      { icon: Bell, label: 'Alerts', nav: 'Notifications' },
+                      { icon: Settings, label: 'Settings', nav: 'Settings' },
+                    ].map((item) => {
+                      const Icon = item.icon;
+                      const isSelected = activeTab === item.nav;
+                      return (
+                        <button
+                          key={item.nav}
+                          onClick={() => { setActiveTab(item.nav as any); setSelectedRequestId(null); setIsMoreMenuOpen(false); }}
+                          className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
+                            isSelected
+                              ? 'bg-gold-500/10 border-gold-500/30 text-gold-500'
+                              : 'bg-neutral-950/50 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
+                          }`}
+                        >
+                          <Icon className="h-5 w-5" />
+                          <span className="text-[9px] font-bold tracking-wider uppercase">{item.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </>
+      )}
+
       {/* FOOTER BAR */}
-      <footer className="border-t border-white/[0.03] bg-[#070709] py-5 px-4 md:px-8">
+      <footer className="border-t border-white/[0.03] bg-[#070709] py-5 px-4 md:px-8 hidden md:block">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-[9px] font-mono text-white/20">
           <span>&copy; 2026 Gillian Anderson Co-op. All rights reserved.</span>
           <div className="flex gap-5">
@@ -3086,7 +3140,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className={`fixed top-4 right-4 z-50 flex items-center gap-2.5 rounded-lg border px-4 py-3 shadow-2xl min-w-[300px] ${
+            className={`fixed top-4 right-4 z-50 flex items-center gap-2.5 rounded-lg border px-4 py-3 shadow-2xl max-w-[calc(100vw-2rem)] ${
               toast.type === 'error'
                 ? 'border-red-500/50 bg-[#0a0a0c] shadow-red-500/10'
                 : 'border-gold-500 bg-[#0a0a0c] shadow-gold-500/10'

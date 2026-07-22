@@ -81,10 +81,16 @@ export default function FanExperienceBookings({ showToast }: Props) {
   }, []);
 
   const loadBookings = async () => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
     try {
-      let query = supabase.from('experience_requests').select('*');
-      if (user?.id) query = query.eq('user_id', user.id);
-      const { data, error } = await query.order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('experience_requests')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
       if (!error && data) {
         setBookings(data.map((r: any) => toCamelCase(r)));
       }

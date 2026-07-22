@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Experience, ExperienceBooking } from '../types';
+import { useAuth } from '../utils/AuthContext';
 import BookingPage from './BookingPage';
 import ExperienceDetailPage from './ExperienceDetailPage';
 import { supabase } from '../utils/supabase';
@@ -43,6 +44,7 @@ const CATEGORY_ICONS: Record<string, any> = {
 export default function ExperiencesSection() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [activeCategory, setActiveCategory] = useState('ALL');
   const [detailViewId, setDetailViewId] = useState<string | null>(null);
@@ -59,12 +61,17 @@ export default function ExperiencesSection() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [expRes, bookingsRes] = await Promise.all([
-          supabase.from('experiences').select('*').order('sort_order').order('title'),
-          supabase.from('experience_requests').select('*').order('created_at', { ascending: false }),
-        ]);
+        const expRes = await supabase.from('experiences').select('*').order('sort_order').order('title');
         if (!expRes.error && expRes.data) setExperiences(expRes.data || []);
-        if (!bookingsRes.error && bookingsRes.data) setBookings(bookingsRes.data || []);
+
+        if (user?.id) {
+          const bookingsRes = await supabase
+            .from('experience_requests')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
+          if (!bookingsRes.error && bookingsRes.data) setBookings(bookingsRes.data || []);
+        }
       } catch (err) {
         console.error('Failed to load experiences:', err);
       } finally {

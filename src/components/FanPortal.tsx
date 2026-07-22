@@ -421,11 +421,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [journeyLog, setJourneyLog] = useState([]);
 
   useEffect(() => {
+    if (!user) return;
     void (async () => {
-      const { data, error } = await supabase.from('journey_log').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('journey_log').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
       if (!error && data) setJourneyLog(data);
     })();
-  }, []);
+  }, [user]);
 
   const [newKindnessTitle, setNewKindnessTitle] = useState('');
   const [newKindnessDesc, setNewKindnessDesc] = useState('');
@@ -1615,7 +1616,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                 {log.description && (
                                   <p className="text-[11px] text-neutral-500 font-sans mt-0.5 leading-relaxed line-clamp-2">{log.description}</p>
                                 )}
-                                <p className="font-mono text-[7px] text-neutral-700 mt-1 tracking-wide">{log.date}</p>
+                                <p className="font-mono text-[7px] text-neutral-700 mt-1 tracking-wide">{log.date || (log.created_at ? new Date(log.created_at).toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' }) : '')}</p>
                               </div>
                             </motion.div>
                           ))}
@@ -2396,7 +2397,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         <div key={log.id} className="relative">
                           <span className={`absolute -left-[31px] top-0.5 h-4.5 w-4.5 rounded-full ${log.color || 'bg-green-500'} border-4 border-[#070709]`} />
                           <h4 className="text-xs font-bold text-white">{log.title}</h4>
-                          <p className="text-[10px] text-neutral-500 font-mono mt-0.5">{log.date}</p>
+                          <p className="text-[10px] text-neutral-500 font-mono mt-0.5">{log.date || (log.created_at ? new Date(log.created_at).toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' }) : '')}</p>
                           {log.description && (
                             <p className="text-xs text-neutral-400 mt-1 leading-normal">{log.description}</p>
                           )}

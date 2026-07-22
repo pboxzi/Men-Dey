@@ -653,9 +653,8 @@ export default function App() {
                       <span className="text-white hover:text-gold-500 transition-colors duration-500">{userName}</span>
                     </h1>
                   ) : (
-                    <h1 className="font-serif text-[28px] sm:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
-                      GILLIAN
-                      <span className="text-white hover:text-gold-500 transition-colors duration-500">ANDERSON</span>
+                    <h1 className="font-serif text-[28px] sm:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] sm:uppercase">
+                      Gillian Anderson
                     </h1>
                   )}
                 </motion.div>

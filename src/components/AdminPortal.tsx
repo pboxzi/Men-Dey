@@ -163,15 +163,25 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const [notificationCount, setNotificationCount] = useState(0);
   const [notifications, setNotifications] = useState<any[]>([]);
 
+  const fetchNotifications = async () => {
+    if (!user?.id) return;
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (!error && data) {
+      setNotifications(data);
+      setNotificationCount(data.filter((n: any) => !n.is_read).length);
+    }
+  };
+
   useEffect(() => {
-    void (async () => {
-      const { data, error } = await supabase.from('admin_notifications').select('*');
-      if (!error && data) {
-        setNotifications(data);
-        setNotificationCount(data.filter((n: any) => n.status === 'unread').length);
-      }
-    })();
-  }, []);
+    void fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, [user?.id]);
 
   // Request state
   const {
@@ -629,14 +639,14 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       <button
                         key={n.id}
                         onClick={() => {
-                          if (n.status === 'unread') {
-                            supabase.from('admin_notifications').update({ status: 'read' }).eq('id', n.id).then(() => {
-                              setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, status: 'read' } : x));
+                          if (!n.is_read) {
+                            supabase.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', n.id).then(() => {
+                              setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, is_read: true } : x));
                               setNotificationCount(prev => Math.max(0, prev - 1));
                             });
                           }
                         }}
-                        className={`w-full text-left px-4 py-3 hover:bg-neutral-900/40 transition-colors ${n.status === 'unread' ? 'bg-amber-500/[0.03] border-l-2 border-l-amber-500' : ''}`}
+                        className={`w-full text-left px-4 py-3 hover:bg-neutral-900/40 transition-colors ${!n.is_read ? 'bg-amber-500/[0.03] border-l-2 border-l-amber-500' : ''}`}
                       >
                         <h5 className="text-xs font-semibold text-white">{n.title}</h5>
                         <p className="text-[10px] text-neutral-400 mt-0.5 line-clamp-2">{n.message}</p>
@@ -1357,24 +1367,24 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 ) : (
                   notifications.map((n: any) => (
                     <div key={n.id} className={`p-4 rounded-xl border text-xs text-left flex justify-between items-start gap-4 transition-all ${
-                      n.status === 'unread' ? 'border-gold-500/30 bg-gold-500/[0.02]' : 'border-neutral-900 bg-neutral-950/40'
+                      !n.is_read ? 'border-gold-500/30 bg-gold-500/[0.02]' : 'border-neutral-900 bg-neutral-950/40'
                     }`}>
                       <div className="space-y-1 flex-1">
                         <p className="text-white font-bold text-[11px]">{n.title}</p>
                         <p className="text-neutral-400 leading-relaxed">{n.message}</p>
                         <div className="flex items-center gap-3">
                           <p className="text-[9px] font-mono text-neutral-500">{new Date(n.created_at).toLocaleString()}</p>
-                          {n.scope && <span className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-neutral-900 text-neutral-400">{n.scope}</span>}
+                          {n.type && <span className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-neutral-900 text-neutral-400">{n.type}</span>}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        {n.status === 'unread' && (
+                        {!n.is_read && (
                           <span className="h-2 w-2 rounded-full bg-gold-500" />
                         )}
                         <button
                           onClick={async () => {
-                            await supabase.from('admin_notifications').update({ status: 'read' }).eq('id', n.id);
-                            setNotifications(prev => prev.map((x: any) => x.id === n.id ? { ...x, status: 'read' } : x));
+                            await supabase.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', n.id);
+                            setNotifications(prev => prev.map((x: any) => x.id === n.id ? { ...x, is_read: true } : x));
                             setNotificationCount(prev => Math.max(0, prev - 1));
                           }}
                           className="text-[9px] font-mono text-gold-500/70 hover:text-gold-500 cursor-pointer"

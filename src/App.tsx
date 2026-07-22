@@ -444,8 +444,6 @@ export default function App() {
                   className="px-2 sm:px-3 py-1.5 text-[9px] font-bold tracking-widest text-neutral-950 bg-gold-500 hover:bg-gold-400 rounded-lg transition-all shrink-0">
                   JOIN
                 </button>
-                  JOIN
-                </button>
               </div>
             ) : (
               <div className="relative">

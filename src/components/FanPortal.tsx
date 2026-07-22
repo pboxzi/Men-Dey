@@ -1277,6 +1277,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
           {/* STICKY HEADER */}
           <header className="sticky top-0 z-40 w-full border-b border-neutral-900/80 bg-[#050505]/95 backdrop-blur-md px-3 sm:px-4 md:px-8 flex items-center justify-between h-14 md:h-16 shrink-0">
             <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                onClick={onBackToHome}
+                className="p-1.5 rounded-lg bg-neutral-950/60 border border-neutral-800/50 text-neutral-400 hover:text-white hover:border-gold-500/30 transition-all"
+              >
+                <Home className="h-3.5 w-3.5" />
+              </button>
               <div className="flex flex-col">
                   <span className="text-xs sm:text-sm font-bold tracking-wider text-white leading-tight">
                     Fan Portal
@@ -1288,14 +1294,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3">
-              <button
-                onClick={onBackToHome}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-neutral-950/60 border border-neutral-800/50 text-neutral-400 hover:text-white hover:border-gold-500/30 transition-all"
-              >
-                <Home className="h-3.5 w-3.5" />
-                <span className="text-[9px] font-bold tracking-wider uppercase">Home</span>
-              </button>
-
               <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gold-500/5 border border-gold-500/15 text-[10px] font-mono text-gold-400/80 font-medium">
                 <span className="text-gold-500/60">✦</span>
                 <span>{loyaltyPoints.toLocaleString()} pts</span>

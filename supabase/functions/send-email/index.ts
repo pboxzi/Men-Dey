@@ -12,10 +12,6 @@ serve(async (req: Request) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    const supabase = createClient(supabaseUrl, supabaseServiceKey)
-
     const { to, subject, html, from } = await req.json()
 
     if (!to || !subject || !html) {
@@ -25,42 +21,16 @@ serve(async (req: Request) => {
       )
     }
 
-    // Fetch Resend API key and sender email from site_settings
-    const { data: settings } = await supabase
-      .from("site_settings")
-      .select("value")
-      .eq("key", "resend_api_key")
-      .single()
-
-    const { data: senderSettings } = await supabase
-      .from("site_settings")
-      .select("value")
-      .eq("key", "resend_sender_email")
-      .single()
-
-    const { data: enabledSettings } = await supabase
-      .from("site_settings")
-      .select("value")
-      .eq("key", "email_notifications_enabled")
-      .single()
-
-    const resendApiKey = Deno.env.get("RESEND_API_KEY") || settings?.value
-    const senderEmail = senderSettings?.value || "noreply@cmagency.me"
-    const emailEnabled = enabledSettings?.value !== "false"
-
+    // Get Resend API key from env (Supabase secret)
+    const resendApiKey = Deno.env.get("RESEND_API_KEY")
     if (!resendApiKey) {
       return new Response(
-        JSON.stringify({ error: "Resend API key not configured" }),
+        JSON.stringify({ error: "RESEND_API_KEY not configured as Supabase secret" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       )
     }
 
-    if (!emailEnabled) {
-      return new Response(
-        JSON.stringify({ success: true, message: "Email notifications disabled" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      )
-    }
+    const senderEmail = from || "notifications@cmagency.me"
 
     // Send email via Resend API
     const resendResponse = await fetch("https://api.resend.com/emails", {
@@ -70,7 +40,7 @@ serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: from || senderEmail,
+        from: senderEmail,
         to: [to],
         subject,
         html,
@@ -80,21 +50,28 @@ serve(async (req: Request) => {
     const resendData = await resendResponse.json()
 
     if (!resendResponse.ok) {
-      console.error("Resend API error:", resendData)
+      console.error("Resend API error:", JSON.stringify(resendData))
       return new Response(
         JSON.stringify({ error: "Failed to send email", details: resendData }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       )
     }
 
-    // Log the email in email_logs table
-    await supabase.from("email_logs").insert({
-      recipient_email: to,
-      subject,
-      body_preview: html.replace(/<[^>]*>/g, "").slice(0, 500),
-      status: "sent",
-      resend_id: resendData.id,
-    })
+    // Try to log the email (non-critical)
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!
+      const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      const supabase = createClient(supabaseUrl, supabaseServiceKey)
+      await supabase.from("email_logs").insert({
+        recipient_email: to,
+        subject,
+        body_preview: html.replace(/<[^>]*>/g, "").slice(0, 500),
+        status: "sent",
+        resend_id: resendData.id,
+      })
+    } catch (logErr) {
+      console.error("Email log failed (non-critical):", logErr)
+    }
 
     return new Response(
       JSON.stringify({ success: true, id: resendData.id }),
@@ -103,7 +80,7 @@ serve(async (req: Request) => {
   } catch (error) {
     console.error("Email function error:", error)
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({ error: "Internal server error", details: String(error) }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     )
   }

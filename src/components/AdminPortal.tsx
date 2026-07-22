@@ -52,6 +52,8 @@ import AdminMembershipReview from './AdminMembershipReview';
 import AdminExperiences from './AdminExperiences';
 import AdminEventManagement from './AdminEventManagement';
 import AdminCommunityManagement from './AdminCommunityManagement';
+import AdminMediaLibrary from './AdminMediaLibrary';
+import AdminJournalCMS from './AdminJournalCMS';
 
 interface AdminPortalProps {
   onBackToHome: () => void;
@@ -1358,6 +1360,12 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
           {/* ACTIVE VIEW: COMMUNITY MANAGEMENT */}
           {activeTab === 'Community' && <AdminCommunityManagement showToast={showToast} />}
+
+          {/* ACTIVE VIEW: MEDIA LIBRARY */}
+          {activeTab === 'Media Library' && <AdminMediaLibrary showToast={showToast} />}
+
+          {/* ACTIVE VIEW: JOURNAL CMS */}
+          {activeTab === 'Journal CMS' && <AdminJournalCMS showToast={showToast} />}
 
           {/* ACTIVE VIEW: COMMUNICATION LOG */}
           {activeTab === 'Communication Log' && (

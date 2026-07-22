@@ -523,12 +523,36 @@ export default function App() {
               variants={heroContainerVariants}
               initial="hidden"
               animate="visible"
-              className="grid gap-8 lg:gap-12 lg:grid-cols-12 items-center"
+              className="flex flex-col lg:grid lg:gap-12 lg:grid-cols-12 items-center gap-8"
             >
               
-              {/* Left: Interactive Slide Visualizer */}
-              <motion.div variants={heroScaleVariants} className="lg:col-span-4 relative group flex flex-col items-center order-2 lg:order-none">
-                <div className="relative aspect-[3/4] w-full max-w-[220px] sm:max-w-[260px] lg:max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
+              {/* Name — first on mobile, center on desktop */}
+              <motion.div variants={heroItemVariants} className="lg:col-span-5 text-center lg:text-left space-y-5 sm:space-y-7 order-1 w-full">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 justify-center lg:justify-start">
+                    <span className="h-[1px] w-5 bg-gold-500/40" />
+                    <span className="text-[10px] font-mono tracking-[0.3em] text-gold-500 uppercase font-bold">
+                      THE ARCHIVE SANCTUARY
+                    </span>
+                    <span className="h-[1px] w-5 bg-gold-500/40" />
+                  </div>
+                  {userName ? (
+                    <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-white to-neutral-400 leading-[1.1] uppercase">
+                      Welcome back, <br className="hidden lg:block" />
+                      <span className="text-white hover:text-gold-500 transition-colors duration-500">{userName}</span>
+                    </h1>
+                  ) : (
+                    <h1 className="font-serif text-[28px] sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
+                      GILLIAN <br className="hidden lg:block" />
+                      <span className="text-white hover:text-gold-500 transition-colors duration-500">ANDERSON</span>
+                    </h1>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* Image — second on mobile, left on desktop */}
+              <motion.div variants={heroScaleVariants} className="lg:col-span-4 relative group flex flex-col items-center order-2 w-full">
+                <div className="relative aspect-[3/4] w-full max-w-[240px] sm:max-w-[260px] lg:max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
                   {/* Visual filter transitions on slide change */}
                   <motion.div
                     key={currentSlideIdx}
@@ -537,7 +561,7 @@ export default function App() {
                     transition={{ duration: 0.6 }}
                     className="h-full w-full relative"
                   >
-                    {/* Premium Shimmer Skeleton Loader (Only visible while image is loading) */}
+                    {/* Premium Shimmer Skeleton Loader */}
                     {!loadedImages[activeSlide.image] && (
                       <div className="absolute inset-0 bg-neutral-950 flex flex-col items-center justify-center z-10">
                         <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-900/40 to-neutral-950 animate-pulse" />
@@ -572,20 +596,14 @@ export default function App() {
                   {/* Left/Right Slider Controls */}
                   <div className="absolute bottom-5 right-5 flex gap-1.5 z-10">
                     <button
-                      onClick={() => {
-                        handlePrevSlide();
-                        setIsPlayingSlide(false); // Pause on manual action
-                      }}
+                      onClick={() => { handlePrevSlide(); setIsPlayingSlide(false); }}
                       className="p-2 rounded-full border border-neutral-800/80 bg-black/80 text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors"
                       aria-label="Previous slide"
                     >
                       <ChevronLeft className="h-3.5 w-3.5" />
                     </button>
                     <button
-                      onClick={() => {
-                        handleNextSlide();
-                        setIsPlayingSlide(false); // Pause on manual action
-                      }}
+                      onClick={() => { handleNextSlide(); setIsPlayingSlide(false); }}
                       className="p-2 rounded-full border border-neutral-800/80 bg-black/80 text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors"
                       aria-label="Next slide"
                     >
@@ -610,10 +628,7 @@ export default function App() {
                   {HERO_SLIDES.map((slide, idx) => (
                     <button
                       key={slide.id}
-                      onClick={() => {
-                        setCurrentSlideIdx(idx);
-                        setIsPlayingSlide(false);
-                      }}
+                      onClick={() => { setCurrentSlideIdx(idx); setIsPlayingSlide(false); }}
                       className={`h-1.5 rounded-full transition-all duration-300 ${
                         currentSlideIdx === idx
                           ? 'w-6 bg-gold-500'
@@ -628,40 +643,15 @@ export default function App() {
                     className="p-1 rounded text-neutral-500 hover:text-gold-500 transition-colors"
                     title={isPlayingSlide ? "Pause Autoplay" : "Resume Autoplay"}
                   >
-                    {isPlayingSlide ? (
-                      <Pause className="h-3 w-3" />
-                    ) : (
-                      <Play className="h-3 w-3 fill-current" />
-                    )}
+                    {isPlayingSlide ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3 fill-current" />}
                   </button>
                 </div>
               </motion.div>
 
-              {/* Center: Hero Welcome and Quotes */}
-              <div className="lg:col-span-5 text-center lg:text-left space-y-5 sm:space-y-7 order-1 lg:order-none">
-                <motion.div variants={heroItemVariants} className="space-y-2">
-                  <div className="flex items-center gap-2 justify-center lg:justify-start">
-                    <span className="h-[1px] w-5 bg-gold-500/40" />
-                    <span className="text-[10px] font-mono tracking-[0.3em] text-gold-500 uppercase font-bold">
-                      THE ARCHIVE SANCTUARY
-                    </span>
-                    <span className="h-[1px] w-5 bg-gold-500/40" />
-                  </div>
-                  {userName ? (
-                    <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-white to-neutral-400 leading-[1.1] uppercase">
-                      Welcome back, <br className="hidden lg:block" />
-                      <span className="text-white hover:text-gold-500 transition-colors duration-500">{userName}</span>
-                    </h1>
-                  ) : (
-                    <h1 className="font-serif text-[28px] sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
-                      GILLIAN <br className="hidden lg:block" />
-                      <span className="text-white hover:text-gold-500 transition-colors duration-500">ANDERSON</span>
-                    </h1>
-                  )}
-                </motion.div>
-
-                {/* Slider Quote Container */}
-                <motion.div variants={heroItemVariants} className="min-h-[110px] flex flex-col justify-center">
+              {/* Quote + Buttons + Achievements + Social — third on mobile, right on desktop */}
+              <div className="lg:col-span-3 space-y-5 order-3 w-full">
+                {/* Quote */}
+                <motion.div variants={heroItemVariants} className="min-h-[80px] flex flex-col justify-center text-center lg:text-left">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={currentSlideIdx}
@@ -669,14 +659,14 @@ export default function App() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 10 }}
                       transition={{ duration: 0.4 }}
-                      className="space-y-4"
+                      className="space-y-3"
                     >
-                      <p className="font-serif italic text-base md:text-lg text-neutral-300 leading-relaxed max-w-md">
+                      <p className="font-serif italic text-sm md:text-base text-neutral-300 leading-relaxed">
                         "{activeSlide.quote}"
                       </p>
                       <div className="flex items-center gap-2 justify-center lg:justify-start">
                         <div className="h-[1px] w-5 bg-gold-500/50" />
-                        <span className="font-serif text-xs font-semibold tracking-wider text-gold-500 italic">
+                        <span className="font-serif text-[11px] font-semibold tracking-wider text-gold-500 italic">
                           {activeSlide.author}
                         </span>
                       </div>
@@ -685,10 +675,10 @@ export default function App() {
                 </motion.div>
 
                 {/* Primary Buttons */}
-                <motion.div variants={heroItemVariants} className="flex flex-wrap items-center gap-2 sm:gap-3.5 justify-center lg:justify-start pt-1">
+                <motion.div variants={heroItemVariants} className="flex flex-wrap items-center gap-2 justify-center lg:justify-start">
                   <button
                     onClick={() => navigate('/portal?mode=register')}
-                    className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold px-6 py-3 rounded-lg text-xs tracking-widest transition-all hover:shadow-[0_0_20px_rgba(212,163,89,0.3)] active:scale-95 shadow-lg shadow-gold-500/10"
+                    className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold px-5 py-2.5 rounded-lg text-[11px] tracking-widest transition-all active:scale-95 shadow-lg shadow-gold-500/10"
                   >
                     JOIN THE COMMUNITY
                   </button>
@@ -697,62 +687,46 @@ export default function App() {
                       const videoItem = MEDIA_ITEMS.find((m) => m.id === 'media-bts') || MEDIA_ITEMS[0];
                       setSelectedMedia(videoItem);
                     }}
-                    className="border border-neutral-800 hover:border-gold-500/60 bg-neutral-950 hover:bg-gold-500/5 text-gold-500 hover:text-white font-semibold px-5 py-3 rounded-lg text-xs tracking-widest transition-all active:scale-95 flex items-center gap-2"
+                    className="border border-neutral-800 hover:border-gold-500/60 bg-neutral-950 hover:bg-gold-500/5 text-gold-500 hover:text-white font-semibold px-4 py-2.5 rounded-lg text-[11px] tracking-widest transition-all active:scale-95 flex items-center gap-2"
                   >
-                    <Play className="h-3.5 w-3.5 fill-gold-500 hover:fill-white" />
-                    WATCH MESSAGE
+                    <Play className="h-3 w-3 fill-gold-500 hover:fill-white" />
+                    WATCH
                   </button>
                 </motion.div>
 
-                {/* Achievements Bento Badge */}
-                <motion.div variants={heroItemVariants} className="grid grid-cols-3 gap-2 sm:gap-3 max-w-md pt-2">
-                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
-                    <span className="font-serif text-base sm:text-lg font-bold text-gold-500 tracking-tight flex items-center gap-1">
-                      30+
-                      <Compass className="h-3 w-3 text-gold-500/60 group-hover:rotate-45 transition-transform" />
-                    </span>
-                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Years on Stage & Screen</span>
+                {/* Achievements */}
+                <motion.div variants={heroItemVariants} className="grid grid-cols-3 gap-2">
+                  <div className="p-2 sm:p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 flex flex-col text-left">
+                    <span className="font-serif text-sm sm:text-lg font-bold text-gold-500 tracking-tight">30+</span>
+                    <span className="text-[7px] sm:text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-0.5">Years on Screen</span>
                   </div>
-                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
-                    <span className="font-serif text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-1">
-                      2x
-                      <Award className="h-3 w-3 text-amber-500/60 group-hover:scale-110 transition-transform animate-pulse" />
-                    </span>
-                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Emmys & Golden Globes</span>
+                  <div className="p-2 sm:p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 flex flex-col text-left">
+                    <span className="font-serif text-sm sm:text-lg font-bold text-white tracking-tight">2x</span>
+                    <span className="text-[7px] sm:text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-0.5">Emmys & Globes</span>
                   </div>
-                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
-                    <span className="font-serif text-base sm:text-lg font-bold text-gold-500 tracking-tight flex items-center gap-1">
-                      100%
-                      <Sparkles className="h-3 w-3 text-gold-500/60 group-hover:scale-110 transition-transform" />
-                    </span>
-                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Empowering Advocacy</span>
+                  <div className="p-2 sm:p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 flex flex-col text-left">
+                    <span className="font-serif text-sm sm:text-lg font-bold text-gold-500 tracking-tight">100%</span>
+                    <span className="text-[7px] sm:text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-0.5">Empowering All</span>
                   </div>
                 </motion.div>
 
-                {/* Social Proof fans banner */}
-                <motion.div variants={heroItemVariants} className="flex items-center gap-3 pt-4 justify-center lg:justify-start border-t border-neutral-900 max-w-sm">
+                {/* Social Proof */}
+                <motion.div variants={heroItemVariants} className="flex items-center gap-2 pt-3 justify-center lg:justify-start border-t border-neutral-900">
                   <div className="flex -space-x-2">
-                    {[1, 2, 3, 4].map((num) => (
-                      <div
-                        key={num}
-                        className="h-7 w-7 rounded-full border border-neutral-950 bg-neutral-900 flex items-center justify-center text-[9px] font-mono font-bold text-neutral-300 overflow-hidden shadow-inner"
-                      >
-                        {['AM', 'JW', 'ND', 'KR'][num - 1]}
+                    {['AM', 'JW', 'ND', 'KR'].map((initials) => (
+                      <div key={initials} className="h-6 w-6 rounded-full border border-neutral-950 bg-neutral-900 flex items-center justify-center text-[8px] font-mono font-bold text-neutral-300">
+                        {initials}
                       </div>
                     ))}
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
-                      24.2M+ Subscribers & Followers
-                    </span>
-                    <span className="text-[9px] font-mono text-gold-500/80 font-bold">
-                      Worldwide Community
-                    </span>
+                    <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest">24.2M+ Subscribers</span>
+                    <span className="text-[8px] font-mono text-gold-500/80 font-bold">Worldwide Community</span>
                   </div>
                 </motion.div>
               </div>
 
-              {/* Right: Monthly Video Box — hidden on mobile */}
+              {/* Monthly Video Box — desktop only */}
               <motion.div variants={heroScaleVariants} className="hidden lg:block lg:col-span-3">
                 <div className="rounded-2xl border border-neutral-900/80 bg-neutral-950/80 p-5 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-neutral-800 transition-all">
                   <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-widest pb-2 border-b border-neutral-900">

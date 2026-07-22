@@ -2845,8 +2845,20 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {[
               { tab: 'Dashboard' as const, icon: LayoutGrid, label: 'Home' },
               { tab: 'Community' as const, icon: Users, label: 'Connect' },
+              { icon: Home, isHome: true },
               { tab: 'Experiences' as const, icon: Star, label: 'Book' },
-            ].map((item) => {
+            ].map((item, i) => {
+              if ('isHome' in item) {
+                return (
+                  <button
+                    key="home"
+                    onClick={() => navigate('/')}
+                    className="flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all text-neutral-500"
+                  >
+                    <Home className="h-5 w-5" strokeWidth={1.5} />
+                  </button>
+                );
+              }
               const Icon = item.icon;
               const isSelected = activeTab === item.tab;
               return (
@@ -2860,13 +2872,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 </button>
               );
             })}
-            <button
-              onClick={() => navigate('/')}
-              className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all text-neutral-500`}
-            >
-              <Home className="h-5 w-5" strokeWidth={1.5} />
-              <span className="text-[8px] font-bold tracking-widest uppercase">Home</span>
-            </button>
             <button
               onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
               className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${isMoreMenuOpen ? 'text-gold-500' : 'text-neutral-500'}`}

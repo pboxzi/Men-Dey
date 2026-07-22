@@ -384,15 +384,15 @@ export default function App() {
   return (
       <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-24 lg:pb-0 w-full max-w-full">
       {/* 1. Header (Navbar) */}
-      <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md">
-        <div className="flex items-center px-2 py-2.5 sm:px-4 md:px-6 gap-2 sm:gap-4">
+      <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md overflow-hidden">
+        <div className="flex items-center px-2 py-2.5 sm:px-4 md:px-6 gap-2 sm:gap-4 w-full min-w-0">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2 group shrink-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center group-hover:border-gold-500/40 transition-colors">
+          <a href="/" className="flex items-center gap-2 group shrink-0 min-w-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center group-hover:border-gold-500/40 transition-colors shrink-0">
               <span className="font-serif text-xs sm:text-sm font-bold text-gold-500">GA</span>
             </div>
-            <div className="flex flex-col">
-              <span className="text-[9px] sm:text-[11px] font-bold tracking-[0.12em] text-white leading-tight">
+            <div className="flex flex-col min-w-0 shrink">
+              <span className="text-[9px] sm:text-[11px] font-bold tracking-[0.12em] text-white leading-tight truncate">
                 GILLIAN ANDERSON
               </span>
               <span className="text-[7px] sm:text-[8px] font-mono tracking-[0.2em] text-gold-500/70 leading-tight">
@@ -435,13 +435,15 @@ export default function App() {
           <div className="flex items-center gap-2 shrink-0 ml-auto">
             {/* Auth Buttons (logged out) or Profile Menu (logged in) */}
             {!user ? (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1 sm:gap-1.5">
                 <button onClick={() => navigate('/portal?mode=login')}
-                  className="px-3 py-1.5 text-[9px] font-bold tracking-widest text-neutral-300 hover:text-white border border-neutral-800 hover:border-gold-500/30 rounded-lg transition-all">
+                  className="px-2 sm:px-3 py-1.5 text-[9px] font-bold tracking-widest text-neutral-300 hover:text-white border border-neutral-800 hover:border-gold-500/30 rounded-lg transition-all shrink-0">
                   SIGN IN
                 </button>
                 <button onClick={() => navigate('/portal?mode=register')}
-                  className="px-3 py-1.5 text-[9px] font-bold tracking-widest text-neutral-950 bg-gold-500 hover:bg-gold-400 rounded-lg transition-all">
+                  className="px-2 sm:px-3 py-1.5 text-[9px] font-bold tracking-widest text-neutral-950 bg-gold-500 hover:bg-gold-400 rounded-lg transition-all shrink-0">
+                  JOIN
+                </button>
                   JOIN
                 </button>
               </div>

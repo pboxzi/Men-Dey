@@ -47,7 +47,7 @@ import {
 } from './data';
 
 // Import Custom Modals & Pages
-import AskGillianModal from './components/AskGillianModal';
+
 import VideoPlayerModal from './components/VideoPlayerModal';
 
 import ExperienceModal from './components/ExperienceModal';
@@ -220,7 +220,7 @@ export default function App() {
   }, []);
 
   // Modal Triggers
-  const [isAskGillianOpen, setIsAskGillianOpen] = useState(false);
+
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
   const [isExperienceOpen, setIsExperienceOpen] = useState(false);
   const [isMembershipOpen, setIsMembershipOpen] = useState(false);
@@ -964,7 +964,7 @@ export default function App() {
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5 text-left">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-left">
                         {/* Experiences Card */}
                         <button
                           onClick={() => handleNavClick('EXPERIENCES')}
@@ -1073,43 +1073,6 @@ export default function App() {
                           </div>
                           <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
                             CONCLAVES <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
-                          </span>
-                        </button>
-
-                        {/* Ask Gillian Card (Modal) */}
-                        <button
-                          onClick={() => setIsAskGillianOpen(true)}
-                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
-                        >
-                          {/* Rich Background Visual */}
-                          <div className="absolute inset-0 z-0 overflow-hidden">
-                            <img
-                              src="/src/assets/images/pillar_ask_gillian_1784103625430.jpg"
-                              alt="Ask Gillian Background"
-                              referrerPolicy="no-referrer"
-                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
-                          </div>
-
-                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
-                            04
-                          </div>
-                          <div className="space-y-4 relative z-10">
-                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-850 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
-                              <MessageSquare className="h-4 w-4" />
-                            </span>
-                            <div className="space-y-1">
-                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
-                                ASK GILLIAN
-                              </h3>
-                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
-                                Ask Gillian anything & get wise philosophical answers.
-                              </p>
-                            </div>
-                          </div>
-                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
-                            LAUNCH CHAT <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
                           </span>
                         </button>
 
@@ -1296,7 +1259,7 @@ export default function App() {
       </footer>
 
       {/* --- ALL INTERACTIVE MODALS INJECTED HERE --- */}
-      <AskGillianModal isOpen={isAskGillianOpen} onClose={() => setIsAskGillianOpen(false)} />
+
 
       <ExperienceModal isOpen={isExperienceOpen} onClose={() => setIsExperienceOpen(false)} />
 

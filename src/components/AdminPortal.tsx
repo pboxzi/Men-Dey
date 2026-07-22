@@ -253,16 +253,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     }
   }, [requests, selectedRequest]);
 
-  // Membership pending count (for dashboard alert)
-  const [pendingMemberships, setPendingMemberships] = useState(0);
-
-  useEffect(() => {
-    void (async () => {
-      const { count } = await supabase.from('membership_applications').select('*', { count: 'exact', head: true }).in('status', ['pending', 'upgrade_pending']);
-      setPendingMemberships(count ?? 0);
-    })();
-  }, []);
-
 
   // Platform Activity (daily aggregates)
   const [activityData, setActivityData] = useState<{
@@ -364,7 +354,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('status', 'cancelled'),
       supabase.from('subscribers').select('*', { count: 'exact', head: true }),
       supabase.from('event_registrations').select('*', { count: 'exact', head: true }),
-      supabase.from('membership_applications').select('*', { count: 'exact', head: true }).in('status', ['pending', 'upgrade_pending']),
+      supabase.from('membership_applications').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
       supabase.from('fan_admin_conversations').select('*', { count: 'exact', head: true }).neq('status', 'closed'),
       supabase.from('notifications').select('*', { count: 'exact', head: true }),
       supabase.from('user_badges').select('*', { count: 'exact', head: true }),
@@ -390,7 +380,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     });
     if (eventsData) setDashboardEvents(eventsData);
     if (activityData) setRecentActivity(activityData);
-    setPendingMemberships(pendingMemCount ?? 0);
   };
 
   useEffect(() => {

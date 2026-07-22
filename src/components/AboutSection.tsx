@@ -27,7 +27,6 @@ export default function AboutSection() {
 
   // Interactive Tab 4: Audiobook Excerpt state
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [selectedTrackIdx, setSelectedTrackIdx] = useState(0);
 
   // Interactive Tab 5: Kindness Log category
   const [kindnessFilter, setKindnessFilter] = useState<'all' | 'stunts' | 'charity' | 'fans'>('all');
@@ -468,86 +467,10 @@ export default function AboutSection() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
-                className="grid gap-8 lg:grid-cols-12 items-center"
+                className="space-y-8"
               >
-                {/* Visual AUDIOBOOK PLAYER */}
-                <div className="lg:col-span-5 flex flex-col items-center">
-                  <div className="w-full max-w-[340px] bg-neutral-900/90 border border-neutral-800 rounded-xl p-5 shadow-2xl space-y-4">
-                    
-                    {/* Retro Audiobook tape graphic */}
-                    <div className="aspect-[1.6/1] w-full rounded-lg bg-neutral-950 border border-neutral-800 p-3 flex flex-col justify-between relative overflow-hidden">
-                      {/* Reels simulation */}
-                      <div className="flex items-center justify-between px-6 pt-4">
-                        <div className={`h-10 w-10 rounded-full border-[3px] border-neutral-800 bg-neutral-900 flex items-center justify-center ${isPlayingAudio ? 'animate-spin' : ''}`} style={{ animationDuration: '6s' }}>
-                          <div className="h-4 w-4 rounded-full bg-neutral-950 border border-neutral-700 flex items-center justify-center">
-                            <div className="h-1.5 w-1.5 rounded-full bg-gold-500" />
-                          </div>
-                        </div>
-
-                        <div className="h-2 w-16 rounded bg-neutral-900/70 border border-neutral-800 text-[8px] font-mono text-gold-500 flex items-center justify-center uppercase font-bold tracking-widest">
-                          {isPlayingAudio ? "READING" : "MUTED"}
-                        </div>
-
-                        <div className={`h-10 w-10 rounded-full border-[3px] border-neutral-800 bg-neutral-900 flex items-center justify-center ${isPlayingAudio ? 'animate-spin' : ''}`} style={{ animationDuration: '6s' }}>
-                          <div className="h-4 w-4 rounded-full bg-neutral-950 border border-neutral-700 flex items-center justify-center">
-                            <div className="h-1.5 w-1.5 rounded-full bg-gold-500" />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Label sticker */}
-                      <div className="bg-neutral-900 border border-neutral-800 p-2 rounded text-center">
-                        <span className="block text-[8px] font-mono text-neutral-400 uppercase tracking-widest font-bold">GILLIAN ANDERSON // AUTHOR READINGS</span>
-                        <span className="block text-[8px] font-mono text-gold-500 mt-0.5 uppercase tracking-wider">
-                          TITLE: {LITERARY_WORKS[selectedTrackIdx].title} ({LITERARY_WORKS[selectedTrackIdx].duration})
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Controls */}
-                    <div className="flex items-center justify-between border-t border-neutral-800/80 pt-4 px-2">
-                      <button 
-                        onClick={() => {
-                          setSelectedTrackIdx(prev => (prev > 0 ? prev - 1 : LITERARY_WORKS.length - 1));
-                        }}
-                        className="p-2 rounded bg-neutral-950 text-neutral-400 hover:text-white border border-neutral-800 transition-colors text-[9px] font-mono"
-                      >
-                        PREV
-                      </button>
-
-                      <button
-                        onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-                        className={`px-5 py-2 rounded-lg font-bold text-[10px] tracking-widest transition-colors flex items-center gap-1.5 border ${
-                          isPlayingAudio
-                            ? 'bg-red-500/10 border-red-500/30 text-red-400'
-                            : 'bg-gold-500 border-gold-400 text-neutral-950'
-                        }`}
-                      >
-                        <Volume2 className="h-3.5 w-3.5" />
-                        {isPlayingAudio ? "PAUSE PREVIEW" : "PLAY AUDIO EXCERPT"}
-                      </button>
-
-                      <button 
-                        onClick={() => {
-                          setSelectedTrackIdx(prev => (prev < LITERARY_WORKS.length - 1 ? prev + 1 : 0));
-                        }}
-                        className="p-2 rounded bg-neutral-950 text-neutral-400 hover:text-white border border-neutral-800 transition-colors text-[9px] font-mono"
-                      >
-                        NEXT
-                      </button>
-                    </div>
-
-                    <div className="text-center">
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase">
-                        VIBE: {LITERARY_WORKS[selectedTrackIdx].vibe}
-                      </span>
-                    </div>
-
-                  </div>
-                </div>
-
                 {/* Content info */}
-                <div className="lg:col-span-7 space-y-6 text-left">
+                <div className="space-y-6 text-left max-w-3xl">
                   <div className="space-y-2">
                     <span className="text-[10px] font-mono text-gold-500 tracking-wider">04 // VOICE, INTUITION, & WRITING</span>
                     <h3 className="font-serif text-2xl md:text-3xl font-bold text-white uppercase">

@@ -279,19 +279,10 @@ export default function JournalSection() {
               </div>
 
               {/* Body Content */}
-              <div className="prose prose-invert max-w-none text-neutral-300 font-sans text-sm leading-relaxed space-y-6 pt-4 border-b border-neutral-900 pb-8">
-                {selectedEntry.content.split('\n\n').map((para, i) => {
-                  if (para.startsWith('>')) {
-                    const blockquoteText = para.replace('>', '').replace(/"/g, '').trim();
-                    return (
-                      <blockquote key={i} className="border-l-2 border-gold-500 pl-4 py-2 italic font-serif text-lg text-neutral-200 bg-gold-500/5 rounded-r">
-                        "{blockquoteText}"
-                      </blockquote>
-                    );
-                  }
-                  return <p key={i}>{para}</p>;
-                })}
-              </div>
+              <div
+                className="prose prose-invert max-w-none text-neutral-300 font-sans text-sm leading-relaxed space-y-6 pt-4 border-b border-neutral-900 pb-8 [&_p]:leading-relaxed [&_p]:mb-4 [&_blockquote]:border-l-2 [&_blockquote]:border-gold-500 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_blockquote]:font-serif [&_blockquote]:text-lg [&_blockquote]:text-neutral-200 [&_blockquote]:bg-gold-500/5 [&_blockquote]:rounded-r [&_blockquote]:my-6"
+                dangerouslySetInnerHTML={{ __html: selectedEntry.content }}
+              />
 
               {/* Quick Actions Panel */}
               <div className="flex items-center justify-between py-4 border-b border-neutral-900">

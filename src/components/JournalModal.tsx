@@ -5,7 +5,7 @@
 
 import React from 'react';
 import Modal from './Modal';
-import { Calendar, Clock, BookOpen, Quote } from 'lucide-react';
+import { Calendar, Clock, BookOpen } from 'lucide-react';
 import { JournalEntry } from '../types';
 
 interface JournalModalProps {
@@ -54,29 +54,10 @@ export default function JournalModal({ isOpen, onClose, entry }: JournalModalPro
         </div>
 
         {/* Article Body */}
-        <div className="text-sm text-neutral-300 leading-relaxed space-y-4">
-          {entry.content.split('\n\n').map((paragraph, index) => {
-            // Check if paragraph is a quote block
-            if (paragraph.startsWith('>')) {
-              return (
-                <div
-                  key={index}
-                  className="relative pl-8 pr-4 py-4 my-6 rounded border-l-2 border-gold-500 bg-gold-500/5 italic text-gold-200 font-serif text-base"
-                >
-                  <Quote className="absolute left-2.5 top-3.5 h-4 w-4 text-gold-500/40 rotate-180" />
-                  <p className="leading-relaxed">
-                    {paragraph.replace('>', '').trim()}
-                  </p>
-                </div>
-              );
-            }
-            return (
-              <p key={index} className="text-neutral-300">
-                {paragraph}
-              </p>
-            );
-          })}
-        </div>
+        <div
+          className="text-sm text-neutral-300 leading-relaxed space-y-4"
+          dangerouslySetInnerHTML={{ __html: entry.content }}
+        />
 
         {/* Footer */}
         <div className="border-t border-neutral-900 pt-4 flex justify-between items-center text-[10px] font-mono text-neutral-500">

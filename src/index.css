@@ -69,3 +69,10 @@ body {
   scrollbar-width: none;
 }
 
+/* Touch devices: remove grayscale so images show in color */
+@media (hover: none) {
+  .grayscale {
+    filter: none !important;
+  }
+}
+

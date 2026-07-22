@@ -1235,13 +1235,6 @@ export default function App() {
           <Calendar className="h-5 w-5" strokeWidth={activeNav === 'EVENTS' ? 2.5 : 1.5} />
           <span className="text-[8px] font-bold tracking-widest uppercase">Events</span>
         </button>
-
-        {/* Profile */}
-        <button onClick={() => { if (!user) { navigate('/portal?mode=login'); } else { navigate('/portal'); } setMobileExploreOpen(false); }}
-          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${location.pathname === '/portal' ? 'text-gold-500' : 'text-neutral-500'}`}>
-          <User className="h-5 w-5" strokeWidth={location.pathname === '/portal' ? 2.5 : 1.5} />
-          <span className="text-[8px] font-bold tracking-widest uppercase">Profile</span>
-        </button>
       </div>
 
       {/* Mobile Explore Sheet */}

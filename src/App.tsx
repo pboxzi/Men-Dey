@@ -278,7 +278,6 @@ export default function App() {
   const handleNavClick = (link: string) => {
     setMobileMenuOpen(false);
     navigate(link === 'HOME' ? '/' : `/${link.toLowerCase()}`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const navigateTo = (mode: 'landing' | 'portal' | 'admin', nav?: string) => {
@@ -1343,9 +1342,6 @@ export default function App() {
           onClick={() => {
             navigateTo('landing');
             setMobileMenuOpen(!mobileMenuOpen);
-            if (!mobileMenuOpen) {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
           }}
           className={`flex flex-col items-center justify-center gap-1 flex-1 py-1 transition-all duration-300 min-h-[44px] ${
             mobileMenuOpen && viewMode === 'landing'

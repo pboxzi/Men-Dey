@@ -528,7 +528,7 @@ export default function App() {
               
               {/* Left: Interactive Slide Visualizer */}
               <motion.div variants={heroScaleVariants} className="lg:col-span-4 relative group flex flex-col items-center order-2 lg:order-none">
-                <div className="relative aspect-[3/4] w-full max-w-[300px] sm:max-w-[340px] lg:max-w-[380px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
+                <div className="relative aspect-[3/4] w-full max-w-[220px] sm:max-w-[260px] lg:max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
                   {/* Visual filter transitions on slide change */}
                   <motion.div
                     key={currentSlideIdx}
@@ -659,10 +659,7 @@ export default function App() {
                     </h1>
                   )}
                 </motion.div>
-              </div>
 
-              {/* Hero Content - Quote, Buttons, Achievements */}
-              <div className="lg:col-span-5 text-center lg:text-left space-y-5 sm:space-y-7 order-3 lg:order-none">
                 {/* Slider Quote Container */}
                 <motion.div variants={heroItemVariants} className="min-h-[110px] flex flex-col justify-center">
                   <AnimatePresence mode="wait">

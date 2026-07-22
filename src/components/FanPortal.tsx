@@ -397,18 +397,20 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   }, [user]);
 
   // Additional dashboard stats
-  const [fanStats, setFanStats] = useState({ bookings: 0, events: 0, memberSince: '' });
+  const [fanStats, setFanStats] = useState({ bookings: 0, events: 0, conversations: 0, memberSince: '' });
   useEffect(() => {
     if (!user?.id || activeTab !== 'Dashboard') return;
     void (async () => {
-      const [{ count: bookingCount }, { count: eventCount }, { data: prof }] = await Promise.all([
+      const [{ count: bookingCount }, { count: eventCount }, { count: convCount }, { data: prof }] = await Promise.all([
         supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
         supabase.from('event_registrations').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+        supabase.from('ask_gillian_conversations').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
         supabase.from('profiles').select('created_at').eq('id', user.id).maybeSingle(),
       ]);
       setFanStats({
         bookings: bookingCount ?? 0,
         events: eventCount ?? 0,
+        conversations: convCount ?? 0,
         memberSince: prof?.created_at || '',
       });
     })();
@@ -1508,6 +1510,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     },
                     { label: 'Bookings', value: fanStats.bookings.toString(), accent: 'blue', icon: '★' },
                     { label: 'Events', value: fanStats.events.toString(), accent: 'emerald', icon: '●' },
+                    { label: 'Ask Gillian', value: fanStats.conversations.toString(), accent: 'violet', icon: '💬' },
                   ].map((stat: any, i) => {
                     if (stat.isCard) {
                       const c = stat.card;

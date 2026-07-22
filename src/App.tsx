@@ -382,7 +382,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-20 lg:pb-0">
+    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-24 lg:pb-0">
       {/* 1. Header (Navbar) */}
       <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1440px] items-center px-4 py-3 md:px-6 gap-4">
@@ -507,7 +507,7 @@ export default function App() {
 
       {/* 2. Hero Section */}
       {activeNav === 'HOME' && (
-        <section className="relative overflow-hidden bg-[#050505] py-16 md:py-24 border-b border-neutral-900/60">
+        <section className="relative overflow-hidden bg-[#050505] py-10 md:py-24 border-b border-neutral-900/60">
           {/* Elegant Architectural Tech-Arts Grid Background */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c0c0c_1px,transparent_1px),linear-gradient(to_bottom,#0c0c0c_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] pointer-events-none" />
           
@@ -523,12 +523,12 @@ export default function App() {
               variants={heroContainerVariants}
               initial="hidden"
               animate="visible"
-              className="grid gap-12 lg:grid-cols-12 items-center"
+              className="grid gap-8 lg:gap-12 lg:grid-cols-12 items-center"
             >
               
               {/* Left: Interactive Slide Visualizer */}
-              <motion.div variants={heroScaleVariants} className="lg:col-span-4 relative group flex flex-col items-center">
-                <div className="relative aspect-[3/4] w-full max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
+              <motion.div variants={heroScaleVariants} className="lg:col-span-4 relative group flex flex-col items-center order-2 lg:order-none">
+                <div className="relative aspect-[3/4] w-full max-w-[220px] sm:max-w-[260px] lg:max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
                   {/* Visual filter transitions on slide change */}
                   <motion.div
                     key={currentSlideIdx}
@@ -638,7 +638,7 @@ export default function App() {
               </motion.div>
 
               {/* Center: Hero Welcome and Quotes */}
-              <div className="lg:col-span-5 text-center lg:text-left space-y-7">
+              <div className="lg:col-span-5 text-center lg:text-left space-y-5 sm:space-y-7 order-1 lg:order-none">
                 <motion.div variants={heroItemVariants} className="space-y-2">
                   <div className="flex items-center gap-2 justify-center lg:justify-start">
                     <span className="h-[1px] w-5 bg-gold-500/40" />
@@ -653,7 +653,7 @@ export default function App() {
                       <span className="text-white hover:text-gold-500 transition-colors duration-500">{userName}</span>
                     </h1>
                   ) : (
-                    <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
+                    <h1 className="font-serif text-[28px] sm:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
                       GILLIAN <br className="hidden lg:block" />
                       <span className="text-white hover:text-gold-500 transition-colors duration-500">ANDERSON</span>
                     </h1>
@@ -685,7 +685,7 @@ export default function App() {
                 </motion.div>
 
                 {/* Primary Buttons */}
-                <motion.div variants={heroItemVariants} className="flex flex-wrap items-center gap-3.5 justify-center lg:justify-start pt-1">
+                <motion.div variants={heroItemVariants} className="flex flex-wrap items-center gap-2 sm:gap-3.5 justify-center lg:justify-start pt-1">
                   <button
                     onClick={() => navigate('/portal?mode=register')}
                     className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold px-6 py-3 rounded-lg text-xs tracking-widest transition-all hover:shadow-[0_0_20px_rgba(212,163,89,0.3)] active:scale-95 shadow-lg shadow-gold-500/10"
@@ -705,7 +705,7 @@ export default function App() {
                 </motion.div>
 
                 {/* Achievements Bento Badge */}
-                <motion.div variants={heroItemVariants} className="grid grid-cols-3 gap-3 max-w-md pt-2">
+                <motion.div variants={heroItemVariants} className="grid grid-cols-3 gap-2 sm:gap-3 max-w-md pt-2">
                   <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
                     <span className="font-serif text-base sm:text-lg font-bold text-gold-500 tracking-tight flex items-center gap-1">
                       30+
@@ -752,8 +752,8 @@ export default function App() {
                 </motion.div>
               </div>
 
-              {/* Right: Monthly Video Box */}
-              <motion.div variants={heroScaleVariants} className="lg:col-span-3">
+              {/* Right: Monthly Video Box — hidden on mobile */}
+              <motion.div variants={heroScaleVariants} className="hidden lg:block lg:col-span-3">
                 <div className="rounded-2xl border border-neutral-900/80 bg-neutral-950/80 p-5 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-neutral-800 transition-all">
                   <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-widest pb-2 border-b border-neutral-900">
                     <span className="relative flex h-2 w-2">
@@ -834,12 +834,12 @@ export default function App() {
 
                 {/* Six Community Pillars Navigation Cards */}
                 <ScrollReveal>
-                  <section className="py-20 bg-[#050505] border-t border-neutral-900/60 relative overflow-hidden">
+                  <section className="py-12 sm:py-20 bg-[#050505] border-t border-neutral-900/60 relative overflow-hidden">
                     {/* Subtle aesthetic lines */}
                     <div className="absolute top-0 left-10 w-[1px] h-full bg-neutral-900/30 pointer-events-none" />
                     <div className="absolute top-0 right-10 w-[1px] h-full bg-neutral-900/30 pointer-events-none" />
 
-                    <div className="mx-auto max-w-7xl px-4 md:px-6 space-y-16 relative z-10">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-10 sm:space-y-16 relative z-10">
                       <div className="text-center space-y-4">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[9px] font-mono tracking-widest uppercase font-bold">
                           <Star className="h-3 w-3 animate-pulse" />
@@ -854,11 +854,11 @@ export default function App() {
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 text-left">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 text-left">
                         {/* Experiences Card */}
                         <button
                           onClick={() => handleNavClick('EXPERIENCES')}
-                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
+                          className="flex flex-col justify-between p-5 sm:p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[180px] sm:min-h-[230px] shadow-lg shadow-black/40"
                         >
                           {/* Rich Background Visual */}
                           <div className="absolute inset-0 z-0 overflow-hidden">
@@ -895,7 +895,7 @@ export default function App() {
                         {/* Membership Card */}
                         <button
                           onClick={() => handleNavClick('MEMBERSHIP')}
-                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
+                          className="flex flex-col justify-between p-5 sm:p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[180px] sm:min-h-[230px] shadow-lg shadow-black/40"
                         >
                           {/* Rich Background Visual */}
                           <div className="absolute inset-0 z-0 overflow-hidden">
@@ -932,7 +932,7 @@ export default function App() {
                         {/* Events Card */}
                         <button
                           onClick={() => handleNavClick('EVENTS')}
-                          className="flex flex-col justify-between p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[230px] shadow-lg shadow-black/40"
+                          className="flex flex-col justify-between p-5 sm:p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[180px] sm:min-h-[230px] shadow-lg shadow-black/40"
                         >
                           {/* Rich Background Visual */}
                           <div className="absolute inset-0 z-0 overflow-hidden">
@@ -993,7 +993,7 @@ export default function App() {
 
                 {/* Fast interactive portal prompt to finish landing */}
                 <ScrollReveal>
-                  <section className="py-20 bg-neutral-950/20 border-t border-neutral-900/60">
+                  <section className="py-12 sm:py-20 bg-neutral-950/20 border-t border-neutral-900/60">
                     <div className="mx-auto max-w-4xl px-4 text-center space-y-6">
                       <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white uppercase tracking-tight">
                         Be Excellent To <span className="text-gold-500">Each Other</span>
@@ -1032,7 +1032,7 @@ export default function App() {
 
       {/* 6. Footer — only on HOME */}
       {activeNav === 'HOME' && (
-      <footer className="border-t border-neutral-900 bg-[#030303] py-12">
+      <footer className="border-t border-neutral-900 bg-[#030303] py-8 sm:py-12 pb-24 lg:pb-12">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
           <div className="grid gap-8 md:grid-cols-12 items-center">
             

@@ -15,7 +15,6 @@ import {
   FileText,
   Calendar,
   Award,
-  ShoppingBag,
   Bell,
   Settings,
   ChevronDown,
@@ -45,8 +44,7 @@ import {
   Flame,
   Filter,
   CheckSquare,
-  FileSpreadsheet,
-  Trash2
+  FileSpreadsheet
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
@@ -70,16 +68,6 @@ interface RequestDetail {
   location: string;
   attendees: string;
   whatsappNumber: string;
-}
-
-interface ShopOrder {
-  id: string;
-  member: string;
-  memberAvatar: string;
-  item: string;
-  status: 'Payment Requested' | 'Confirmed' | 'Preparing' | 'Shipped' | 'Delivered';
-  updated: string;
-  price: string;
 }
 
 interface CommunicationLogItem {
@@ -180,7 +168,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const {
     requests: backendRequests,
     proposalChats: backendProposalChats,
-    orders: backendOrders,
     updateRequestStatus,
     addRequestChatMessage,
     suggestOffer
@@ -257,25 +244,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     }
   }, [requests, selectedRequest]);
 
-  // Shop Orders state
-  const [orders, setOrders] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (backendOrders) {
-      setOrders(backendOrders);
-    }
-  }, [backendOrders]);
-
-  const [selectedOrder, setSelectedOrder] = useState<ShopOrder | null>(null);
-  const [confirmDeleteOrder, setConfirmDeleteOrder] = useState<string | null>(null);
-
-  const deleteOrder = async (id: string) => {
-    await supabase.from('orders').delete().eq('id', id);
-    setOrders(prev => prev.filter(o => o.id !== id));
-    setConfirmDeleteOrder(null);
-    showToast('Order deleted', 'info');
-  };
-
   // Membership pending count (for dashboard alert)
   const [pendingMemberships, setPendingMemberships] = useState(0);
 
@@ -313,15 +281,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       return d;
     });
 
-    const [
-      { data: allBookings },
-      { data: allOrders },
-      { data: allProfiles },
-    ] = await Promise.all([
-      supabase.from('experience_requests').select('created_at'),
-      supabase.from('orders').select('updated_at'),
-      supabase.from('profiles').select('created_at'),
-    ]);
+    const { data: allBookings } = await supabase.from('experience_requests').select('created_at');
+    const { data: allProfiles } = await supabase.from('profiles').select('created_at');
 
     const dailyBars = sevenDays.map((day) => {
       const dayStart = new Date(day.getFullYear(), day.getMonth(), day.getDate()).toISOString();
@@ -329,21 +290,19 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       return {
         label: day.toLocaleDateString('en-US', { weekday: 'short' }),
         bookings: (allBookings || []).filter((b: any) => b.created_at && new Date(b.created_at) >= new Date(dayStart) && new Date(b.created_at) < new Date(dayEnd)).length,
-        orders: (allOrders || []).filter((o: any) => o.updated_at && new Date(o.updated_at) >= new Date(dayStart) && new Date(o.updated_at) < new Date(dayEnd)).length,
+        orders: 0,
         members: (allProfiles || []).filter((p: any) => p.created_at && new Date(p.created_at) >= new Date(dayStart) && new Date(p.created_at) < new Date(dayEnd)).length,
       };
     });
 
     const todayBookings = (allBookings || []).filter((b: any) => b.created_at && new Date(b.created_at) >= new Date(todayStart)).length;
-    const todayOrders = (allOrders || []).filter((o: any) => o.updated_at && new Date(o.updated_at) >= new Date(todayStart)).length;
     const todayMembers = (allProfiles || []).filter((p: any) => p.created_at && new Date(p.created_at) >= new Date(todayStart)).length;
     const weekBookings = (allBookings || []).filter((b: any) => b.created_at && new Date(b.created_at) >= new Date(weekAgo)).length;
-    const weekOrders = (allOrders || []).filter((o: any) => o.updated_at && new Date(o.updated_at) >= new Date(weekAgo)).length;
     const weekMembers = (allProfiles || []).filter((p: any) => p.created_at && new Date(p.created_at) >= new Date(weekAgo)).length;
 
     setActivityData({
-      today: { bookings: todayBookings, orders: todayOrders, members: todayMembers },
-      week: { bookings: weekBookings, orders: weekOrders, members: weekMembers },
+      today: { bookings: todayBookings, orders: 0, members: todayMembers },
+      week: { bookings: weekBookings, orders: 0, members: weekMembers },
       dailyBars,
     });
   };
@@ -367,7 +326,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     experienceBookings: 0,
     pendingBookings: 0,
     subscriberCount: 0,
-    totalRevenue: 0,
   });
   const [dashboardEvents, setDashboardEvents] = useState<any[]>([]);
 
@@ -382,7 +340,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       { count: confirmedB },
       { count: cancelledB },
       { count: subsCount },
-      { data: ordersData },
       { data: eventsData },
     ] = await Promise.all([
       supabase.from('profiles').select('*', { count: 'exact', head: true }),
@@ -392,17 +349,14 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       supabase.from('experience_requests').select('*', { count: 'exact', head: true }).in('status', ['discussion', 'active', 'completed']),
       supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('status', 'cancelled'),
       supabase.from('subscribers').select('*', { count: 'exact', head: true }),
-      supabase.from('orders').select('price'),
       supabase.from('admin_events').select('*').order('created_at', { ascending: false }),
     ]);
-    const revenue = (ordersData || []).reduce((sum, o: any) => sum + (parseFloat(o.price) || 0), 0);
     setDashboardStats({
       totalMembers: profileCount ?? 0,
       totalExperiences: expCount ?? 0,
       experienceBookings: expBookings ?? 0,
       pendingBookings: pendingB ?? 0,
       subscriberCount: subsCount ?? 0,
-      totalRevenue: revenue,
     });
     setBookingStatusCounts({
       confirmed: confirmedB ?? 0,
@@ -755,7 +709,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   { name: 'Experiences', icon: Star, count: null },
                   { name: 'Memberships', icon: Award, count: null },
                   { name: 'Events', icon: Calendar, count: null },
-                  { name: 'Shop Orders', icon: ShoppingBag, count: null },
                   { name: 'Community', icon: Users, count: null },
                   { name: 'Media Library', icon: Briefcase, count: null },
                   { name: 'Journal CMS', icon: FileSpreadsheet, count: null },
@@ -770,7 +723,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       onClick={() => {
                         setActiveTab(item.name);
                         setSelectedRequest(null);
-                        setSelectedOrder(null);
                         setIsMobileMenuOpen(false);
                       }}
                       className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all ${
@@ -815,7 +767,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       onClick={() => {
                         setActiveTab(item.name);
                         setSelectedRequest(null);
-                        setSelectedOrder(null);
                         setIsMobileMenuOpen(false);
                       }}
                       className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all ${
@@ -1005,20 +956,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   </p>
                 </div>
 
-                {/* Revenue */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Revenue</span>
-                    <Briefcase className="h-4 w-4 text-neutral-600" />
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-gold-500">
-                    ${dashboardStats.totalRevenue.toLocaleString()}
-                  </h3>
-                  <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>From orders</span>
-                  </p>
-                </div>
-
               </div>
 
               {/* MAIN METRIC LAYOUT SPLIT */}
@@ -1163,49 +1100,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       </div>
                     </div>
 
-                    {/* Recent Orders Box */}
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden text-left">
-                      <div className="px-5 py-4 border-b border-neutral-900 flex items-center justify-between">
-                        <h3 className="text-xs font-mono font-bold tracking-wider text-white uppercase">
-                          Recent Orders
-                        </h3>
-                        <button
-                          onClick={() => setActiveTab('Shop Orders')}
-                          className="text-[10px] font-mono text-gold-500 hover:text-gold-400 font-semibold"
-                        >
-                          View All
-                        </button>
-                      </div>
 
-                      <div className="p-4 space-y-3.5">
-                        {orders.map((ord) => (
-                          <div key={ord.id} className="flex items-center justify-between gap-3 p-3 rounded-lg border border-neutral-900/60 bg-neutral-950/20 hover:border-neutral-800 transition-colors">
-                            <div className="flex items-center gap-3">
-                              <div className="h-8 w-8 rounded bg-neutral-950 border border-neutral-900 text-gold-500 flex items-center justify-center shrink-0">
-                                <ShoppingBag className="h-4 w-4" />
-                              </div>
-                              <div className="text-left space-y-0.5">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-xs font-semibold text-white">{ord.item}</span>
-                                  <span className="text-[9px] font-mono text-neutral-500">{ord.id}</span>
-                                </div>
-                                <span className="text-[10px] text-neutral-400 block">{ord.member} • <span className="text-gold-500 font-mono font-medium">${ord.price}</span></span>
-                              </div>
-                            </div>
-
-                            <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase leading-none shrink-0 ${
-                              ord.status === 'Payment Requested' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' :
-                              ord.status === 'Confirmed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' :
-                              ord.status === 'Preparing' ? 'bg-purple-500/10 text-purple-500 border border-purple-500/20' :
-                              ord.status === 'Shipped' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
-                              'bg-green-500/10 text-green-500 border border-green-500/20'
-                            }`}>
-                              {ord.status}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
 
                   </div>
 
@@ -1367,23 +1262,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
                       {/* Alert 3 */}
                       <button
-                        onClick={() => setActiveTab('Shop Orders')}
-                        className="w-full flex items-center justify-between p-2.5 rounded-lg border border-amber-500/20 bg-amber-500/[0.02] hover:bg-amber-500/[0.04] text-left transition-all group"
-                      >
-                        <div className="flex gap-2 items-center">
-                          <div className="p-1.5 rounded bg-amber-500/10 text-amber-500 shrink-0">
-                            <ShoppingBag className="h-4 w-4" />
-                          </div>
-                          <div className="space-y-0.5">
-                            <h5 className="text-xs font-semibold text-white">{orders.filter(o => o.status === 'Payment Requested').length} shop orders pending action</h5>
-                            <p className="text-[10px] text-neutral-400">Awaiting response</p>
-                          </div>
-                        </div>
-                        <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-white transition-colors" />
-                      </button>
-
-                      {/* Alert 4 */}
-                      <button
                         onClick={() => setActiveTab('Events')}
                         className="w-full flex items-center justify-between p-2.5 rounded-lg border border-blue-500/20 bg-blue-500/[0.02] hover:bg-blue-500/[0.04] text-left transition-all group"
                       >
@@ -1478,104 +1356,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           {activeTab === 'Experiences' && <AdminExperiences showToast={showToast} />}
 
           {/* ACTIVE VIEW: SHOP ORDERS */}
-          {activeTab === 'Shop Orders' && (
-            <div className="space-y-6 text-left">
-              <div className="border-b border-neutral-900 pb-4">
-                <h2 className="font-serif text-xl font-bold tracking-wider text-white">
-                  Exclusive Merchandise Orders Fulfillment CMS
-                </h2>
-                <p className="text-xs text-neutral-500 leading-normal font-mono">
-                  Monitor payment status, log shipping tracking codes, and coordinate with fulfillment vendors.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden">
-                <div className="px-5 py-4 border-b border-neutral-900 bg-neutral-950/20 flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold text-neutral-400 uppercase">
-                    All Orders ({orders.length})
-                  </span>
-                </div>
-
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[10px] uppercase">
-                        <th className="px-5 py-3 font-semibold">Order ID</th>
-                        <th className="px-4 py-3 font-semibold">Buyer Member</th>
-                        <th className="px-4 py-3 font-semibold">Merch Product</th>
-                        <th className="px-4 py-3 font-semibold">Total Price</th>
-                        <th className="px-4 py-3 font-semibold">Updated</th>
-                        <th className="px-4 py-3 font-semibold">Status</th>
-                        <th className="px-4 py-3 font-semibold text-right">Update Status</th>
-                        <th className="px-4 py-3 font-semibold text-center w-16">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-neutral-900/40">
-                      {orders.map((ord) => (
-                        <tr key={ord.id} className="hover:bg-neutral-950/20 transition-all">
-                          <td className="px-5 py-3.5 font-mono text-neutral-300 font-semibold">{ord.id}</td>
-                          <td className="px-4 py-3.5 text-white font-medium">{ord.member}</td>
-                          <td className="px-4 py-3.5 font-medium">{ord.item}</td>
-                          <td className="px-4 py-3.5 text-gold-500 font-mono font-bold">${ord.price}</td>
-                          <td className="px-4 py-3.5 text-neutral-400 font-mono">{ord.updated}</td>
-                          <td className="px-4 py-3.5">
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${
-                              ord.status === 'Payment Requested' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' :
-                              ord.status === 'Confirmed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' :
-                              ord.status === 'Preparing' ? 'bg-purple-500/10 text-purple-500 border border-purple-500/20' :
-                              ord.status === 'Shipped' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
-                              'bg-green-500/10 text-green-500 border border-green-500/20'
-                            }`}>
-                              {ord.status}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3.5 text-right">
-                            <select
-                              value={ord.status}
-                              onChange={(e) => {
-                                const newStatus = e.target.value as any;
-                                setOrders(prev => prev.map(o => o.id === ord.id ? { ...o, status: newStatus, updated: 'Just now' } : o));
-                              }}
-                              className="bg-neutral-950 border border-neutral-900 rounded px-2.5 py-1 text-[10px] font-mono text-neutral-300 outline-none"
-                            >
-                              <option value="Payment Requested">Payment Requested</option>
-                              <option value="Confirmed">Confirmed</option>
-                              <option value="Preparing">Preparing</option>
-                              <option value="Shipped">Shipped</option>
-                              <option value="Delivered">Delivered</option>
-                            </select>
-                          </td>
-                          <td className="px-4 py-3.5 text-center">
-                            {confirmDeleteOrder === ord.id ? (
-                              <div className="flex items-center justify-center gap-1">
-                                <button onClick={() => deleteOrder(ord.id)}
-                                  className="px-2 py-1 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[9px] font-mono uppercase tracking-widest transition-all"
-                                >Yes</button>
-                                <button onClick={() => setConfirmDeleteOrder(null)}
-                                  className="px-2 py-1 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[9px] font-mono uppercase transition-all"
-                                >No</button>
-                              </div>
-                            ) : (
-                              <button onClick={() => setConfirmDeleteOrder(ord.id)}
-                                title="Delete order"
-                                className="text-red-500/50 hover:text-red-400 transition-colors"
-                              ><Trash2 className="h-3.5 w-3.5" /></button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ACTIVE VIEW: EVENTS */}
-          {activeTab === 'Events' && (
-            <AdminEventManagement showToast={showToast} />
-          )}
-
           {/* ACTIVE VIEW: COMMUNICATION LOG */}
           {activeTab === 'Communication Log' && (
             <div className="space-y-6 text-left">

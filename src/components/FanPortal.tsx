@@ -19,7 +19,6 @@ import {
   Calendar,
   Award,
   Crown,
-  ShoppingBag,
   Compass,
   Gift,
   Bell,
@@ -179,7 +178,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   }, [profile, user]);
 
   // Portal State
-  const [activeTab, setActiveTab] = useState<'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Events' | 'Experiences' | 'Membership' | 'Orders' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'>('Dashboard');
+  const [activeTab, setActiveTab] = useState<'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Events' | 'Experiences' | 'Membership' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'>('Dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // Selected single request detail expansion
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
@@ -187,10 +186,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const {
     requests: backendRequests,
     proposalChats: backendProposalChats,
-    orders: backendOrders,
     discussions: backendDiscussions,
     content: backendContent,
-    addOrder,
     addDiscussionPost,
     addDiscussionReply,
     addNotification,
@@ -263,15 +260,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [uploadCategory, setUploadCategory] = useState<'Fan Art' | 'Fan Story' | 'Fan Video' | 'Photography'>('Fan Art');
   const [uploadDesc, setUploadDesc] = useState('');
 
-  // Simulated Shop Orders tracking
-  const [orders, setOrders] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (backendOrders) {
-      setOrders(backendOrders);
-    }
-  }, [backendOrders]);
-
   // Experience browser state
   const [expSubTab, setExpSubTab] = useState<'browse' | 'bookings'>('browse');
   const [fanExperiences, setFanExperiences] = useState<any[]>([]);
@@ -288,24 +276,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       });
     }
   }, [expSubTab]);
-
-  // Portal store items from DB
-  const [storeItems, setStoreItems] = useState<any[]>([]);
-
-  useEffect(() => {
-    void (async () => {
-      const { data, error } = await supabase.from('shop_products').select('*');
-      if (!error && data) {
-        setStoreItems(data.map((p: any) => ({
-          id: p.id,
-          item: p.name,
-          price: String(p.price),
-          desc: p.description,
-          icon: p.image_placeholder || '📦'
-        })));
-      }
-    })();
-  }, []);
 
   // Portal rewards from DB
   const [portalRewards, setPortalRewards] = useState<any[]>([]);
@@ -431,12 +401,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       } catch {}
     })();
   }, []);
-
-  // Shop Cart State
-  const [cart, setCart] = useState<{ id: string; item: string; price: string; quantity: number }[]>([]);
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'crypto'>('card');
-  const [checkoutCardNumber, setCheckoutCardNumber] = useState('');
-  const [checkoutCryptoWallet, setCheckoutCryptoWallet] = useState('');
 
   // Active Proposal Inner Chat Timeline
   const [proposalChats, setProposalChats] = useState<{ [proposalId: string]: { id: string; sender: 'management' | 'user' | 'system'; text: string; timestamp: string }[] }>({});
@@ -909,53 +873,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     } catch {}
   };
 
-  const handleAddToCart = (item: any) => {
-    setCart((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
-      if (existing) {
-        return prev.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i));
-      }
-      return [...prev, { id: item.id, item: item.item, price: item.price, quantity: 1 }];
-    });
-    showToast(`Added ${item.item} to cart!`, 'success');
-  };
-
-  const handleRemoveFromCart = (id: string) => {
-    setCart((prev) => prev.filter((i) => i.id !== id));
-    showToast('Removed item from cart.', 'info');
-  };
-
-  const handleCheckout = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (cart.length === 0) return;
-
-    const consolidatedItems = cart.map((i) => `${i.item} (x${i.quantity})`).join(', ');
-    const totalCost = cart.reduce((acc, curr) => acc + parseFloat(curr.price) * curr.quantity, 0).toFixed(2);
-
-    try {
-      await addOrder(consolidatedItems, totalCost, authName);
-
-      setCart([]);
-      
-      // Clear form fields
-      setCheckoutCardNumber('');
-      setCheckoutCryptoWallet('');
-
-      // Prepend dynamic journey milestone
-      addJourneyMilestone(
-        `Purchased: ${consolidatedItems.substring(0, 30)}...`,
-        `Consolidated checkout of ${cart.length} item(s) totaling $${totalCost} approved via ${paymentMethod === 'crypto' ? 'Secure Crypto Wallet' : 'Sanctuary Card'}.`,
-        'bg-green-500'
-      );
-
-      pushNotification('Order successfully placed. Awaiting confirmation.');
-      showToast('Checkout approved! State synchronized.', 'success');
-    } catch (err) {
-      console.error(err);
-      showToast('Failed to process merchandise order.', 'error');
-    }
-  };
-
   const handleDeleteNotification = (id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
     showToast('Notification cleared.', 'info');
@@ -1266,7 +1183,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   { name: 'Experiences', icon: Star },
                   { name: 'Events', icon: Calendar },
                   { name: 'Membership', icon: Award },
-                  { name: 'Orders', icon: ShoppingBag },
                   { name: 'My Journey', icon: Compass },
                   { name: 'Rewards', icon: Gift },
                   { name: 'Notifications', icon: Bell },
@@ -1447,7 +1363,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     },
                     { label: 'Bookings', value: fanStats.bookings.toString(), accent: 'blue', icon: '★' },
                     { label: 'Events', value: fanStats.events.toString(), accent: 'emerald', icon: '●' },
-                    { label: 'Orders', value: orders.length.toString(), accent: 'violet', icon: '◆' },
                   ].map((stat: any, i) => {
                     if (stat.isCard) {
                       const c = stat.card;
@@ -1764,200 +1679,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               <MyMembershipDashboard userId={user?.id} authName={authName} rank={displayRank} progressPercent={progressPercent} content={backendContent} />
             )}
 
-            {/* VIEW RENDERING 5: ORDERS (Exclusive Merchandise requests tracker) */}
-            {activeTab === 'Orders' && (
-              <div className="space-y-6 text-left">
-                <div className="space-y-1 border-b border-neutral-900 pb-4">
-                  <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
-                    Your Shop Order Applications
-                  </h2>
-                  <p className="text-xs text-neutral-500 font-mono">
-                    Track the fulfillment logs or request limited-run official collectibles.
-                  </p>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-12">
-                  {/* Left Column: Active Order Logs */}
-                  <div className="md:col-span-7 space-y-4">
-                    <h3 className="text-xs font-mono font-bold text-neutral-400 uppercase tracking-widest pb-1 border-b border-neutral-900/40">
-                      Active Requests & Fulfillment Log
-                    </h3>
-                    
-                    {orders.length === 0 ? (
-                      <div className="rounded-xl border border-neutral-900 p-8 text-center text-neutral-500 text-xs">
-                        No merchandise order applications found. Use the catalog to apply for items.
-                      </div>
-                    ) : (
-                      <div className="space-y-4 max-h-[420px] overflow-y-auto pr-1">
-                        {orders.map((ord) => (
-                          <div key={ord.id} className="rounded-xl border border-neutral-900 bg-neutral-950 p-4 flex flex-col sm:flex-row justify-between sm:items-center gap-4 text-xs">
-                            <div className="flex items-center gap-3">
-                              <div className="h-10 w-10 rounded bg-neutral-900 text-gold-500 flex items-center justify-center text-xl shrink-0">
-                                📦
-                              </div>
-                              <div className="space-y-1 text-left">
-                                <p className="font-bold text-white text-sm leading-tight">{ord.item}</p>
-                                <p className="text-[10px] text-neutral-500 font-mono">Reference ID: {ord.id} • Price: <span className="text-gold-500 font-medium">${ord.price}</span></p>
-                              </div>
-                            </div>
-
-                            <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2">
-                              <span className="inline-flex items-center gap-1 px-3 py-1 rounded bg-gold-500/10 border border-gold-500/20 text-xs font-mono font-bold text-gold-500 uppercase">
-                                {ord.status}
-                              </span>
-                              <span className="text-[10px] text-neutral-500 font-mono font-bold">Ordered: {ord.date}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Right Column: Order Collectibles directly inside Portal */}
-                  <div className="md:col-span-5 space-y-6">
-                    {/* Dynamic Shopping Cart Component */}
-                    <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-4.5 space-y-4">
-                      <div className="flex items-center justify-between pb-2 border-b border-neutral-900/40">
-                        <div className="flex items-center gap-2">
-                          <ShoppingBag className="h-4 w-4 text-gold-500" />
-                          <h3 className="text-xs font-mono font-bold text-white uppercase tracking-widest">
-                            Active Shopping Cart
-                          </h3>
-                        </div>
-                        <span className="text-[10px] bg-gold-500 text-neutral-950 px-2 py-0.5 rounded-full font-bold font-mono">
-                          {cart.reduce((acc, curr) => acc + curr.quantity, 0)} Items
-                        </span>
-                      </div>
-
-                      {cart.length === 0 ? (
-                        <p className="text-[11px] text-neutral-500 text-center py-4">Your sanctuary shopping cart is empty.</p>
-                      ) : (
-                        <div className="space-y-4 text-xs">
-                          <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
-                            {cart.map((item) => (
-                              <div key={item.id} className="flex justify-between items-center bg-neutral-900/30 p-2 rounded border border-neutral-900">
-                                <div className="space-y-0.5 text-left">
-                                  <p className="font-semibold text-white">{item.item}</p>
-                                  <p className="text-[10px] text-neutral-500 font-mono">
-                                    ${item.price} x {item.quantity}
-                                  </p>
-                                </div>
-                                <button
-                                  onClick={() => handleRemoveFromCart(item.id)}
-                                  className="text-red-500 hover:text-red-400 font-bold px-1.5 py-1 text-[10px] font-mono uppercase"
-                                >
-                                  Remove
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-
-                          <div className="pt-2 border-t border-neutral-900 space-y-3">
-                            <div className="flex justify-between items-center font-mono text-xs">
-                              <span className="text-neutral-400">ESTIMATED TOTAL:</span>
-                              <span className="text-gold-500 font-bold">
-                                ${cart.reduce((acc, curr) => acc + parseFloat(curr.price) * curr.quantity, 0).toFixed(2)}
-                              </span>
-                            </div>
-
-                            {/* Payment Credentials Input */}
-                            <form onSubmit={handleCheckout} className="space-y-2">
-                              <div className="flex gap-2 pb-1 border-b border-neutral-900">
-                                <button
-                                  type="button"
-                                  onClick={() => setPaymentMethod('card')}
-                                  className={`flex-1 py-1 rounded text-[9px] font-mono border uppercase font-bold transition-all ${
-                                    paymentMethod === 'card'
-                                      ? 'bg-gold-500/15 border-gold-500 text-gold-500'
-                                      : 'bg-neutral-950 border-neutral-900 text-neutral-500'
-                                  }`}
-                                >
-                                  Sanctuary Card
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setPaymentMethod('crypto')}
-                                  className={`flex-1 py-1 rounded text-[9px] font-mono border uppercase font-bold transition-all ${
-                                    paymentMethod === 'crypto'
-                                      ? 'bg-gold-500/15 border-gold-500 text-gold-500'
-                                      : 'bg-neutral-950 border-neutral-900 text-neutral-500'
-                                  }`}
-                                >
-                                  Crypto Wallet
-                                </button>
-                              </div>
-
-                              {paymentMethod === 'card' ? (
-                                <div className="space-y-1 text-left">
-                                  <label className="text-[8px] font-mono text-neutral-500 uppercase">SANCTUARY DEBIT KEY</label>
-                                  <input
-                                    type="text"
-                                    required
-                                    maxLength={19}
-                                    value={checkoutCardNumber}
-                                    onChange={(e) => setCheckoutCardNumber(e.target.value)}
-                                    placeholder="4111 2222 3333 4444"
-                                    className="w-full rounded border border-neutral-900 bg-[#0c0c0e] px-2.5 py-1.5 text-xs text-white placeholder-neutral-700 outline-none focus:border-gold-500/40"
-                                  />
-                                </div>
-                              ) : (
-                                <div className="space-y-1 text-left">
-                                  <label className="text-[8px] font-mono text-neutral-500 uppercase">SOLANA/ETH VAULT COORDINATES</label>
-                                  <input
-                                    type="text"
-                                    required
-                                    value={checkoutCryptoWallet}
-                                    onChange={(e) => setCheckoutCryptoWallet(e.target.value)}
-                                    placeholder="0x71C...39ab"
-                                    className="w-full rounded border border-neutral-900 bg-[#0c0c0e] px-2.5 py-1.5 text-xs text-white placeholder-neutral-700 outline-none focus:border-gold-500/40"
-                                  />
-                                </div>
-                              )}
-
-                              <button
-                                type="submit"
-                                className="w-full bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-1.5 rounded text-[10px] tracking-wider transition-colors uppercase font-mono"
-                              >
-                                Authorize Purchase
-                              </button>
-                            </form>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-4.5 space-y-4">
-                      <h3 className="text-xs font-mono font-bold text-gold-500 uppercase tracking-widest pb-1 border-b border-neutral-900/40">
-                        Private Collector Catalogue
-                      </h3>
-                      <p className="text-[11px] text-neutral-400">
-                        Gold level verified access grants you clearance to apply for custom, highly limited physical replicas and official garments.
-                      </p>
-
-                      <div className="space-y-3.5 pt-2">
-                        {storeItems.map((item) => (
-                          <div key={item.id} className="p-3 border border-neutral-900/60 rounded bg-neutral-900/20 text-xs text-left space-y-2">
-                            <div className="flex justify-between items-start">
-                              <h4 className="font-bold text-white pr-2 leading-tight">{item.item}</h4>
-                              <span className="text-gold-500 font-mono font-bold shrink-0">${item.price}</span>
-                            </div>
-                            <p className="text-[10px] text-neutral-400 leading-normal">{item.desc}</p>
-                            <button
-                              onClick={() => handleAddToCart(item)}
-                              className="w-full bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-gold-500 hover:text-white font-mono font-bold py-1.5 rounded text-[10px] transition-colors uppercase tracking-wider"
-                            >
-                              Add To Cart 🛒
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* VIEW RENDERING 6: EXPERIENCES */}
+            {/* VIEW RENDERING 5: EXPERIENCES */}
             {activeTab === 'Experiences' && (
               <div className="space-y-6">
                 {/* Sub-tabs */}

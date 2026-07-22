@@ -59,19 +59,7 @@ export function TermsOfServiceModal({ isOpen, onClose }: LegalModalProps) {
         </section>
 
         <section className="space-y-2">
-          <h5 className="font-mono text-[10px] text-gold-500 font-bold uppercase tracking-widest">4. Merchandise & Conclaves Store</h5>
-          <p>
-            All physical items, limited catalogs, and conclave tickets sold through the Platform are subject to co-operative procurement guidelines. Since all net proceeds are directly assigned to designated charity causes (including youth mentoring transition programs), refund and exchange guidelines are strictly limited.
-          </p>
-          <ul className="list-disc pl-5 space-y-1 text-neutral-400">
-            <li>Orders are processed within 3-5 business days and shipped with secure tracking details.</li>
-            <li>Refunds are issued solely in the case of damaged or lost packages upon verified carrier inspection.</li>
-            <li>You are responsible for providing correct shipping coordinates; re-delivery costs for incorrect addresses will be charged.</li>
-          </ul>
-        </section>
-
-        <section className="space-y-2">
-          <h5 className="font-mono text-[10px] text-gold-500 font-bold uppercase tracking-widest">5. Intellectual Property</h5>
+          <h5 className="font-mono text-[10px] text-gold-500 font-bold uppercase tracking-widest">4. Intellectual Property</h5>
           <p>
             All design systems, editorial journal posts, logos, and digital assets on the Platform are owned by or licensed to Gillian Anderson Official. You are granted a limited, personal, non-commercial license to access the content. Mirroring, scraping, or commercializing Platform material without written consent is strictly prohibited.
           </p>

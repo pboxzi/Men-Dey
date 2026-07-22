@@ -24,7 +24,7 @@ const FAQ_DATA_FALLBACK: FAQItem[] = [
   {
     id: 'faq-sayes',
     question: "What is SA-YES and how does Gillian support it?",
-    answer: "SA-YES (South African Youth Education for AIDS) was co-founded by Gillian Anderson in 2005. It is a charity dedicated to mentoring marginalized youth transitioning out of children's homes in South Africa, providing them with guidance, resources, and pathways to independent adult lives. 100% of the net proceeds from specific official campaign items and store merchandise support SA-YES programs directly.",
+    answer: "SA-YES (South African Youth Education for AIDS) was co-founded by Gillian Anderson in 2005. It is a charity dedicated to mentoring marginalized youth transitioning out of children's homes in South Africa, providing them with guidance, resources, and pathways to independent adult lives. 100% of the net proceeds from specific official campaign items support SA-YES programs directly.",
     category: "advocacy"
   },
   {

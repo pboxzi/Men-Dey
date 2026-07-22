@@ -215,16 +215,13 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
       setBookingRef(data?.booking_reference || ref);
 
       // Add journey milestone
-      if (user?.id) {
-        try {
-          await supabase.from('journey_log').insert({
-            title: 'Booked Experience',
-            description: `Submitted booking request for "${exp!.title}" — Reference: ${ref}`,
-            color: 'bg-blue-500',
-            user_id: user.id,
-          });
-        } catch {}
-      }
+      try {
+        await supabase.from('journey_log').insert({
+          title: `Booked: ${exp!.title}`,
+          description: `Submitted booking request for "${exp!.title}" — Reference: ${ref}`,
+          color: 'bg-blue-500',
+        });
+      } catch {}
 
       // Notify fan + admin
       if (user?.id) {

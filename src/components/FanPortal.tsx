@@ -1401,408 +1401,236 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {/* MAIN CONTENT */}
             <main className="flex-1 md:ml-64 min-h-[calc(100vh-4rem)] overflow-y-auto overflow-x-clip bg-[#050505] p-4 md:p-8 lg:p-10 space-y-6 md:space-y-8 pb-24 lg:pb-8">
             
-            {/* VIEW RENDERING 1: DASHBOARD — Cinematic Rebuild */}
+            {/* VIEW RENDERING 1: DASHBOARD — Clean Mobile-First */}
             {activeTab === 'Dashboard' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto relative">
 
-                {/* ── ATMOSPHERE: Layered light orbs ── */}
-                <div className="absolute -top-48 -right-48 w-[500px] h-[500px] bg-gold-500/[0.04] rounded-full blur-[150px] pointer-events-none" />
-                <div className="absolute -bottom-48 -left-48 w-[400px] h-[400px] bg-amber-500/[0.03] rounded-full blur-[130px] pointer-events-none" />
-                <div className="absolute top-1/3 left-1/3 w-[300px] h-[300px] bg-rose-500/[0.015] rounded-full blur-[120px] pointer-events-none" />
-                <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-gold-500/30 rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '4s' }} />
-                <div className="absolute bottom-1/4 left-1/4 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '3s', animationDelay: '1s' }} />
-                <div className="absolute top-1/4 right-1/3 w-1 h-1 bg-rose-400/20 rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '5s', animationDelay: '2s' }} />
-
-                {/* ── HERO: Rank Crest + Cinematic Welcome ── */}
-                <div className="relative mb-14">
-                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-                    <div className="space-y-5 flex-1">
-                      {/* Rank crest + greeting */}
-                      <div className="flex items-center gap-4">
-                        <motion.div
-                          initial={{ scale: 0, rotate: -20 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          transition={{ type: 'spring', stiffness: 180, damping: 12, delay: 0.1 }}
-                          className="relative h-14 w-14 shrink-0"
-                        >
-                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-gold-500/30 to-amber-500/10 blur-sm" />
-                          <div className="relative h-full w-full rounded-2xl bg-gradient-to-br from-gold-500/20 to-amber-500/5 border border-gold-500/30 flex items-center justify-center text-2xl shadow-lg shadow-gold-500/5">
-                            {displayRank.icon || '✦'}
-                          </div>
-                        </motion.div>
-                        <div className="space-y-1.5">
-                          <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.2 }}
-                          >
-                            <span className="inline-block px-2 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/20 font-mono text-[7px] text-gold-500/80 tracking-[0.15em] uppercase font-semibold">
-                              {displayRank.name}
-                            </span>
-                          </motion.div>
-                          <motion.h1
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.25 }}
-                            className="font-elegant text-3xl md:text-4xl font-bold text-white tracking-tight leading-[1.15]"
-                          >
-                            Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {authName.split(' ')[0]}
-                          </motion.h1>
-                        </div>
-                      </div>
-
-                      {/* Time-aware message + signature quote */}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.35 }}
-                        className="pl-0 sm:pl-[4.25rem] space-y-3"
-                      >
-                        <p className="text-sm text-neutral-400 font-elegant leading-relaxed max-w-xl">
-                          {new Date().getHours() < 12
-                            ? 'The world wakes with possibility. Every great story begins with a single step — and yours is already being written.'
-                            : new Date().getHours() < 18
-                            ? 'Light bends golden through the afternoon. This is your space to create, connect, and belong to something extraordinary.'
-                            : 'As the stars take their watch, remember: the most meaningful connections are often forged in quiet moments. You are home here.'}
-                        </p>
-                        <div className="flex items-center gap-3">
-                          <span className="h-px w-6 bg-gold-500/30" />
-                          <span className="font-elegant text-[10px] italic text-gold-500/50 tracking-wide">— Gillian</span>
-                        </div>
-                      </motion.div>
-                    </div>
-
-                    {/* Date medallion */}
+                {/* ── WELCOME HERO ── */}
+                <div className="relative mb-8">
+                  <div className="flex items-start gap-4">
                     <motion.div
-                      initial={{ y: -15, opacity: 0, scale: 0.9 }}
-                      animate={{ y: 0, opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.3, type: 'spring', stiffness: 150, damping: 14 }}
-                      className="hidden md:flex flex-col items-center justify-center h-18 w-18 rounded-2xl bg-gradient-to-b from-neutral-900/90 to-neutral-950/90 border border-neutral-800/80 font-mono shrink-0 shadow-2xl shadow-black/40"
+                      initial={{ scale: 0, rotate: -20 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ type: 'spring', stiffness: 180, damping: 12, delay: 0.1 }}
+                      className="relative h-14 w-14 shrink-0"
                     >
-                      <span className="text-2xl font-bold text-white leading-none tracking-tight">{new Date().getDate()}</span>
-                      <span className="text-[7px] font-semibold text-gold-500/70 tracking-widest mt-0.5 uppercase">{new Date().toLocaleString('en', { month: 'short' })}</span>
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-gold-500/30 to-amber-500/10 blur-sm" />
+                      <div className="relative h-full w-full rounded-2xl bg-gradient-to-br from-gold-500/20 to-amber-500/5 border border-gold-500/30 flex items-center justify-center text-2xl shadow-lg shadow-gold-500/5">
+                        {displayRank.icon || '✦'}
+                      </div>
                     </motion.div>
+                    <div className="flex-1 min-w-0">
+                      <span className="inline-block px-2 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/20 font-mono text-[7px] text-gold-500/80 tracking-[0.15em] uppercase font-semibold mb-1.5">
+                        {displayRank.name}
+                      </span>
+                      <motion.h1
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-2xl md:text-3xl font-bold text-white tracking-tight leading-tight"
+                      >
+                        Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {authName.split(' ')[0]}
+                      </motion.h1>
+                      <p className="text-xs text-neutral-500 mt-1.5 leading-relaxed hidden sm:block">
+                        {new Date().getHours() < 12
+                          ? 'The world wakes with possibility. Every great story begins with a single step.'
+                          : new Date().getHours() < 18
+                          ? 'This is your space to create, connect, and belong.'
+                          : 'The most meaningful connections are forged in quiet moments. You are home.'}
+                      </p>
+                    </div>
+                    {/* Points pill — visible on all screens */}
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gold-500/10 border border-gold-500/20 shrink-0">
+                      <Sparkles className="h-3.5 w-3.5 text-gold-500" />
+                      <span className="text-sm font-bold text-gold-400 font-mono">{loyaltyPoints.toLocaleString()}</span>
+                    </div>
                   </div>
-
-                  {/* Signature divider */}
-                  <motion.div
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ delay: 0.4, duration: 0.8, ease: 'easeOut' }}
-                    className="h-px bg-gradient-to-r from-gold-500/40 via-gold-500/15 to-transparent mt-8 origin-left"
-                  />
+                  <div className="h-px bg-gradient-to-r from-gold-500/30 via-gold-500/10 to-transparent mt-6" />
                 </div>
 
-                {/* ── STAT ROW: Glass-panel achievements ── */}
+                {/* ── PROGRESS BAR ── */}
                 <motion.div
-                  initial={{ y: 25, opacity: 0 }}
+                  initial={{ y: 15, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.15 }}
+                  className="mb-8 rounded-xl border border-neutral-900 bg-neutral-950/50 p-4"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Rank Progress</span>
+                    <span className="text-[10px] font-mono text-gold-500 font-bold">{Math.round(progressPercent)}%</span>
+                  </div>
+                  <div className="h-1.5 bg-neutral-900/60 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progressPercent}%` }}
+                      transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
+                      className="h-full bg-gradient-to-r from-gold-500/60 to-gold-500 rounded-full"
+                    />
+                  </div>
+                </motion.div>
+
+                {/* ── QUICK ACTIONS — 2x2 grid ── */}
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12"
+                  className="grid grid-cols-2 gap-3 mb-8"
                 >
                   {[
-                    {
-                      isCard: true,
-                      card: membership,
-                      fallbackName: displayRank.name,
-                    },
-                    { label: 'Bookings', value: fanStats.bookings.toString(), accent: 'blue', icon: '★' },
-                    { label: 'Events', value: fanStats.events.toString(), accent: 'emerald', icon: '●' },
-                  ].map((stat: any, i) => {
-                    if (stat.isCard) {
-                      const c = stat.card;
-                      const isActive = c?.status === 'active';
-                      return (
-                        <motion.div
-                          key="membership-card"
-                          initial={{ y: 20, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          transition={{ delay: 0.25, type: 'spring', stiffness: 120, damping: 14 }}
-                          whileHover={{ y: -2, scale: 1.02 }}
-                          className="relative overflow-hidden rounded-2xl border border-gold-500/25 bg-gradient-to-br from-gold-500/[0.07] via-gold-500/[0.02] to-transparent backdrop-blur-sm p-4 text-left shadow-lg shadow-gold-500/5 transition-all duration-300 group"
-                        >
-                          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-gold-500/[0.05] to-transparent rounded-bl-full pointer-events-none" />
-                          <div className="flex items-center gap-2 mb-1.5">
-                            <span className="text-base">👑</span>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-sans text-[11px] font-bold text-white leading-tight truncate">{c?.card_name || 'Member'}</p>
-                              <div className="flex items-center gap-1">
-                                <span className="font-sans text-[8px] text-gold-500/90 font-semibold truncate">{c?.tier_name || stat.fallbackName}</span>
-                                {isActive && <span className="h-1 w-1 rounded-full bg-green-500" />}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 border-t border-gold-500/10 pt-1.5">
-                            <div>
-                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Member #</span>
-                              <span className="font-sans text-[8px] text-neutral-200 font-semibold truncate block">{c?.membership_number || '—'}</span>
-                            </div>
-                            <div>
-                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Serial</span>
-                              <span className="font-sans text-[8px] text-neutral-200 font-semibold truncate block">{c?.card_serial || '—'}</span>
-                            </div>
-                            <div>
-                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Activated</span>
-                              <span className="font-sans text-[8px] text-neutral-200 font-semibold">{c?.activation_date ? new Date(c.activation_date).toLocaleDateString() : '—'}</span>
-                            </div>
-                            <div>
-                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Expires</span>
-                              <span className="font-sans text-[8px] text-neutral-200 font-semibold">{c?.expiration_date ? new Date(c.expiration_date).toLocaleDateString() : '—'}</span>
-                            </div>
-                          </div>
-                          {!c && <p className="font-mono text-[7px] text-neutral-600 mt-1">No card</p>}
-                        </motion.div>
-                      );
-                    }
-                    const accentMap: Record<string, string> = {
-                      blue: 'border-blue-500/20 from-blue-500/[0.06] via-blue-500/[0.015] to-transparent shadow-blue-500/5',
-                      emerald: 'border-emerald-500/20 from-emerald-500/[0.06] via-emerald-500/[0.015] to-transparent shadow-emerald-500/5',
-                      violet: 'border-violet-500/20 from-violet-500/[0.06] via-violet-500/[0.015] to-transparent shadow-violet-500/5',
-                    };
-                    const textAccent: Record<string, string> = {
-                      blue: 'text-blue-400', emerald: 'text-emerald-400', violet: 'text-violet-400',
-                    };
+                    { icon: Star, label: 'Experiences', sub: 'Browse & book', tab: 'Experiences' as const, color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+                    { icon: Users, label: 'Community', sub: 'Connect', tab: 'Community' as const, color: 'text-gold-400', bg: 'bg-gold-500/10 border-gold-500/20' },
+                    { icon: MessageSquare, label: 'Messages', sub: 'Chat', tab: 'Messages' as const, color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
+                    { icon: Gift, label: 'Rewards', sub: `${loyaltyPoints.toLocaleString()} pts`, tab: 'Rewards' as const, color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' },
+                  ].map((item, i) => {
+                    const Icon = item.icon;
                     return (
-                      <motion.div
-                        key={stat.label}
-                        initial={{ y: 20, opacity: 0 }}
+                      <motion.button
+                        key={item.label}
+                        initial={{ y: 15, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.25 + i * 0.08, type: 'spring', stiffness: 120, damping: 14 }}
-                        whileHover={{ y: -2, scale: 1.02 }}
-                        className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br ${accentMap[stat.accent]} backdrop-blur-sm p-5 text-left shadow-lg transition-all duration-300 group`}
+                        transition={{ delay: 0.25 + i * 0.05 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setActiveTab(item.tab)}
+                        className="flex items-center gap-3 p-4 rounded-xl border border-neutral-900 bg-neutral-950/50 hover:border-neutral-800 transition-all text-left group"
                       >
-                        <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-white/[0.03] to-transparent rounded-bl-full" />
-                        <span className="text-xl block mb-2 opacity-50 group-hover:opacity-80 transition-opacity">{stat.icon}</span>
-                        <p className={`font-elegant text-2xl font-bold tracking-tight ${textAccent[stat.accent]}`}>
-                          {String(stat.value)}
-                        </p>
-                        <p className="font-mono text-[8px] text-neutral-600 uppercase tracking-wider mt-1 font-medium">{stat.label}</p>
-                      </motion.div>
+                        <div className={`h-10 w-10 rounded-xl ${item.bg} border flex items-center justify-center shrink-0`}>
+                          <Icon className={`h-5 w-5 ${item.color}`} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-white group-hover:text-gold-500/80 transition-colors">{item.label}</p>
+                          <p className="text-[10px] text-neutral-500 font-mono">{item.sub}</p>
+                        </div>
+                      </motion.button>
                     );
                   })}
                 </motion.div>
 
-                {/* ── TWO-COLUMN CONTENT ── */}
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-14">
-
-                  {/* LEFT COL: Journey + activity (3/5) */}
-                  <div className="md:col-span-3 space-y-5">
-                    <div className="flex items-center gap-3">
-                      <div className="h-6 w-6 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                        <Compass className="h-3 w-3 text-gold-500/70" />
-                      </div>
-                      <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Your Journey</span>
-                      <span className="h-px flex-1 bg-gradient-to-r from-neutral-900/80 to-transparent" />
-                      <button onClick={() => setActiveTab('My Journey')} className="font-mono text-[7px] text-neutral-600 hover:text-gold-500/60 uppercase tracking-wider transition-colors">View all</button>
-                    </div>
-
-                    {journeyLog.length > 0 ? (
-                      <div className="relative">
-                        {/* Timeline vertical track */}
-                        <div className="absolute left-[11px] top-2 bottom-2 w-px bg-gradient-to-b from-gold-500/30 via-gold-500/10 to-transparent pointer-events-none" />
-
-                        <div className="space-y-1">
-                          {journeyLog.slice(0, 5).map((log, i) => (
-                            <motion.div
-                              key={log.id || i}
-                              initial={{ x: -12, opacity: 0 }}
-                              animate={{ x: 0, opacity: 1 }}
-                              transition={{ delay: i * 0.06, type: 'spring', stiffness: 100 }}
-                              className="flex gap-4 group"
-                            >
-                              <div className="flex flex-col items-center pt-[6px] relative z-10">
-                                <div className={`h-3 w-3 rounded-full ${log.color || 'bg-gold-500/50'} ring-[3px] ring-[#050505] shadow-sm group-hover:shadow-md group-hover:shadow-gold-500/20 transition-shadow duration-300`} />
-                              </div>
-                              <div className="flex-1 min-w-0 pb-[14px]">
-                                <p className="font-elegant text-sm font-bold text-neutral-200 group-hover:text-gold-500/60 transition-colors duration-300 tracking-wide">{log.title}</p>
-                                {log.description && (
-                                  <p className="text-[11px] text-neutral-500 font-sans mt-0.5 leading-relaxed line-clamp-2">{log.description}</p>
-                                )}
-                                <p className="font-mono text-[7px] text-neutral-700 mt-1 tracking-wide">{log.date}</p>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="rounded-2xl border border-dashed border-neutral-900/60 bg-neutral-950/20 p-10 text-center">
-                        <Compass className="h-6 w-6 text-neutral-700 mx-auto mb-3" />
-                        <p className="font-elegant text-sm text-neutral-500">Your journey begins here</p>
-                        <p className="text-xs text-neutral-600 mt-1 font-sans max-w-xs mx-auto">Book an experience or register for an event to log your first milestone.</p>
-                      </div>
-                    )}
-
-                    {/* Explore CTA */}
-                    <motion.button
-                      whileHover={{ x: 4 }}
-                      onClick={() => setActiveTab('Experiences')}
-                      className="group w-full rounded-2xl border border-dashed border-neutral-900/50 bg-neutral-950/10 p-4 hover:border-gold-500/30 hover:bg-gold-500/[0.02] transition-all text-left"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="h-7 w-7 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                            <Sparkles className="h-3.5 w-3.5 text-gold-500/60" />
-                          </div>
-                          <span className="font-elegant text-xs font-bold text-neutral-400 group-hover:text-gold-500/60 transition-colors tracking-wide uppercase">Discover experiences crafted for you</span>
-                        </div>
-                        <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-gold-500/60 transition-colors" />
-                      </div>
-                    </motion.button>
-                  </div>
-
-                  {/* RIGHT COL: Events + Community + Quick access (2/5) */}
-                  <div className="md:col-span-2 space-y-5">
-
-                    <FanEvents
-                      embedded
-                      onNavigate={setActiveTab as any}
-                      showToast={showToast}
-                      addJourneyMilestone={addJourneyMilestone}
-                      pushNotification={pushNotification}
-                    />
-
-                    {/* ── Community chatter ── */}
-                    <motion.div
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.38 }}
-                      className="rounded-2xl border border-neutral-900/70 bg-neutral-950/20 overflow-hidden shadow-xl shadow-black/20 hover:border-gold-500/20 transition-colors duration-500"
-                    >
-                      <div className="flex items-center gap-2.5 px-5 pt-4 pb-3 border-b border-neutral-900/30">
-                        <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                          <Users className="h-3 w-3 text-gold-500/70" />
-                        </div>
-                        <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Community</span>
-                      </div>
-                      <div className="p-4 space-y-2">
-                        {(clubDiscussions[activeCountryClub] || []).length > 0 ? (
-                          (clubDiscussions[activeCountryClub] || []).slice(0, 2).map((post) => (
-                            <button
-                              key={post.id}
-                              onClick={() => setActiveTab('Community')}
-                              className="w-full text-left group rounded-xl p-3 hover:bg-gold-500/[0.03] transition-colors"
-                            >
-                              <p className="font-elegant text-xs font-semibold text-neutral-200 group-hover:text-gold-500/60 transition-colors leading-snug">
-                                {post.text.length > 80 ? post.text.substring(0, 80) + '…' : post.text}
-                              </p>
-                              <div className="flex items-center gap-2 mt-1.5">
-                                <span className="font-mono text-[7px] text-neutral-500">{post.author}</span>
-                                <span className="h-1 w-1 rounded-full bg-neutral-700" />
-                                <span className="font-mono text-[7px] text-neutral-500">{post.replies?.length || 0} replies</span>
-                              </div>
-                            </button>
-                          ))
-                        ) : (
-                          <button onClick={() => setActiveTab('Community')} className="w-full text-center py-4 group rounded-xl hover:bg-gold-500/[0.02] transition-colors">
-                            <Users className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
-                            <p className="font-elegant text-xs text-neutral-500 group-hover:text-gold-500/60 transition-colors">Be the first to start a conversation</p>
-                          </button>
-                        )}
-                        <button onClick={() => setActiveTab('Community')}
-                          className="w-full text-center pt-3 border-t border-neutral-900/30 font-mono text-[7px] text-neutral-600 hover:text-gold-500/60 uppercase tracking-wider transition-colors"
-                        >
-                          Browse all discussions
-                        </button>
-                      </div>
-                    </motion.div>
-
-                    {/* ── Quick Access ── */}
-                    <motion.div
-                      initial={{ y: 20, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.46 }}
-                    >
-                      <div className="flex items-center gap-2.5 mb-3">
-                        <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                          <LayoutGrid className="h-3 w-3 text-gold-500/70" />
-                        </div>
-                        <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Quick Access</span>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        {[
-                          { label: 'Experiences', icon: Star, tab: 'Experiences' as const },
-                          { label: 'Membership', icon: Award, tab: 'Membership' as const },
-                          { label: 'Messages', icon: MessageSquare, tab: 'Messages' as const },
-                          { label: 'Rewards', icon: Gift, tab: 'Rewards' as const },
-                        ].map((item) => {
-                          const Icon = item.icon;
-                          return (
-                            <motion.button
-                              key={item.label}
-                              whileHover={{ y: -1, scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              onClick={() => setActiveTab(item.tab)}
-                              className="flex items-center gap-3 px-3.5 py-3 rounded-xl border border-neutral-900/60 bg-neutral-950/20 hover:border-gold-500/30 hover:bg-gold-500/[0.03] transition-all text-left group shadow-lg shadow-black/10"
-                            >
-                              <div className="h-7 w-7 rounded-lg bg-neutral-900/80 border border-neutral-800/60 flex items-center justify-center group-hover:bg-gold-500/10 group-hover:border-gold-500/30 transition-all">
-                                <Icon className="h-3.5 w-3.5 text-neutral-500 group-hover:text-gold-500/70 transition-colors" />
-                              </div>
-                              <span className="font-elegant text-[11px] font-bold text-neutral-300 group-hover:text-gold-500/60 transition-colors tracking-wide">{item.label}</span>
-                            </motion.button>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-
-                  </div>
-                </div>
-
-                {/* ── BOTTOM: Action cards with elegance ── */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-8">
+                {/* ── STATS ROW ── */}
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.35 }}
+                  className="grid grid-cols-3 gap-3 mb-8"
+                >
                   {[
-                    {
-                      icon: Users, label: 'Community', sub: 'Connect with fellow members in your country club.',
-                      color: 'from-gold-500/15 via-gold-500/5 to-transparent border-gold-500/25',
-                      iconBg: 'bg-gold-500/15 border-gold-500/25',
-                      iconColor: 'text-gold-500/80',
-                      glow: 'bg-gold-500/[0.06]',
-                      action: () => setActiveTab('Community'),
-                    },
-                    {
-                      icon: Gift, label: 'Loyalty Rewards', sub: `${loyaltyPoints.toLocaleString()} points ready to redeem.`,
-                      color: 'from-amber-500/15 via-amber-500/5 to-transparent border-amber-500/25',
-                      iconBg: 'bg-amber-500/15 border-amber-500/25',
-                      iconColor: 'text-amber-500/80',
-                      glow: 'bg-amber-500/[0.06]',
-                      action: () => setActiveTab('Rewards'),
-                    },
-                    {
-                      icon: Star, label: 'Book Experiences', sub: 'Exclusive intimate moments await you.',
-                      color: 'from-blue-500/15 via-blue-500/5 to-transparent border-blue-500/25',
-                      iconBg: 'bg-blue-500/15 border-blue-500/25',
-                      iconColor: 'text-blue-500/80',
-                      glow: 'bg-blue-500/[0.06]',
-                      action: () => setActiveTab('Experiences'),
-                    },
-                  ].map((card, i) => {
-                    const Icon = card.icon;
-                    return (
-                      <motion.button
-                        key={card.label}
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.35 + i * 0.08 }}
-                        whileHover={{ y: -3, scale: 1.015 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={card.action}
-                        className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br ${card.color} p-5 text-left shadow-xl shadow-black/30 transition-all duration-300`}
-                      >
-                        <div className={`absolute -top-10 -right-10 w-24 h-24 ${card.glow} rounded-full blur-[50px]`} />
-                        <div className="relative flex items-center gap-3.5">
-                          <div className={`h-10 w-10 rounded-xl ${card.iconBg} border flex items-center justify-center shrink-0 shadow-lg shadow-black/20 group-hover:scale-110 transition-transform duration-300`}>
-                            <Icon className={`h-4.5 w-4.5 ${card.iconColor}`} />
-                          </div>
-                          <div>
-                            <p className="font-elegant text-sm font-bold text-neutral-100 group-hover:text-white transition-colors tracking-wide">{card.label}</p>
-                            <p className="font-mono text-[8px] text-neutral-500 mt-0.5">{card.sub}</p>
-                          </div>
+                    { label: 'Bookings', value: fanStats.bookings, icon: '★', color: 'text-blue-400' },
+                    { label: 'Events', value: fanStats.events, icon: '●', color: 'text-emerald-400' },
+                    { label: 'Points', value: loyaltyPoints, icon: '✦', color: 'text-amber-400' },
+                  ].map((stat, i) => (
+                    <motion.div
+                      key={stat.label}
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.4 + i * 0.05 }}
+                      className="rounded-xl border border-neutral-900 bg-neutral-950/50 p-3.5 text-center"
+                    >
+                      <span className="text-base block mb-1 opacity-50">{stat.icon}</span>
+                      <p className={`text-xl font-bold font-mono ${stat.color}`}>{stat.value}</p>
+                      <p className="text-[9px] font-mono text-neutral-600 uppercase tracking-wider mt-0.5">{stat.label}</p>
+                    </motion.div>
+                  ))}
+                </motion.div>
+
+                {/* ── MEMBERSHIP CARD (if active) ── */}
+                {membership?.status === 'active' && (
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.45 }}
+                    onClick={() => setActiveTab('Membership')}
+                    className="mb-8 rounded-xl border border-gold-500/20 bg-gradient-to-br from-gold-500/[0.06] via-gold-500/[0.02] to-transparent p-4 cursor-pointer hover:border-gold-500/30 transition-all"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">👑</span>
+                        <div>
+                          <p className="text-xs font-bold text-white">{membership.card_name || 'Member'}</p>
+                          <p className="text-[10px] text-gold-500/70 font-mono">{membership.tier_name}</p>
                         </div>
-                        {/* Shine sweep on hover */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
-                      </motion.button>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[9px] text-neutral-500 font-mono">#{membership.membership_number?.split('-').pop() || '—'}</p>
+                        <ChevronRight className="h-4 w-4 text-neutral-600 ml-auto mt-0.5" />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ── JOURNEY (last 3) ── */}
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="mb-8"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Compass className="h-4 w-4 text-gold-500/60" />
+                      <span className="text-xs font-bold text-white">Your Journey</span>
+                    </div>
+                    <button onClick={() => setActiveTab('My Journey')} className="text-[10px] text-neutral-500 hover:text-gold-500/60 font-mono transition-colors">
+                      View all →
+                    </button>
+                  </div>
+
+                  {journeyLog.length > 0 ? (
+                    <div className="space-y-3">
+                      {journeyLog.slice(0, 3).map((log, i) => (
+                        <motion.div
+                          key={log.id || i}
+                          initial={{ x: -10, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: 0.55 + i * 0.05 }}
+                          className="flex items-start gap-3 p-3 rounded-xl border border-neutral-900 bg-neutral-950/30"
+                        >
+                          <div className={`h-2.5 w-2.5 rounded-full ${log.color || 'bg-gold-500/50'} mt-1.5 shrink-0`} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-bold text-neutral-200">{log.title}</p>
+                            {log.description && (
+                              <p className="text-[11px] text-neutral-500 mt-0.5 line-clamp-2">{log.description}</p>
+                            )}
+                            <p className="text-[9px] font-mono text-neutral-700 mt-1">{log.date}</p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-neutral-900 bg-neutral-950/20 p-8 text-center">
+                      <Compass className="h-6 w-6 text-neutral-700 mx-auto mb-2" />
+                      <p className="text-xs text-neutral-500">Your journey begins here</p>
+                      <p className="text-[10px] text-neutral-600 mt-1">Book an experience to log your first milestone.</p>
+                    </div>
+                  )}
+                </motion.div>
+
+                {/* ── QUICK LINKS ── */}
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="space-y-2 pb-8"
+                >
+                  {[
+                    { icon: Calendar, label: 'Upcoming Events', tab: 'Events' as const },
+                    { icon: Award, label: 'My Membership', tab: 'Membership' as const },
+                    { icon: Settings, label: 'Settings', tab: 'Settings' as const },
+                  ].map((item, i) => {
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.label}
+                        onClick={() => setActiveTab(item.tab)}
+                        className="w-full flex items-center gap-3 p-3.5 rounded-xl border border-neutral-900 bg-neutral-950/30 hover:border-neutral-800 transition-all text-left group"
+                      >
+                        <div className="h-8 w-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center group-hover:bg-gold-500/10 transition-all">
+                          <Icon className="h-4 w-4 text-neutral-500 group-hover:text-gold-500/70 transition-colors" />
+                        </div>
+                        <span className="text-xs font-semibold text-neutral-300 group-hover:text-white transition-colors">{item.label}</span>
+                        <ChevronRight className="h-3.5 w-3.5 text-neutral-700 group-hover:text-neutral-500 ml-auto transition-colors" />
+                      </button>
                     );
                   })}
-                </div>
+                </motion.div>
 
               </motion.div>
             )}

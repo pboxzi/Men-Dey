@@ -51,6 +51,10 @@ export default function CommunitySection() {
   // Delete confirmation
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
+  // Pagination for community posts
+  const POSTS_PER_PAGE = 3;
+  const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
+
   // Toast notifications
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -242,6 +246,11 @@ export default function CommunitySection() {
       return 0;
     });
   }, [highlights, activeCategory, searchQuery, activeSort]);
+
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(POSTS_PER_PAGE);
+  }, [activeCategory, activeSort, searchQuery]);
 
   return (
     <section id="community-page" className="bg-[#050505] py-20 px-4 md:px-6 relative min-h-[900px] overflow-hidden">
@@ -601,7 +610,7 @@ export default function CommunitySection() {
             {/* Cards */}
             <div className="space-y-6">
               {filteredHighlights.length > 0 ? (
-                filteredHighlights.map((hl, i) => (
+                filteredHighlights.slice(0, visibleCount).map((hl, i) => (
                   <motion.div
                     key={hl.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -842,6 +851,18 @@ export default function CommunitySection() {
                     )}
                   </div>
                 </motion.div>
+              )}
+
+              {/* Show More Button */}
+              {filteredHighlights.length > visibleCount && (
+                <div className="text-center pt-4">
+                  <button
+                    onClick={() => setVisibleCount((prev) => prev + POSTS_PER_PAGE)}
+                    className="px-6 py-2.5 rounded-xl border border-neutral-800 bg-neutral-950/50 text-[11px] font-mono text-neutral-400 hover:text-white hover:border-gold-500/30 hover:bg-neutral-900/50 transition-all uppercase tracking-widest"
+                  >
+                    Show More ({filteredHighlights.length - visibleCount} remaining)
+                  </button>
+                </div>
               )}
             </div>
           </div>

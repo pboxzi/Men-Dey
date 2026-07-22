@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useGlobalState } from '../utils/StateContext';
 import { useAuth } from '../utils/AuthContext';
 import { supabase } from '../utils/supabase';
@@ -48,7 +48,11 @@ import {
   Menu,
   X,
   Mail,
-  Loader2
+  Loader2,
+  Palette,
+  AlertCircle,
+  CheckCircle,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
@@ -187,7 +191,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     requests: backendRequests,
     proposalChats: backendProposalChats,
     discussions: backendDiscussions,
+    posts: backendPosts,
     content: backendContent,
+    addPost,
+    deletePost,
+    likePost,
+    commentPost,
+    replyComment,
     addDiscussionPost,
     addDiscussionReply,
     addNotification,
@@ -235,6 +245,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   // (request wizard state removed — feature deprecated)
 
   // Community State
+  const [communitySubTab, setCommunitySubTab] = useState<'Feed' | 'Discussions' | 'Fan Works'>('Feed');
   const [activeCountryClub, setActiveCountryClub] = useState<string>('Global');
   const [clubDiscussions, setClubDiscussions] = useState<{ [club: string]: DiscussionPost[] }>({});
 
@@ -245,6 +256,16 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   }, [backendDiscussions]);
   const [newDiscussionText, setNewDiscussionText] = useState('');
   const [replyInputs, setReplyInputs] = useState<{ [postId: string]: string }>({});
+
+  // Posts Feed State
+  const [postCommentInputs, setPostCommentInputs] = useState<{ [postId: string]: string }>({});
+  const [postReplyInputs, setPostReplyInputs] = useState<{ [postId: string]: string }>({});
+  const [showPostComments, setShowPostComments] = useState<{ [postId: string]: boolean }>({});
+  const [postCategoryFilter, setPostCategoryFilter] = useState<string>('All');
+  const postCategories = ['All', 'FAN ART', 'LETTERS', 'ENCOUNTERS'];
+  const [postSearchQuery, setPostSearchQuery] = useState('');
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
 
   // Fan Creativity Board
   const [creations, setCreations] = useState<FanArtItem[]>([]);
@@ -640,6 +661,66 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         await supabase.from('fan_creations').update({ likes: (item.likes || 0) + 1 }).eq('id', id);
       }
     } catch {}
+  };
+
+  // Posts Feed Handlers
+  const getRelativeTime = (timestamp?: string) => {
+    if (!timestamp) return 'Just now';
+    const now = Date.now();
+    const then = new Date(timestamp).getTime();
+    const diffMs = now - then;
+    const mins = Math.floor(diffMs / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    if (days < 30) return `${days}d ago`;
+    return `${Math.floor(days / 30)}mo ago`;
+  };
+
+  const handlePostLike = async (postId: string) => {
+    try {
+      await likePost(postId);
+    } catch {
+      showToast('Could not send your heart. Please try again.', 'error');
+    }
+  };
+
+  const handlePostComment = async (postId: string, e: React.FormEvent) => {
+    e.preventDefault();
+    const text = postCommentInputs[postId]?.trim();
+    if (!text) return;
+    try {
+      await commentPost(postId, text, user?.user_metadata?.name || authName || 'A kindred spirit');
+      setPostCommentInputs((prev) => ({ ...prev, [postId]: '' }));
+      showToast('Your kind word was shared.', 'success');
+    } catch {
+      showToast('Could not share your words. Please try again.', 'error');
+    }
+  };
+
+  const handlePostReply = async (postId: string, commentId: string, e: React.FormEvent) => {
+    e.preventDefault();
+    const text = postReplyInputs[commentId]?.trim();
+    if (!text) return;
+    try {
+      await replyComment(postId, commentId, text, user?.user_metadata?.name || authName || 'A kindred spirit');
+      setPostReplyInputs((prev) => ({ ...prev, [commentId]: '' }));
+      showToast('Your reply was shared with kindness.', 'success');
+    } catch {
+      showToast('Could not send your reply. Please try again.', 'error');
+    }
+  };
+
+  const handlePostDelete = async (postId: string) => {
+    try {
+      await deletePost(postId);
+      setDeleteConfirmId(null);
+      showToast('Story removed.', 'success');
+    } catch {
+      showToast('Could not remove the story.', 'error');
+    }
   };
 
   const handleUploadCreation = async (e: React.FormEvent) => {
@@ -1814,169 +1895,394 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               </div>
             )}
 
-            {/* VIEW RENDERING 7: COMMUNITY (Country Clubs and Fan Creativity) */}
+            {/* VIEW RENDERING 7: COMMUNITY (Feed, Country Clubs, and Fan Works) */}
             {activeTab === 'Community' && (
-              <div className="space-y-6 text-left">
-                
-                {/* Switcher tabs for Forums / Country Clubs vs Fan Creativity */}
+              <div className="space-y-6 text-left relative">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-900 pb-4">
                   <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-[10px] font-mono text-gold-400 tracking-widest uppercase">
+                      <Sparkles className="h-3 w-3" />
+                      Welcome back, kindred spirit
+                    </div>
                     <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
-                      Official Sanctuary Forums
+                      Your Sanctuary
                     </h2>
                     <p className="text-xs text-neutral-500 font-mono">
-                      Connect with localized Country Clubs and share fan-authored content.
+                      A cozy corner for the community — share, connect, and celebrate together.
                     </p>
                   </div>
-                  <button
-                    onClick={() => setShowUploadModal(true)}
-                    className="flex items-center gap-1.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-1.5 px-4 rounded text-xs uppercase tracking-wider transition-all active:scale-95"
-                  >
-                    <Upload className="h-4 w-4" /> Share Fan Work
-                  </button>
+                  {communitySubTab === 'Fan Works' && (
+                    <button
+                      onClick={() => setShowUploadModal(true)}
+                      className="flex items-center gap-1.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-1.5 px-4 rounded text-xs uppercase tracking-wider transition-all active:scale-95"
+                    >
+                      <Upload className="h-4 w-4" /> Share Your Creation
+                    </button>
+                  )}
                 </div>
 
-                {/* Country clubs selector */}
-                <div className="space-y-2">
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest block">
-                    LOCALIZED COUNTRY CLUBS
-                  </span>
-                  <div className="flex gap-1.5 overflow-x-auto whitespace-nowrap py-1 scrollbar-none">
-                    {['Global', 'USA', 'Canada', 'UK', 'Australia', 'New Zealand', 'Japan', 'Germany', 'Brazil', 'France', 'India', 'Mexico', 'South Africa', 'South Korea', 'Italy', 'Spain', 'Argentina', 'Philippines', 'Singapore', 'Ireland', 'Netherlands'].map((club) => (
-                      <button
-                        key={club}
-                        onClick={() => setActiveCountryClub(club)}
-                        className={`px-3.5 py-1.5 rounded text-xs font-mono font-medium border transition-all ${
-                          activeCountryClub === club
-                            ? 'bg-gold-500/10 border-gold-500 text-gold-500'
-                            : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white'
-                        }`}
-                      >
-                        {club === 'Global' ? <Globe className="h-3.5 w-3.5 inline mr-1" /> : null}
-                        {club} Club
-                      </button>
-                    ))}
-                  </div>
+                {/* Sub-tab navigation */}
+                <div className="flex gap-1 bg-neutral-950/60 border border-neutral-900 rounded-lg p-0.5 w-fit">
+                  {[
+                    { id: 'Feed' as const, label: 'The Feed', icon: MessageSquare },
+                    { id: 'Discussions' as const, label: 'Country Clubs', icon: Globe },
+                    { id: 'Fan Works' as const, label: 'Fan Works', icon: Palette },
+                  ].map((sub) => (
+                    <button
+                      key={sub.id}
+                      onClick={() => setCommunitySubTab(sub.id)}
+                      className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded text-[10px] font-mono tracking-widest uppercase transition-all ${
+                        communitySubTab === sub.id
+                          ? 'bg-gold-500 text-neutral-950 font-bold'
+                          : 'text-neutral-500 hover:text-white'
+                      }`}
+                    >
+                      <sub.icon className="h-3 w-3" />
+                      {sub.label}
+                    </button>
+                  ))}
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-12">
-                  {/* Left: Club Discussion logs */}
-                  <div className="md:col-span-7 rounded-xl border border-neutral-900 bg-neutral-950 p-4.5 space-y-4 flex flex-col justify-between min-h-[500px]">
+                {/* Feed Sub-Tab */}
+                {communitySubTab === 'Feed' && (
+                  <div className="space-y-5">
+                    {/* Search bar */}
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500 pointer-events-none" />
+                      <input
+                        type="text"
+                        placeholder="Search stories, names, or words..."
+                        value={postSearchQuery}
+                        onChange={(e) => setPostSearchQuery(e.target.value)}
+                        className="w-full bg-neutral-950 border border-neutral-900 rounded-lg pl-9 pr-8 py-2 text-xs text-white outline-none focus:border-gold-500/40 placeholder-neutral-600 transition-all duration-300"
+                      />
+                      {postSearchQuery && (
+                        <button onClick={() => setPostSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors">
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Category filters */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {postCategories.map((cat) => (
+                        <button
+                          key={cat}
+                          onClick={() => setPostCategoryFilter(cat)}
+                          className={`px-3 py-1.5 rounded text-[10px] font-mono font-medium border transition-all ${
+                            postCategoryFilter === cat
+                              ? 'bg-gold-500/10 border-gold-500 text-gold-500'
+                              : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white'
+                          }`}
+                        >
+                          {cat === 'All' ? 'All Stories' : cat === 'FAN ART' ? 'Art & Creativity' : cat === 'LETTERS' ? 'Letters of Light' : 'Encounters & Moments'}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Posts Feed */}
                     <div className="space-y-4">
-                      <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                        Active {activeCountryClub} Board Discussions
-                      </h3>
+                      {(backendPosts || [])
+                        .filter((p) => postCategoryFilter === 'All' || (p.category || 'FAN ART') === postCategoryFilter)
+                        .filter((p) => !postSearchQuery || p.username?.toLowerCase().includes(postSearchQuery.toLowerCase()) || p.content?.toLowerCase().includes(postSearchQuery.toLowerCase()) || p.handle?.toLowerCase().includes(postSearchQuery.toLowerCase()))
+                        .map((post) => (
+                        <div key={post.id} className="relative group rounded-xl border border-neutral-900 bg-gradient-to-b from-neutral-950/60 to-neutral-950/20 p-4.5 space-y-3.5 text-left hover:border-gold-500/20 hover:shadow-[0_0_40px_-10px_rgba(212,175,55,0.08)] transition-all duration-500 overflow-hidden">
+                          <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-gold-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                      {/* Discussions logs list */}
-                      <div className="space-y-4 max-h-[360px] overflow-y-auto pr-1">
-                        {(clubDiscussions[activeCountryClub] || []).length === 0 ? (
-                          <div className="p-8 text-center text-neutral-500 font-mono text-xs">
-                            No active discussions on this board yet. Post the first message!
-                          </div>
-                        ) : (
-                          (clubDiscussions[activeCountryClub] || []).map((disc) => (
-                            <div key={disc.id || `disc-${Math.random()}`} className="p-3.5 rounded-xl border border-neutral-900/60 bg-neutral-900/10 text-xs text-left space-y-3">
-                              {/* OP Header */}
-                              <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500">
-                                <span className="text-gold-500 font-bold flex items-center gap-1.5">
-                                  <User className="h-3.5 w-3.5 text-neutral-600" /> {disc.author}
-                                </span>
-                                <span>{disc.time}</span>
+                          {/* Post Header */}
+                          <div className="flex items-center justify-between relative">
+                            <div className="flex items-center gap-2.5">
+                              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-gold-500/20 via-amber-500/10 to-neutral-900 border border-gold-500/20 flex items-center justify-center text-[10px] font-mono font-medium text-gold-400 shrink-0">
+                                {post.avatarText || post.username?.charAt(0).toUpperCase() || '?'}
                               </div>
-                              {/* OP Text */}
-                              <p className="text-neutral-200 leading-relaxed font-sans text-xs">{disc.text}</p>
+                              <div>
+                                <span className="text-xs font-semibold text-white">{post.username}</span>
+                                <span className="text-[9px] font-mono text-neutral-500 ml-2">{post.handle}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${
+                                post.category === 'FAN ART' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                                post.category === 'LETTERS' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                                'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                              }`}>
+                                {post.category || 'Story'}
+                              </span>
+                              <span className="text-[9px] font-mono text-neutral-600 flex items-center gap-1">
+                                <Clock className="h-2.5 w-2.5" />
+                                {(post as any).created_at ? getRelativeTime((post as any).created_at) : ''}
+                              </span>
+                            </div>
+                          </div>
 
-                              {/* Nested Replies Thread */}
-                              {disc.replies && disc.replies.length > 0 && (
-                                <div className="pl-4 border-l-2 border-gold-500/20 space-y-2.5 pt-1">
-                                  {disc.replies.map((reply) => (
-                                    <div key={reply.id} className="bg-neutral-950/40 p-2.5 rounded-lg border border-neutral-900/40 space-y-1">
-                                      <div className="flex justify-between items-center text-[9px] font-mono text-neutral-500">
-                                        <span className="text-neutral-400 font-semibold flex items-center gap-1">
-                                          <User className="h-3 w-3 text-neutral-600" /> {reply.author}
-                                        </span>
-                                        <span>{reply.time}</span>
-                                      </div>
-                                      <p className="text-neutral-300 text-[11px] leading-relaxed">{reply.text}</p>
-                                    </div>
-                                  ))}
+                          {/* Post Content */}
+                          <p className="text-xs text-neutral-300 leading-relaxed relative">{post.content}</p>
+
+                          {/* Post Image */}
+                          {post.image && (
+                            <div className="relative rounded-xl overflow-hidden border border-neutral-900/60 group/img">
+                              <img src={post.image} alt="" className="w-full h-40 object-cover brightness-[0.85] saturate-[0.9] group-hover/img:brightness-100 group-hover/img:saturate-100 group-hover/img:scale-[1.02] transition-all duration-700" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-500" />
+                            </div>
+                          )}
+
+                          {/* Like & Comments Row */}
+                          <div className="flex items-center gap-5 text-[10px] font-mono text-neutral-500 border-t border-neutral-900/50 pt-3 relative">
+                            <button
+                              onClick={() => handlePostLike(post.id)}
+                              className={`flex items-center gap-1.5 transition-colors ${
+                                post.liked ? 'text-red-500 font-semibold' : 'hover:text-white'
+                              }`}
+                            >
+                              <Heart className={`h-3.5 w-3.5 ${post.liked ? 'fill-red-500 stroke-red-500' : ''}`} />
+                              <span>{post.likes} {post.likes === 1 ? 'Heart' : 'Hearts'}</span>
+                            </button>
+                            <button
+                              onClick={() => setShowPostComments((prev) => ({ ...prev, [post.id]: !prev[post.id] }))}
+                              className={`flex items-center gap-1.5 transition-colors hover:text-white ${
+                                showPostComments[post.id] ? 'text-gold-500' : ''
+                              }`}
+                            >
+                              <MessageSquare className="h-3.5 w-3.5" />
+                              <span>{post.replies} {post.replies === 1 ? 'Response' : 'Responses'}</span>
+                            </button>
+
+                            {/* Delete own post */}
+                            <div className="ml-auto">
+                              {deleteConfirmId === post.id ? (
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-red-500/10 border border-red-500/30">
+                                  <span className="text-[8px] font-mono text-red-400 uppercase">Remove?</span>
+                                  <button onClick={() => handlePostDelete(post.id)} className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[8px] font-mono uppercase">Yes</button>
+                                  <button onClick={() => setDeleteConfirmId(null)} className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[8px] font-mono uppercase">No</button>
                                 </div>
+                              ) : (
+                                (user?.user_metadata?.name || authName) && post.username === (user?.user_metadata?.name || authName) && (
+                                  <button onClick={() => setDeleteConfirmId(post.id)} className="text-neutral-600 hover:text-red-400 transition-colors" title="Remove your story">
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                )
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Comments Section */}
+                          {showPostComments[post.id] && (
+                            <div className="space-y-3.5 pt-3 border-t border-neutral-900/50 relative">
+                              {post.comments && post.comments.length > 0 ? (
+                                post.comments.map((comment) => (
+                                  <div key={comment.id} className="p-3 rounded-lg border border-neutral-900/60 bg-neutral-900/15 space-y-2 text-xs">
+                                    <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500">
+                                      <span className="text-gold-500/90 font-bold flex items-center gap-1.5">
+                                        <span className="h-5 w-5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[9px] font-medium text-gold-500 shrink-0">
+                                          {comment.avatarText || comment.username?.charAt(0).toUpperCase() || '?'}
+                                        </span>
+                                        {comment.username}
+                                      </span>
+                                      <span>{comment.timestamp}</span>
+                                    </div>
+                                    <p className="text-neutral-200 leading-relaxed">{comment.content}</p>
+
+                                    {comment.replies && comment.replies.length > 0 && (
+                                      <div className="pl-4 ml-2 border-l border-gold-500/15 space-y-2 pt-1">
+                                        {comment.replies.map((reply) => (
+                                          <div key={reply.id} className="bg-neutral-950/40 p-2 rounded-lg border border-neutral-900/40 space-y-1">
+                                            <div className="flex justify-between items-center text-[9px] font-mono text-neutral-500">
+                                              <span className="text-neutral-300 font-semibold flex items-center gap-1">
+                                                <span className="h-4.5 w-4.5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[8px] font-medium text-neutral-400 shrink-0">
+                                                  {reply.avatarText || reply.username?.charAt(0).toUpperCase() || '?'}
+                                                </span>
+                                                {reply.username}
+                                              </span>
+                                              <span>{reply.timestamp}</span>
+                                            </div>
+                                            <p className="text-neutral-300 text-[11px] leading-relaxed">{reply.content}</p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    <form onSubmit={(e) => handlePostReply(post.id, comment.id, e)} className="flex gap-2 pt-1.5">
+                                      <input
+                                        type="text"
+                                        value={postReplyInputs[comment.id] || ''}
+                                        onChange={(e) => setPostReplyInputs((prev) => ({ ...prev, [comment.id]: e.target.value }))}
+                                        placeholder={`Reply to ${comment.username}...`}
+                                        className="flex-1 bg-neutral-900 text-[11px] border border-neutral-800 rounded px-2.5 py-1.5 text-white outline-none focus:border-gold-500/30"
+                                      />
+                                      <button type="submit" disabled={!(postReplyInputs[comment.id] || '').trim()} className="px-3 bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-neutral-950 font-bold rounded text-[10px] uppercase transition-colors">Reply</button>
+                                    </form>
+                                  </div>
+                                ))
+                              ) : (
+                                <p className="text-[10px] text-neutral-600 italic py-2">No kind words yet. Yours would be a gift.</p>
                               )}
 
-                              {/* Inline Thread Reply Input Form */}
-                              <form
-                                onSubmit={(e) => handleAddReply(disc.id, e)}
-                                className="flex gap-2 pt-2 border-t border-neutral-900/30"
-                              >
+                              <form onSubmit={(e) => handlePostComment(post.id, e)} className="flex gap-2 pt-2 border-t border-neutral-900/30">
                                 <input
                                   type="text"
-                                  value={replyInputs[disc.id] || ''}
-                                  onChange={(e) => setReplyInputs(prev => ({ ...prev, [disc.id]: e.target.value }))}
-                                  placeholder="Reply to this thread..."
-                                  className="flex-1 rounded bg-[#0c0c0e] border border-neutral-900/80 px-3 py-1.5 text-[11px] text-white placeholder-neutral-600 outline-none focus:border-gold-500/30"
+                                  value={postCommentInputs[post.id] || ''}
+                                  onChange={(e) => setPostCommentInputs((prev) => ({ ...prev, [post.id]: e.target.value }))}
+                                  placeholder="Share a kind thought..."
+                                  className="flex-1 bg-neutral-900 text-xs border border-neutral-800 rounded px-3 py-2 text-white outline-none focus:border-gold-500/40"
                                 />
-                                <button
-                                  type="submit"
-                                  disabled={!(replyInputs[disc.id] || '').trim()}
-                                  className="px-3 bg-neutral-900 border border-neutral-800 text-[10px] font-mono font-medium text-gold-500 hover:text-white rounded disabled:opacity-50 transition-colors uppercase"
-                                >
-                                  Reply
-                                </button>
+                                <button type="submit" disabled={!(postCommentInputs[post.id] || '').trim()} className="px-4 bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-neutral-950 font-bold rounded text-[10px] uppercase transition-colors">Share</button>
                               </form>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      {(!backendPosts || backendPosts.length === 0) && (
+                        <div className="text-center py-20 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10 space-y-3">
+                          <div className="h-14 w-14 rounded-full bg-gradient-to-br from-gold-500/10 to-neutral-900 border border-gold-500/20 flex items-center justify-center mx-auto">
+                            <Heart className="h-6 w-6 text-gold-500/60" />
+                          </div>
+                          <p className="text-sm text-neutral-400">The feed is quiet... for now.</p>
+                          <p className="text-[10px] text-neutral-600 font-mono">Be the first to share a story, a piece of art, or a memory.</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Discussions Sub-Tab */}
+                {communitySubTab === 'Discussions' && (
+                  <div className="space-y-4">
+                    {/* Country clubs selector */}
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest block">
+                        Choose your Country Club
+                      </span>
+                      <div className="flex gap-1.5 overflow-x-auto whitespace-nowrap py-1 scrollbar-none">
+                        {['Global', 'USA', 'Canada', 'UK', 'Australia', 'New Zealand', 'Japan', 'Germany', 'Brazil', 'France', 'India', 'Mexico', 'South Africa', 'South Korea', 'Italy', 'Spain', 'Argentina', 'Philippines', 'Singapore', 'Ireland', 'Netherlands'].map((club) => (
+                          <button
+                            key={club}
+                            onClick={() => setActiveCountryClub(club)}
+                            className={`px-3.5 py-1.5 rounded text-xs font-mono font-medium border transition-all ${
+                              activeCountryClub === club
+                                ? 'bg-gold-500/10 border-gold-500 text-gold-500'
+                                : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white'
+                            }`}
+                          >
+                            {club === 'Global' ? <Globe className="h-3.5 w-3.5 inline mr-1" /> : null}
+                            {club} Club
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-neutral-900 bg-gradient-to-b from-neutral-950/80 to-neutral-950/40 p-4.5 space-y-4 min-h-[400px] flex flex-col justify-between">
+                      <div className="space-y-4">
+                        <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                          <MessageCircle className="h-3.5 w-3.5 text-gold-500" />
+                          {activeCountryClub} Club Conversations
+                        </h3>
+                        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
+                          {(clubDiscussions[activeCountryClub] || []).length === 0 ? (
+                            <div className="p-8 text-center text-neutral-500 font-mono text-xs">
+                              <p>No conversations yet in this club.</p>
+                              <p className="text-neutral-600 mt-1">Start one — your voice is welcome here.</p>
+                            </div>
+                          ) : (
+                            (clubDiscussions[activeCountryClub] || []).map((disc) => (
+                              <div key={disc.id || `disc-${Math.random()}`} className="p-3.5 rounded-xl border border-neutral-900/60 bg-neutral-900/10 text-xs text-left space-y-3">
+                                <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500">
+                                  <span className="text-gold-500 font-bold flex items-center gap-1.5">
+                                    <User className="h-3.5 w-3.5 text-neutral-600" /> {disc.author}
+                                  </span>
+                                  <span>{disc.time}</span>
+                                </div>
+                                <p className="text-neutral-200 leading-relaxed font-sans text-xs">{disc.text}</p>
+                                {disc.replies && disc.replies.length > 0 && (
+                                  <div className="pl-4 border-l-2 border-gold-500/20 space-y-2.5 pt-1">
+                                    {disc.replies.map((reply) => (
+                                      <div key={reply.id} className="bg-neutral-950/40 p-2.5 rounded-lg border border-neutral-900/40 space-y-1">
+                                        <div className="flex justify-between items-center text-[9px] font-mono text-neutral-500">
+                                          <span className="text-neutral-400 font-semibold flex items-center gap-1">
+                                            <User className="h-3 w-3 text-neutral-600" /> {reply.author}
+                                          </span>
+                                          <span>{reply.time}</span>
+                                        </div>
+                                        <p className="text-neutral-300 text-[11px] leading-relaxed">{reply.text}</p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                <form onSubmit={(e) => handleAddReply(disc.id, e)} className="flex gap-2 pt-2 border-t border-neutral-900/30">
+                                  <input
+                                    type="text"
+                                    value={replyInputs[disc.id] || ''}
+                                    onChange={(e) => setReplyInputs(prev => ({ ...prev, [disc.id]: e.target.value }))}
+                                    placeholder="Join the conversation..."
+                                    className="flex-1 rounded bg-[#0c0c0e] border border-neutral-900/80 px-3 py-1.5 text-[11px] text-white placeholder-neutral-600 outline-none focus:border-gold-500/30"
+                                  />
+                                  <button type="submit" disabled={!(replyInputs[disc.id] || '').trim()} className="px-3 bg-neutral-900 border border-neutral-800 text-[10px] font-mono font-medium text-gold-500 hover:text-white rounded disabled:opacity-50 transition-colors uppercase">
+                                    Reply
+                                  </button>
+                                </form>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                      <form onSubmit={handleAddDiscussion} className="flex gap-2 border-t border-neutral-900 pt-3 mt-4">
+                        <input
+                          type="text"
+                          value={newDiscussionText}
+                          onChange={(e) => setNewDiscussionText(e.target.value)}
+                          placeholder={`Start a conversation in the ${activeCountryClub} Club...`}
+                          className="flex-1 rounded border border-neutral-900 bg-neutral-950 px-3.5 py-2 text-xs text-white placeholder-neutral-600 outline-none focus:border-gold-500/40"
+                        />
+                        <button type="submit" disabled={!newDiscussionText.trim()} className="px-4 bg-gold-500 text-neutral-950 hover:bg-gold-400 disabled:opacity-50 font-bold rounded text-xs transition-all uppercase font-mono">
+                          Post
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                )}
+
+                {/* Fan Works Sub-Tab */}
+                {communitySubTab === 'Fan Works' && (
+                  <div className="space-y-4">
+                    <div className="rounded-xl border border-neutral-900 bg-gradient-to-b from-neutral-950/80 to-neutral-950/40 p-4.5 space-y-4 min-h-[300px]">
+                      <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                        <Palette className="h-3.5 w-3.5 text-gold-500" />
+                        From the Hearts of Fellow Fans
+                      </h3>
+                      <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+                        {creations.length === 0 ? (
+                          <div className="p-8 text-center text-neutral-500 font-mono text-xs">
+                            <p>No creations shared yet.</p>
+                            <p className="text-neutral-600 mt-1">Be the first to share your art, poetry, or tribute.</p>
+                          </div>
+                        ) : (
+                          creations.map((item) => (
+                            <div key={item.id} className="p-3 border border-neutral-900/50 rounded bg-neutral-900/10 space-y-2 text-xs hover:border-gold-500/20 transition-all">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[8px] font-mono uppercase font-bold border border-gold-800/20 mb-1">
+                                    {item.category}
+                                  </span>
+                                  <h4 className="font-bold text-white">{item.title}</h4>
+                                </div>
+                                <button
+                                  onClick={() => handleLikeCreation(item.id)}
+                                  className={`flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-mono transition-colors ${
+                                    item.hasLiked ? 'bg-gold-500/15 border border-gold-500/30 text-gold-500' : 'bg-neutral-950 border border-neutral-900 text-neutral-400 hover:text-white'
+                                  }`}
+                                >
+                                  <ThumbsUp className="h-3 w-3" />
+                                  <span>{item.likes}</span>
+                                </button>
+                              </div>
+                              <p className="text-neutral-400 text-[11px] leading-relaxed">{item.description}</p>
+                              <p className="text-[9px] font-mono text-neutral-500">Created by: <span className="text-neutral-400">{item.author}</span></p>
                             </div>
                           ))
                         )}
                       </div>
                     </div>
-
-                    {/* Create New Discussion Thread */}
-                    <form onSubmit={handleAddDiscussion} className="flex gap-2 border-t border-neutral-900 pt-3 mt-4">
-                      <input
-                        type="text"
-                        value={newDiscussionText}
-                        onChange={(e) => setNewDiscussionText(e.target.value)}
-                        placeholder={`Start a new discussion thread in the ${activeCountryClub} club board...`}
-                        className="flex-1 rounded border border-neutral-900 bg-neutral-950 px-3.5 py-2 text-xs text-white placeholder-neutral-600 outline-none focus:border-gold-500/40"
-                      />
-                      <button type="submit" disabled={!newDiscussionText.trim()} className="px-4 bg-gold-500 text-neutral-950 hover:bg-gold-400 disabled:opacity-50 font-bold rounded text-xs transition-all uppercase font-mono">
-                        Create Thread
-                      </button>
-                    </form>
                   </div>
-
-                  {/* Right: Fan Creativity highlights */}
-                  <div className="md:col-span-5 rounded-xl border border-neutral-900 bg-neutral-950 p-4.5 space-y-4 text-left">
-                    <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                      Fan Creative Showcases
-                    </h3>
-
-                    <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1">
-                      {creations.map((item) => (
-                        <div key={item.id} className="p-3 border border-neutral-900/50 rounded bg-neutral-900/10 space-y-2 text-xs">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[8px] font-mono uppercase font-bold border border-gold-800/20 mb-1">
-                                {item.category}
-                              </span>
-                              <h4 className="font-bold text-white">{item.title}</h4>
-                            </div>
-                            <button
-                              onClick={() => handleLikeCreation(item.id)}
-                              className={`flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-mono transition-colors ${
-                                item.hasLiked ? 'bg-gold-500/15 border border-gold-500/30 text-gold-500' : 'bg-neutral-950 border border-neutral-900 text-neutral-400 hover:text-white'
-                              }`}
-                            >
-                              <ThumbsUp className="h-3 w-3" />
-                              <span>{item.likes}</span>
-                            </button>
-                          </div>
-                          <p className="text-neutral-400 text-[11px] leading-relaxed">{item.description}</p>
-                          <p className="text-[9px] font-mono text-neutral-500">Shared by: <span className="text-neutral-400">{item.author}</span></p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -2779,11 +3085,17 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="fixed top-4 right-4 z-50 flex items-center gap-2.5 rounded-lg border border-gold-500 bg-[#0a0a0c] px-4 py-3 shadow-2xl shadow-gold-500/10 min-w-[300px]"
+            className={`fixed top-4 right-4 z-50 flex items-center gap-2.5 rounded-lg border px-4 py-3 shadow-2xl min-w-[300px] ${
+              toast.type === 'error'
+                ? 'border-red-500/50 bg-[#0a0a0c] shadow-red-500/10'
+                : 'border-gold-500 bg-[#0a0a0c] shadow-gold-500/10'
+            }`}
           >
-            <div className="h-2 w-2 rounded-full bg-gold-500 animate-pulse" />
+            <div className={`h-2 w-2 rounded-full ${toast.type === 'error' ? 'bg-red-500' : 'bg-gold-500'} animate-pulse`} />
             <div className="flex-1 text-xs text-left">
-              <p className="font-mono text-gold-500 uppercase tracking-widest font-bold text-[9px]">SYSTEM MSG</p>
+              <p className={`font-mono uppercase tracking-widest font-bold text-[9px] ${toast.type === 'error' ? 'text-red-400' : 'text-gold-500'}`}>
+                {toast.type === 'error' ? 'NOTICE' : 'SYSTEM MSG'}
+              </p>
               <p className="text-white mt-0.5 leading-tight">{toast.message}</p>
             </div>
           </motion.div>

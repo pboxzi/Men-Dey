@@ -424,6 +424,12 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     };
   };
 
+  const deletePost = async (id: string) => {
+    const { error } = await supabase.from('posts').delete().eq('id', id);
+    if (error) throw new Error('Failed to remove story');
+    setPosts(prev => prev.filter(p => p.id !== id));
+  };
+
   const likePost = async (id: string) => {
     setPosts(prev => prev.map(p => {
       if (p.id === id) {
@@ -620,6 +626,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         addRequestChatMessage,
         addOrder,
         addPost,
+        deletePost,
         likePost,
         commentPost,
         replyComment,

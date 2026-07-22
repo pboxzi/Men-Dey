@@ -51,6 +51,7 @@ import { PaletteType, applyTheme } from '../utils/theme';
 import AdminMembershipReview from './AdminMembershipReview';
 import AdminExperiences from './AdminExperiences';
 import AdminEventManagement from './AdminEventManagement';
+import AdminCommunityManagement from './AdminCommunityManagement';
 
 interface AdminPortalProps {
   onBackToHome: () => void;
@@ -1355,7 +1356,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           {activeTab === 'Memberships' && <AdminMembershipReview />}
           {activeTab === 'Experiences' && <AdminExperiences showToast={showToast} />}
 
-          {/* ACTIVE VIEW: SHOP ORDERS */}
+          {/* ACTIVE VIEW: COMMUNITY MANAGEMENT */}
+          {activeTab === 'Community' && <AdminCommunityManagement showToast={showToast} />}
+
           {/* ACTIVE VIEW: COMMUNICATION LOG */}
           {activeTab === 'Communication Log' && (
             <div className="space-y-6 text-left">

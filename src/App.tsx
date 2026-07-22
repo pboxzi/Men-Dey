@@ -528,7 +528,7 @@ export default function App() {
               
               {/* Left: Interactive Slide Visualizer */}
               <motion.div variants={heroScaleVariants} className="lg:col-span-4 relative group flex flex-col items-center order-2 lg:order-none">
-                <div className="relative aspect-[3/4] w-full max-w-[320px] sm:max-w-[380px] lg:max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
+                <div className="relative aspect-[3/4] w-full max-w-[340px] sm:max-w-[400px] lg:max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
                   {/* Visual filter transitions on slide change */}
                   <motion.div
                     key={currentSlideIdx}

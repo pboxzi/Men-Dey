@@ -253,11 +253,11 @@ export default function MediaSection() {
   const currentPhoto = lightboxIndex !== null ? filteredPhotos[lightboxIndex] : null;
 
   return (
-    <section id="media-page" className="py-20 px-4 md:px-6 relative min-h-[900px] border-t border-neutral-900 bg-[#050505]">
+    <section id="media-page" className="py-12 sm:py-20 px-3 sm:px-4 md:px-6 relative min-h-[900px] border-t border-neutral-900 bg-[#050505]">
       <div className="absolute right-1/4 bottom-1/4 h-96 w-96 rounded-full blur-[120px] pointer-events-none bg-gold-500/5" />
       <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full blur-[140px] pointer-events-none bg-gold-500/3" />
 
-      <div className="mx-auto max-w-7xl space-y-12">
+      <div className="mx-auto max-w-7xl space-y-8 sm:space-y-12">
         {/* Page Title */}
         <div className="text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[10px] font-mono tracking-widest uppercase">
@@ -273,44 +273,44 @@ export default function MediaSection() {
         </div>
 
         {/* Stats Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 max-w-3xl mx-auto">
           {[
             { icon: Film, value: videos.length, label: 'Videos', color: 'text-gold-500' },
             { icon: Image, value: photos.length, label: 'Photos', color: 'text-amber-400' },
             { icon: Heart, value: (Object.values(videoLikes) as number[]).reduce((a: number, b: number) => a + b, 0) + (Object.values(photoLikes) as number[]).reduce((a: number, b: number) => a + b, 0), label: 'Total Likes', color: 'text-red-400' },
             { icon: Tv, value: activeTab === 'videos' ? videoCategories.length - 1 : photoCategories.length - 1, label: 'Categories', color: 'text-emerald-400' },
           ].map((stat) => (
-            <div key={stat.label} className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-4 text-center space-y-1.5 hover:border-neutral-800 transition-colors">
-              <stat.icon className={`h-4 w-4 ${stat.color} mx-auto`} />
-              <span className={`block text-xl font-bold ${stat.color}`}>{stat.value}</span>
-              <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
+            <div key={stat.label} className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-2.5 sm:p-4 text-center space-y-1 sm:space-y-1.5 hover:border-neutral-800 transition-colors">
+              <stat.icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${stat.color} mx-auto`} />
+              <span className={`block text-base sm:text-xl font-bold ${stat.color}`}>{stat.value}</span>
+              <span className="text-[8px] sm:text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
             </div>
           ))}
         </div>
 
         {/* Section Tab Bar Switcher */}
         <div className="flex justify-center">
-          <div className="inline-flex bg-neutral-950 p-1.5 rounded-xl border border-neutral-900 shadow-2xl">
+          <div className="inline-flex bg-neutral-950 p-1 sm:p-1.5 rounded-xl border border-neutral-900 shadow-2xl">
             <button
               onClick={() => setActiveTab('videos')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg text-xs tracking-widest font-mono uppercase font-bold transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-lg text-[10px] sm:text-xs tracking-widest font-mono uppercase font-bold transition-all ${
                 activeTab === 'videos'
                   ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/10'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
-              <Film className="h-4 w-4" />
+              <Film className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Videos ({videos.length})
             </button>
             <button
               onClick={() => setActiveTab('photos')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg text-xs tracking-widest font-mono uppercase font-bold transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-lg text-[10px] sm:text-xs tracking-widest font-mono uppercase font-bold transition-all ${
                 activeTab === 'photos'
                   ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/10'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
-              <Image className="h-4 w-4" />
+              <Image className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Photos ({photos.length})
             </button>
           </div>
@@ -324,10 +324,10 @@ export default function MediaSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="grid gap-6 lg:grid-cols-12 items-start"
+              className="grid gap-4 sm:gap-6 lg:grid-cols-12 items-start"
             >
               {/* Left Column: YouTube Player */}
-              <div className="lg:col-span-8 space-y-5">
+              <div className="lg:col-span-8 space-y-3 sm:space-y-5">
                 <div className="relative rounded-xl overflow-hidden shadow-2xl bg-black ring-1 ring-gold-500/20">
                   {/* NOW PLAYING indicator */}
                   <div className="absolute top-3 left-3 z-10 flex items-center gap-2 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1.5">
@@ -383,7 +383,7 @@ export default function MediaSection() {
 
                 {/* Subtitle Bar */}
                 {selectedVideo.subtitles && selectedVideo.subtitles.length > 0 && (
-                  <div className="bg-neutral-950/80 border border-neutral-900 rounded-xl p-4">
+                  <div className="bg-neutral-950/80 border border-neutral-900 rounded-xl p-3 sm:p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-1 h-4 bg-gold-500 rounded-full" />
                       <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">SUBTITLES</span>
@@ -399,62 +399,62 @@ export default function MediaSection() {
                 )}
 
                 {/* Video Info Card */}
-                <div className="bg-neutral-950/40 border border-neutral-900 p-6 rounded-xl space-y-4 text-left relative overflow-hidden">
+                <div className="bg-neutral-950/40 border border-neutral-900 p-4 sm:p-6 rounded-xl space-y-3 sm:space-y-4 text-left relative overflow-hidden">
                   <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-500 via-amber-400 to-gold-500" />
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-start sm:items-center justify-between gap-2">
                     <div>
                       <span className="text-[10px] font-mono text-gold-500 uppercase tracking-wider font-semibold">
                         {selectedVideo.category}
                       </span>
-                      <h3 className="font-serif text-lg font-bold text-white mt-1">
+                      <h3 className="font-serif text-sm sm:text-lg font-bold text-white mt-0.5 sm:mt-1">
                         {selectedVideo.title}
                       </h3>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                       <button
                         onClick={() => handleCopyLink('video', selectedVideo.id)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded border border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white transition-colors text-[10px] font-mono font-bold"
+                        className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded border border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white transition-colors text-[9px] sm:text-[10px] font-mono font-bold"
                       >
-                        <Share2 className="h-3.5 w-3.5" />
+                        <Share2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                         <span>Share</span>
                       </button>
                       <button
                         onClick={() => handleVideoLike(selectedVideo.id)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded border transition-colors text-[10px] font-mono font-bold ${
+                        className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded border transition-colors text-[9px] sm:text-[10px] font-mono font-bold ${
                           hasLikedVideo[selectedVideo.id]
                             ? 'border-red-500/40 bg-red-500/5 text-red-500'
                             : 'border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white'
                         }`}
                       >
-                        <Heart className={`h-3.5 w-3.5 ${hasLikedVideo[selectedVideo.id] ? 'fill-red-500 stroke-red-500' : ''}`} />
+                        <Heart className={`h-3 w-3 sm:h-3.5 sm:w-3.5 ${hasLikedVideo[selectedVideo.id] ? 'fill-red-500 stroke-red-500' : ''}`} />
                         <span>{videoLikes[selectedVideo.id] || 0}</span>
                       </button>
                     </div>
                   </div>
-                  <div className="grid gap-3 grid-cols-2 sm:grid-cols-4 pt-2">
-                    <div className="border border-neutral-900 p-3 rounded-lg text-center bg-neutral-950/20">
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase block">DURATION</span>
-                      <span className="text-xs font-mono text-white font-semibold">{selectedVideo.duration}</span>
+                  <div className="grid gap-2 sm:gap-3 grid-cols-2 sm:grid-cols-4 pt-1.5 sm:pt-2">
+                    <div className="border border-neutral-900 p-2 sm:p-3 rounded-lg text-center bg-neutral-950/20">
+                      <span className="text-[8px] sm:text-[9px] font-mono text-neutral-500 uppercase block">DURATION</span>
+                      <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">{selectedVideo.duration}</span>
                     </div>
-                    <div className="border border-neutral-900 p-3 rounded-lg text-center bg-neutral-950/20">
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase block">REACTIONS</span>
-                      <span className="text-xs font-mono text-white font-semibold">{videoLikes[selectedVideo.id] || 0}</span>
+                    <div className="border border-neutral-900 p-2 sm:p-3 rounded-lg text-center bg-neutral-950/20">
+                      <span className="text-[8px] sm:text-[9px] font-mono text-neutral-500 uppercase block">REACTIONS</span>
+                      <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">{videoLikes[selectedVideo.id] || 0}</span>
                     </div>
-                    <div className="border border-neutral-900 p-3 rounded-lg text-center bg-neutral-950/20">
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase block">SOURCE</span>
-                      <span className="text-xs font-mono text-white font-semibold">YOUTUBE</span>
+                    <div className="border border-neutral-900 p-2 sm:p-3 rounded-lg text-center bg-neutral-950/20">
+                      <span className="text-[8px] sm:text-[9px] font-mono text-neutral-500 uppercase block">SOURCE</span>
+                      <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">YOUTUBE</span>
                     </div>
-                    <div className="border border-neutral-900 p-3 rounded-lg text-center bg-neutral-950/20">
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase block">QUALITY</span>
-                      <span className="text-xs font-mono text-white font-semibold">HD</span>
+                    <div className="border border-neutral-900 p-2 sm:p-3 rounded-lg text-center bg-neutral-950/20">
+                      <span className="text-[8px] sm:text-[9px] font-mono text-neutral-500 uppercase block">QUALITY</span>
+                      <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">HD</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Right Column: Video Selection Sidebar */}
-              <div className="lg:col-span-4 space-y-4 flex flex-col h-full">
-                <div className="bg-neutral-950 border border-neutral-900 p-4 rounded-xl space-y-3 text-left">
+              <div className="lg:col-span-4 space-y-3 sm:space-y-4 flex flex-col h-full">
+                <div className="bg-neutral-950 border border-neutral-900 p-3 sm:p-4 rounded-xl space-y-2.5 sm:space-y-3 text-left">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400 uppercase tracking-wider">
                       <Filter className="h-3.5 w-3.5 text-gold-500" />
@@ -494,7 +494,7 @@ export default function MediaSection() {
                   </div>
                 </div>
 
-                <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+                <div className="space-y-1.5 sm:space-y-2 max-h-[300px] sm:max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
                   {filteredVideos.length === 0 ? (
                     <div className="text-center py-10 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/20 text-neutral-500 text-xs font-mono">
                       No videos match criteria
@@ -506,14 +506,14 @@ export default function MediaSection() {
                         <button
                           key={item.id}
                           onClick={() => setSelectedVideo(item)}
-                          className={`w-full p-3 rounded-xl border text-left transition-all flex items-center gap-3 group cursor-pointer ${
+                          className={`w-full p-2 sm:p-3 rounded-lg sm:rounded-xl border text-left transition-all flex items-center gap-2 sm:gap-3 group cursor-pointer ${
                             isCurrent
                               ? 'bg-gold-500/5 border-gold-500/40 shadow-lg'
                               : 'bg-neutral-950/30 border-neutral-900 hover:border-neutral-800 hover:bg-neutral-950/80'
                           }`}
                         >
                           {/* Thumbnail */}
-                          <div className="h-14 w-20 rounded-lg overflow-hidden border border-neutral-800/80 shrink-0 bg-neutral-900 relative">
+                          <div className="h-10 w-14 sm:h-14 sm:w-20 rounded-lg overflow-hidden border border-neutral-800/80 shrink-0 bg-neutral-900 relative">
                             {item.thumbnail ? (
                               <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
                             ) : (
@@ -556,9 +556,9 @@ export default function MediaSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="space-y-6"
+              className="space-y-4 sm:space-y-6"
             >
-              <div className="bg-neutral-950 border border-neutral-900 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-left">
+              <div className="bg-neutral-950 border border-neutral-900 p-3 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 text-left">
                 <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-gold-500" />
                   <span className="text-xs font-mono text-neutral-400 uppercase tracking-widest font-bold">
@@ -635,7 +635,7 @@ export default function MediaSection() {
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 auto-rows-[180px] gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 auto-rows-[140px] sm:auto-rows-[180px] gap-2.5 sm:gap-4">
                   {filteredPhotos.map((photo, index) => {
                     const isLiked = hasLikedPhoto[photo.id];
                     const count = photoLikes[photo.id] !== undefined ? photoLikes[photo.id] : photo.likes;
@@ -662,20 +662,20 @@ export default function MediaSection() {
                           {/* Cinematic hover overlay */}
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-500 z-[2] flex items-center justify-center">
                             <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
-                              <div className="w-12 h-12 rounded-full bg-gold-500/90 flex items-center justify-center">
-                                <Image className="h-5 w-5 text-neutral-950" />
+                              <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-gold-500/90 flex items-center justify-center">
+                                <Image className="h-4 w-4 sm:h-5 sm:w-5 text-neutral-950" />
                               </div>
                             </div>
                           </div>
                         </div>
                         {/* Category badge - slides in on hover */}
                         <div className="absolute top-3 left-3 z-10 opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-                          <span className="px-2.5 py-1 rounded bg-black/80 backdrop-blur-sm text-[8px] font-mono text-gold-500 border border-gold-500/20">
+                          <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded bg-black/80 backdrop-blur-sm text-[7px] sm:text-[8px] font-mono text-gold-500 border border-gold-500/20">
                             {photo.category}
                           </span>
                         </div>
-                        <div className="relative z-10 p-3 space-y-1 bg-gradient-to-t from-black/95 to-transparent text-left">
-                          <h4 className={`font-bold text-white tracking-wide truncate group-hover:text-gold-500 transition-colors ${isLarge ? 'text-sm' : 'text-[11px]'}`}>
+                        <div className="relative z-10 p-2 sm:p-3 space-y-0.5 sm:space-y-1 bg-gradient-to-t from-black/95 to-transparent text-left">
+                          <h4 className={`font-bold text-white tracking-wide truncate group-hover:text-gold-500 transition-colors ${isLarge ? 'text-[11px] sm:text-sm' : 'text-[10px] sm:text-[11px]'}`}>
                             {photo.title.split(' (Archive')[0]}
                           </h4>
                           <div className="flex items-center justify-between">
@@ -714,22 +714,22 @@ export default function MediaSection() {
               setIsSlideshowActive(false);
             }}
           >
-            <div className="w-full flex items-center justify-between pb-4" onClick={(e) => e.stopPropagation()}>
-              <div className="text-left flex items-center gap-3 flex-wrap">
-                <span className="text-[10px] font-mono bg-neutral-900 text-gold-500 px-2.5 py-1 rounded border border-neutral-800 uppercase tracking-widest font-semibold">
+            <div className="w-full flex items-center justify-between pb-2 sm:pb-4" onClick={(e) => e.stopPropagation()}>
+              <div className="text-left flex items-center gap-2 sm:gap-3 flex-wrap">
+                <span className="text-[8px] sm:text-[10px] font-mono bg-neutral-900 text-gold-500 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded border border-neutral-800 uppercase tracking-widest font-semibold">
                   {currentPhoto.category}
                 </span>
                 <span className="text-[10px] font-mono text-neutral-500">
                   PORTRAIT #{currentPhoto.id.replace('photo-', '')} of {photos.length}
                 </span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsSlideshowActive(!isSlideshowActive);
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-[10px] font-mono font-bold cursor-pointer ${
+                  className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-[10px] font-mono font-bold cursor-pointer ${
                     isSlideshowActive
                       ? 'bg-gold-500/20 border-gold-500 text-gold-500 animate-pulse'
                       : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
@@ -743,7 +743,7 @@ export default function MediaSection() {
                     e.stopPropagation();
                     setIsZoomed(!isZoomed);
                   }}
-                  className={`p-2 rounded-full border transition-all cursor-pointer ${
+                  className={`p-1.5 sm:p-2 rounded-full border transition-all cursor-pointer ${
                     isZoomed
                       ? 'bg-gold-500 border-gold-400 text-neutral-950'
                       : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
@@ -755,18 +755,18 @@ export default function MediaSection() {
                   href={`${currentPhoto.url}&dl=gillian_archive.jpg`}
                   target="_blank"
                   rel="noreferrer"
-                  className="p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors cursor-pointer"
+                  className="p-1.5 sm:p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors cursor-pointer"
                 >
-                  <Download className="h-4 w-4" />
+                  <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </a>
                 <button
                   onClick={() => {
                     setLightboxIndex(null);
                     setIsSlideshowActive(false);
                   }}
-                  className="p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors cursor-pointer"
+                  className="p-1.5 sm:p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors cursor-pointer"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </button>
               </div>
             </div>
@@ -774,9 +774,9 @@ export default function MediaSection() {
             <div className="flex-1 flex items-center justify-between w-full relative max-h-[70vh]">
               <button
                 onClick={handlePrevPhoto}
-                className="p-3.5 rounded-full bg-neutral-900/65 border border-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all absolute left-0 sm:left-4 z-50 cursor-pointer"
+                className="p-2.5 sm:p-3.5 rounded-full bg-neutral-900/65 border border-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all absolute left-0 sm:left-4 z-50 cursor-pointer"
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
 
               <div
@@ -800,15 +800,15 @@ export default function MediaSection() {
 
               <button
                 onClick={handleNextPhoto}
-                className="p-3.5 rounded-full bg-neutral-900/65 border border-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all absolute right-0 sm:right-4 z-50 cursor-pointer"
+                className="p-2.5 sm:p-3.5 rounded-full bg-neutral-900/65 border border-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all absolute right-0 sm:right-4 z-50 cursor-pointer"
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
             </div>
 
             {/* Filmstrip Thumbnail Navigation */}
-            <div className="w-full max-w-4xl mx-auto px-12 pb-2" onClick={(e) => e.stopPropagation()}>
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide py-2 justify-center">
+            <div className="w-full max-w-4xl mx-auto px-10 sm:px-12 pb-2" onClick={(e) => e.stopPropagation()}>
+              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide py-2 justify-center">
                 {filteredPhotos.slice(Math.max(0, lightboxIndex - 3), Math.min(filteredPhotos.length, lightboxIndex + 4)).map((photo, i) => {
                   const actualIndex = Math.max(0, lightboxIndex - 3) + i;
                   const isActive = actualIndex === lightboxIndex;
@@ -816,7 +816,7 @@ export default function MediaSection() {
                     <button
                       key={photo.id}
                       onClick={() => setLightboxIndex(actualIndex)}
-                      className={`shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all ${
+                      className={`shrink-0 w-12 h-8 sm:w-16 sm:h-12 rounded-md sm:rounded-lg overflow-hidden border-2 transition-all ${
                         isActive
                           ? 'border-gold-500 ring-2 ring-gold-500/30 scale-110'
                           : 'border-neutral-700 opacity-50 hover:opacity-80 hover:border-neutral-500'
@@ -834,34 +834,34 @@ export default function MediaSection() {
             </div>
 
             <div
-              className="w-full max-w-4xl mx-auto bg-neutral-950/80 backdrop-blur-sm border border-neutral-900 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-5 text-left z-10"
+              className="w-full max-w-4xl mx-auto bg-neutral-950/80 backdrop-blur-sm border border-neutral-900 p-3 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-5 text-left z-10"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex-1 space-y-1.5">
-                <h3 className="font-serif text-lg sm:text-xl font-extrabold text-white uppercase tracking-tight">
+              <div className="flex-1 space-y-1 sm:space-y-1.5">
+                <h3 className="font-serif text-base sm:text-xl font-extrabold text-white uppercase tracking-tight">
                   {currentPhoto.title}
                 </h3>
-                <p className="text-xs text-neutral-400 leading-relaxed max-w-2xl font-sans">
+                <p className="text-[11px] sm:text-xs text-neutral-400 leading-relaxed max-w-2xl font-sans">
                   {currentPhoto.description}
                 </p>
               </div>
-              <div className="flex items-center gap-3 shrink-0 border-t border-neutral-900 pt-3 md:border-0 md:pt-0">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0 border-t border-neutral-900 pt-2.5 sm:pt-3 md:border-0 md:pt-0">
                 <button
                   onClick={() => handleCopyLink('photo', currentPhoto.id)}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all text-xs font-mono font-bold cursor-pointer"
+                  className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all text-[11px] sm:text-xs font-mono font-bold cursor-pointer"
                 >
-                  <Share2 className="h-4 w-4" />
+                  <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>Share</span>
                 </button>
                 <button
                   onClick={(e) => handlePhotoLike(currentPhoto.id, e)}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border transition-all text-xs font-mono font-bold cursor-pointer ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border transition-all text-[11px] sm:text-xs font-mono font-bold cursor-pointer ${
                     hasLikedPhoto[currentPhoto.id]
                       ? 'border-red-500 bg-red-500/10 text-red-500 font-extrabold'
                       : 'border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white hover:border-neutral-700'
                   }`}
                 >
-                  <Heart className={`h-4 w-4 ${hasLikedPhoto[currentPhoto.id] ? 'fill-red-500 stroke-red-500' : ''}`} />
+                  <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${hasLikedPhoto[currentPhoto.id] ? 'fill-red-500 stroke-red-500' : ''}`} />
                   <span>{photoLikes[currentPhoto.id] !== undefined ? photoLikes[currentPhoto.id] : currentPhoto.likes} Likes</span>
                 </button>
               </div>
@@ -878,7 +878,7 @@ export default function MediaSection() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[110] bg-gold-500 text-neutral-950 px-6 py-3 rounded-xl font-mono text-[11px] font-bold shadow-2xl flex items-center gap-2 border border-gold-400"
+            className="fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 z-[110] bg-gold-500 text-neutral-950 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-mono text-[10px] sm:text-[11px] font-bold shadow-2xl flex items-center gap-2 border border-gold-400"
           >
             <Sparkles className="h-4 w-4 animate-pulse shrink-0" />
             <span>{showToast}</span>

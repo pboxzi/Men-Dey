@@ -121,6 +121,7 @@ export const INITIAL_COMMUNITY_HIGHLIGHTS: CommunityHighlight[] = [
     replies: 24,
     liked: false,
     category: 'FAN ART',
+    created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     comments: [
       {
         id: 'c1',
@@ -154,6 +155,7 @@ export const INITIAL_COMMUNITY_HIGHLIGHTS: CommunityHighlight[] = [
     replies: 33,
     liked: false,
     category: 'FAN ART',
+    created_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
     comments: [
       {
         id: 'c3',
@@ -186,6 +188,7 @@ export const INITIAL_COMMUNITY_HIGHLIGHTS: CommunityHighlight[] = [
     replies: 18,
     liked: false,
     category: 'ENCOUNTERS',
+    created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     comments: [
       {
         id: 'c5',

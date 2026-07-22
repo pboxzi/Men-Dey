@@ -83,6 +83,7 @@ export interface CommunityHighlight {
   liked: boolean;
   category: string;
   comments: Comment[];
+  created_at?: string;
 }
 
 export interface ShopItem {

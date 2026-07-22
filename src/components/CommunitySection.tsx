@@ -648,7 +648,7 @@ export default function CommunitySection() {
                         </span>
                         <span className="text-[9px] font-mono text-neutral-600 flex items-center gap-1">
                           <Clock className="h-2.5 w-2.5" />
-                          {getRelativeTime((hl as any).created_at)}
+                          {getRelativeTime(hl.created_at)}
                         </span>
                       </div>
                     </div>

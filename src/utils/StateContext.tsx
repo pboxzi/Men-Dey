@@ -223,6 +223,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       avatarText: post.avatar_text, image: post.image, content: post.content,
       likes: post.likes, replies: post.replies_count, liked: post.liked,
       category: post.category || 'FAN ART', comments: postComments,
+      created_at: post.created_at,
     };
   };
 
@@ -424,6 +425,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       id: data.id, username: data.username, handle: data.handle, avatarText: data.avatar_text,
       image: data.image, content: data.content, likes: data.likes, replies: data.replies_count,
       liked: data.liked, category: data.category || 'FAN ART', comments: [],
+      created_at: data.created_at,
     };
   };
 

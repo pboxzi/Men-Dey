@@ -2845,7 +2845,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {[
               { tab: 'Dashboard' as const, icon: LayoutGrid, label: 'Home' },
               { tab: 'Community' as const, icon: Users, label: 'Connect' },
-              { tab: 'Experiences' as const, icon: Star, label: '' },
+              { tab: 'Rewards' as const, icon: Gift, label: 'Explore' },
+              { tab: 'Experiences' as const, icon: Star, label: 'Book' },
             ].map((item) => {
               const Icon = item.icon;
               const isSelected = activeTab === item.tab;
@@ -2856,7 +2857,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${isSelected ? 'text-gold-500' : 'text-neutral-500'}`}
                 >
                   <Icon className="h-5 w-5" strokeWidth={isSelected ? 2.5 : 1.5} />
-                  {item.label && <span className="text-[8px] font-bold tracking-widest uppercase">{item.label}</span>}
+                  <span className="text-[8px] font-bold tracking-widest uppercase">{item.label}</span>
                 </button>
               );
             })}

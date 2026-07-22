@@ -854,7 +854,7 @@ export default function App() {
                   </div>
                   <div className="flex flex-col text-left">
                     <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
-                      Join 1.2M+ Official Fans
+                      24.2M+ Subscribers & Followers
                     </span>
                     <span className="text-[9px] font-mono text-gold-500/80 font-bold">
                       Worldwide Community

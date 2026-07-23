@@ -90,11 +90,24 @@ export default function MembershipSection() {
 
   useEffect(() => {
     if (!user) { setCheckingMembership(false); return; }
+    let cancelled = false;
+    const timeout = setTimeout(() => {
+      if (!cancelled) { setCheckingMembership(false); }
+    }, 8000); // Fallback: show page after 8s even if query fails
     void (async () => {
-      const { data } = await supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
-      setMyMembership(normalizeMembership(data));
-      setCheckingMembership(false);
+      try {
+        const { data, error } = await supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
+        if (error) console.warn('membership_applications query error:', error.message);
+        if (!cancelled) {
+          setMyMembership(normalizeMembership(data));
+          setCheckingMembership(false);
+        }
+      } catch (e) {
+        console.error('membership_applications fetch failed:', e);
+        if (!cancelled) setCheckingMembership(false);
+      }
     })();
+    return () => { cancelled = true; clearTimeout(timeout); };
   }, [user]);
 
   const activeTier = tiers.find((t: any) => t.id === selectedTier) || tiers[0] || null;

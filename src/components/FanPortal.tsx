@@ -1511,6 +1511,40 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   />
                 </div>
 
+                {/* ── WELCOME CARD for new users ── */}
+                {fanStats.bookings === 0 && fanStats.events === 0 && fanStats.posts === 0 && !membership && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="mb-8 p-5 rounded-xl border border-gold-500/20 bg-gold-500/[0.03]"
+                  >
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                        <Star className="h-4 w-4 text-gold-500" /> Welcome to your Fan Portal
+                      </h3>
+                      <p className="text-xs text-neutral-400 leading-relaxed">
+                        Here's how to get started. Use the tabs on the left (or bottom on mobile) to explore:
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-[11px]">
+                        <div className="flex items-start gap-2 p-3 rounded-lg bg-neutral-900/40 border border-neutral-800">
+                          <LayoutGrid className="h-3.5 w-3.5 text-gold-500 shrink-0 mt-0.5" />
+                          <div><span className="text-white font-medium">Dashboard</span> — <span className="text-neutral-500">Your home screen with stats and quick links.</span></div>
+                        </div>
+                        <div className="flex items-start gap-2 p-3 rounded-lg bg-neutral-900/40 border border-neutral-800">
+                          <Users className="h-3.5 w-3.5 text-blue-400 shrink-0 mt-0.5" />
+                          <div><span className="text-white font-medium">Community</span> — <span className="text-neutral-500">Chat with other fans and share your thoughts.</span></div>
+                        </div>
+                        <div className="flex items-start gap-2 p-3 rounded-lg bg-neutral-900/40 border border-neutral-800">
+                          <Star className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                          <div><span className="text-white font-medium">Experiences</span> — <span className="text-neutral-500">Book sessions with Gillian or check your bookings.</span></div>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-neutral-500">Tap <span className="text-gold-500 font-medium">More</span> on the bottom bar to see Membership, Events, Messages, and Settings.</p>
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* ── STAT ROW: Glass-panel achievements ── */}
                 <motion.div
                   initial={{ y: 25, opacity: 0 }}

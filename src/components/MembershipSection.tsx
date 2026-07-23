@@ -678,6 +678,26 @@ export default function MembershipSection() {
           })}
         </div>
 
+        {/* Step Indicator */}
+        <div className="flex items-center justify-center gap-3 mb-8">
+          {['Choose Tier', 'Your Details', 'Contact Method'].map((label, i) => {
+            const stepNum = i + 1;
+            const completed = stepNum < applicationStep;
+            const current = stepNum === applicationStep;
+            return (
+              <div key={label} className="flex items-center gap-3">
+                <div className={`flex items-center gap-1.5 ${current ? 'text-gold-500' : completed ? 'text-emerald-400' : 'text-neutral-600'}`}>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${current ? 'bg-gold-500 text-neutral-950' : completed ? 'bg-emerald-500/20 border border-emerald-500/40' : 'bg-neutral-900 border border-neutral-800'}`}>
+                    {completed ? <Check className="h-3 w-3" /> : stepNum}
+                  </div>
+                  <span className="text-[10px] font-mono tracking-wider hidden sm:inline">{label}</span>
+                </div>
+                {i < 2 && <div className={`w-6 h-px ${stepNum < applicationStep ? 'bg-emerald-500/40' : 'bg-neutral-800'}`} />}
+              </div>
+            );
+          })}
+        </div>
+
         {/* Card Configurator */}
         <div className="grid gap-8 lg:grid-cols-12 items-center bg-neutral-950/60 border border-neutral-900 rounded-xl p-8 shadow-xl text-left">
           <div className="lg:col-span-5 space-y-5">
@@ -695,6 +715,7 @@ export default function MembershipSection() {
               </div>
               <div className="space-y-1.5">
                 <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">PROFILE PHOTO <span className="text-red-500">*</span></label>
+                <p className="text-[10px] text-neutral-500 leading-relaxed">This appears on your digital membership card. Use a clear photo of yourself — it helps personalize your card.</p>
                 <div onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }} onDragLeave={() => setIsDragOver(false)} onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
                   className={`border border-dashed rounded-lg p-4 text-center cursor-pointer transition-all flex flex-col items-center justify-center space-y-1 bg-neutral-900/40 ${isDragOver ? 'border-gold-500 bg-gold-500/5' : photoError ? 'border-red-500/50' : 'border-neutral-800 hover:border-neutral-700'}`}

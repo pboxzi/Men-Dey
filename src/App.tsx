@@ -649,7 +649,7 @@ export default function App() {
                   <div className="flex items-center gap-2 justify-center">
                     <span className="h-[1px] w-5 bg-gold-500/40" />
                     <span className="text-[10px] font-mono tracking-[0.3em] text-gold-500 uppercase font-bold">
-                      THE ARCHIVE SANCTUARY
+                      OFFICIAL COMMUNITY
                     </span>
                     <span className="h-[1px] w-5 bg-gold-500/40" />
                   </div>
@@ -673,7 +673,7 @@ export default function App() {
                   <div className="flex items-center gap-2 justify-center lg:justify-start">
                     <span className="h-[1px] w-5 bg-gold-500/40" />
                     <span className="text-[10px] font-mono tracking-[0.3em] text-gold-500 uppercase font-bold">
-                      THE ARCHIVE SANCTUARY
+                      OFFICIAL COMMUNITY
                     </span>
                     <span className="h-[1px] w-5 bg-gold-500/40" />
                   </div>
@@ -862,6 +862,38 @@ export default function App() {
                   <AboutSection />
                 </ScrollReveal>
 
+                {/* How It Works — Simple Guide for New Visitors */}
+                <ScrollReveal>
+                  <section className="py-12 sm:py-16 bg-[#050505] border-t border-neutral-900/60">
+                    <div className="mx-auto max-w-5xl px-4 sm:px-6">
+                      <div className="text-center space-y-3 mb-10">
+                        <h2 className="font-serif text-2xl md:text-3xl font-bold text-white uppercase tracking-tight">
+                          How It <span className="text-gold-500">Works</span>
+                        </h2>
+                        <div className="h-[1px] w-16 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto" />
+                        <p className="text-xs text-neutral-400 max-w-lg mx-auto leading-relaxed">
+                          Getting started is easy. Here's how to join the community and make the most of it.
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        {[
+                          { step: '1', title: 'Create Your Free Account', desc: 'Click "Join" at the top and sign up with your email. It takes less than a minute.' },
+                          { step: '2', title: 'Explore & Connect', desc: 'Browse experiences, events, and community posts. Share your thoughts and connect with other fans.' },
+                          { step: '3', title: 'Join as a Member', desc: 'Choose a membership tier to unlock exclusive perks, events, and your personalized membership card.' },
+                        ].map((item) => (
+                          <div key={item.step} className="text-center space-y-3 p-5 rounded-xl border border-neutral-900 bg-neutral-950/40">
+                            <div className="mx-auto w-10 h-10 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
+                              <span className="font-serif text-lg font-bold text-gold-500">{item.step}</span>
+                            </div>
+                            <h3 className="text-xs font-bold tracking-wider text-white uppercase">{item.title}</h3>
+                            <p className="text-[10px] text-neutral-400 leading-relaxed">{item.desc}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                </ScrollReveal>
+
                 {/* Six Community Pillars Navigation Cards */}
                 <ScrollReveal>
                   <section className="py-12 sm:py-20 bg-[#050505] border-t border-neutral-900/60 relative overflow-hidden">
@@ -873,14 +905,14 @@ export default function App() {
                       <div className="text-center space-y-4">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[9px] font-mono tracking-widest uppercase font-bold">
                           <Star className="h-3 w-3 animate-pulse" />
-                          THE CO-OPERATIVE SANCTUARY
+                          GET INVOLVED
                         </div>
                         <h2 className="font-serif text-3xl md:text-5xl font-black text-white uppercase tracking-tight">
-                          Community <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-500 to-amber-300">Pillars</span>
+                          Explore <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-500 to-amber-300">What We Offer</span>
                         </h2>
                         <div className="h-[1px] w-20 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto" />
                         <p className="text-xs text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed">
-                          Enter our designated portals. Click any interactive architectural pillar below to explore, collaborate, and access official logs.
+                          Choose an area below to learn more, join in, and connect with the community.
                         </p>
                       </div>
 
@@ -913,12 +945,12 @@ export default function App() {
                                 EXPERIENCES
                               </h3>
                               <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
-                                Apply for exclusive once-in-a-lifetime events & custom sessions.
+                                Book one-on-one experiences, meetings, and special sessions with Gillian.
                               </p>
                             </div>
                           </div>
                           <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
-                            LAUNCH DIRECTORY <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                            LEARN MORE <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
                           </span>
                         </button>
 
@@ -950,12 +982,12 @@ export default function App() {
                                 MEMBERSHIP
                               </h3>
                               <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
-                                Become an official co-op member & view customized cards.
+                                Join as an official member and get your personalized membership card.
                               </p>
                             </div>
                           </div>
                           <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
-                            TIERS & CARD <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                            SEE TIERS <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
                           </span>
                         </button>
 
@@ -987,12 +1019,12 @@ export default function App() {
                                 EVENTS
                               </h3>
                               <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
-                                Attend private live Q&As & commemorative anniversaries.
+                                Attend live Q&A sessions, watch parties, and special celebrations.
                               </p>
                             </div>
                           </div>
                           <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
-                            CONCLAVES <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                            VIEW EVENTS <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
                           </span>
                         </button>
 

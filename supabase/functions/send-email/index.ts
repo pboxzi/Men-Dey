@@ -30,7 +30,7 @@ serve(async (req: Request) => {
       )
     }
 
-    const senderEmail = from || "admin@cmagency.me"
+    const senderEmail = from || "Gillian Anderson Community <admin@cmagency.me>"
 
     // Send email via Resend API
     const resendResponse = await fetch("https://api.resend.com/emails", {

@@ -37,8 +37,8 @@ function emailTemplate(title: string, content: string, ctaText?: string): string
 
 <!-- Header -->
 <tr><td style="padding:32px 40px;background-color:#111111;border-radius:12px 12px 0 0;">
-  <h1 style="margin:0;font-size:20px;font-weight:700;color:#d4a853;letter-spacing:1px;">MEN-DEY</h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#666;letter-spacing:0.5px;">GILLIAN ANDERSON FAN COMMUNITY</p>
+  <h1 style="margin:0;font-size:20px;font-weight:700;color:#d4a853;letter-spacing:1px;">GILLIAN ANDERSON</h1>
+  <p style="margin:4px 0 0;font-size:12px;color:#666;letter-spacing:0.5px;">FAN COMMUNITY</p>
 </td></tr>
 
 <!-- Body -->

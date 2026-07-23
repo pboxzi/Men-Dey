@@ -709,7 +709,8 @@ function BookingsTab({ showToast }: Props) {
         }
       }
     } catch (err) {
-      showToast('Failed to update booking.', 'error');
+      console.error('Booking update failed:', err);
+      showToast(`Failed to update booking: ${(err as Error)?.message || 'Unknown error'}`, 'error');
     } finally {
       setSaving(false);
     }

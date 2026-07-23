@@ -24,7 +24,7 @@ interface CreateNotificationOpts {
   emailOverride?: string;
 }
 
-const SITE_URL = 'https://men-dey.vercel.app';
+const SITE_URL = 'https://www.cmagency.me';
 
 // ─── Base email shell — dark luxury theme ───
 function baseTemplate(accent: string, title: string, body: string, ctaText?: string, ctaUrl?: string): string {

@@ -83,11 +83,21 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
 
   useEffect(() => {
     if (!userId) { setLoading(false); return; }
+    let cancelled = false;
     void (async () => {
-      const { data } = await supabase.from('membership_applications').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle();
-      setMembership(normalizeMembership(data));
-      setLoading(false);
+      try {
+        const { data, error } = await supabase.from('membership_applications').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle();
+        if (error) console.warn('membership_applications query error:', error.message);
+        if (!cancelled) {
+          setMembership(normalizeMembership(data));
+          setLoading(false);
+        }
+      } catch (e) {
+        console.warn('membership_applications fetch failed:', e);
+        if (!cancelled) setLoading(false);
+      }
     })();
+    return () => { cancelled = true; };
   }, [userId]);
 
   const handleUpgrade = async () => {

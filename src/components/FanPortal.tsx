@@ -365,18 +365,17 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   useEffect(() => {
     if (!user?.id) return;
-    // Fetch loyalty points independently
     supabase.from('loyalty_points').select('total').eq('user_id', user.id).limit(1)
       .then(({ data, error }) => {
         if (!error && data && data.length > 0) setLoyaltyPoints(data[0].total);
-      });
-    // Fetch membership independently
+      })
+      .catch(() => {});
     supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle()
       .then(({ data, error }) => {
-        if (error) console.warn('membership query error:', error.message);
         if (data) setMembership(normalizeMembership(data));
-      });
-  }, [user, activeTab]);
+      })
+      .catch(() => {});
+  }, [user]);
 
   const rank = getLoyaltyRank(loyaltyPoints);
   // Override rank display with membership tier if active
@@ -395,14 +394,16 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   useEffect(() => {
     if (!user?.id) return;
     void (async () => {
-      const { data, error } = await supabase.from('user_badges').select('*').eq('user_id', user.id);
-      if (error) console.warn('user_badges query error:', error.message);
-      if (!error && data) setBadges(data);
+      try {
+        const { data, error } = await supabase.from('user_badges').select('*').eq('user_id', user.id);
+        if (error) { console.warn('user_badges query error:', error.message); return; }
+        if (data) setBadges(data);
+      } catch (e) { console.warn('user_badges fetch failed:', e); }
     })();
   }, [user]);
 
   // Additional dashboard stats
-  const [fanStats, setFanStats] = useState({ bookings: 0, events: 0, posts: 0, memberSince: '' });
+  const [fanStats, setFanStats] = useState({ bookings: 0, events: 0, memberSince: '' });
   useEffect(() => {
     if (!user?.id || activeTab !== 'Dashboard') return;
     void (async () => {
@@ -410,16 +411,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         const results = await Promise.all([
           supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
           supabase.from('event_registrations').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-          // posts table has no user_id column, skip
           supabase.from('profiles').select('created_at').eq('id', user.id).maybeSingle(),
         ]);
-        // Log any errors for debugging
         results.forEach((r, i) => { if (r.error) console.warn(`fanStats query ${i} error:`, r.error.message); });
         const [{ count: bookingCount }, { count: eventCount }, { data: prof }] = results;
         setFanStats({
           bookings: bookingCount ?? 0,
           events: eventCount ?? 0,
-          posts: 0,
           memberSince: prof?.created_at || '',
         });
       } catch (e) { console.error('fanStats fetch failed:', e); }
@@ -1521,7 +1519,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 </div>
 
                 {/* ── WELCOME CARD for new users ── */}
-                {fanStats.bookings === 0 && fanStats.events === 0 && fanStats.posts === 0 && !membership && (
+                {fanStats.bookings === 0 && fanStats.events === 0 && !membership && (
                   <motion.div
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -1559,7 +1557,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   initial={{ y: 25, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12"
+                  className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-12"
                 >
                   {[
                     {
@@ -1569,7 +1567,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     },
                     { label: 'Bookings', value: fanStats.bookings.toString(), accent: 'blue', icon: '★' },
                     { label: 'Events', value: fanStats.events.toString(), accent: 'emerald', icon: '●' },
-                    { label: 'Posts', value: fanStats.posts.toString(), accent: 'violet', icon: '✎' },
                   ].map((stat: any, i) => {
                     if (stat.isCard) {
                       const c = stat.card;

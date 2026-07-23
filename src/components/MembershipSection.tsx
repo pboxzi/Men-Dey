@@ -93,7 +93,7 @@ export default function MembershipSection() {
     let cancelled = false;
     const timeout = setTimeout(() => {
       if (!cancelled) { setCheckingMembership(false); }
-    }, 8000); // Fallback: show page after 8s even if query fails
+    }, 5000);
     void (async () => {
       try {
         const { data, error } = await supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle();

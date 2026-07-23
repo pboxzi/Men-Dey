@@ -112,7 +112,13 @@ export async function createNotification(opts: CreateNotificationOpts): Promise<
   const { userId, type, title, message, link, data, sendEmail, emailSubject, emailBody } = opts;
   const { error } = await supabase.from('notifications').insert({ user_id: userId, type, title, message, link: link || null, data: data || {}, email_sent: false });
   if (error) { console.error('Failed to create notification:', error.message); return; }
-  if (sendEmail && emailSubject && emailBody) await sendNotificationEmail(userId, emailSubject, emailBody);
+  if (sendEmail && emailSubject && emailBody) {
+    // Auto-wrap in branded template if not already wrapped
+    const wrapped = emailBody.includes('<!DOCTYPE') || emailBody.includes('background-color:#0f0f0f')
+      ? emailBody
+      : baseTemplate('#b8860b', emailSubject, emailBody);
+    await sendNotificationEmail(userId, emailSubject, wrapped);
+  }
 }
 
 // ─── Batch notify ───

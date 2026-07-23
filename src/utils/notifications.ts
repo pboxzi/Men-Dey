@@ -23,126 +23,71 @@ interface CreateNotificationOpts {
   emailBody?: string;
 }
 
-// ─── Professional Email Template ───
-function emailTemplate(title: string, content: string, ctaText?: string): string {
-  const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://men-dey.vercel.app';
-  return `
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background-color:#0a0a0a;font-family:'Helvetica Neue',Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a0a;padding:40px 20px;">
+const SITE_URL = 'https://men-dey.vercel.app';
+
+// ─── Base email shell — dark luxury theme ───
+function baseTemplate(accent: string, title: string, body: string, ctaText?: string, ctaUrl?: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#050505;padding:40px 16px;">
 <tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+<table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;width:100%;">
 
-<!-- Header -->
-<tr><td style="padding:32px 40px;background-color:#111111;border-radius:12px 12px 0 0;">
-  <h1 style="margin:0;font-size:20px;font-weight:700;color:#d4a853;letter-spacing:1px;">GILLIAN ANDERSON</h1>
-  <p style="margin:4px 0 0;font-size:12px;color:#666;letter-spacing:0.5px;">FAN COMMUNITY</p>
-</td></tr>
-
-<!-- Body -->
-<tr><td style="padding:40px;background-color:#111111;">
-  <h2 style="margin:0 0 20px;font-size:18px;font-weight:600;color:#ffffff;">${title}</h2>
-  <div style="font-size:14px;line-height:1.7;color:#cccccc;">${content}</div>
-  ${ctaText ? `
-  <table cellpadding="0" cellspacing="0" style="margin:32px 0 0;">
-  <tr><td style="background-color:#d4a853;border-radius:8px;">
-    <a href="${siteUrl}" style="display:inline-block;padding:14px 32px;font-size:13px;font-weight:600;color:#0a0a0a;text-decoration:none;letter-spacing:0.5px;">${ctaText}</a>
+<tr><td style="padding:0 0 1px;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;border-radius:16px 16px 0 0;">
+  <tr><td style="padding:28px 40px;">
+    <table width="100%" cellpadding="0" cellspacing="0"><tr>
+      <td><div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,${accent},#b8860b);text-align:center;line-height:40px;font-size:16px;font-weight:800;color:#050505;">GA</div></td>
+      <td style="padding-left:14px;">
+        <p style="margin:0;font-size:15px;font-weight:700;color:#fff;letter-spacing:0.5px;">Gillian Anderson</p>
+        <p style="margin:2px 0 0;font-size:10px;color:#666;letter-spacing:1.5px;text-transform:uppercase;">Fan Community</p>
+      </td>
+    </tr></table>
   </td></tr>
-  </table>` : ''}
+  </table>
 </td></tr>
 
-<!-- Footer -->
-<tr><td style="padding:24px 40px;background-color:#0d0d0d;border-radius:0 0 12px 12px;border-top:1px solid #1a1a1a;">
-  <p style="margin:0;font-size:11px;color:#555;line-height:1.6;">
-    This is a transactional email regarding your account activity.<br>
-    <a href="${siteUrl}" style="color:#d4a853;text-decoration:none;">Visit Men-Dey</a> &nbsp;|&nbsp;
-    <a href="${siteUrl}/settings" style="color:#888;text-decoration:none;">Email Preferences</a>
-  </p>
+<tr><td style="height:2px;background:linear-gradient(90deg,${accent},transparent);"></td></tr>
+
+<tr><td style="background:#0a0a0a;padding:44px 40px;">
+  <h1 style="margin:0 0 24px;font-size:22px;font-weight:700;color:#fff;line-height:1.3;">${title}</h1>
+  <div style="font-size:14px;line-height:1.8;color:#a0a0a0;">${body}</div>
+  ${ctaText ? `<table cellpadding="0" cellspacing="0" style="margin:36px 0 0;"><tr><td style="background:linear-gradient(135deg,${accent},#b8860b);border-radius:8px;"><a href="${ctaUrl || SITE_URL}" style="display:inline-block;padding:14px 36px;font-size:12px;font-weight:700;color:#050505;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;">${ctaText}</a></td></tr></table>` : ''}
 </td></tr>
 
-</table>
+<tr><td style="background:#080808;padding:28px 40px;border-radius:0 0 16px 16px;border-top:1px solid #1a1a1a;">
+  <p style="margin:0 0 8px;font-size:10px;color:#444;letter-spacing:1px;text-transform:uppercase;">The Gillian Anderson Community</p>
+  <p style="margin:0;font-size:11px;color:#333;"><a href="${SITE_URL}" style="color:#d4a853;text-decoration:none;">Visit Portal</a> &nbsp;&bull;&nbsp; <a href="${SITE_URL}/portal?mode=login" style="color:#666;text-decoration:none;">Sign In</a></p>
 </td></tr>
-</table>
-</body>
-</html>`;
+
+</table></td></tr></table>
+</body></html>`;
 }
 
-// ─── Create a notification ───
-export async function createNotification(opts: CreateNotificationOpts): Promise<void> {
-  const { userId, type, title, message, link, data, sendEmail, emailSubject, emailBody } = opts;
-
-  const { error } = await supabase.from('notifications').insert({
-    user_id: userId,
-    type,
-    title,
-    message,
-    link: link || null,
-    data: data || {},
-    email_sent: false,
-  });
-
-  if (error) {
-    console.error('Failed to create notification:', error.message);
-    return;
-  }
-
-  if (sendEmail && emailSubject && emailBody) {
-    await sendNotificationEmail(userId, emailSubject, emailBody);
-  }
+// ─── Notification card builder (for inline previews) ───
+function infoCard(label: string, value: string, accent = '#d4a853'): string {
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 12px;"><tr><td style="padding:14px 20px;background:#111;border-radius:8px;border-left:3px solid ${accent};">
+    <p style="margin:0 0 4px;font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;">${label}</p>
+    <p style="margin:0;font-size:15px;color:#fff;font-weight:600;">${value}</p>
+  </td></tr></table>`;
 }
 
-// ─── Batch notify multiple users ───
-export async function broadcastNotification(
-  userIds: string[],
-  type: NotificationType,
-  title: string,
-  message: string,
-  sendEmail = false
-): Promise<void> {
-  const notifications = userIds.map(userId => ({
-    user_id: userId,
-    type,
-    title,
-    message,
-    data: {},
-    email_sent: false,
-  }));
-
-  await supabase.from('notifications').insert(notifications);
-
-  if (sendEmail) {
-    for (const userId of userIds) {
-      await sendNotificationEmail(userId, title, message);
-    }
-  }
+function quoteBlock(text: string): string {
+  return `<div style="padding:18px 22px;background:#111;border-left:3px solid #d4a853;border-radius:8px;margin:0 0 24px;">
+    <p style="margin:0;font-size:14px;color:#ccc;line-height:1.7;">"${text}"</p>
+  </div>`;
 }
 
-// ─── Send email via Supabase Edge Function (Resend API) ───
+// ─── Send email via edge function ───
 async function sendNotificationEmail(userId: string, subject: string, body: string): Promise<void> {
   try {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('email')
-      .eq('id', userId)
-      .maybeSingle();
+    const { data: profile } = await supabase.from('profiles').select('email').eq('id', userId).maybeSingle();
+    if (!profile?.email) return;
 
-    if (!profile?.email) {
-      console.warn('No email found for user:', userId);
-      return;
-    }
-
-    const { data: enabledSetting } = await supabase
-      .from('site_settings')
-      .select('value')
-      .eq('key', 'email_notifications_enabled')
-      .maybeSingle();
-
-    if (enabledSetting?.value === 'false') {
-      console.log('Email notifications disabled');
-      return;
-    }
+    const { data: enabledSetting } = await supabase.from('site_settings').select('value').eq('key', 'email_notifications_enabled').maybeSingle();
+    if (enabledSetting?.value === 'false') return;
 
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://wmhndjdxvxtozeyesvsy.supabase.co';
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -150,235 +95,176 @@ async function sendNotificationEmail(userId: string, subject: string, body: stri
 
     const response = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session?.access_token || supabaseAnonKey}`,
-        'apikey': supabaseAnonKey,
-      },
-      body: JSON.stringify({
-        to: profile.email,
-        subject,
-        html: body,
-      }),
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || supabaseAnonKey}`, 'apikey': supabaseAnonKey },
+      body: JSON.stringify({ to: profile.email, subject, html: body }),
     });
 
     const result = await response.json();
+    if (!response.ok) { console.error('Email error:', result); return; }
 
-    if (!response.ok) {
-      console.error('Edge Function email error:', result);
-      return;
-    }
-
-    await supabase.from('email_logs').insert({
-      user_id: userId,
-      recipient_email: profile.email,
-      subject,
-      body_preview: body.replace(/<[^>]*>/g, '').slice(0, 500),
-      status: 'sent',
-      resend_id: result.id || null,
-    });
-
-    await supabase
-      .from('notifications')
-      .update({ email_sent: true })
-      .eq('user_id', userId)
-      .eq('title', subject)
-      .order('created_at', { ascending: false })
-      .limit(1);
-  } catch (e) {
-    console.error('Email send failed:', e);
-  }
+    await supabase.from('email_logs').insert({ user_id: userId, recipient_email: profile.email, subject, body_preview: body.replace(/<[^>]*>/g, '').slice(0, 500), status: 'sent', resend_id: result.id || null });
+    await supabase.from('notifications').update({ email_sent: true }).eq('user_id', userId).eq('title', subject).order('created_at', { ascending: false }).limit(1);
+  } catch (e) { console.error('Email send failed:', e); }
 }
 
-// ─── Convenience functions for common triggers ───
+// ─── Create a notification ───
+export async function createNotification(opts: CreateNotificationOpts): Promise<void> {
+  const { userId, type, title, message, link, data, sendEmail, emailSubject, emailBody } = opts;
+  const { error } = await supabase.from('notifications').insert({ user_id: userId, type, title, message, link: link || null, data: data || {}, email_sent: false });
+  if (error) { console.error('Failed to create notification:', error.message); return; }
+  if (sendEmail && emailSubject && emailBody) await sendNotificationEmail(userId, emailSubject, emailBody);
+}
 
+// ─── Batch notify ───
+export async function broadcastNotification(userIds: string[], type: NotificationType, title: string, message: string, sendEmail = false): Promise<void> {
+  await supabase.from('notifications').insert(userIds.map(userId => ({ user_id: userId, type, title, message, data: {}, email_sent: false })));
+  if (sendEmail) for (const userId of userIds) await sendNotificationEmail(userId, title, message);
+}
+
+// ═══════════════════════════════════════════════════════
+//  EMAIL TEMPLATES — each with unique accent & feel
+// ═══════════════════════════════════════════════════════
+
+// ── 1. NEW MESSAGE (blue accent) ──
 export async function notifyNewMessage(userId: string, senderName: string, preview: string) {
   return createNotification({
-    userId,
-    type: 'message',
+    userId, type: 'message',
     title: `New message from ${senderName}`,
     message: preview.slice(0, 200),
     sendEmail: true,
-    emailSubject: `New Message from ${senderName}`,
-    emailBody: emailTemplate(
-      `New Message from ${senderName}`,
-      `<p style="margin:0 0 16px;">You have received a new message:</p>
-       <div style="padding:16px 20px;background-color:#1a1a1a;border-left:3px solid #d4a853;border-radius:4px;margin:0 0 24px;">
-         <p style="margin:0;font-size:14px;color:#cccccc;">${preview}</p>
-       </div>
-       <p style="margin:0;font-size:13px;color:#888;">Log in to your account to view the full conversation and respond.</p>`,
-      'View Message'
+    emailSubject: `${senderName} sent you a message`,
+    emailBody: baseTemplate(
+      '#3b82f6',
+      `${senderName} sent you a message`,
+      `<p style="margin:0 0 20px;">You have a new message waiting for you.</p>
+       ${quoteBlock(preview)}
+       <p style="margin:0;font-size:13px;color:#666;">Log in to read the full message and reply.</p>`,
+      'Read Message'
     ),
   });
 }
 
+// ── 2. MEMBERSHIP APPROVED (gold accent) ──
 export async function notifyMembershipStatus(userId: string, status: string, tierName: string) {
   const isApproved = status === 'active';
   return createNotification({
-    userId,
-    type: 'membership',
+    userId, type: 'membership',
     title: isApproved ? 'Membership Approved' : 'Membership Update',
-    message: isApproved
-      ? `Your ${tierName} membership has been approved.`
-      : `Your membership status has been updated to: ${status}.`,
+    message: isApproved ? `Your ${tierName} membership has been approved.` : `Your membership status: ${status}.`,
     sendEmail: true,
-    emailSubject: isApproved ? `Welcome to ${tierName} — Membership Approved` : `Membership Status Update`,
-    emailBody: emailTemplate(
-      isApproved ? 'Membership Approved' : 'Membership Status Update',
+    emailSubject: isApproved ? `Welcome to ${tierName} — You're In` : `Membership Status Update`,
+    emailBody: baseTemplate(
+      '#d4af37',
+      isApproved ? `Welcome to ${tierName}` : 'Membership Update',
       isApproved
-        ? `<p style="margin:0 0 16px;">Your <strong style="color:#d4a853;">${tierName}</strong> membership has been approved.</p>
-           <p style="margin:0 0 16px;">You now have full access to all ${tierName} tier benefits. Welcome to the community.</p>
-           <p style="margin:0;font-size:13px;color:#888;">You can view your membership details and card in your dashboard.</p>`
-        : `<p style="margin:0 0 16px;">Your membership status has been updated.</p>
-           <p style="margin:0 0 16px;"><strong>Status:</strong> ${status}</p>
-           <p style="margin:0;font-size:13px;color:#888;">If you have questions, please contact support.</p>`,
+        ? `<p style="margin:0 0 20px;">Your <strong style="color:#d4af37;">${tierName}</strong> membership has been approved. You are now a verified member of the community.</p>
+           ${infoCard('Tier', tierName)}
+           ${infoCard('Status', 'Active', '#22c55e')}
+           <p style="margin:20px 0 0;font-size:13px;color:#666;">Access your dashboard to view your membership card, track points, and explore exclusive benefits.</p>`
+        : `<p style="margin:0 0 20px;">Your membership status has been updated.</p>
+           ${infoCard('Status', status)}
+           <p style="margin:20px 0 0;font-size:13px;color:#666;">If you have questions about your membership, reach out to our team.</p>`,
       'View Membership'
     ),
   });
 }
 
+// ── 3. EXPERIENCE STATUS (purple accent) ──
 export async function notifyExperienceStatus(userId: string, status: string, experienceTitle: string) {
+  const statusColor = status === 'confirmed' ? '#22c55e' : status === 'cancelled' ? '#ef4444' : '#d4af37';
   return createNotification({
-    userId,
-    type: 'experience',
+    userId, type: 'experience',
     title: `Experience ${status}`,
     message: `Your request for "${experienceTitle}" has been ${status}.`,
     sendEmail: true,
-    emailSubject: `Experience Request — ${status.charAt(0).toUpperCase() + status.slice(1)}`,
-    emailBody: emailTemplate(
-      `Experience Request — ${status.charAt(0).toUpperCase() + status.slice(1)}`,
-      `<p style="margin:0 0 16px;">Your experience request has been reviewed.</p>
-       <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
-         <tr><td style="padding:12px 16px;background-color:#1a1a1a;border-radius:4px;">
-           <p style="margin:0;font-size:12px;color:#888;">Experience</p>
-           <p style="margin:4px 0 0;font-size:14px;color:#fff;font-weight:600;">${experienceTitle}</p>
-         </td></tr>
-         <tr><td style="padding:8px 16px;background-color:#1a1a1a;border-radius:4px;margin-top:2px;">
-           <p style="margin:0;font-size:12px;color:#888;">Status</p>
-           <p style="margin:4px 0 0;font-size:14px;color:#d4a853;font-weight:600;">${status.toUpperCase()}</p>
-         </td></tr>
-       </table>
-       <p style="margin:0;font-size:13px;color:#888;">Log in to view full details and any updates from the team.</p>`,
+    emailSubject: `Experience ${status.charAt(0).toUpperCase() + status.slice(1)} — ${experienceTitle}`,
+    emailBody: baseTemplate(
+      '#a855f7',
+      `Experience ${status.charAt(0).toUpperCase() + status.slice(1)}`,
+      `<p style="margin:0 0 20px;">Your experience request has been reviewed by our team.</p>
+       ${infoCard('Experience', experienceTitle, '#a855f7')}
+       ${infoCard('Status', status.toUpperCase(), statusColor)}
+       <p style="margin:20px 0 0;font-size:13px;color:#666;">Log in to view full details, confirmed date, and next steps.</p>`,
       'View Experience'
     ),
   });
 }
 
+// ── 4. EVENT REGISTRATION (emerald accent) ──
 export async function notifyEventRegistration(userId: string, eventTitle: string, ref: string) {
   return createNotification({
-    userId,
-    type: 'event',
+    userId, type: 'event',
     title: 'Event Registration Confirmed',
     message: `You're registered for "${eventTitle}". Reference: ${ref}`,
     sendEmail: true,
-    emailSubject: `Registration Confirmed — ${eventTitle}`,
-    emailBody: emailTemplate(
-      `Registration Confirmed`,
-      `<p style="margin:0 0 16px;">Your registration has been confirmed.</p>
-       <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
-         <tr><td style="padding:12px 16px;background-color:#1a1a1a;border-radius:4px;">
-           <p style="margin:0;font-size:12px;color:#888;">Event</p>
-           <p style="margin:4px 0 0;font-size:14px;color:#fff;font-weight:600;">${eventTitle}</p>
-         </td></tr>
-         <tr><td style="padding:8px 16px;background-color:#1a1a1a;border-radius:4px;margin-top:2px;">
-           <p style="margin:0;font-size:12px;color:#888;">Reference</p>
-           <p style="margin:4px 0 0;font-size:14px;color:#d4a853;font-weight:600;font-family:monospace;">${ref}</p>
-         </td></tr>
-       </table>
-       <p style="margin:0;font-size:13px;color:#888;">Please save your reference number. Log in for event details, location, and scheduling information.</p>`,
+    emailSubject: `You're Registered — ${eventTitle}`,
+    emailBody: baseTemplate(
+      '#22c55e',
+      `You're registered for ${eventTitle}`,
+      `<p style="margin:0 0 20px;">Your spot has been reserved. We look forward to seeing you there.</p>
+       ${infoCard('Event', eventTitle, '#22c55e')}
+       ${infoCard('Reference', ref, '#22c55e')}
+       <p style="margin:20px 0 0;font-size:13px;color:#666;">Save your reference number. Check your dashboard for event details, schedule, and location information.</p>`,
       'View Event Details'
     ),
   });
 }
 
+// ── 5. REWARD REDEEMED (amber accent, no email) ──
 export async function notifyRewardRedeemed(userId: string, rewardTitle: string, cost: number) {
   return createNotification({
-    userId,
-    type: 'reward',
+    userId, type: 'reward',
     title: 'Reward Redeemed',
     message: `You've redeemed "${rewardTitle}" for ${cost} points.`,
     sendEmail: false,
   });
 }
 
+// ── 6. ADMIN RESPONSE (blue accent) ──
 export async function notifyAdminResponse(userId: string, adminName: string, preview: string) {
   return createNotification({
-    userId,
-    type: 'message',
+    userId, type: 'message',
     title: `${adminName} responded`,
     message: preview.slice(0, 200),
     sendEmail: true,
-    emailSubject: `${adminName} Has Responded to Your Message`,
-    emailBody: emailTemplate(
-      `${adminName} Has Responded`,
-      `<p style="margin:0 0 16px;">${adminName} has replied to your message:</p>
-       <div style="padding:16px 20px;background-color:#1a1a1a;border-left:3px solid #d4a853;border-radius:4px;margin:0 0 24px;">
-         <p style="margin:0;font-size:14px;color:#cccccc;">${preview}</p>
-       </div>
-       <p style="margin:0;font-size:13px;color:#888;">Log in to continue the conversation.</p>`,
+    emailSubject: `${adminName} replied to your message`,
+    emailBody: baseTemplate(
+      '#3b82f6',
+      `${adminName} replied`,
+      `<p style="margin:0 0 20px;">${adminName} has responded to your message:</p>
+       ${quoteBlock(preview)}
+       <p style="margin:0;font-size:13px;color:#666;">Continue the conversation in your portal.</p>`,
       'View Conversation'
     ),
   });
 }
 
+// ── 7. ANNOUNCEMENT (rose accent) ──
 export async function notifyAnnouncement(userIds: string[], title: string, body: string) {
-  const notifications = userIds.map(userId => ({
-    user_id: userId,
-    type: 'announcement' as NotificationType,
-    title,
-    message: body.slice(0, 500),
-    data: {},
-    email_sent: false,
-  }));
-
-  await supabase.from('notifications').insert(notifications);
-
+  await supabase.from('notifications').insert(userIds.map(userId => ({ user_id: userId, type: 'announcement' as NotificationType, title, message: body.slice(0, 500), data: {}, email_sent: false })));
   for (const userId of userIds) {
-    await sendNotificationEmail(userId, title, emailTemplate(
+    await sendNotificationEmail(userId, title, baseTemplate(
+      '#f43f5e',
       title,
-      `<div style="padding:16px 20px;background-color:#1a1a1a;border-left:3px solid #d4a853;border-radius:4px;margin:0 0 24px;">
-         <p style="margin:0;font-size:14px;color:#cccccc;">${body}</p>
-       </div>
-       <p style="margin:0;font-size:13px;color:#888;">Log in to view the full announcement and any attachments.</p>`,
+      `${quoteBlock(body)}
+       <p style="margin:0;font-size:13px;color:#666;">Log in to view the full announcement.</p>`,
       'View Announcement'
     ));
   }
 }
 
-// ─── Notify admin of fan action (finds admin users) ───
+// ── 8. NOTIFY ADMINS (in-app only, no email) ──
 export async function notifyAdmins(type: NotificationType, title: string, message: string) {
-  const { data: admins } = await supabase
-    .from('profiles')
-    .select('id')
-    .eq('role', 'admin');
-
+  const { data: admins } = await supabase.from('profiles').select('id').eq('role', 'admin');
   if (!admins || admins.length === 0) return;
-
-  const notifications = admins.map((admin: { id: string }) => ({
-    user_id: admin.id,
-    type,
-    title,
-    message,
-    data: {},
-    email_sent: false,
-  }));
-
-  await supabase.from('notifications').insert(notifications);
+  await supabase.from('notifications').insert(admins.map((admin: { id: string }) => ({ user_id: admin.id, type, title, message, data: {}, email_sent: false })));
 }
 
 // ─── Mark as read ───
 export async function markNotificationRead(notificationId: string) {
-  await supabase
-    .from('notifications')
-    .update({ is_read: true, read_at: new Date().toISOString() })
-    .eq('id', notificationId);
+  await supabase.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', notificationId);
 }
 
-// ─── Mark all as read for a user ───
 export async function markAllNotificationsRead(userId: string) {
-  await supabase
-    .from('notifications')
-    .update({ is_read: true, read_at: new Date().toISOString() })
-    .eq('user_id', userId)
-    .eq('is_read', false);
+  await supabase.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('user_id', userId).eq('is_read', false);
 }

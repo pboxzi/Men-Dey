@@ -366,12 +366,16 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   useEffect(() => {
     if (!user?.id) return;
     void (async () => {
-      const [{ data: pts }, { data: card }] = await Promise.all([
-        supabase.from('loyalty_points').select('total').eq('user_id', user.id).limit(1),
-        supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
-      ]);
-      if (pts && pts.length > 0) setLoyaltyPoints(pts[0].total);
-      if (card) setMembership(normalizeMembership(card));
+      try {
+        const results = await Promise.all([
+          supabase.from('loyalty_points').select('total').eq('user_id', user.id).limit(1),
+          supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+        ]);
+        results.forEach((r, i) => { if (r.error) console.warn(`membership query ${i} error:`, r.error.message); });
+        const [{ data: pts }, { data: card }] = results;
+        if (pts && pts.length > 0) setLoyaltyPoints(pts[0].total);
+        if (card) setMembership(normalizeMembership(card));
+      } catch (e) { console.error('membership fetch failed:', e); }
     })();
   }, [user, activeTab]);
 
@@ -402,18 +406,23 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   useEffect(() => {
     if (!user?.id || activeTab !== 'Dashboard') return;
     void (async () => {
-      const [{ count: bookingCount }, { count: eventCount }, { count: postCount }, { data: prof }] = await Promise.all([
-        supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-        supabase.from('event_registrations').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-        supabase.from('community_posts').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-        supabase.from('profiles').select('created_at').eq('id', user.id).maybeSingle(),
-      ]);
-      setFanStats({
-        bookings: bookingCount ?? 0,
-        events: eventCount ?? 0,
-        posts: postCount ?? 0,
-        memberSince: prof?.created_at || '',
-      });
+      try {
+        const results = await Promise.all([
+          supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+          supabase.from('event_registrations').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+          supabase.from('community_posts').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+          supabase.from('profiles').select('created_at').eq('id', user.id).maybeSingle(),
+        ]);
+        // Log any errors for debugging
+        results.forEach((r, i) => { if (r.error) console.warn(`fanStats query ${i} error:`, r.error.message); });
+        const [{ count: bookingCount }, { count: eventCount }, { count: postCount }, { data: prof }] = results;
+        setFanStats({
+          bookings: bookingCount ?? 0,
+          events: eventCount ?? 0,
+          posts: postCount ?? 0,
+          memberSince: prof?.created_at || '',
+        });
+      } catch (e) { console.error('fanStats fetch failed:', e); }
     })();
   }, [user, activeTab]);
 

@@ -137,11 +137,14 @@ export default function FanExperienceBookings({ showToast }: Props) {
 
   const continueConversation = (booking: ExperienceBooking) => {
     const experienceTitle = booking.experienceTitle || experiences[booking.experienceId]?.title || 'Experience';
-    const message = `EXPERIENCE BOOKING FOLLOW-UP\n\nBooking Ref: ${booking.bookingReference}\nExperience: ${experienceTitle}\n\n--- MESSAGE ---\n`;
+    const message = `Hi, I'd like to follow up on my booking.\n\n` +
+      `Reference: ${booking.bookingReference}\n` +
+      `Experience: ${experienceTitle}\n\n` +
+      `Thank you.`;
     if (booking.communicationMethod === 'whatsapp') {
       openWhatsApp(message);
     } else {
-      openEmail('Experience Booking Follow-Up - ' + booking.bookingReference, message);
+      openEmail('Booking Follow-Up - ' + booking.bookingReference, message);
     }
   };
 

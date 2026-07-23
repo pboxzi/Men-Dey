@@ -394,14 +394,22 @@ function RegistrationsTab({ showToast }: Props) {
             ><Ban className="h-3 w-3" /> Cancel Registration</button>
 
             <button onClick={() => {
-              const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${r.ticket_ref}\nEvent: ${r.event_title}\nStatus: ${r.status}\n\n--- ADMIN MESSAGE ---\n`;
+              const msg = `Hi, regarding your event registration.\n\n` +
+                `Reference: ${r.ticket_ref}\n` +
+                `Event: ${r.event_title}\n` +
+                `Status: ${r.status}\n\n` +
+                `Please let us know if you have any questions.`;
               openWhatsApp(msg);
             }}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-emerald-800/30 bg-emerald-950/10 text-emerald-400 hover:bg-emerald-950/20 text-[10px] font-mono transition-all"
             ><MessageCircle className="h-3 w-3" /> Contact via WhatsApp</button>
 
             <button onClick={() => {
-              const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${r.ticket_ref}\nEvent: ${r.event_title}\nStatus: ${r.status}\n\n--- ADMIN MESSAGE ---\n`;
+              const msg = `Hi, regarding your event registration.\n\n` +
+                `Reference: ${r.ticket_ref}\n` +
+                `Event: ${r.event_title}\n` +
+                `Status: ${r.status}\n\n` +
+                `Please let us know if you have any questions.`;
               openEmail(`Event Registration - ${r.ticket_ref}`, msg, r.member_email);
             }}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-blue-800/30 bg-blue-950/10 text-blue-400 hover:bg-blue-950/20 text-[10px] font-mono transition-all"

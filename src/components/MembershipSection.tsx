@@ -166,12 +166,12 @@ export default function MembershipSection() {
       notifyAdmins('membership', 'New Membership Application', `New ${activeTier.name} membership application from ${profile?.name || user.email}.`);
 
       const msg = encodeURIComponent(
-        `Hello, I'd like to apply for the ${activeTier.name} membership.\n\n` +
+        `Hi, I'd like to apply for the ${activeTier.name} membership.\n\n` +
         `Name: ${cardName || profile?.name}\n` +
         `Email: ${profile?.email || user.email}\n` +
-        `Selected Tier: ${activeTier.name} (${activeTier.price})\n` +
+        `Tier: ${activeTier.name} (${activeTier.price})\n` +
         `Card Serial: ${cardSerial}\n\n` +
-        `Looking forward to hearing from the Sanctuary team.`
+        `Thank you.`
       );
       setTimeout(() => {
         if (commMethod === 'whatsapp') {
@@ -230,12 +230,12 @@ export default function MembershipSection() {
       notifyAdmins('membership', 'Membership Upgrade Request', `Upgrade request to ${t?.name} from ${profile?.name || user.email}.`);
 
       const msg = encodeURIComponent(
-        `Hello, I'd like to upgrade my membership to ${t?.name}.\n\n` +
+        `Hi, I'd like to upgrade my membership.\n\n` +
         `Name: ${myMembership?.card_name || profile?.name}\n` +
         `Current Tier: ${myMembership?.tier_name}\n` +
-        `Requested Tier: ${t?.name} (${t?.price})\n` +
-        `Membership Number: ${myMembership?.membership_number || 'N/A'}\n\n` +
-        `Looking forward to hearing from the Sanctuary team.`
+        `New Tier: ${t?.name} (${t?.price})\n` +
+        `Membership #: ${myMembership?.membership_number || 'N/A'}\n\n` +
+        `Thank you.`
       );
       setTimeout(() => {
         if (upgradeCommMethod === 'whatsapp') {

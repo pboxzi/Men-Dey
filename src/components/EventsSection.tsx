@@ -144,7 +144,13 @@ export default function EventsSection() {
     }
     notifyAdmins('event', 'New Event Registration', `New registration for "${selectedEvent.title}" by ${form.name}. Reference: ${ref}`);
 
-    const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${ref}\nEvent: ${selectedEvent.title}\nDate: ${selectedEvent.month} ${selectedEvent.day}, 2026\nAttendees: ${form.attendees}\n\n--- MESSAGE ---\n${form.specialRequests ? form.specialRequests + '\n\n' : ''}`;
+    const msg = `Hi, I'd like to register for an event.\n\n` +
+      `Event: ${selectedEvent.title}\n` +
+      `Date: ${selectedEvent.month} ${selectedEvent.day}, 2026\n` +
+      `Reference: ${ref}\n` +
+      `Attendees: ${form.attendees}\n\n` +
+      (form.specialRequests ? `Notes: ${form.specialRequests}\n\n` : '') +
+      `Thank you.`;
     if (form.commMethod === 'whatsapp') {
       openWhatsApp(msg);
     } else {

@@ -121,12 +121,12 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
       setShowUpgradeModal(false);
       showToast('Upgrade request submitted!', 'success');
       const msg = encodeURIComponent(
-        `Hello, I'd like to upgrade my membership to ${t?.name}.\n\n` +
+        `Hi, I'd like to upgrade my membership.\n\n` +
         `Name: ${membership?.card_name || authName}\n` +
         `Current Tier: ${membership?.tier_name}\n` +
-        `Requested Tier: ${t?.name} (${t?.price})\n` +
-        `Membership Number: ${membership?.membership_number || 'N/A'}\n\n` +
-        `Looking forward to hearing from the Sanctuary team.`
+        `New Tier: ${t?.name} (${t?.price})\n` +
+        `Membership #: ${membership?.membership_number || 'N/A'}\n\n` +
+        `Thank you.`
       );
       setTimeout(() => {
         if (upgradeCommMethod === 'whatsapp') {

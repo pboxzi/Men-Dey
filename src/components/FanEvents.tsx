@@ -145,7 +145,13 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
     pushNotification?.('Event registration submitted! Check your ref.');
     showToast?.('Registration submitted!', 'success');
 
-    const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${ref}\nEvent: ${registeringEvent.title}\nDate: ${registeringEvent.month} ${registeringEvent.day}, 2026\nAttendees: ${form.attendees}\n\n--- MESSAGE ---\n${form.specialRequests ? form.specialRequests + '\n\n' : ''}`;
+    const msg = `Hi, I'd like to register for an event.\n\n` +
+      `Event: ${registeringEvent.title}\n` +
+      `Date: ${registeringEvent.month} ${registeringEvent.day}, 2026\n` +
+      `Reference: ${ref}\n` +
+      `Attendees: ${form.attendees}\n\n` +
+      (form.specialRequests ? `Notes: ${form.specialRequests}\n\n` : '') +
+      `Thank you.`;
     if (form.commMethod === 'whatsapp') {
       openWhatsApp(msg);
     } else {
@@ -155,7 +161,13 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
 
   const openCommApp = () => {
     if (!registeringEvent || !ticketRef) return;
-    const msg = `EVENT REGISTRATION\n\nRegistration Ref: ${ticketRef}\nEvent: ${registeringEvent.title}\nDate: ${registeringEvent.month} ${registeringEvent.day}, 2026\nAttendees: ${form.attendees}\n\n--- MESSAGE ---\n${form.specialRequests ? form.specialRequests + '\n\n' : ''}`;
+    const msg = `Hi, I'd like to register for an event.\n\n` +
+      `Event: ${registeringEvent.title}\n` +
+      `Date: ${registeringEvent.month} ${registeringEvent.day}, 2026\n` +
+      `Reference: ${ticketRef}\n` +
+      `Attendees: ${form.attendees}\n\n` +
+      (form.specialRequests ? `Notes: ${form.specialRequests}\n\n` : '') +
+      `Thank you.`;
     if (form.commMethod === 'whatsapp') {
       openWhatsApp(msg);
     } else {

@@ -177,7 +177,18 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
   const handleBack = () => setStep(prev => Math.max(prev - 1, 1));
 
   const buildMessage = (): string => {
-    return `EXPERIENCE BOOKING REQUEST\n\nExperience: ${exp?.title}\nCategory: ${exp?.category}\n\n--- YOUR DETAILS ---\nName: ${personalInfo.fullName}\nEmail: ${personalInfo.email}\nPhone: ${personalInfo.phone || 'Not provided'}\nCountry: ${personalInfo.country}\n\n--- BOOKING ---\nPreferred Date: ${form.preferredDate}\nPreferred Time: ${form.preferredTime}\nGuests: ${form.participants}\n\n--- NOTES ---\n${form.specialRequests || 'None'}`;
+    return `Hi, I'd like to book an experience.\n\n` +
+      `Experience: ${exp?.title}\n` +
+      `Category: ${exp?.category}\n\n` +
+      `Name: ${personalInfo.fullName}\n` +
+      `Email: ${personalInfo.email}\n` +
+      `Phone: ${personalInfo.phone || 'Not provided'}\n` +
+      `Country: ${personalInfo.country}\n\n` +
+      `Preferred Date: ${form.preferredDate}\n` +
+      `Preferred Time: ${form.preferredTime}\n` +
+      `Guests: ${form.participants}\n\n` +
+      (form.specialRequests ? `Notes: ${form.specialRequests}\n\n` : '') +
+      `Thank you.`;
   };
 
   const handleSubmit = async () => {

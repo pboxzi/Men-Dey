@@ -396,6 +396,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     if (!user?.id) return;
     void (async () => {
       const { data, error } = await supabase.from('user_badges').select('*').eq('user_id', user.id);
+      if (error) console.warn('user_badges query error:', error.message);
       if (!error && data) setBadges(data);
     })();
   }, [user]);
@@ -409,16 +410,16 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         const results = await Promise.all([
           supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
           supabase.from('event_registrations').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-          supabase.from('posts').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+          // posts table has no user_id column, skip
           supabase.from('profiles').select('created_at').eq('id', user.id).maybeSingle(),
         ]);
         // Log any errors for debugging
         results.forEach((r, i) => { if (r.error) console.warn(`fanStats query ${i} error:`, r.error.message); });
-        const [{ count: bookingCount }, { count: eventCount }, { count: postCount }, { data: prof }] = results;
+        const [{ count: bookingCount }, { count: eventCount }, { data: prof }] = results;
         setFanStats({
           bookings: bookingCount ?? 0,
           events: eventCount ?? 0,
-          posts: postCount ?? 0,
+          posts: 0,
           memberSince: prof?.created_at || '',
         });
       } catch (e) { console.error('fanStats fetch failed:', e); }

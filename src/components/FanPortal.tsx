@@ -462,8 +462,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   useEffect(() => {
     void (async () => {
       try {
-        const { data, error } = await supabase.from('channel_messages').select('*').eq('name', 'management');
-        if (!error && data) setChannelMessages(data);
+        const { data, error } = await supabase.from('channel_messages').select('*');
+        if (!error && data) setChannelMessages(data.filter((m: any) => m.name === 'management' || !m.name));
       } catch {}
     })();
   }, []);
@@ -636,7 +636,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
     try {
       await supabase.from('channel_messages').insert({
-        name: 'management', sender: 'user', text: userText
+        sender: 'user', text: userText
       });
     } catch {}
 

@@ -76,6 +76,9 @@ export default function MembershipSection() {
   const [upgrading, setUpgrading] = useState(false);
 
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
+
+  // Step indicator: 1 = tier selected, 2 = name + photo filled, 3 = comm method chosen
+  const applicationStep = !selectedTier ? 1 : (!cardName.trim() || !userPhoto) ? 2 : (!commMethod && !showCommModal) ? 3 : 3;
   const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);

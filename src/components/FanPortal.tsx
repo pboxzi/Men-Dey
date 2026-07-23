@@ -2677,30 +2677,30 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               <div className="space-y-6 text-left">
                 <div className="space-y-1 border-b border-neutral-900 pb-4">
                   <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
-                    Sanctuary Bridge Configuration
+                    Settings
                   </h2>
                   <p className="text-xs text-neutral-500 font-mono">
-                    Under private administration security protocols. Configure your portal preference variables.
+                    Manage your notifications, security, and preferences.
                   </p>
                 </div>
 
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-4 max-w-xl">
                   <div className="space-y-3">
                     <h4 className="text-xs font-mono font-bold text-neutral-500 uppercase tracking-widest pb-1 border-b border-neutral-900">
-                      Security & Privacy Logs
+                      Notifications & Privacy
                     </h4>
                     
-                    {/* Webhook tracker */}
+                    {/* Push Notifications */}
                     <div className="flex justify-between items-center text-xs py-2 border-b border-neutral-900/40">
                       <div>
-                        <p className="text-white font-semibold">Active Webhook Trackers</p>
-                        <p className="text-[10px] text-neutral-400">Direct notifications forwarded to communications bridge.</p>
+                        <p className="text-white font-semibold">Push Notifications</p>
+                        <p className="text-[10px] text-neutral-400">Get notified about messages and updates.</p>
                       </div>
                       <button
                         onClick={() => {
                           const val = !settingsWebhooks;
                           setSettingsWebhooks(val);
-                          showToast(`Webhook Trackers turned ${val ? 'ON' : 'OFF'}.`, 'info');
+                          showToast(`Push Notifications turned ${val ? 'ON' : 'OFF'}.`, 'info');
                         }}
                         className={`px-3 py-1 rounded text-[10px] font-mono font-bold transition-all uppercase ${
                           settingsWebhooks 
@@ -2708,21 +2708,21 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             : 'bg-neutral-900 border border-neutral-800 text-neutral-500'
                         }`}
                       >
-                        {settingsWebhooks ? 'ON / ACTIVE' : 'DISABLED'}
+                        {settingsWebhooks ? 'ON' : 'OFF'}
                       </button>
                     </div>
 
-                    {/* Diagnostic Terminal Logs */}
+                    {/* Session History */}
                     <div className="flex justify-between items-center text-xs py-2 border-b border-neutral-900/40">
                       <div>
-                        <p className="text-white font-semibold">Diagnostic Terminal Logs</p>
-                        <p className="text-[10px] text-neutral-400">Store offline session states in local browser cache.</p>
+                        <p className="text-white font-semibold">Session History</p>
+                        <p className="text-[10px] text-neutral-400">Remember your login for faster access.</p>
                       </div>
                       <button
                         onClick={() => {
                           const val = !settingsLogs;
                           setSettingsLogs(val);
-                          showToast(`Diagnostic Terminal Logs set to ${val ? 'ACTIVE SESSION' : 'OFFLINE ONLY'}.`, 'info');
+                          showToast(`Session History turned ${val ? 'ON' : 'OFF'}.`, 'info');
                         }}
                         className={`px-3 py-1 rounded text-[10px] font-mono font-bold transition-all uppercase ${
                           settingsLogs 
@@ -2730,21 +2730,21 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             : 'bg-neutral-900 border border-neutral-800 text-neutral-500'
                         }`}
                       >
-                        {settingsLogs ? 'ACTIVE SESSION' : 'OFFLINE ONLY'}
+                        {settingsLogs ? 'ON' : 'OFF'}
                       </button>
                     </div>
 
                     {/* Two-Factor Authentication */}
                     <div className="flex justify-between items-center text-xs py-2 border-b border-neutral-900/40">
                       <div>
-                        <p className="text-white font-semibold">Two-Factor Authentication</p>
-                        <p className="text-[10px] text-neutral-400">Require cryptographically signed SMS or OTP access tokens.</p>
+                        <p className="text-white font-semibold">Extra Login Security</p>
+                        <p className="text-[10px] text-neutral-400">Add a verification code when you sign in.</p>
                       </div>
                       <button
                         onClick={() => {
                           const val = !settingsTwoFactor;
                           setSettingsTwoFactor(val);
-                          showToast(`Two-Factor Auth turned ${val ? 'ON' : 'OFF'}.`, 'info');
+                          showToast(`Extra Login Security turned ${val ? 'ON' : 'OFF'}.`, 'info');
                         }}
                         className={`px-3 py-1 rounded text-[10px] font-mono font-bold transition-all uppercase ${
                           settingsTwoFactor 
@@ -2752,15 +2752,15 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             : 'bg-neutral-900 border border-neutral-800 text-neutral-500'
                         }`}
                       >
-                        {settingsTwoFactor ? 'SECURE' : 'INSECURE'}
+                        {settingsTwoFactor ? 'ON' : 'OFF'}
                       </button>
                     </div>
 
                     {/* Email Alerts */}
                     <div className="flex justify-between items-center text-xs py-2">
                       <div>
-                        <p className="text-white font-semibold">Instant Email Alerts</p>
-                        <p className="text-[10px] text-neutral-400">Receive dispatch summaries of proposal updates immediately.</p>
+                        <p className="text-white font-semibold">Email Alerts</p>
+                        <p className="text-[10px] text-neutral-400">Get email notifications for updates and messages.</p>
                       </div>
                       <button
                         onClick={() => {
@@ -2784,15 +2784,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       onClick={signOut}
                       className="px-5 py-2 bg-red-600/10 border border-red-500/20 hover:bg-red-600/20 text-red-500 font-bold rounded text-xs uppercase tracking-wider transition-colors"
                     >
-                      Disconnect Connection Bridge
-                    </button>
-                    <button
-                      onClick={() => {
-                        showToast('Bridge synchronization logs generated.', 'success');
-                      }}
-                      className="px-4 py-2 bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-neutral-400 hover:text-white font-mono text-[10px] rounded transition-colors uppercase"
-                    >
-                      Sync State
+                      Sign Out
                     </button>
                   </div>
                 </div>
@@ -2802,13 +2794,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <div className="space-y-1">
                     <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-gold-500 flex items-center gap-1.5">
                       <Sparkles className="h-3 w-3 text-gold-500 animate-pulse" />
-                      Visual Environment Configuration
+                      Appearance
                     </span>
                     <h4 className="text-xs font-mono font-bold text-neutral-300 uppercase tracking-widest pb-1 border-b border-neutral-900">
-                      Portal Accent Customizer
+                      Theme Color
                     </h4>
                     <p className="text-[11px] text-neutral-500 font-mono">
-                      Globally re-wire the primary color-grid of the sanctuary. Selection synchronizes instantly across all portals.
+                      Choose your accent color. Changes apply immediately.
                     </p>
                   </div>
 
@@ -2828,7 +2820,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           whileTap={{ scale: 0.98 }}
                           onClick={() => {
                             setPortalAccent(pal.name as PaletteType);
-                            showToast(`Sanctuary grid re-wired to ${pal.name}.`, 'success');
+                            showToast(`Theme changed to ${pal.name}.`, 'success');
                           }}
                           className={`p-3.5 rounded-xl border text-left transition-colors relative overflow-hidden group cursor-pointer ${
                             isSelected 
@@ -2906,6 +2898,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     className="flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all text-neutral-500"
                   >
                     <Home className="h-5 w-5" strokeWidth={1.5} />
+                    <span className="text-[8px] font-bold tracking-widest uppercase">Site</span>
                   </button>
                 );
               }
@@ -2956,10 +2949,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       { icon: MessageCircle, label: 'Ask Gillian', nav: 'Ask Gillian' },
                       { icon: Calendar, label: 'Events', nav: 'Events' },
                       { icon: Award, label: 'Membership', nav: 'Membership' },
-                      { icon: Compass, label: 'Journey', nav: 'My Journey' },
+                      { icon: Compass, label: 'My Journey', nav: 'My Journey' },
                       { icon: Gift, label: 'Rewards', nav: 'Rewards' },
                       { icon: MessageSquare, label: 'Messages', nav: 'Messages' },
-                      { icon: Bell, label: 'Alerts', nav: 'Notifications' },
+                      { icon: Bell, label: 'Notifications', nav: 'Notifications' },
                       { icon: Settings, label: 'Settings', nav: 'Settings' },
                     ].map((item) => {
                       const Icon = item.icon;

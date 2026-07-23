@@ -14,7 +14,7 @@ export default function ConfirmEmail() {
     const token = searchParams.get('token');
     if (!token) {
       setStatus('error');
-      setMessage('Invalid confirmation link. No token provided.');
+      setMessage('This verification link is invalid or has expired.');
       return;
     }
 

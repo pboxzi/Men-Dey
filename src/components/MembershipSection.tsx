@@ -78,7 +78,7 @@ export default function MembershipSection() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
 
   // Step indicator: 1 = tier selected, 2 = name + photo filled, 3 = comm method chosen
-  const applicationStep = !selectedTier ? 1 : (!cardName.trim() || !userPhoto) ? 2 : (!commMethod && !showCommModal) ? 3 : 3;
+  const applicationStep = !selectedTier ? 1 : (!cardName.trim() || !userPhoto) ? 2 : !commMethod ? 3 : 4;
   const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
@@ -811,8 +811,8 @@ export default function MembershipSection() {
               className="w-full max-w-md rounded-xl border border-neutral-900 bg-[#0a0a0c] p-6 space-y-5 shadow-2xl"
             >
               <div className="text-center space-y-1">
-                <h3 className="font-serif text-lg font-bold text-white">Choose Communication Method</h3>
-                <p className="text-xs text-neutral-500">How would you like to send your membership request?</p>
+                <h3 className="font-serif text-lg font-bold text-white">How Should We Contact You?</h3>
+                <p className="text-xs text-neutral-500">Choose how you'd like the admin to follow up about your application.</p>
               </div>
               <div className="space-y-3">
                 <button onClick={() => setCommMethod('whatsapp')}
@@ -821,7 +821,7 @@ export default function MembershipSection() {
                   <div className={`h-10 w-10 rounded-full flex items-center justify-center ${commMethod === 'whatsapp' ? 'bg-emerald-500 text-white' : 'bg-neutral-900 text-neutral-400'}`}>
                     <MessageCircle className="h-5 w-5" />
                   </div>
-                  <div><p className="text-sm font-bold text-white">WhatsApp</p><p className="text-[10px] text-neutral-500">Instant messaging via WhatsApp</p></div>
+                  <div><p className="text-sm font-bold text-white">WhatsApp</p><p className="text-[10px] text-neutral-500">We'll message you on WhatsApp</p></div>
                   {commMethod === 'whatsapp' && <Check className="h-5 w-5 text-emerald-500 ml-auto" />}
                 </button>
                 <button onClick={() => setCommMethod('email')}
@@ -830,7 +830,7 @@ export default function MembershipSection() {
                   <div className={`h-10 w-10 rounded-full flex items-center justify-center ${commMethod === 'email' ? 'bg-gold-500 text-neutral-950' : 'bg-neutral-900 text-neutral-400'}`}>
                     <Mail className="h-5 w-5" />
                   </div>
-                  <div><p className="text-sm font-bold text-white">Email</p><p className="text-[10px] text-neutral-500">Send via your default email app</p></div>
+                  <div><p className="text-sm font-bold text-white">Email</p><p className="text-[10px] text-neutral-500">We'll send you an email</p></div>
                   {commMethod === 'email' && <Check className="h-5 w-5 text-gold-500 ml-auto" />}
                 </button>
               </div>

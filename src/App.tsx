@@ -653,6 +653,9 @@ export default function App() {
                     </span>
                     <span className="h-[1px] w-5 bg-gold-500/40" />
                   </div>
+                  <p className="text-[11px] text-neutral-500 max-w-xs mx-auto leading-relaxed">
+                    Your hub for events, experiences, and connection with Gillian Anderson.
+                  </p>
                   {userName ? (
                     <h1 className="font-serif text-[28px] sm:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-white to-neutral-400 leading-[1.1] uppercase">
                       Welcome back,
@@ -730,7 +733,7 @@ export default function App() {
                     className="border border-neutral-800 hover:border-gold-500/60 bg-neutral-950 hover:bg-gold-500/5 text-gold-500 hover:text-white font-semibold px-5 py-3 rounded-lg text-xs tracking-widest transition-all active:scale-95 flex items-center gap-2"
                   >
                     <Play className="h-3.5 w-3.5 fill-gold-500 hover:fill-white" />
-                    WATCH MESSAGE
+                    WATCH WELCOME VIDEO
                   </button>
                 </motion.div>
 
@@ -857,11 +860,6 @@ export default function App() {
           >
             {activeNav === 'HOME' && (
               <div className="space-y-0">
-                {/* About Section */}
-                <ScrollReveal>
-                  <AboutSection />
-                </ScrollReveal>
-
                 {/* How It Works — Simple Guide for New Visitors */}
                 <ScrollReveal>
                   <section className="py-12 sm:py-16 bg-[#050505] border-t border-neutral-900/60">
@@ -892,6 +890,11 @@ export default function App() {
                       </div>
                     </div>
                   </section>
+                </ScrollReveal>
+
+                {/* About Section */}
+                <ScrollReveal>
+                  <AboutSection />
                 </ScrollReveal>
 
                 {/* Six Community Pillars Navigation Cards */}

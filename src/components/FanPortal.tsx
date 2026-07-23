@@ -365,18 +365,17 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   useEffect(() => {
     if (!user?.id) return;
-    void (async () => {
-      try {
-        const results = await Promise.all([
-          supabase.from('loyalty_points').select('total').eq('user_id', user.id).limit(1),
-          supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
-        ]);
-        results.forEach((r, i) => { if (r.error) console.warn(`membership query ${i} error:`, r.error.message); });
-        const [{ data: pts }, { data: card }] = results;
-        if (pts && pts.length > 0) setLoyaltyPoints(pts[0].total);
-        if (card) setMembership(normalizeMembership(card));
-      } catch (e) { console.error('membership fetch failed:', e); }
-    })();
+    // Fetch loyalty points independently
+    supabase.from('loyalty_points').select('total').eq('user_id', user.id).limit(1)
+      .then(({ data, error }) => {
+        if (!error && data && data.length > 0) setLoyaltyPoints(data[0].total);
+      });
+    // Fetch membership independently
+    supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle()
+      .then(({ data, error }) => {
+        if (error) console.warn('membership query error:', error.message);
+        if (data) setMembership(normalizeMembership(data));
+      });
   }, [user, activeTab]);
 
   const rank = getLoyaltyRank(loyaltyPoints);

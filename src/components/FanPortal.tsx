@@ -410,7 +410,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         const results = await Promise.all([
           supabase.from('experience_requests').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
           supabase.from('event_registrations').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-          supabase.from('community_posts').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+          supabase.from('posts').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
           supabase.from('profiles').select('created_at').eq('id', user.id).maybeSingle(),
         ]);
         // Log any errors for debugging

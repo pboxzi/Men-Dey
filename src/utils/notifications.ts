@@ -21,6 +21,7 @@ interface CreateNotificationOpts {
   sendEmail?: boolean;
   emailSubject?: string;
   emailBody?: string;
+  emailOverride?: string;
 }
 
 const SITE_URL = 'https://men-dey.vercel.app';
@@ -81,10 +82,14 @@ function quoteBlock(text: string): string {
 }
 
 // ─── Send email via edge function ───
-async function sendNotificationEmail(userId: string, subject: string, body: string): Promise<void> {
+async function sendNotificationEmail(userId: string, subject: string, body: string, emailOverride?: string): Promise<void> {
   try {
-    const { data: profile } = await supabase.from('profiles').select('email').eq('id', userId).maybeSingle();
-    if (!profile?.email) return;
+    let email = emailOverride;
+    if (!email) {
+      const { data: profile } = await supabase.from('profiles').select('email').eq('id', userId).maybeSingle();
+      email = profile?.email;
+    }
+    if (!email) return;
 
     const { data: enabledSetting } = await supabase.from('site_settings').select('value').eq('key', 'email_notifications_enabled').maybeSingle();
     if (enabledSetting?.value === 'false') return;
@@ -96,28 +101,27 @@ async function sendNotificationEmail(userId: string, subject: string, body: stri
     const response = await fetch(`${supabaseUrl}/functions/v1/send-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || supabaseAnonKey}`, 'apikey': supabaseAnonKey },
-      body: JSON.stringify({ to: profile.email, subject, html: body }),
+      body: JSON.stringify({ to: email, subject, html: body }),
     });
 
     const result = await response.json();
     if (!response.ok) { console.error('Email error:', result); return; }
 
-    await supabase.from('email_logs').insert({ user_id: userId, recipient_email: profile.email, subject, body_preview: body.replace(/<[^>]*>/g, '').slice(0, 500), status: 'sent', resend_id: result.id || null });
+    await supabase.from('email_logs').insert({ user_id: userId, recipient_email: email, subject, body_preview: body.replace(/<[^>]*>/g, '').slice(0, 500), status: 'sent', resend_id: result.id || null });
     await supabase.from('notifications').update({ email_sent: true }).eq('user_id', userId).eq('title', subject).order('created_at', { ascending: false }).limit(1);
   } catch (e) { console.error('Email send failed:', e); }
 }
 
 // ─── Create a notification ───
 export async function createNotification(opts: CreateNotificationOpts): Promise<void> {
-  const { userId, type, title, message, link, data, sendEmail, emailSubject, emailBody } = opts;
+  const { userId, type, title, message, link, data, sendEmail, emailSubject, emailBody, emailOverride } = opts;
   const { error } = await supabase.from('notifications').insert({ user_id: userId, type, title, message, link: link || null, data: data || {}, email_sent: false });
   if (error) { console.error('Failed to create notification:', error.message); return; }
   if (sendEmail && emailSubject && emailBody) {
-    // Auto-wrap in branded template if not already wrapped
     const wrapped = emailBody.includes('<!DOCTYPE') || emailBody.includes('background-color:#0f0f0f')
       ? emailBody
       : baseTemplate('#b8860b', emailSubject, emailBody);
-    await sendNotificationEmail(userId, emailSubject, wrapped);
+    await sendNotificationEmail(userId, emailSubject, wrapped, emailOverride);
   }
 }
 

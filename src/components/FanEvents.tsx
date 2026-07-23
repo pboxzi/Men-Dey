@@ -7,6 +7,7 @@ import {
   MessageCircle, Mail, Send, Loader2, FileText, Users, Star, AlertTriangle, RefreshCw,
 } from 'lucide-react';
 import { openWhatsApp, openEmail } from '../utils/contactSettings';
+import { createNotification } from '../utils/notifications';
 
 interface EventItem {
   id: string; title: string; type: string; day: string; month: string;
@@ -144,6 +145,16 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
     addJourneyMilestone?.('Registered for Event', `Registered for ${registeringEvent.title}`, 'bg-blue-500');
     pushNotification?.('Event registration submitted! Check your ref.');
     showToast?.('Registration submitted!', 'success');
+
+    createNotification({
+      userId: user.id,
+      type: 'event',
+      title: 'Event Registration Confirmed',
+      message: `You're registered for "${registeringEvent.title}". Reference: ${ref}`,
+      sendEmail: true,
+      emailSubject: `Registration Confirmed: ${registeringEvent.title}`,
+      emailBody: `<p>You're registered for <strong>${registeringEvent.title}</strong>.</p><p>Reference: <code>${ref}</code></p><p>Date: ${registeringEvent.month} ${registeringEvent.day}, 2026</p><p>Attendees: ${form.attendees}</p>`,
+    });
 
     const msg = `Hi, I'd like to register for an event.\n\n` +
       `Event: ${registeringEvent.title}\n` +

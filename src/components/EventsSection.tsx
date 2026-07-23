@@ -140,6 +140,7 @@ export default function EventsSection() {
         sendEmail: true,
         emailSubject: `Registration Confirmed: ${selectedEvent.title}`,
         emailBody: `<p>You're registered for <strong>${selectedEvent.title}</strong>.</p><p>Reference: <code>${ref}</code></p><p>Date: ${selectedEvent.month} ${selectedEvent.day}, 2026</p><p>Attendees: ${form.attendees}</p>`,
+        emailOverride: form.email,
       });
     }
     notifyAdmins('event', 'New Event Registration', `New registration for "${selectedEvent.title}" by ${form.name}. Reference: ${ref}`);

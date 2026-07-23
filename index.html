@@ -81,6 +81,45 @@
     <link rel="preload" href="/assets/images/gillian_hero_one_1783349664739.jpg" as="image" fetchpriority="high" />
   </head>
   <body>
+    <!-- Google Translate auto-detect and translate -->
+    <div id="google_translate_element" style="display:none;"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          includedLanguages: 'es,fr,de,pt,ja,zh-CN,ar,hi,ko,it,nl,ru,pl,th,vi,tr,sv,da,no,fi',
+          autoDisplay: false,
+          layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element');
+      }
+
+      // Auto-translate based on browser language
+      (function() {
+        var lang = (navigator.language || navigator.userLanguage || 'en').split('-')[0].toLowerCase();
+        if (lang === 'en') return; // Don't translate English
+        
+        var combo = document.querySelector('#google_translate_element select.goog-te-combo');
+        var checkLang = setInterval(function() {
+          combo = document.querySelector('#google_translate_element select.goog-te-combo');
+          if (combo) {
+            clearInterval(checkLang);
+            // Find matching language option
+            var options = combo.options;
+            for (var i = 0; i < options.length; i++) {
+              if (options[i].value.indexOf(lang) !== -1) {
+                combo.value = options[i].value;
+                combo.dispatchEvent(new Event('change'));
+                break;
+              }
+            }
+          }
+        }, 200);
+        // Stop checking after 5 seconds
+        setTimeout(function() { clearInterval(checkLang); }, 5000);
+      })();
+    </script>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" type="text/javascript"></script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

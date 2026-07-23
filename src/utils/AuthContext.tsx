@@ -112,6 +112,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.warn('Profile creation warning:', profileError.message);
     }
 
+    // Send custom confirmation email via Resend
+    try {
+      await supabase.functions.invoke('send-confirmation-email', {
+        body: { email, userId: data.user.id, userName: name },
+      });
+    } catch (emailErr) {
+      console.warn('Confirmation email failed (non-critical):', emailErr);
+    }
+
     // Fetch the profile so it's available immediately
     await fetchProfile(data.user.id);
 

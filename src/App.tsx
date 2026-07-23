@@ -67,6 +67,7 @@ import MembershipSection from './components/MembershipSection';
 import FAQSection from './components/FAQSection';
 import FanPortal from './components/FanPortal';
 import AdminPortal from './components/AdminPortal';
+import ConfirmEmail from './components/ConfirmEmail';
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -126,6 +127,7 @@ export default function App() {
   const getViewFromPath = (pathname: string) => {
     if (pathname === '/portal') return { vm: 'portal' as const, nav: 'HOME' };
     if (pathname === '/admin') return { vm: 'admin' as const, nav: 'HOME' };
+    if (pathname === '/confirm-email') return { vm: 'confirm-email' as const, nav: 'HOME' };
     if (pathname.startsWith('/experiences/book/')) return { vm: 'landing' as const, nav: 'EXPERIENCES' };
     const nav = pathToNav[pathname] || 'HOME';
     return { vm: 'landing' as const, nav };
@@ -367,6 +369,10 @@ export default function App() {
   if (user && profile?.role === 'admin' && viewMode !== 'admin') {
     navigate('/admin', { replace: true });
     return null;
+  }
+
+  if (viewMode === 'confirm-email') {
+    return <ConfirmEmail />;
   }
 
   if (viewMode === 'portal') {

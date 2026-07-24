@@ -177,38 +177,14 @@ body {
   }
 }
 
-/* Crisp Chat Widget Fix — Chrome + Firefox */
-#crisp-chatbox,
-.crisp-client,
-[class*="crisp"],
-.crisp-client-main {
+/* Crisp Chat Widget Fix */
+#crisp-chatbox {
   max-height: 500px !important;
-  height: 500px !important;
   bottom: 80px !important;
-  top: auto !important;
 }
 
-#crisp-chatbox iframe,
-.crisp-client iframe {
+#crisp-chatbox iframe {
   max-height: 500px !important;
   height: 500px !important;
-}
-
-/* Prevent Crisp from taking full screen on Chrome */
-#crisp-chatbox > div,
-#crisp-chatbox > span,
-.crisp-client > div {
-  max-height: 500px !important;
-  height: auto !important;
-  max-width: 400px !important;
-  width: 400px !important;
-}
-
-/* Override any fullscreen behavior */
-.crisp-chatbox-window,
-.crisp-chatbox-inner {
-  max-height: 500px !important;
-  height: 500px !important;
-  max-width: 400px !important;
 }
 

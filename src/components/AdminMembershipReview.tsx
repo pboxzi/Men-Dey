@@ -20,9 +20,15 @@ interface MembershipRequest {
   created_at: string;
 }
 
+const parseJson = (val: any): Record<string, any> => {
+  if (!val) return {};
+  if (typeof val === 'object') return val;
+  try { return JSON.parse(val); } catch { return {}; }
+};
+
 const normalizeMembership = (r: any): MembershipRequest => {
-  const msg = typeof r.message === 'string' ? JSON.parse(r.message || '{}') : (r.message || {});
-  const notes = typeof r.notes === 'string' ? JSON.parse(r.notes || '{}') : (r.notes || {});
+  const msg = parseJson(r.message);
+  const notes = parseJson(r.notes);
   return {
     id: r.id, user_id: r.user_id || '', status: r.status || 'pending',
     tier_id: msg.tier_id || '', tier_name: msg.tier_name || '', tier_price: msg.tier_price || '',
@@ -84,7 +90,10 @@ export default function AdminMembershipReview() {
   const fetchRequests = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.from('membership_applications').select('*').order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('membership_applications')
+        .select('id, user_id, status, full_name, email, phone, country, message, notes, card_name, card_serial, member_name, profile_photo, comm_method, membership_number, activation_date, expiration_date, cancel_reason, admin_notes, reviewed_at, created_at, updated_at')
+        .order('created_at', { ascending: false });
       if (!error) setRequests((data || []).map(normalizeMembership));
     } catch {}
     setLoading(false);

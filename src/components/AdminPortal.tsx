@@ -581,10 +581,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     <div className="min-h-screen bg-[#070709] text-neutral-200 flex flex-col font-sans selection:bg-gold-500 selection:text-neutral-950">
       
       {/* 1. TOP PORTAL HEADER BAR */}
-      <header className="sticky top-0 z-40 w-full border-b border-neutral-900 bg-[#070709]/95 backdrop-blur-md px-4 md:px-6 py-3.5 flex items-center justify-between">
+      <header className="sticky top-0 z-40 w-full border-b border-neutral-900 bg-[#070709]/95 backdrop-blur-md px-3 sm:px-4 md:px-6 py-3 flex items-center justify-between gap-2">
         
         {/* Left: Brand logo & name */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => { signOut(); navigate('/'); }}
             className="p-1.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors"
@@ -596,8 +596,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             <span className="font-serif text-lg font-bold tracking-widest text-gold-500">
               GA
             </span>
-            <div className="h-4 w-[1px] bg-neutral-800" />
-            <div className="flex flex-col text-left">
+            <div className="hidden sm:block h-4 w-[1px] bg-neutral-800" />
+            <div className="hidden sm:flex flex-col text-left">
               <span className="font-serif text-[10px] font-bold tracking-widest text-neutral-300">
                 GILLIAN ANDERSON
               </span>
@@ -621,7 +621,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
         </div>
 
         {/* Right Actions: bell, messages, profile dropdown */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-3">
           
           {/* Notifications alert with dropdown */}
           <div className="relative" ref={notifRef}>
@@ -638,7 +638,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             </button>
 
             {showNotifications && (
-              <div className="absolute right-0 top-full mt-2 w-80 bg-neutral-950 border border-neutral-900 rounded-lg shadow-2xl z-50 overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-80 bg-neutral-950 border border-neutral-900 rounded-lg shadow-2xl z-50 overflow-hidden">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-900">
                   <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">Notifications</h4>
                   <button
@@ -691,7 +691,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
           <button
             onClick={() => setActiveTab('Communication Log')}
-            className="relative p-2 rounded bg-neutral-900/50 border border-neutral-900 hover:border-neutral-800 text-neutral-400 hover:text-white transition-all"
+            className="relative p-2 rounded bg-neutral-900/50 border border-neutral-900 hover:border-neutral-800 text-neutral-400 hover:text-white transition-all hidden sm:block"
           >
             <Mail className="h-4 w-4" />
             {notificationCount > 0 && (
@@ -701,22 +701,22 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             )}
           </button>
 
-          <div className="h-5 w-[1px] bg-neutral-800" />
+          <div className="hidden sm:block h-5 w-[1px] bg-neutral-800" />
 
           {/* Super Administrator Menu */}
           <div className="relative" ref={profileMenuRef}>
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center gap-2.5 hover:bg-neutral-900/50 rounded-lg px-2 py-1.5 transition-colors cursor-pointer"
+              className="flex items-center gap-2 hover:bg-neutral-900/50 rounded-lg px-1.5 sm:px-2 py-1.5 transition-colors cursor-pointer"
             >
-              <div className="h-8 w-8 rounded-full border-2 border-red-500 bg-neutral-900 overflow-hidden shrink-0 flex items-center justify-center relative">
-                <div className="text-xs font-mono font-bold text-white">{((profile?.name || user?.email?.split('@')[0] || 'Admin').match(/\b\w/g) || []).join('').toUpperCase().slice(0, 2) || 'AD'}</div>
+              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full border-2 border-red-500 bg-neutral-900 overflow-hidden shrink-0 flex items-center justify-center relative">
+                <div className="text-[10px] sm:text-xs font-mono font-bold text-white">{((profile?.name || user?.email?.split('@')[0] || 'Admin').match(/\b\w/g) || []).join('').toUpperCase().slice(0, 2) || 'AD'}</div>
               </div>
-              <div className="hidden sm:flex flex-col text-left">
+              <div className="hidden md:flex flex-col text-left">
                 <span className="text-xs font-semibold text-white leading-tight">{profile?.name || user?.email?.split('@')[0] || 'Admin'}</span>
                 <span className="text-[9px] font-mono font-bold text-red-400 leading-none">Super Administrator</span>
               </div>
-              <ChevronDown className={`h-3.5 w-3.5 text-neutral-500 transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`hidden sm:block h-3.5 w-3.5 text-neutral-500 transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
             </button>
 
             {showProfileMenu && (
@@ -737,7 +737,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           {/* Mobile hamburger menu button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded bg-neutral-900/50 border border-neutral-900 text-neutral-400 hover:text-white transition-all ml-1"
+            className="md:hidden p-2 rounded bg-neutral-900/50 border border-neutral-900 text-neutral-400 hover:text-white transition-all"
             aria-label="Toggle navigation menu"
           >
             {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -748,10 +748,18 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       </header>
 
       {/* 2. BODY CONTAINER */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         
+        {/* Mobile sidebar backdrop */}
+        {isMobileMenuOpen && (
+          <div 
+            className="md:hidden fixed inset-0 bg-black/60 z-40"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
         {/* LEFT NAV SIDEBAR */}
-        <aside className={`w-60 border-r border-neutral-900 bg-[#070709] shrink-0 overflow-y-auto text-left flex flex-col justify-between p-4 transition-all duration-300 z-50 ${isMobileMenuOpen ? 'fixed top-[65px] left-0 bottom-0 w-64 bg-[#070709] border-r border-neutral-900 shadow-2xl flex' : 'hidden md:flex'}`}>
+        <aside className={`w-60 border-r border-neutral-900 bg-[#070709] shrink-0 overflow-y-auto text-left flex flex-col justify-between p-4 transition-all duration-300 z-50 ${isMobileMenuOpen ? 'fixed top-[52px] left-0 bottom-0 w-64 bg-[#070709] border-r border-neutral-900 shadow-2xl flex' : 'hidden md:flex'}`}>
           
           <div className="space-y-6">
             <div>
@@ -870,18 +878,20 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2.5">
-                  <div className="flex items-center gap-1 bg-neutral-900 border border-neutral-800 px-3 py-1.5 rounded text-xs text-neutral-300 font-mono">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 bg-neutral-900 border border-neutral-800 px-2 sm:px-3 py-1.5 rounded text-xs text-neutral-300 font-mono">
                     <Calendar className="h-3.5 w-3.5 text-neutral-500" />
-                    <span>{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                    <span className="hidden sm:inline">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                    <span className="sm:hidden">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
                     <span className="text-neutral-600 mx-0.5">·</span>
                     <span className="text-neutral-400">{currentTime}</span>
                   </div>
 
                   {/* Quick Actions Dropdown */}
                   <div className="relative group">
-                    <button className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 px-4 py-1.5 rounded text-xs font-bold tracking-wide transition-colors">
-                      Quick Actions
+                    <button className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 px-2.5 sm:px-4 py-1.5 rounded text-xs font-bold tracking-wide transition-colors">
+                      <span className="hidden sm:inline">Quick Actions</span>
+                      <span className="sm:hidden">Quick</span>
                       <ChevronDown className="h-3.5 w-3.5" />
                     </button>
                     
@@ -915,84 +925,84 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
               </div>
 
               {/* STATS COUNT GRID (6 LIVE CARDS) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
                 
                 {/* Total Members */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5 relative overflow-hidden">
+                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5 relative overflow-hidden">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Total Members</span>
-                    <Users className="h-4 w-4 text-neutral-600" />
+                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Members</span>
+                    <Users className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalMembers}</h3>
-                  <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>Registered profiles</span>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalMembers}</h3>
+                  <p className="text-[9px] sm:text-[10px] font-mono text-green-500 flex items-center gap-0.5">
+                    <span>Registered</span>
                   </p>
                 </div>
 
                 {/* Event Registrations */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
+                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Event Regs</span>
-                    <Calendar className="h-4 w-4 text-neutral-600" />
+                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Events</span>
+                    <Calendar className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.eventRegistrations}</h3>
-                  <p className="text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
-                    <span>Total registrations</span>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.eventRegistrations}</h3>
+                  <p className="text-[9px] sm:text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
+                    <span>Registrations</span>
                   </p>
                 </div>
 
                 {/* Experience Bookings */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
+                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Bookings</span>
-                    <Star className="h-4 w-4 text-neutral-600" />
+                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Bookings</span>
+                    <Star className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.experienceBookings}</h3>
-                  <p className="text-[10px] font-mono text-green-500 flex items-center gap-0.5">
-                    <span>Experience requests</span>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.experienceBookings}</h3>
+                  <p className="text-[9px] sm:text-[10px] font-mono text-green-500 flex items-center gap-0.5">
+                    <span>Requests</span>
                   </p>
                 </div>
 
                 {/* Pending Memberships */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
+                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Pending</span>
-                    <Clock className="h-4 w-4 text-neutral-600" />
+                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Pending</span>
+                    <Clock className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-amber-500">{dashboardStats.pendingMemberships + dashboardStats.pendingBookings}</h3>
-                  <p className="text-[10px] font-mono text-amber-500 flex items-center gap-0.5">
-                    <span>Awaiting review</span>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-amber-500">{dashboardStats.pendingMemberships + dashboardStats.pendingBookings}</h3>
+                  <p className="text-[9px] sm:text-[10px] font-mono text-amber-500 flex items-center gap-0.5">
+                    <span>Review</span>
                   </p>
                 </div>
 
                 {/* Active Conversations */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
+                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Conversations</span>
-                    <MessageCircle className="h-4 w-4 text-neutral-600" />
+                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Chats</span>
+                    <MessageCircle className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.activeConversations}</h3>
-                  <p className="text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
-                    <span>Active chats</span>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.activeConversations}</h3>
+                  <p className="text-[9px] sm:text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
+                    <span>Active</span>
                   </p>
                 </div>
 
                 {/* Rewards Redeemed */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 text-left space-y-1.5">
+                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Rewards</span>
-                    <Award className="h-4 w-4 text-neutral-600" />
+                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Rewards</span>
+                    <Award className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
-                  <h3 className="text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalRewardsRedeemed}</h3>
-                  <p className="text-[10px] font-mono text-purple-500 flex items-center gap-0.5">
-                    <span>Badges earned</span>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalRewardsRedeemed}</h3>
+                  <p className="text-[9px] sm:text-[10px] font-mono text-purple-500 flex items-center gap-0.5">
+                    <span>Badges</span>
                   </p>
                 </div>
 
               </div>
 
               {/* MAIN METRIC LAYOUT SPLIT */}
-              <div className="grid gap-6 xl:grid-cols-12 items-start">
+              <div className="grid gap-6 grid-cols-1 xl:grid-cols-12 items-start">
                 
                 {/* Left Column (9 cols): Requests log table, Events summary, and Orders summary */}
                 <div className="xl:col-span-9 space-y-6">
@@ -1012,15 +1022,15 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     </div>
 
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs border-collapse">
+                      <table className="w-full text-left text-xs border-collapse min-w-[500px]">
                         <thead>
                           <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[10px] uppercase">
-                            <th className="px-5 py-3 font-semibold">Booking Ref</th>
-                            <th className="px-4 py-3 font-semibold">Member</th>
-                            <th className="px-4 py-3 font-semibold">Date</th>
-                            <th className="px-4 py-3 font-semibold">Participants</th>
-                            <th className="px-4 py-3 font-semibold">Status</th>
-                            <th className="px-5 py-3 font-semibold text-right">Action</th>
+                            <th className="px-4 sm:px-5 py-3 font-semibold">Ref</th>
+                            <th className="px-3 sm:px-4 py-3 font-semibold">Member</th>
+                            <th className="hidden sm:table-cell px-3 sm:px-4 py-3 font-semibold">Date</th>
+                            <th className="hidden md:table-cell px-3 sm:px-4 py-3 font-semibold">People</th>
+                            <th className="px-3 sm:px-4 py-3 font-semibold">Status</th>
+                            <th className="px-4 sm:px-5 py-3 font-semibold text-right">Action</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-neutral-900/60">
@@ -1039,35 +1049,35 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                               'bg-amber-500/10 text-amber-500 border-amber-500/20';
                             return (
                               <tr key={bk.id} className="hover:bg-neutral-950/40 transition-colors">
-                                <td className="px-5 py-3.5 font-mono font-semibold text-neutral-300">
+                                <td className="px-4 sm:px-5 py-3.5 font-mono font-semibold text-neutral-300 text-[11px]">
                                   {bk.booking_reference || bk.id?.toString().slice(0, 8)}
                                 </td>
-                                <td className="px-4 py-3.5">
+                                <td className="px-3 sm:px-4 py-3.5">
                                   <div className="flex items-center gap-2">
                                     <div className="h-6 w-6 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-mono text-gold-500 font-bold shrink-0">
                                       {bk.member_avatar || (bk.member_name || '?').slice(0, 2).toUpperCase()}
                                     </div>
-                                    <span className="text-neutral-300 font-medium">{bk.member_name || bk.full_name || 'Anonymous'}</span>
+                                    <span className="text-neutral-300 font-medium text-[11px]">{bk.member_name || bk.full_name || 'Anonymous'}</span>
                                   </div>
                                 </td>
-                                <td className="px-4 py-3.5 text-neutral-400 font-mono text-[11px]">
+                                <td className="hidden sm:table-cell px-3 sm:px-4 py-3.5 text-neutral-400 font-mono text-[11px]">
                                   {bk.preferred_date || bk.confirmed_date || '-'}
                                 </td>
-                                <td className="px-4 py-3.5 text-neutral-300 font-mono">
+                                <td className="hidden md:table-cell px-3 sm:px-4 py-3.5 text-neutral-300 font-mono">
                                   {bk.participants || 1}
                                 </td>
-                                <td className="px-4 py-3.5">
-                                  <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase ${statusColor}`}>
+                                <td className="px-3 sm:px-4 py-3.5">
+                                  <span className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold uppercase ${statusColor}`}>
                                     <span className={`h-1 w-1 rounded-full ${
                                       statusLabel === 'Confirmed' || statusLabel === 'Completed' ? 'bg-green-500' : statusLabel === 'Cancelled' ? 'bg-red-500' : statusLabel === 'Discussion' ? 'bg-blue-500' : 'bg-amber-500'
                                     }`} />
                                     {statusLabel}
                                   </span>
                                 </td>
-                                <td className="px-5 py-3.5 text-right">
+                                <td className="px-4 sm:px-5 py-3.5 text-right">
                                   <button
                                     onClick={() => setActiveTab('Experiences')}
-                                    className="px-3 py-1 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-[10px] font-mono text-neutral-300 rounded hover:text-white transition-colors"
+                                    className="px-2.5 sm:px-3 py-1 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-[10px] font-mono text-neutral-300 rounded hover:text-white transition-colors"
                                   >
                                     View
                                   </button>
@@ -1077,7 +1087,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                           })}
                           {recentBookings.length === 0 && (
                             <tr>
-                              <td colSpan={6} className="px-5 py-8 text-center text-[10px] font-mono text-neutral-500">
+                              <td colSpan={6} className="px-4 sm:px-5 py-8 text-center text-[10px] font-mono text-neutral-500">
                                 No experience bookings yet
                               </td>
                             </tr>

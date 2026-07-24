@@ -133,6 +133,35 @@ body {
   border-color: #dfba89 !important;
 }
 
+/* Scroll Reveal — CSS animation-timeline: view() */
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: revealUp linear forwards;
+    animation-timeline: view();
+    animation-range: cover 0% cover 25%;
+  }
+
+  @keyframes revealUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .scroll-line {
+    width: 0;
+    animation: lineGrow linear forwards;
+    animation-timeline: view();
+    animation-range: cover 0% cover 25%;
+  }
+
+  @keyframes lineGrow {
+    to { width: 100%; }
+  }
+}
+
 /* Mobile: smaller widget */
 @media (max-width: 640px) {
   #google_translate_element {

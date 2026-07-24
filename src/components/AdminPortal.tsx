@@ -455,6 +455,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           method: 'WhatsApp',
           notes,
           next_action: nextAction,
+          last_contact: new Date().toISOString(),
+          by: 'management',
         }).then(() => {});
       }
 
@@ -500,7 +502,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
         member: reqObj.member,
         method: manualLogMethod,
         notes: manualLogNote.trim(),
-        next_action: manualLogAction.trim() || 'Awaiting response'
+        next_action: manualLogAction.trim() || 'Awaiting response',
+        last_contact: new Date().toISOString(),
+        by: 'management',
       });
     } catch {};
   };
@@ -511,10 +515,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     if (!announceTitle.trim() || !announceText.trim()) return;
 
     const { error } = await supabase.from('admin_notifications').insert({
-      title: announceTitle.trim(),
-      message: announceText.trim(),
+      text: announceTitle.trim(),
       status: 'unread',
-      scope: announceScope,
+      notif_time: new Date().toISOString(),
     });
     if (error) {
       showToast('Failed to send announcement: ' + error.message, 'error');
@@ -545,7 +548,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       excerpt: journalExcerpt.trim() || '',
       content: journalContent.trim() || '',
       date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-      readTime: '3 min read',
+      read_time: '3 min read',
       image: '',
     });
     if (error) {

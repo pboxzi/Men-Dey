@@ -1009,7 +1009,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       await supabase.from('user_badges').insert({ user_id: user?.id, title: newBadge.title, description: newBadge.desc, icon: newBadge.icon });
       await supabase.from('loyalty_points').upsert({ user_id: user?.id, total: loyaltyPoints - item.cost, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
       await supabase.from('journey_log').insert({ title: journeyMilestone.title, description: journeyMilestone.description, color: journeyMilestone.color });
-      await supabase.from('fan_notifications').insert({ text: `Successfully redeemed loyalty reward: ${item.title}. Check your unlocked badges!` });
+      await supabase.from('fan_notifications').insert({ text: `Successfully redeemed loyalty reward: ${item.title}. Check your unlocked badges!`, notif_time: new Date().toISOString() });
 
       // Create notification
       if (user?.id) notifyRewardRedeemed(user.id, item.title, item.cost);

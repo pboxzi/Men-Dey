@@ -91,9 +91,9 @@ export default function EventsSection() {
     }
     setSelectedEvent(evt);
     setForm({
-      name: profile?.full_name || user?.user_metadata?.name || '',
+      name: profile?.name || user?.user_metadata?.name || '',
       email: user?.email || '',
-      phone: profile?.phone || user?.user_metadata?.phone || '',
+      phone: user?.user_metadata?.phone || '',
       country: profile?.country || user?.user_metadata?.country || '',
       attendees: 1, specialRequests: '', commMethod: 'email',
     });

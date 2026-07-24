@@ -76,20 +76,9 @@ interface ScrollRevealProps {
 
 function ScrollReveal({ children, className = '' }: ScrollRevealProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 35 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-12% 0px -12% 0px' }}
-      transition={{
-        type: 'spring',
-        stiffness: 55,
-        damping: 18,
-        duration: 0.7,
-      }}
-      className={className}
-    >
+    <div className={`scroll-reveal ${className}`}>
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -868,7 +857,7 @@ export default function App() {
                         <h2 className="font-serif text-2xl md:text-3xl font-bold text-white uppercase tracking-tight">
                           How It <span className="text-gold-500">Works</span>
                         </h2>
-                        <div className="h-[1px] w-16 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto" />
+                        <div className="scroll-line h-[1px] w-16 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto" />
                         <p className="text-xs text-neutral-400 max-w-lg mx-auto leading-relaxed">
                           Getting started is easy. Here's how to join the community and make the most of it.
                         </p>
@@ -913,7 +902,7 @@ export default function App() {
                         <h2 className="font-serif text-3xl md:text-5xl font-black text-white uppercase tracking-tight">
                           Explore <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-500 to-amber-300">What We Offer</span>
                         </h2>
-                        <div className="h-[1px] w-20 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto" />
+                        <div className="scroll-line h-[1px] w-20 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto" />
                         <p className="text-xs text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed">
                           Choose an area below to learn more, join in, and connect with the community.
                         </p>

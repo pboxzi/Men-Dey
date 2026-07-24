@@ -47,7 +47,7 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
       }
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
       const { error: updateError } = await supabase.from('profiles')
-        .update({ avatar_url: publicUrl }).eq('id', user?.id);
+        .update({ avatar_text: publicUrl }).eq('id', user?.id);
       if (updateError) {
         showToast(updateError.message || 'Upload failed', 'error');
       } else {

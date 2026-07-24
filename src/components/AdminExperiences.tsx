@@ -218,7 +218,13 @@ function CatalogueTab({ showToast }: Props) {
   const handleArchive = async (exp: Experience) => {
     if (!confirm(`Archive "${exp.title}"? Historical bookings preserved.`)) return;
     try {
-      const { error } = await supabase.from('experiences').update({ archived: true }).eq('id', exp.id);
+      const { data: current } = await supabase.from('experiences').select('details').eq('id', exp.id).single();
+      let details: any = {};
+      try { if (current?.details?.length > 0) details = JSON.parse(current.details[0]); } catch {}
+      details.archived = true;
+      const { error } = await supabase.from('experiences').update({
+        details: [JSON.stringify(details)]
+      }).eq('id', exp.id);
       if (error) throw new Error(error.message);
       showToast('Experience archived.', 'info');
       loadExperiences();

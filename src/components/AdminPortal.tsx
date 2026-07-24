@@ -861,7 +861,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
         </aside>
 
         {/* MAIN WORKSPACE SCREEN CONTENT */}
-        <main className="flex-1 overflow-y-auto bg-[#070709] p-4 md:p-6 lg:p-8 space-y-6">
+        <main 
+          className="flex-1 overflow-y-auto bg-[#070709] p-4 md:p-6 lg:p-8 space-y-6"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
           
           {/* ACTIVE VIEW RENDERING: DASHBOARD */}
           {activeTab === 'Dashboard' && (

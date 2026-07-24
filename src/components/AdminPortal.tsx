@@ -585,26 +585,17 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
         
         {/* Left: Brand logo & name */}
         <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => { signOut(); navigate('/'); }}
-            className="p-1.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors"
-            aria-label="Sign out"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </button>
-          <div className="flex items-center gap-2">
-            <span className="font-serif text-lg font-bold tracking-widest text-gold-500">
-              GA
+          <span className="font-serif text-lg font-bold tracking-widest text-gold-500">
+            GA
+          </span>
+          <div className="hidden sm:block h-4 w-[1px] bg-neutral-800" />
+          <div className="hidden sm:flex flex-col text-left">
+            <span className="font-serif text-[10px] font-bold tracking-widest text-neutral-300">
+              GILLIAN ANDERSON
             </span>
-            <div className="hidden sm:block h-4 w-[1px] bg-neutral-800" />
-            <div className="hidden sm:flex flex-col text-left">
-              <span className="font-serif text-[10px] font-bold tracking-widest text-neutral-300">
-                GILLIAN ANDERSON
-              </span>
-              <span className="font-mono text-[7px] tracking-[0.2em] text-red-500 font-bold uppercase">
-                OFFICIAL MANAGEMENT PORTAL
-              </span>
-            </div>
+            <span className="font-mono text-[7px] tracking-[0.2em] text-red-500 font-bold uppercase">
+              OFFICIAL MANAGEMENT PORTAL
+            </span>
           </div>
         </div>
 

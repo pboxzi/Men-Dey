@@ -177,3 +177,14 @@ body {
   }
 }
 
+/* Crisp Chat Widget Fix */
+#crisp-chatbox {
+  max-height: 500px !important;
+  bottom: 80px !important;
+}
+
+#crisp-chatbox iframe {
+  max-height: 500px !important;
+  height: 500px !important;
+}
+

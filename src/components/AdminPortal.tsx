@@ -112,6 +112,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const notifRef = useRef<HTMLDivElement>(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+  const quickActionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -121,10 +122,13 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
         setShowProfileMenu(false);
       }
+      if (quickActionsRef.current && !quickActionsRef.current.contains(e.target as Node)) {
+        setShowQuickActions(false);
+      }
     };
-    if (showNotifications || showProfileMenu) document.addEventListener('mousedown', handleClick);
+    if (showNotifications || showProfileMenu || showQuickActions) document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, [showNotifications, showProfileMenu]);
+  }, [showNotifications, showProfileMenu, showQuickActions]);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
 
@@ -242,6 +246,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const [announceScope, setAnnounceScope] = useState('All Members');
 
   const [showJournalModal, setShowJournalModal] = useState(false);
+  const [showQuickActions, setShowQuickActions] = useState(false);
   const [journalTitle, setJournalTitle] = useState('');
   const [journalCategory, setJournalCategory] = useState('Philanthropy');
   const [journalExcerpt, setJournalExcerpt] = useState('');
@@ -872,38 +877,41 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   </div>
 
                   {/* Quick Actions Dropdown */}
-                  <div className="relative group">
-                    <button className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 px-2.5 sm:px-4 py-1.5 rounded text-xs font-bold tracking-wide transition-colors">
+                  <div className="relative" ref={quickActionsRef}>
+                    <button
+                      onClick={() => setShowQuickActions(!showQuickActions)}
+                      className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 px-2.5 sm:px-4 py-1.5 rounded text-xs font-bold tracking-wide transition-colors"
+                    >
                       <span className="hidden sm:inline">Quick Actions</span>
                       <span className="sm:hidden">Quick</span>
                       <ChevronDown className="h-3.5 w-3.5" />
                     </button>
                     
-                    {/* Hover menu */}
-                    <div className="absolute right-0 top-full mt-1.5 w-52 bg-neutral-950 border border-neutral-900 rounded-lg shadow-xl py-1 z-30 hidden group-hover:block">
-                      <button
-                        onClick={() => { setActiveTab('Events'); }}
-                        className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center gap-2"
-                      >
-                        <Plus className="h-3.5 w-3.5 text-amber-500" />
-                        Add New Event
-                      </button>
-                      <button
-                        onClick={() => setShowAnnounceModal(true)}
-                        className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center gap-2"
-                      >
-                        <Bell className="h-3.5 w-3.5 text-amber-500" />
-                        Send Announcement
-                      </button>
-                      <button
-                        onClick={() => setShowJournalModal(true)}
-                        className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center gap-2"
-                      >
-                        <FileSpreadsheet className="h-3.5 w-3.5 text-amber-500" />
-                        Create Journal Post
-                      </button>
-
-                    </div>
+                    {showQuickActions && (
+                      <div className="absolute right-0 top-full mt-1.5 w-52 bg-neutral-950 border border-neutral-900 rounded-lg shadow-xl py-1 z-30">
+                        <button
+                          onClick={() => { setActiveTab('Events'); setShowQuickActions(false); }}
+                          className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center gap-2"
+                        >
+                          <Plus className="h-3.5 w-3.5 text-amber-500" />
+                          Add New Event
+                        </button>
+                        <button
+                          onClick={() => { setShowAnnounceModal(true); setShowQuickActions(false); }}
+                          className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center gap-2"
+                        >
+                          <Bell className="h-3.5 w-3.5 text-amber-500" />
+                          Send Announcement
+                        </button>
+                        <button
+                          onClick={() => { setShowJournalModal(true); setShowQuickActions(false); }}
+                          className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center gap-2"
+                        >
+                          <FileSpreadsheet className="h-3.5 w-3.5 text-amber-500" />
+                          Create Journal Post
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

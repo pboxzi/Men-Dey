@@ -69,6 +69,8 @@ const FanPortal = React.lazy(() => import('./components/FanPortal'));
 const AdminPortal = React.lazy(() => import('./components/AdminPortal'));
 const ConfirmEmail = React.lazy(() => import('./components/ConfirmEmail'));
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 interface ScrollRevealProps {
   children: React.ReactNode;
   className?: string;
@@ -369,7 +371,7 @@ export default function App() {
   }
 
   if (viewMode === 'confirm-email') {
-    return <React.Suspense fallback={null}><ConfirmEmail /></React.Suspense>;
+    return <ErrorBoundary><React.Suspense fallback={null}><ConfirmEmail /></React.Suspense></ErrorBoundary>;
   }
 
   if (viewMode === 'portal') {
@@ -377,11 +379,11 @@ export default function App() {
       navigate('/admin', { replace: true });
       return null;
     }
-    return <React.Suspense fallback={null}><FanPortal onBackToHome={() => navigateTo('landing')} /></React.Suspense>;
+    return <ErrorBoundary><React.Suspense fallback={null}><FanPortal onBackToHome={() => navigateTo('landing')} /></React.Suspense></ErrorBoundary>;
   }
 
   if (viewMode === 'admin') {
-    return <React.Suspense fallback={null}><AdminPortal onBackToHome={() => navigateTo('landing')} /></React.Suspense>;
+    return <ErrorBoundary><React.Suspense fallback={null}><AdminPortal onBackToHome={() => navigateTo('landing')} /></React.Suspense></ErrorBoundary>;
   }
 
   return (
@@ -1084,11 +1086,11 @@ export default function App() {
             {activeNav === 'JOURNAL' && <JournalSection />}
             {activeNav === 'MEDIA' && <MediaSection />}
             {activeNav === 'COMMUNITY' && <CommunitySection />}
-            {activeNav === 'EXPERIENCES' && <React.Suspense fallback={null}><ExperiencesSection /></React.Suspense>}
-            {activeNav === 'MEMBERSHIP' && <React.Suspense fallback={null}><MembershipSection /></React.Suspense>}
+            {activeNav === 'EXPERIENCES' && <ErrorBoundary><React.Suspense fallback={null}><ExperiencesSection /></React.Suspense></ErrorBoundary>}
+            {activeNav === 'MEMBERSHIP' && <ErrorBoundary><React.Suspense fallback={null}><MembershipSection /></React.Suspense></ErrorBoundary>}
             {activeNav === 'EVENTS' && (
               <div className="py-8">
-                <React.Suspense fallback={null}><EventsSection /></React.Suspense>
+                <ErrorBoundary><React.Suspense fallback={null}><EventsSection /></React.Suspense></ErrorBoundary>
               </div>
             )}
             {activeNav === 'FAQ' && <FAQSection />}

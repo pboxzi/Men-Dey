@@ -1236,7 +1236,7 @@ export default function App() {
           maxWidth="max-w-4xl"
         >
           <div className="p-1">
-            <React.Suspense fallback={null}><EventsSection /></React.Suspense>
+            <ErrorBoundary><React.Suspense fallback={null}><EventsSection /></React.Suspense></ErrorBoundary>
           </div>
         </Modal>
       )}

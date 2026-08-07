@@ -200,7 +200,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
           <div className="flex items-start gap-4">
             <div className="h-16 w-16 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-center overflow-hidden shrink-0">
               {expImg(b) ? (
-                <img src={expImg(b)} alt="" loading="lazy" className="h-full w-full object-cover" />
+                <img src={expImg(b)} alt={b.experienceTitle || "Experience"} loading="lazy" className="h-full w-full object-cover" />
               ) : (
                 <Star className="h-6 w-6 text-neutral-600" />
               )}
@@ -419,7 +419,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
                   <div className="flex items-start gap-4">
                     <div className="h-14 w-14 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center overflow-hidden shrink-0">
                       {expImg(b) ? (
-                        <img src={expImg(b)} alt="" loading="lazy" className="h-full w-full object-cover" />
+                        <img src={expImg(b)} alt={b.experienceTitle || "Experience"} loading="lazy" className="h-full w-full object-cover" />
                       ) : (
                         <Star className="h-5 w-5 text-neutral-600" />
                       )}
@@ -461,7 +461,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
                     <div className="flex items-start gap-3">
                       <div className="h-12 w-12 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center overflow-hidden shrink-0">
                         {expImg(b) ? (
-                          <img src={expImg(b)} alt="" loading="lazy" className="h-full w-full object-cover opacity-60" />
+                          <img src={expImg(b)} alt={b.experienceTitle || "Experience"} loading="lazy" className="h-full w-full object-cover opacity-60" />
                         ) : (
                           <Star className="h-4 w-4 text-neutral-600" />
                         )}

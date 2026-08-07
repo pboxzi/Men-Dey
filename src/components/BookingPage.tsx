@@ -405,7 +405,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
               <Star className="h-12 w-12 text-neutral-700" />
             </div>
             {exp.image && (
-              <img src={exp.image} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-40" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              <img src={exp.image} alt={exp?.title || "Experience"} loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-40" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             )}
             <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/60 to-transparent" />
             <div className="absolute inset-0 p-5 md:p-7 flex flex-col justify-center">
@@ -579,7 +579,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                     <div className="p-4 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-3">
                       <div className="flex items-center gap-3">
                         <div className="h-12 w-12 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center overflow-hidden shrink-0">
-                          {exp.image ? <img src={exp.image} alt="" loading="lazy" className="h-full w-full object-cover" /> : <Star className="h-5 w-5 text-gold-500" />}
+                          {exp.image ? <img src={exp.image} alt={exp?.title || "Experience"} loading="lazy" className="h-full w-full object-cover" /> : <Star className="h-5 w-5 text-gold-500" />}
                         </div>
                         <div>
                           <p className="text-sm font-bold text-white">{exp.title}</p>

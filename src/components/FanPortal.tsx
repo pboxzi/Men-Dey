@@ -2371,7 +2371,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           {/* Post Image */}
                           {post.image && (
                             <div className="relative rounded-xl overflow-hidden border border-neutral-900/60 group/img">
-                              <img src={post.image} alt="" loading="lazy" className="w-full h-40 object-cover brightness-[0.85] saturate-[0.9] group-hover/img:brightness-100 group-hover/img:saturate-100 group-hover/img:scale-[1.02] transition-all duration-700" />
+                              <img src={post.image} alt="Community post image" loading="lazy" className="w-full h-40 object-cover brightness-[0.85] saturate-[0.9] group-hover/img:brightness-100 group-hover/img:saturate-100 group-hover/img:scale-[1.02] transition-all duration-700" />
                               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-500" />
                             </div>
                           )}

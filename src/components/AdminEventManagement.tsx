@@ -119,7 +119,7 @@ function CatalogueTab({ showToast }: Props) {
           >
             <div className="flex justify-between items-center">
               <h3 className="font-serif text-lg font-bold text-white">Create Event</h3>
-              <button onClick={() => setShowForm(false)} className="p-1 hover:bg-neutral-900 rounded transition-colors">
+              <button onClick={() => setShowForm(false)} className="p-1 hover:bg-neutral-900 rounded transition-colors" aria-label="Close">
                 <X className="h-5 w-5 text-neutral-500" />
               </button>
             </div>

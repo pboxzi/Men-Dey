@@ -420,14 +420,14 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                   <Edit3 className="h-3.5 w-3.5 inline mr-1.5" />
                   Edit {detailItem._type === 'photos' ? 'Photo' : 'Video'}
                 </span>
-                <button onClick={() => setDetailItem(null)} className="p-1 rounded text-neutral-500 hover:text-white"><X className="h-4 w-4" /></button>
+                <button onClick={() => setDetailItem(null)} className="p-1 rounded text-neutral-500 hover:text-white" aria-label="Close"><X className="h-4 w-4" /></button>
               </div>
 
               <div className="p-5 space-y-5 max-h-[75vh] overflow-y-auto">
                 {/* Preview */}
                 {detailItem._type === 'photos' && detailItem.url && (
                   <div className="rounded-lg border border-neutral-900 overflow-hidden bg-neutral-900 max-h-64 flex items-center justify-center">
-                    <img src={detailItem.url} alt="" loading="lazy" className="max-w-full max-h-64 object-contain" />
+                    <img src={detailItem.url} alt={detailItem.title || "Media item"} loading="lazy" className="max-w-full max-h-64 object-contain" />
                   </div>
                 )}
                 {detailItem._type === 'videos' && detailItem.youtube_id && (
@@ -550,7 +550,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                   <Plus className="h-3.5 w-3.5 inline mr-1.5" />
                   Add {activeMediaSubTab === 'photos' ? 'Photo' : 'Video'}
                 </span>
-                <button onClick={() => setShowAddModal(false)} className="p-1 rounded text-neutral-500 hover:text-white"><X className="h-4 w-4" /></button>
+                <button onClick={() => setShowAddModal(false)} className="p-1 rounded text-neutral-500 hover:text-white" aria-label="Close"><X className="h-4 w-4" /></button>
               </div>
 
               <form onSubmit={activeMediaSubTab === 'photos' ? addPhoto : addVideo} className="p-5 space-y-4">

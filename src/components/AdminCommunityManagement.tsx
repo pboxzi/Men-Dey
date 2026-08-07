@@ -587,7 +587,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                 <p className="text-sm text-neutral-200 leading-relaxed">{detailPost.content}</p>
                 {detailPost.image && (
                   <div className="mt-3 rounded-xl overflow-hidden border border-neutral-900/60">
-                    <img src={detailPost.image} alt="" loading="lazy" className="w-full h-48 object-cover" />
+                    <img src={detailPost.image} alt="Post image" loading="lazy" className="w-full h-48 object-cover" />
                   </div>
                 )}
               </div>

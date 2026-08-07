@@ -326,7 +326,7 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
             </div>
             <div className="flex gap-4 items-center z-10 pt-4">
               <div className="h-14 w-14 rounded-full border border-neutral-800 bg-neutral-900 overflow-hidden flex items-center justify-center shrink-0">
-                {membership.profile_photo ? <img src={membership.profile_photo} alt="" loading="lazy" className="h-full w-full object-cover" /> : <User className="h-6 w-6 text-neutral-700" />}
+                {membership.profile_photo ? <img src={membership.profile_photo} alt="Member profile photo" loading="lazy" className="h-full w-full object-cover" /> : <User className="h-6 w-6 text-neutral-700" />}
               </div>
               <div className="space-y-1 text-left">
                 <span className="text-[8px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>
@@ -390,7 +390,7 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
           </div>
           <div className="flex gap-4 items-center z-10 pt-4">
             <div className="h-16 w-16 rounded-full border-2 border-gold-500/40 bg-neutral-900 overflow-hidden flex items-center justify-center shrink-0 shadow-lg shadow-gold-500/10">
-{membership.profile_photo ? <img src={membership.profile_photo} alt="" loading="lazy" className="h-full w-full object-cover" /> : <User className="h-7 w-7 text-neutral-700" />}
+{membership.profile_photo ? <img src={membership.profile_photo} alt="Member profile photo" loading="lazy" className="h-full w-full object-cover" /> : <User className="h-7 w-7 text-neutral-700" />}
             </div>
             <div className="space-y-1 text-left">
                 <span className="text-[8px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>

@@ -447,7 +447,7 @@ export default function MembershipSection() {
             <div className="flex gap-4 items-center z-10 pt-2">
               <div className="h-16 w-16 rounded-full border-2 border-gold-500/30 bg-neutral-900 overflow-hidden flex items-center justify-center shrink-0 shadow-lg">
                 {myMembership.profile_photo ? (
-                  <img src={myMembership.profile_photo} alt="" loading="lazy" className="h-full w-full object-cover" />
+                  <img src={myMembership.profile_photo} alt="Your profile photo" loading="lazy" className="h-full w-full object-cover" />
                 ) : (
                   <User className="h-7 w-7 text-neutral-700" />
                 )}

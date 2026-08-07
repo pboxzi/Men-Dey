@@ -310,7 +310,7 @@ export default function AdminDirectEmail({ showToast }: Props) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-[10px] font-mono font-bold tracking-widest text-neutral-500 uppercase">Recent Emails</h3>
-            <button onClick={fetchRecentEmails} className="p-1 text-neutral-600 hover:text-white transition-colors">
+            <button onClick={fetchRecentEmails} className="p-1 text-neutral-600 hover:text-white transition-colors" aria-label="Refresh emails">
               <Mail className="h-3.5 w-3.5" />
             </button>
           </div>

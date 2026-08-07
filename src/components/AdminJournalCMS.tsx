@@ -455,7 +455,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
                   <Edit3 className="h-3.5 w-3.5 inline mr-1.5" />
                   {editModal.mode === 'create' ? 'New Entry' : 'Edit Entry'}
                 </span>
-                <button onClick={() => setEditModal(null)} className="p-1 rounded text-neutral-500 hover:text-white"><X className="h-4 w-4" /></button>
+                <button onClick={() => setEditModal(null)} className="p-1 rounded text-neutral-500 hover:text-white" aria-label="Close"><X className="h-4 w-4" /></button>
               </div>
 
               <form onSubmit={saveEntry} className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
@@ -526,7 +526,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
                   <Edit3 className="h-3.5 w-3.5 inline mr-1.5" />
                   {editModal.mode === 'create' ? 'New Article' : 'Edit Article'}
                 </span>
-                <button onClick={() => setEditModal(null)} className="p-1 rounded text-neutral-500 hover:text-white"><X className="h-4 w-4" /></button>
+                <button onClick={() => setEditModal(null)} className="p-1 rounded text-neutral-500 hover:text-white" aria-label="Close"><X className="h-4 w-4" /></button>
               </div>
 
               <form onSubmit={saveArticle} className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">

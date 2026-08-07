@@ -181,7 +181,7 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
                     onClick={() => setActiveImageIndex(i)}
                     className={`w-14 h-10 rounded-lg overflow-hidden border-2 transition-all duration-200 ${i === activeImageIndex ? 'border-gold-500 opacity-100 ring-1 ring-gold-500/30' : 'border-white/10 opacity-50 hover:opacity-80'}`}
                   >
-                    <img src={img} alt="" loading="lazy" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <img src={img} alt={exp.title || "Experience thumbnail"} loading="lazy" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                   </button>
                 ))}
               </div>

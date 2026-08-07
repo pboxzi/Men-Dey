@@ -1170,31 +1170,88 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 key="welcome-panel"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-md rounded-xl border border-gold-500/20 bg-neutral-950 p-8 shadow-2xl text-center space-y-6"
+                className="w-full max-w-lg rounded-2xl border border-gold-500/20 bg-[#0a0a0a] p-8 sm:p-10 shadow-2xl text-center space-y-6 relative overflow-hidden"
               >
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold-500/10 text-gold-500 border border-gold-500/30">
-                  <Star className="h-7 w-7" />
-                </div>
-                <div className="space-y-2">
-                  <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest block font-bold">
-                    WELCOME TO YOUR SANCTUARY
-                  </span>
-                  <h4 className="font-serif text-xl font-bold tracking-wider text-white">
-                    You're All Set!
-                  </h4>
-                  <p className="text-xs text-neutral-400 max-w-xs mx-auto leading-relaxed">
-                    Your account is ready. Access your personal portal to manage your profile, connect with the community, and explore exclusive experiences.
+                {/* Ambient glow */}
+                <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full bg-gold-500/5 blur-[80px] pointer-events-none" />
+
+                <div className="relative z-10 space-y-6">
+                  {/* Brand mark */}
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-gold-500/20 to-gold-600/10 text-gold-500 border border-gold-500/30 shadow-lg shadow-gold-500/10">
+                    <Star className="h-7 w-7" />
+                  </div>
+
+                  {/* Title */}
+                  <div className="space-y-2">
+                    <span className="text-[9px] font-mono text-gold-500 uppercase tracking-[0.2em] block font-bold">
+                      WELCOME TO YOUR SANCTUARY
+                    </span>
+                    <h4 className="font-serif text-2xl font-bold tracking-wider text-white">
+                      You're In, {profile?.name?.split(' ')[0] || 'Friend'}
+                    </h4>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="h-[1px] w-16 mx-auto bg-gradient-to-r from-transparent via-gold-500/40 to-transparent" />
+
+                  {/* Welcome body */}
+                  <p className="text-sm text-neutral-300 leading-relaxed max-w-sm mx-auto">
+                    You've joined a community built for those who appreciate artistry, advocacy, and authentic connection. Here's what's waiting for you.
+                  </p>
+
+                  {/* Benefits grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                    <div className="p-3 rounded-xl border border-neutral-800/60 bg-neutral-900/40 space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <Star className="h-3.5 w-3.5 text-gold-500" />
+                        <span className="text-[11px] font-bold text-white tracking-wide">Exclusive Experiences</span>
+                      </div>
+                      <p className="text-[10px] text-neutral-500 leading-relaxed">Book private sessions, one-on-one meetings, and special encounters with Gillian. Limited availability.</p>
+                    </div>
+                    <div className="p-3 rounded-xl border border-neutral-800/60 bg-neutral-900/40 space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-3.5 w-3.5 text-blue-400" />
+                        <span className="text-[11px] font-bold text-white tracking-wide">Members-Only Events</span>
+                      </div>
+                      <p className="text-[10px] text-neutral-500 leading-relaxed">Live Q&A sessions, intimate watch parties, and exclusive celebrations with fellow fans.</p>
+                    </div>
+                    <div className="p-3 rounded-xl border border-neutral-800/60 bg-neutral-900/40 space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-3.5 w-3.5 text-emerald-400" />
+                        <span className="text-[11px] font-bold text-white tracking-wide">Community Hub</span>
+                      </div>
+                      <p className="text-[10px] text-neutral-500 leading-relaxed">Connect with fans worldwide. Share stories, post photos, and find your people.</p>
+                    </div>
+                    <div className="p-3 rounded-xl border border-neutral-800/60 bg-neutral-900/40 space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <Crown className="h-3.5 w-3.5 text-amber-400" />
+                        <span className="text-[11px] font-bold text-white tracking-wide">Membership Perks</span>
+                      </div>
+                      <p className="text-[10px] text-neutral-500 leading-relaxed">Priority booking, custom membership card, early access to events and announcements.</p>
+                    </div>
+                  </div>
+
+                  {/* Quick start */}
+                  <div className="bg-gold-500/[0.04] border border-gold-500/10 rounded-xl p-4 space-y-2">
+                    <p className="text-[10px] font-mono text-gold-500 uppercase tracking-widest font-bold">Quick Start</p>
+                    <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[10px] text-neutral-400">
+                      <span><span className="text-white font-medium">1.</span> Explore Experiences</span>
+                      <span><span className="text-white font-medium">2.</span> Check upcoming Events</span>
+                      <span><span className="text-white font-medium">3.</span> Upgrade for full access</span>
+                    </div>
+                  </div>
+
+                  {/* CTA */}
+                  <button
+                    onClick={() => { setShowWelcome(false); setActiveTab('Dashboard'); }}
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 text-neutral-950 font-bold text-sm tracking-wider hover:from-gold-400 hover:to-amber-400 transition-all shadow-lg shadow-gold-500/10 active:scale-[0.98]"
+                  >
+                    ENTER MY PORTAL
+                  </button>
+                  <p className="text-[8px] text-neutral-600 font-mono uppercase tracking-widest">
+                    Find your portal anytime in the profile menu above
                   </p>
                 </div>
-                <button
-                  onClick={() => { setShowWelcome(false); setActiveTab('Dashboard'); }}
-                  className="w-full py-3 rounded-lg bg-gradient-to-r from-gold-500 to-amber-500 text-neutral-950 font-bold text-sm tracking-wider hover:from-gold-400 hover:to-amber-400 transition-all"
-                >
-                  ENTER MY PORTAL
-                </button>
-                <p className="text-[8px] text-neutral-600 font-mono uppercase tracking-widest">
-                  Find your portal anytime in the profile menu above
-                </p>
               </motion.div>
             ) : (
               <motion.div
@@ -1641,30 +1698,83 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
-                    className="mb-8 p-5 rounded-xl border border-gold-500/20 bg-gold-500/[0.03]"
+                    className="mb-8 rounded-2xl border border-gold-500/20 bg-[#0a0a0a] overflow-hidden"
                   >
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                        <Star className="h-4 w-4 text-gold-500" /> Welcome to your Fan Portal
-                      </h3>
-                      <p className="text-xs text-neutral-400 leading-relaxed">
-                        Here's how to get started. Use the tabs on the left (or bottom on mobile) to explore:
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-[11px]">
-                        <div className="flex items-start gap-2 p-3 rounded-lg bg-neutral-900/40 border border-neutral-800">
-                          <LayoutGrid className="h-3.5 w-3.5 text-gold-500 shrink-0 mt-0.5" />
-                          <div><span className="text-white font-medium">Dashboard</span> — <span className="text-neutral-500">Your home screen with stats and quick links.</span></div>
+                    {/* Header band */}
+                    <div className="px-5 py-4 border-b border-neutral-800/60 bg-gradient-to-r from-gold-500/[0.06] to-transparent">
+                      <div className="flex items-center gap-2.5">
+                        <div className="h-8 w-8 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
+                          <Star className="h-4 w-4 text-gold-500" />
                         </div>
-                        <div className="flex items-start gap-2 p-3 rounded-lg bg-neutral-900/40 border border-neutral-800">
-                          <Users className="h-3.5 w-3.5 text-blue-400 shrink-0 mt-0.5" />
-                          <div><span className="text-white font-medium">Community</span> — <span className="text-neutral-500">Chat with other fans and share your thoughts.</span></div>
-                        </div>
-                        <div className="flex items-start gap-2 p-3 rounded-lg bg-neutral-900/40 border border-neutral-800">
-                          <Star className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                          <div><span className="text-white font-medium">Experiences</span> — <span className="text-neutral-500">Book sessions with Gillian or check your bookings.</span></div>
+                        <div>
+                          <h3 className="text-sm font-bold text-white">Welcome to your Portal</h3>
+                          <p className="text-[10px] text-neutral-500 font-mono tracking-wider">YOUR SANCTUARY AWAITS</p>
                         </div>
                       </div>
-                      <p className="text-[10px] text-neutral-500">Tap <span className="text-gold-500 font-medium">More</span> on the bottom bar to see Membership, Events, Messages, and Settings.</p>
+                    </div>
+
+                    <div className="p-5 space-y-5">
+                      {/* Intro */}
+                      <p className="text-xs text-neutral-300 leading-relaxed">
+                        This is your personal hub. From here, you can book experiences, join events, connect with the community, and manage your membership. Everything is designed for you.
+                      </p>
+
+                      {/* Navigation guide */}
+                      <div className="space-y-2">
+                        <p className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Navigate Your Portal</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-neutral-900/40 border border-neutral-800/60 hover:border-neutral-700/60 transition-colors">
+                            <LayoutGrid className="h-3.5 w-3.5 text-gold-500 shrink-0 mt-0.5" />
+                            <div>
+                              <span className="text-[11px] text-white font-semibold">Dashboard</span>
+                              <p className="text-[10px] text-neutral-500 leading-relaxed">Your home screen — stats, quick links, and activity at a glance.</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-neutral-900/40 border border-neutral-800/60 hover:border-neutral-700/60 transition-colors">
+                            <Star className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                            <div>
+                              <span className="text-[11px] text-white font-semibold">Experiences</span>
+                              <p className="text-[10px] text-neutral-500 leading-relaxed">Book private sessions, meetings, and encounters with Gillian.</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-neutral-900/40 border border-neutral-800/60 hover:border-neutral-700/60 transition-colors">
+                            <Calendar className="h-3.5 w-3.5 text-blue-400 shrink-0 mt-0.5" />
+                            <div>
+                              <span className="text-[11px] text-white font-semibold">Events</span>
+                              <p className="text-[10px] text-neutral-500 leading-relaxed">Live Q&A sessions, watch parties, and exclusive celebrations.</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-neutral-900/40 border border-neutral-800/60 hover:border-neutral-700/60 transition-colors">
+                            <Users className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+                            <div>
+                              <span className="text-[11px] text-white font-semibold">Community</span>
+                              <p className="text-[10px] text-neutral-500 leading-relaxed">Connect with fans, share stories, and find your people.</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Upgrade prompt */}
+                      <div className="p-4 rounded-xl border border-gold-500/15 bg-gold-500/[0.03] space-y-2.5">
+                        <div className="flex items-center gap-2">
+                          <Crown className="h-3.5 w-3.5 text-gold-500" />
+                          <span className="text-[11px] font-bold text-white">Unlock the Full Experience</span>
+                        </div>
+                        <p className="text-[10px] text-neutral-400 leading-relaxed">
+                          Upgrade your membership to get priority booking, early event access, a custom membership card, and direct communication channels. Choose the tier that fits you.
+                        </p>
+                        <button
+                          onClick={() => setActiveTab('Membership')}
+                          className="text-[10px] font-bold text-gold-500 hover:text-gold-400 transition-colors tracking-wider uppercase"
+                        >
+                          VIEW MEMBERSHIP TIERS →
+                        </button>
+                      </div>
+
+                      {/* Mobile hint */}
+                      <p className="text-[10px] text-neutral-600">
+                        Tap <span className="text-gold-500 font-medium">More</span> on the bottom bar to see Membership, Events, Messages, and Settings.
+                      </p>
                     </div>
                   </motion.div>
                 )}

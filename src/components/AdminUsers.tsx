@@ -3,7 +3,7 @@ import { supabase } from '../utils/supabase';
 import { createNotification } from '../utils/notifications';
 import { logger } from '../utils/logger';
 import {
-  Users, Search, Loader2, Crown, Shield, Mail, MapPin, Calendar,
+  Users, Search, Loader2, Crown, Shield, MapPin, Calendar,
   ChevronRight, X, Award, Star, MessageCircle, TrendingUp, Ban, CheckCircle, Trash2
 } from 'lucide-react';
 
@@ -328,10 +328,6 @@ export default function AdminUsers({ showToast }: Props) {
                 <div className="flex items-center gap-2 text-xs">
                   <Calendar className="h-3.5 w-3.5 text-neutral-500" />
                   <span className="text-neutral-400">Joined {new Date(selectedUser.created_at).toLocaleDateString()}</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <Mail className="h-3.5 w-3.5 text-neutral-500" />
-                  <span className="text-neutral-400 font-mono text-[10px]">{selectedUser.id.slice(0, 8)}...</span>
                 </div>
               </div>
 

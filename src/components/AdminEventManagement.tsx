@@ -248,7 +248,7 @@ function RegistrationsTab({ showToast }: Props) {
 
   useEffect(() => { void loadData(); }, []);
 
-  const loadData = async () => {
+  async function loadData() {
     setLoading(true);
     setError(null);
     const [regRes, evRes] = await Promise.all([
@@ -263,7 +263,7 @@ function RegistrationsTab({ showToast }: Props) {
     if (regRes.data) setRegistrations(regRes.data);
     if (evRes.data) setEvents(evRes.data);
     setLoading(false);
-  };
+  }
 
   const filtered = registrations.filter(r => {
     if (statusFilter !== 'all' && r.status !== statusFilter) return false;

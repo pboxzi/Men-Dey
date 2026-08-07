@@ -316,7 +316,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     }, 4000);
   };
 
-  const fetchNotifications = async () => {
+  async function fetchNotifications() {
     if (!user?.id) return;
     const { data, error } = await supabase
       .from('notifications')
@@ -328,9 +328,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       setNotifications(data);
       setNotificationCount(data.filter((n: AdminNotification) => !n.is_read).length);
     }
-  };
+  }
 
-  const fetchActivityData = async () => {
+  async function fetchActivityData() {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
     const weekAgo = new Date(now.getTime() - 7 * 86400000).toISOString();
@@ -364,18 +364,18 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       week: { bookings: weekBookings, orders: 0, members: weekMembers },
       dailyBars,
     });
-  };
+  }
 
-  const fetchRecentBookings = async () => {
+  async function fetchRecentBookings() {
     const { data } = await supabase
       .from('experience_requests')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(5);
     if (data) setRecentBookings(data);
-  };
+  }
 
-  const fetchDashboardStats = async () => {
+  async function fetchDashboardStats() {
     const [
       { count: profileCount },
       { count: expCount },
@@ -426,7 +426,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     });
     if (eventsData) setDashboardEvents(eventsData);
     if (activityData) setRecentActivity(activityData);
-  };
+  }
 
   // Settings State
 

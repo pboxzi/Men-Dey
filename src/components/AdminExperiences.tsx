@@ -610,7 +610,7 @@ function BookingsTab({ showToast }: Props) {
     createdAt: r.created_at || '', userId: r.user_id || '', timeline: [],
   });
 
-  const loadBookings = async () => {
+  async function loadBookings() {
     try {
       const { data, error } = await supabase.from('experience_requests').select('*').order('created_at', { ascending: false });
       if (!error) setBookings((data || []).map(mapBooking));
@@ -619,9 +619,9 @@ function BookingsTab({ showToast }: Props) {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const loadExperiences = async () => {
+  async function loadExperiences() {
     try {
       const { data, error } = await supabase.from('experiences').select('*');
       if (!error) {
@@ -630,7 +630,7 @@ function BookingsTab({ showToast }: Props) {
         setExperiences(map);
       }
     } catch {}
-  };
+  }
 
   const filtered = bookings.filter(b => {
     if (statusFilter !== 'all' && b.status !== statusFilter) return false;

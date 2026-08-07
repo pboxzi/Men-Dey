@@ -215,7 +215,7 @@ export default function AdminMembershipReview() {
         ].map(s => (
           <div key={s.label} className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-3 text-center">
             <p className={'text-lg font-bold font-mono ' + s.color}>{s.value}</p>
-            <p className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">{s.label}</p>
+            <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">{s.label}</p>
           </div>
         ))}
       </div>
@@ -265,10 +265,10 @@ export default function AdminMembershipReview() {
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-white truncate">{req.member_name || req.card_name}</p>
-                    <p className="text-[9px] text-neutral-500 font-mono truncate">{req.member_email}</p>
+                    <p className="text-[11px] text-neutral-500 font-mono truncate">{req.member_email}</p>
                   </div>
                 </div>
-                <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[8px] font-mono font-bold uppercase border ${STATUS_STYLES[req.status] || 'bg-neutral-900 text-neutral-500 border-neutral-800'}`}>
+                <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${STATUS_STYLES[req.status] || 'bg-neutral-900 text-neutral-500 border-neutral-800'}`}>
                   {STATUS_LABELS[req.status] || req.status}
                 </span>
               </div>
@@ -284,13 +284,13 @@ export default function AdminMembershipReview() {
 
               {/* Active membership extras */}
               {req.status === 'active' && (
-                <div className="flex items-center gap-3 text-[9px] font-mono text-neutral-500 pt-1.5 border-t border-neutral-900/60">
+                <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500 pt-1.5 border-t border-neutral-900/60">
                   <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Exp: {req.expiration_date ? new Date(req.expiration_date).toLocaleDateString() : 'N/A'}</span>
                   {req.membership_number && <span className="flex items-center gap-1"><Crown className="h-3 w-3" /> #{req.membership_number.split('-').pop()}</span>}
                 </div>
               )}
 
-              <div className="flex items-center justify-end gap-1 pt-1 border-t border-neutral-900/60 text-[9px] font-mono uppercase tracking-wider text-neutral-600 group-hover:text-gold-400 transition-all duration-300 group-hover:gap-2">
+              <div className="flex items-center justify-end gap-1 pt-1 border-t border-neutral-900/60 text-[11px] font-mono uppercase tracking-wider text-neutral-600 group-hover:text-gold-400 transition-all duration-300 group-hover:gap-2">
                 Click to manage <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
@@ -324,7 +324,7 @@ export default function AdminMembershipReview() {
                     <p className="text-xs text-neutral-500 font-mono">{selectedRequest.member_email}</p>
                   </div>
                 </div>
-                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-[9px] font-mono font-bold uppercase border ${STATUS_STYLES[selectedRequest.status] || ''}`}>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-mono font-bold uppercase border ${STATUS_STYLES[selectedRequest.status] || ''}`}>
                   {STATUS_LABELS[selectedRequest.status] || selectedRequest.status}
                 </span>
               </div>
@@ -332,7 +332,7 @@ export default function AdminMembershipReview() {
               {/* Detail Grid */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Application Details</h4>
+                  <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Application Details</h4>
                   <div className="space-y-2 text-[11px]">
                     {[
                       ['Tier', selectedRequest.tier_name, 'text-gold-500 font-bold'],
@@ -350,7 +350,7 @@ export default function AdminMembershipReview() {
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Member Info</h4>
+                  <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Member Info</h4>
                   <div className="space-y-2 text-[11px]">
                     {[
                       ['Name', selectedRequest.member_name],
@@ -368,7 +368,7 @@ export default function AdminMembershipReview() {
 
                   {selectedRequest.status === 'active' && (
                     <div className="pt-2 space-y-2">
-                      <h4 className="text-[9px] font-mono text-emerald-500 uppercase tracking-widest font-bold">Validity</h4>
+                      <h4 className="text-[11px] font-mono text-emerald-500 uppercase tracking-widest font-bold">Validity</h4>
                       <div className="space-y-2 text-[11px]">
                         <div className="flex justify-between">
                           <span className="text-neutral-500">Activated</span>
@@ -389,7 +389,7 @@ export default function AdminMembershipReview() {
               {/* Cancel Reason */}
               {selectedRequest.cancel_reason && (
                 <div className="rounded-lg border border-red-500/20 bg-red-500/[0.02] p-3 space-y-1">
-                  <h4 className="text-[9px] font-mono text-red-400 uppercase tracking-widest font-bold flex items-center gap-1">
+                  <h4 className="text-[11px] font-mono text-red-400 uppercase tracking-widest font-bold flex items-center gap-1">
                     <AlertTriangle className="h-3 w-3" /> Cancellation Reason
                   </h4>
                   <p className="text-[11px] text-neutral-300">{selectedRequest.cancel_reason}</p>
@@ -398,7 +398,7 @@ export default function AdminMembershipReview() {
 
               {/* Admin Notes */}
               <div className="space-y-2">
-                <h4 className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Admin Notes</h4>
+                <h4 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Admin Notes</h4>
                 {selectedRequest.admin_notes ? (
                   <p className="text-[11px] text-neutral-300 whitespace-pre-line bg-neutral-950/40 border border-neutral-900 rounded-lg p-3">{selectedRequest.admin_notes}</p>
                 ) : (
@@ -472,12 +472,12 @@ export default function AdminMembershipReview() {
                 <div className="flex items-center gap-2 ml-auto">
                   {confirmDelete === selectedRequest.id ? (
                     <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/30">
-                      <span className="text-[9px] font-mono text-red-400 uppercase tracking-wider whitespace-nowrap">Confirm delete?</span>
+                      <span className="text-[11px] font-mono text-red-400 uppercase tracking-wider whitespace-nowrap">Confirm delete?</span>
                       <button onClick={() => deleteRequest(selectedRequest.id)} disabled={actionLoading === selectedRequest.id}
-                        className="px-2.5 py-1 rounded-lg bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[9px] font-mono uppercase tracking-widest transition-all disabled:opacity-50"
+                        className="px-2.5 py-1 rounded-lg bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[11px] font-mono uppercase tracking-widest transition-all disabled:opacity-50"
                       >{actionLoading === selectedRequest.id ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Yes'}</button>
                       <button onClick={() => setConfirmDelete(null)}
-                        className="px-2.5 py-1 rounded-lg border border-neutral-700 text-neutral-400 hover:text-white text-[9px] font-mono uppercase transition-all"
+                        className="px-2.5 py-1 rounded-lg border border-neutral-700 text-neutral-400 hover:text-white text-[11px] font-mono uppercase transition-all"
                       >No</button>
                     </div>
                   ) : (

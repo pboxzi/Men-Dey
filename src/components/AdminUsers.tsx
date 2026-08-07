@@ -200,7 +200,7 @@ export default function AdminUsers({ showToast }: Props) {
           <div key={stat.label} className="rounded-xl border border-neutral-900 bg-neutral-950 p-3 space-y-1">
             <div className="flex items-center gap-1.5">
               <stat.icon className="h-3 w-3 text-gold-500" />
-              <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
+              <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
             </div>
             <p className="text-xl font-bold text-white font-mono">{stat.value}</p>
           </div>
@@ -267,7 +267,7 @@ export default function AdminUsers({ showToast }: Props) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-xs font-bold text-white truncate">{user.name || 'Unnamed'}</p>
-                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded border text-[8px] font-mono uppercase ${roleBadge.color}`}>
+                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded border text-[10px] font-mono uppercase ${roleBadge.color}`}>
                           <roleBadge.icon className="h-2.5 w-2.5" />
                           {roleBadge.label}
                         </span>
@@ -311,7 +311,7 @@ export default function AdminUsers({ showToast }: Props) {
                   <p className="text-[10px] text-neutral-500 font-mono">{selectedUser.email}</p>
                 </div>
                 <div className="flex items-center justify-center gap-2">
-                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded border text-[9px] font-mono uppercase ${getRoleBadge(selectedUser.role).color}`}>
+                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded border text-[11px] font-mono uppercase ${getRoleBadge(selectedUser.role).color}`}>
                     {getRoleBadge(selectedUser.role).label}
                   </span>
                 </div>
@@ -337,13 +337,13 @@ export default function AdminUsers({ showToast }: Props) {
                   <h4 className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">About This Member</h4>
                   {selectedUser.how_heard_about && (
                     <div className="rounded-lg bg-neutral-900/50 p-3 space-y-1">
-                      <p className="text-[8px] font-mono text-neutral-500 uppercase">Discovered Gillian Via</p>
+                      <p className="text-[10px] font-mono text-neutral-500 uppercase">Discovered Gillian Via</p>
                       <p className="text-xs text-white">{selectedUser.how_heard_about}</p>
                     </div>
                   )}
                   {selectedUser.favorite_thing && (
                     <div className="rounded-lg bg-neutral-900/50 p-3 space-y-1">
-                      <p className="text-[8px] font-mono text-neutral-500 uppercase">What They Love About Gillian</p>
+                      <p className="text-[10px] font-mono text-neutral-500 uppercase">What They Love About Gillian</p>
                       <p className="text-xs text-white leading-relaxed">{selectedUser.favorite_thing}</p>
                     </div>
                   )}
@@ -370,7 +370,7 @@ export default function AdminUsers({ showToast }: Props) {
                       <div key={stat.label} className="rounded-lg bg-neutral-900/50 p-2 space-y-0.5">
                         <div className="flex items-center gap-1">
                           <stat.icon className="h-2.5 w-2.5 text-gold-500" />
-                          <span className="text-[8px] font-mono text-neutral-500 uppercase">{stat.label}</span>
+                          <span className="text-[10px] font-mono text-neutral-500 uppercase">{stat.label}</span>
                         </div>
                         <p className="text-sm font-bold text-white font-mono">{stat.value}</p>
                       </div>
@@ -403,7 +403,7 @@ export default function AdminUsers({ showToast }: Props) {
                   <Trash2 className="h-3.5 w-3.5" /> Delete User
                 </button>
                 <div className="rounded-lg bg-neutral-900/30 border border-neutral-900 p-3">
-                  <p className="text-[9px] text-neutral-500 leading-relaxed">
+                  <p className="text-[11px] text-neutral-500 leading-relaxed">
                     {selectedUser.role === 'admin'
                       ? 'This user has full administrative access to all portal features, content management, and user oversight.'
                       : 'This user has standard member access. They can browse content, request experiences, and earn rewards.'}

@@ -51,7 +51,7 @@ export function TermsOfServiceModal({ isOpen, onClose }: LegalModalProps) {
             The Platform offers a Loyalty Points (PTS) program designed to reward positive engagement, direct humanitarian donations, and community kindness logs.
           </p>
           <div className="p-3 bg-neutral-900/40 border border-neutral-900 rounded-lg space-y-1">
-            <span className="font-mono font-bold text-[9px] text-gold-500 uppercase tracking-wider block">Important Disclaimer</span>
+            <span className="font-mono font-bold text-[11px] text-gold-500 uppercase tracking-wider block">Important Disclaimer</span>
             <p className="text-[11px] text-neutral-400">
               Loyalty Points and Badges are purely virtual indicators of your activity and contributions. They have no monetary cash value, cannot be redeemed for fiat currency, are non-transferable, and do not constitute legal property. Points may be revoked if a member violates the platform's Code of Conduct.
             </p>

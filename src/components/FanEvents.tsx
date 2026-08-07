@@ -226,12 +226,12 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-serif text-base font-bold text-white">{ev.title}</h3>
-                <span className={`px-2 py-0.5 rounded-full text-[8px] font-mono font-bold uppercase border ${getStatusColor(ev.regStatus || 'pending')}`}>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border ${getStatusColor(ev.regStatus || 'pending')}`}>
                   {STATUS_STEPS.find(s => s.key === ev.regStatus)?.label || ev.regStatus || 'Pending'}
                 </span>
               </div>
               <p className="text-[10px] font-mono text-neutral-500 mt-1">Ref: {ev.ticketRef}</p>
-              <div className="flex items-center gap-3 text-[9px] font-mono text-neutral-500 mt-1">
+              <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500 mt-1">
                 <span><Calendar className="h-2.5 w-2.5 inline-block mr-1" />{ev.month} {ev.day}, 2026</span>
                 <span><Clock className="h-2.5 w-2.5 inline-block mr-1" />{ev.time}</span>
                 <span><MapPin className="h-2.5 w-2.5 inline-block mr-1" />{ev.location}</span>
@@ -242,7 +242,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
 
         {isPending && currentIdx >= 0 && (
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4">
-            <h4 className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest font-bold flex items-center gap-1.5">
+            <h4 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold flex items-center gap-1.5">
               <Clock className="h-3 w-3" /> Registration Progress
             </h4>
             <div className="relative">
@@ -252,7 +252,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                 return (
                   <div key={step.key} className="flex items-start gap-3 pb-4 last:pb-0">
                     <div className="flex flex-col items-center">
-                      <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center text-[9px] font-bold ${
+                      <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center text-[11px] font-bold ${
                         isDone ? 'border-gold-500 bg-gold-500 text-neutral-950' : 'border-neutral-800 bg-neutral-900/40 text-neutral-600'
                       }`}>
                         {isDone && i < STATUS_STEPS.length - 1 ? <CheckCircle className="h-3 w-3" /> : i === 3 && isDone ? <CheckCircle className="h-3 w-3" /> : i + 1}
@@ -272,13 +272,13 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
         {/* Confirmed details */}
         {(ev.regStatus === 'confirmed' || ev.regStatus === 'active' || ev.regStatus === 'attended') && (
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.02] p-5 space-y-3">
-            <h4 className="text-[9px] font-mono text-emerald-500 uppercase tracking-widest font-bold flex items-center gap-1.5">
+            <h4 className="text-[11px] font-mono text-emerald-500 uppercase tracking-widest font-bold flex items-center gap-1.5">
               <CheckCircle className="h-3 w-3" /> Confirmed Event Details
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-              {ev.confirmedDate && <div><span className="text-neutral-500 block text-[9px]">Date</span><span className="text-white">{ev.confirmedDate}</span></div>}
-              {ev.confirmedTime && <div><span className="text-neutral-500 block text-[9px]">Time</span><span className="text-white">{ev.confirmedTime}</span></div>}
-              {ev.confirmedLocation && <div className="sm:col-span-2"><span className="text-neutral-500 block text-[9px]">Location</span><span className="text-white">{ev.confirmedLocation}</span></div>}
+              {ev.confirmedDate && <div><span className="text-neutral-500 block text-[11px]">Date</span><span className="text-white">{ev.confirmedDate}</span></div>}
+              {ev.confirmedTime && <div><span className="text-neutral-500 block text-[11px]">Time</span><span className="text-white">{ev.confirmedTime}</span></div>}
+              {ev.confirmedLocation && <div className="sm:col-span-2"><span className="text-neutral-500 block text-[11px]">Location</span><span className="text-white">{ev.confirmedLocation}</span></div>}
             </div>
           </div>
         )}
@@ -286,7 +286,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
         {/* Admin notes */}
         {ev.adminNotes && (
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-2">
-            <h4 className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Administrator Notes</h4>
+            <h4 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Administrator Notes</h4>
             <p className="text-[11px] text-neutral-300 whitespace-pre-line">{ev.adminNotes}</p>
           </div>
         )}
@@ -294,14 +294,14 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
         {/* Registration details */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-2">
-            <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Registration Details</h4>
+            <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Registration Details</h4>
             <div className="text-[11px] space-y-1">
               <p><span className="text-neutral-500">Attendees:</span> <span className="text-white">{ev.attendees || 1}</span></p>
               {ev.specialRequests && <p><span className="text-neutral-500">Special Reqs:</span> <span className="text-white">{ev.specialRequests}</span></p>}
             </div>
           </div>
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-2">
-            <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Communication</h4>
+            <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Communication</h4>
             <div className="text-[11px] flex items-center gap-2">
               {ev.commMethod === 'whatsapp' ? <MessageCircle className="h-4 w-4 text-emerald-400" /> : <Mail className="h-4 w-4 text-blue-400" />}
               <span className="text-white capitalize">{ev.commMethod}</span>
@@ -365,7 +365,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
           <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
             <Calendar className="h-3 w-3 text-gold-500/70" />
           </div>
-          <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Upcoming</span>
+          <span className="font-mono text-[11px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Upcoming</span>
         </div>
         {upcoming.length > 0 ? (
           <button onClick={() => onNavigate?.('Events')} className="w-full text-left p-5 group hover:bg-gold-500/[0.02] transition-colors">
@@ -377,7 +377,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
               <div className="flex-1 min-w-0">
                 <p className="font-elegant text-sm font-bold text-neutral-100 group-hover:text-gold-500/60 transition-colors tracking-wide truncate">{upcoming[0].title}</p>
                 <p className="text-[10px] text-neutral-500 font-sans mt-1">{upcoming[0].location}</p>
-                <span className="inline-block mt-2 text-[7px] font-mono text-gold-500/50 uppercase tracking-wider group-hover:text-gold-500/70 transition-colors">Register now →</span>
+                <span className="inline-block mt-2 text-[10px] font-mono text-gold-500/50 uppercase tracking-wider group-hover:text-gold-500/70 transition-colors">Register now →</span>
               </div>
             </div>
           </button>
@@ -467,7 +467,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                     ><ArrowLeft className="h-4 w-4" /></button>
                   )}
                   <div>
-                    <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">
+                    <span className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">
                       {step === 'form' ? 'Step 2 of 6 — Your Details' : step === 'review' ? 'Step 4 of 6 — Review' : 'Registration Complete'}
                     </span>
                     <p className="text-[10px] text-neutral-500 mt-0.5 font-mono">{registeringEvent.title}</p>
@@ -482,12 +482,12 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                 <div className="flex items-center gap-3 p-3 rounded-xl bg-neutral-900/30 border border-neutral-800/60">
                   <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg border border-neutral-800 bg-neutral-950 font-mono shrink-0">
                     <span className="text-sm font-bold text-white leading-none">{registeringEvent.day}</span>
-                    <span className="text-[7px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{registeringEvent.month}</span>
+                    <span className="text-[10px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{registeringEvent.month}</span>
                   </div>
                   <div className="text-[11px] space-y-0.5">
                     <p className="font-bold text-white">{registeringEvent.title}</p>
                     <p className="text-neutral-400 font-mono text-[10px]">{registeringEvent.month} {registeringEvent.day}, 2026 — {registeringEvent.time}</p>
-                    <p className="text-neutral-500 font-mono text-[9px]">{registeringEvent.location}</p>
+                    <p className="text-neutral-500 font-mono text-[11px]">{registeringEvent.location}</p>
                   </div>
                 </div>
 
@@ -495,40 +495,40 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Full Name *</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Full Name *</label>
                         <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Email Address *</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Email Address *</label>
                         <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Phone Number</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Phone Number</label>
                         <input type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Country</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Country</label>
                         <input type="text" value={form.country} onChange={e => setForm(p => ({ ...p, country: e.target.value }))}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Number of Attendees</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Number of Attendees</label>
                         <input type="number" min={1} value={form.attendees} onChange={e => setForm(p => ({ ...p, attendees: Math.max(1, parseInt(e.target.value) || 1) }))}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Special Requirements</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Special Requirements</label>
                         <input type="text" value={form.specialRequests} onChange={e => setForm(p => ({ ...p, specialRequests: e.target.value }))} placeholder="Dietary, accessibility, etc."
                           className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                       </div>
                     </div>
                     <div className="space-y-2 pt-2 border-t border-neutral-800/60">
-                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Preferred Communication Method *</label>
+                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Preferred Communication Method *</label>
                       <div className="grid grid-cols-2 gap-3">
                         {[
                           { id: 'whatsapp' as const, label: 'WhatsApp', icon: MessageCircle, desc: 'Quick messaging' },
@@ -544,7 +544,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                             </div>
                             <div>
                               <p className={`text-xs font-bold ${form.commMethod === opt.id ? 'text-gold-500' : 'text-white'}`}>{opt.label}</p>
-                              <p className="text-[9px] text-neutral-500 mt-0.5">{opt.desc}</p>
+                              <p className="text-[11px] text-neutral-500 mt-0.5">{opt.desc}</p>
                             </div>
                           </button>
                         ))}
@@ -560,7 +560,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-3 p-4 rounded-xl bg-neutral-900/20 border border-neutral-800/60">
-                        <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Fan Information</h4>
+                        <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Fan Information</h4>
                         <div className="text-[11px] space-y-1">
                           <p><span className="text-neutral-500">Name:</span> <span className="text-white">{form.name}</span></p>
                           <p><span className="text-neutral-500">Email:</span> <span className="text-white">{form.email}</span></p>
@@ -569,7 +569,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                         </div>
                       </div>
                       <div className="space-y-3 p-4 rounded-xl bg-neutral-900/20 border border-neutral-800/60">
-                        <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Registration Details</h4>
+                        <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Registration Details</h4>
                         <div className="text-[11px] space-y-1">
                           <p><span className="text-neutral-500">Attendees:</span> <span className="text-white">{form.attendees}</span></p>
                           <p><span className="text-neutral-500">Special Reqs:</span> <span className="text-white">{form.specialRequests || 'None'}</span></p>
@@ -625,7 +625,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
 
       {/* My Registrations */}
       <div className="space-y-3">
-        <h3 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">My Registrations</h3>
+        <h3 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">My Registrations</h3>
         {registeredEvents.length > 0 ? (
           registeredEvents.map(ev => (
             <div key={ev.id} onClick={() => setSelectedReg(ev)}
@@ -634,21 +634,21 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
               <div className="flex items-start gap-4">
                 <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg border border-neutral-800/60 bg-neutral-950/60 font-mono shrink-0">
                   <span className="text-sm font-bold text-white leading-none">{ev.day}</span>
-                  <span className="text-[7px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{ev.month}</span>
+                  <span className="text-[10px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{ev.month}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="text-sm font-bold text-white group-hover:text-gold-500/80 transition-colors">{ev.title}</h4>
-                    <span className={`px-1.5 py-0.5 rounded text-[7px] font-mono font-bold uppercase border ${getStatusColor(ev.regStatus || 'pending')}`}>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${getStatusColor(ev.regStatus || 'pending')}`}>
                       {STATUS_STEPS.find(s => s.key === ev.regStatus)?.label || ev.regStatus || 'Pending'}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-[9px] font-mono text-neutral-500 mt-1">
+                  <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-500 mt-1">
                     <span>{ev.month} {ev.day}, 2026</span>
                     <span className="text-neutral-700">•</span>
                     <span>{ev.time}</span>
                   </div>
-                  <p className="text-[9px] font-mono text-neutral-600 mt-0.5">Ref: {ev.ticketRef}</p>
+                  <p className="text-[11px] font-mono text-neutral-600 mt-0.5">Ref: {ev.ticketRef}</p>
                 </div>
                 <ChevronRight className="h-4 w-4 text-neutral-600 group-hover:text-gold-500/60 mt-1 shrink-0 transition-colors" />
               </div>
@@ -658,14 +658,14 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
           <div className="text-center py-6 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10 space-y-2">
             <Ticket className="h-5 w-5 text-neutral-700 mx-auto" />
             <p className="text-[11px] text-neutral-500">No registrations yet.</p>
-            <p className="text-[9px] text-neutral-600 font-mono">Register for an event below to see it here.</p>
+            <p className="text-[11px] text-neutral-600 font-mono">Register for an event below to see it here.</p>
           </div>
         )}
       </div>
 
       {/* Available Events */}
       <div className="space-y-3">
-        <h3 className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest font-bold">
+        <h3 className="text-[11px] font-mono text-neutral-400 uppercase tracking-widest font-bold">
           {registeredEvents.length > 0 ? 'More Events' : 'All Events'}
         </h3>
         {upcomingEvents.length === 0 ? (
@@ -673,7 +673,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
             <Calendar className="h-7 w-7 text-neutral-700 mx-auto" />
             <div>
               <p className="text-[11px] text-neutral-400 font-bold">All caught up!</p>
-              <p className="text-[9px] text-neutral-600 mt-0.5 font-mono">No more events available right now. Check back soon.</p>
+              <p className="text-[11px] text-neutral-600 mt-0.5 font-mono">No more events available right now. Check back soon.</p>
             </div>
           </div>
         ) : (
@@ -682,7 +682,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
               <div key={ev.id} className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4 relative overflow-hidden flex flex-col justify-between">
                 <div className="space-y-2">
                   <div className="flex justify-between items-start">
-                    <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[8px] font-mono uppercase font-bold border border-gold-800/20">{ev.type}</span>
+                    <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[10px] font-mono uppercase font-bold border border-gold-800/20">{ev.type}</span>
                   </div>
                   <h3 className="font-serif text-base font-bold text-white tracking-wide">{ev.title}</h3>
                   {ev.description && <p className="text-[10px] text-neutral-500 leading-relaxed">{ev.description}</p>}

@@ -193,12 +193,12 @@ export default function AdminCommunityManagement({ showToast }: Props) {
 
   const renderDeleteConfirm = (id: string, onConfirm: () => void) => (
     <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-red-500/10 border border-red-500/30">
-      <span className="text-[8px] font-mono text-red-400 uppercase tracking-wider whitespace-nowrap">Confirm?</span>
+      <span className="text-[10px] font-mono text-red-400 uppercase tracking-wider whitespace-nowrap">Confirm?</span>
       <button onClick={onConfirm}
-        className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[8px] font-mono uppercase tracking-widest transition-all"
+        className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[10px] font-mono uppercase tracking-widest transition-all"
       >Yes</button>
       <button onClick={() => setConfirmDelete(null)}
-        className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[8px] font-mono uppercase transition-all"
+        className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[10px] font-mono uppercase transition-all"
       >No</button>
     </div>
   );
@@ -239,7 +239,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
           <div key={s.label} className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-3 text-center">
             <s.icon className={`h-4 w-4 ${s.color} mx-auto`} />
             <p className={`text-lg font-bold font-mono ${s.color}`}>{s.value}</p>
-            <p className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">{s.label}</p>
+            <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">{s.label}</p>
           </div>
         ))}
       </div>
@@ -272,7 +272,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
           <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-lg p-0.5">
             {categories.map(cat => (
               <button key={cat} onClick={() => setFilterCategory(cat)}
-                className={`px-2.5 py-1 rounded text-[9px] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
+                className={`px-2.5 py-1 rounded text-[11px] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
                   filterCategory === cat ? 'bg-gold-500 text-neutral-950 font-bold' : 'text-neutral-500 hover:text-white'
                 }`}
               >
@@ -281,7 +281,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
               </button>
             ))}
             <button onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
-              className={`px-2.5 py-1 rounded text-[9px] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
+              className={`px-2.5 py-1 rounded text-[11px] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
                 showFlaggedOnly ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'text-neutral-500 hover:text-white'
               }`}
             >
@@ -293,7 +293,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
           <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-lg p-0.5 overflow-x-auto max-w-md">
             {['ALL', 'Global', 'USA', 'UK', 'Canada', 'Australia', 'Japan', 'Germany'].map(c => (
               <button key={c} onClick={() => setFilterCountry(c)}
-                className={`px-2 py-1 rounded text-[9px] font-mono tracking-wider uppercase whitespace-nowrap transition-all ${
+                className={`px-2 py-1 rounded text-[11px] font-mono tracking-wider uppercase whitespace-nowrap transition-all ${
                   filterCountry === c ? 'bg-gold-500 text-neutral-950 font-bold' : 'text-neutral-500 hover:text-white'
                 }`}
               >{c}</button>
@@ -333,13 +333,13 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                   {filteredPosts.map(post => (
                     <tr key={post.id} className={`hover:bg-neutral-950/20 transition-all ${post.pinned ? 'bg-sky-500/5' : ''} ${post.flagged ? 'bg-rose-500/5' : ''}`}>
                       <td className="px-4 py-3">
-                        <div className="h-7 w-7 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[9px] font-mono font-medium text-gold-500">
+                        <div className="h-7 w-7 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[11px] font-mono font-medium text-gold-500">
                           {post.avatar_text || post.username?.slice(0, 2).toUpperCase() || '?'}
                         </div>
                       </td>
                       <td className="px-3 py-3">
                         <p className="text-white font-semibold text-[11px] truncate max-w-[120px]">{post.username}</p>
-                        <p className="text-[8px] font-mono text-neutral-500 truncate max-w-[120px]">{post.handle}</p>
+                        <p className="text-[10px] font-mono text-neutral-500 truncate max-w-[120px]">{post.handle}</p>
                       </td>
                       <td className="px-3 py-3">
                         <button onClick={() => openDetail(post)}
@@ -347,7 +347,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                         >{post.content}</button>
                       </td>
                       <td className="px-3 py-3">
-                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] font-mono font-bold uppercase border ${getCategoryStyle(post.category || 'FAN ART')}`}>
+                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${getCategoryStyle(post.category || 'FAN ART')}`}>
                           {getCategoryIcon(post.category || 'FAN ART')}
                           {post.category || 'FAN ART'}
                         </span>
@@ -360,12 +360,12 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                       <td className="px-3 py-3">
                         <div className="flex items-center gap-1.5">
                           {post.pinned && (
-                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[7px] font-mono font-bold uppercase bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-sky-500/10 text-sky-400 border border-sky-500/20">
                               <Pin className="h-2 w-2" /> Pinned
                             </span>
                           )}
                           {post.flagged && (
-                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[7px] font-mono font-bold uppercase bg-rose-500/10 text-rose-400 border border-rose-500/20" title={post.flag_reason || 'Flagged'}>
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-rose-500/10 text-rose-400 border border-rose-500/20" title={post.flag_reason || 'Flagged'}>
                               <Flag className="h-2 w-2" /> Flagged
                             </span>
                           )}
@@ -423,7 +423,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                     <tr key={disc.id} className="hover:bg-neutral-950/20 transition-all">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="h-7 w-7 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[9px] font-mono font-medium text-amber-400">
+                          <div className="h-7 w-7 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[11px] font-mono font-medium text-amber-400">
                             {disc.author?.slice(0, 2).toUpperCase() || '?'}
                           </div>
                           <span className="text-white font-semibold text-[11px]">{disc.author}</span>
@@ -433,7 +433,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                         <p className="text-neutral-300 text-[11px] line-clamp-2 max-w-[300px]">{disc.text}</p>
                       </td>
                       <td className="px-3 py-3">
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] font-mono font-bold uppercase border border-blue-500/20 bg-blue-500/10 text-blue-400">
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border border-blue-500/20 bg-blue-500/10 text-blue-400">
                           <Globe className="h-2.5 w-2.5" /> {disc.country}
                         </span>
                       </td>
@@ -482,7 +482,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                     <tr key={fc.id} className="hover:bg-neutral-950/20 transition-all">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="h-7 w-7 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[9px] font-mono font-medium text-purple-400">
+                          <div className="h-7 w-7 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[11px] font-mono font-medium text-purple-400">
                             {fc.author?.slice(0, 2).toUpperCase() || '?'}
                           </div>
                           <span className="text-white font-semibold text-[11px]">{fc.author}</span>
@@ -495,7 +495,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                         <p className="text-neutral-300 text-[11px] line-clamp-2 max-w-[200px]">{fc.description}</p>
                       </td>
                       <td className="px-3 py-3">
-                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] font-mono font-bold uppercase border ${
+                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${
                           getCategoryStyle(fc.category || 'Fan Art')
                         }`}>
                           {fc.category || 'Fan Art'}
@@ -580,7 +580,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
 
               {/* Post content */}
               <div className="mb-4">
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase border mb-3 ${getCategoryStyle(detailPost.category || 'FAN ART')}`}>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono font-bold uppercase border mb-3 ${getCategoryStyle(detailPost.category || 'FAN ART')}`}>
                   {getCategoryIcon(detailPost.category || 'FAN ART')}
                   {detailPost.category || 'FAN ART'}
                 </span>
@@ -616,12 +616,12 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                       <div key={comment.id} className="p-3 rounded-lg border border-neutral-900/60 bg-neutral-900/15 space-y-2">
                         <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500">
                           <span className={`font-bold flex items-center gap-1.5 ${comment.username === 'Management' ? 'text-gold-400' : 'text-gold-500/90'}`}>
-                            <span className="h-5 w-5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[8px] font-medium shrink-0">
+                            <span className="h-5 w-5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-medium shrink-0">
                               {comment.avatar_text || comment.username?.charAt(0).toUpperCase() || '?'}
                             </span>
                             {comment.username}
                             {comment.username === 'Management' && (
-                              <span className="text-[7px] font-mono uppercase tracking-wider bg-gold-500/15 text-gold-400 border border-gold-500/30 px-1 py-0.5 rounded">Admin</span>
+                              <span className="text-[10px] font-mono uppercase tracking-wider bg-gold-500/15 text-gold-400 border border-gold-500/30 px-1 py-0.5 rounded">Admin</span>
                             )}
                           </span>
                           <span>{comment.created_at ? new Date(comment.created_at).toLocaleDateString() : ''}</span>
@@ -631,7 +631,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                           <div className="pl-4 ml-2 border-l border-gold-500/15 space-y-2 pt-1">
                             {comment.replies.map((reply: Record<string, unknown>) => (
                               <div key={reply.id} className="bg-neutral-950/40 p-2 rounded-lg border border-neutral-900/40 space-y-1">
-                                <div className="flex justify-between items-center text-[9px] font-mono text-neutral-500">
+                                <div className="flex justify-between items-center text-[11px] font-mono text-neutral-500">
                                   <span className="text-neutral-300 font-semibold">{reply.username}</span>
                                   <span>{reply.created_at ? new Date(reply.created_at).toLocaleDateString() : ''}</span>
                                 </div>

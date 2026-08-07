@@ -297,7 +297,7 @@ export default function AdminAskGillian({ showToast, adminUserId }: Props) {
           <h3 className="text-[10px] font-mono font-bold text-white uppercase tracking-widest">Your Availability</h3>
           <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full border ${currentStatus.borderColor} bg-neutral-950`}>
             <div className={`h-2 w-2 rounded-full ${currentStatus.color}`} />
-            <span className={`text-[9px] font-mono uppercase ${currentStatus.textColor}`}>{currentStatus.label}</span>
+            <span className={`text-[11px] font-mono uppercase ${currentStatus.textColor}`}>{currentStatus.label}</span>
           </div>
         </div>
 
@@ -359,7 +359,7 @@ export default function AdminAskGillian({ showToast, adminUserId }: Props) {
                 { id: 'active' as const, label: 'Active' },
               ].map(f => (
                 <button key={f.id} onClick={() => setFilter(f.id)}
-                  className={`px-2 py-1 rounded text-[9px] font-mono uppercase tracking-wider transition-all ${
+                  className={`px-2 py-1 rounded text-[11px] font-mono uppercase tracking-wider transition-all ${
                     filter === f.id ? 'bg-gold-500 text-neutral-950 font-bold' : 'text-neutral-500 hover:text-white'
                   }`}
                 >{f.label}</button>
@@ -384,7 +384,7 @@ export default function AdminAskGillian({ showToast, adminUserId }: Props) {
                 >
                   <div className="flex items-center gap-2.5">
                     <div className="h-8 w-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0">
-                      <span className="text-[9px] font-mono font-bold text-gold-500">
+                      <span className="text-[11px] font-mono font-bold text-gold-500">
                         {(conv.profiles?.name || 'U').slice(0, 2).toUpperCase()}
                       </span>
                     </div>
@@ -392,12 +392,12 @@ export default function AdminAskGillian({ showToast, adminUserId }: Props) {
                       <div className="flex items-center justify-between">
                         <p className="text-[11px] font-bold text-white truncate">{conv.profiles?.name || 'Unknown'}</p>
                         {(conv.unread_count || 0) > 0 && (
-                          <span className="h-4 min-w-4 rounded-full bg-gold-500 text-neutral-950 text-[8px] font-mono font-bold flex items-center justify-center px-1">
+                          <span className="h-4 min-w-4 rounded-full bg-gold-500 text-neutral-950 text-[10px] font-mono font-bold flex items-center justify-center px-1">
                             {conv.unread_count}
                           </span>
                         )}
                       </div>
-                      <p className="text-[9px] text-neutral-500 truncate mt-0.5">{conv.last_message || 'No messages yet'}</p>
+                      <p className="text-[11px] text-neutral-500 truncate mt-0.5">{conv.last_message || 'No messages yet'}</p>
                     </div>
                   </div>
                 </button>
@@ -421,15 +421,15 @@ export default function AdminAskGillian({ showToast, adminUserId }: Props) {
               {/* Chat Header */}
               <div className="px-4 py-3 border-b border-neutral-900 flex items-center gap-3">
                 <div className="h-8 w-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center">
-                  <span className="text-[9px] font-mono font-bold text-gold-500">
+                  <span className="text-[11px] font-mono font-bold text-gold-500">
                     {(selectedConv.profiles?.name || 'U').slice(0, 2).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-bold text-white">{selectedConv.profiles?.name || 'Unknown'}</p>
-                  <p className="text-[9px] text-neutral-500 font-mono">{selectedConv.profiles?.email || ''}</p>
+                  <p className="text-[11px] text-neutral-500 font-mono">{selectedConv.profiles?.email || ''}</p>
                 </div>
-                <div className={`px-2 py-1 rounded-full text-[8px] font-mono uppercase ${
+                <div className={`px-2 py-1 rounded-full text-[10px] font-mono uppercase ${
                   selectedConv.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
                   selectedConv.status === 'waiting' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
                   'bg-neutral-900 text-neutral-500 border border-neutral-800'
@@ -451,7 +451,7 @@ export default function AdminAskGillian({ showToast, adminUserId }: Props) {
                 ) : (
                   messages.map((msg) => (
                     <div key={msg.id} className={`flex gap-3 ${msg.sender === 'gillian' ? 'flex-row-reverse' : 'flex-row'}`}>
-                      <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[9px] ${
+                      <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[11px] ${
                         msg.sender === 'gillian'
                           ? 'bg-neutral-950 border-gold-800/35 text-gold-500'
                           : 'bg-neutral-900 border-neutral-800 text-white'
@@ -466,7 +466,7 @@ export default function AdminAskGillian({ showToast, adminUserId }: Props) {
                         }`}>
                           {msg.text}
                         </div>
-                        <p className="text-[9px] text-neutral-600 font-mono">
+                        <p className="text-[11px] text-neutral-600 font-mono">
                           {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           {msg.sender === 'gillian' && msg.read && (
                             <CheckCircle className="inline h-3 w-3 ml-1 text-emerald-500" />

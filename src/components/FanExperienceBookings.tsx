@@ -208,7 +208,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-serif text-base font-bold text-white">{b.experienceTitle}</h3>
-                <span className={`px-2 py-0.5 rounded-full text-[8px] font-mono font-bold tracking-wider uppercase border ${getStatusColor(b.status)}`}>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-wider uppercase border ${getStatusColor(b.status)}`}>
                   {STATUS_STEPS.find(s => s.key === b.status)?.label || b.status}
                 </span>
               </div>
@@ -221,7 +221,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
         {/* Booking Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-2">
-            <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Booking Details</h4>
+            <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Booking Details</h4>
             <div className="space-y-1.5 text-[11px]">
               <div className="flex justify-between"><span className="text-neutral-500">Preferred Date</span><span className="text-white">{b.preferredDate}</span></div>
               <div className="flex justify-between"><span className="text-neutral-500">Preferred Time</span><span className="text-white">{b.preferredTime}</span></div>
@@ -230,7 +230,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
             </div>
           </div>
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-2">
-            <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Communication</h4>
+            <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Communication</h4>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-[11px]">
                 {b.communicationMethod === 'whatsapp' ? (
@@ -254,16 +254,16 @@ export default function FanExperienceBookings({ showToast }: Props) {
         {/* Confirmed Details (when active/completed) */}
         {(b.status === 'active' || b.status === 'completed') && (
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.02] p-4 space-y-3">
-            <h4 className="text-[9px] font-mono text-emerald-500 uppercase tracking-widest font-bold flex items-center gap-1.5">
+            <h4 className="text-[11px] font-mono text-emerald-500 uppercase tracking-widest font-bold flex items-center gap-1.5">
               <CheckCircle className="h-3 w-3" /> Confirmed Details
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-              {b.confirmedDate && <div><span className="text-neutral-500 block text-[9px]">Confirmed Date</span><span className="text-white">{b.confirmedDate}</span></div>}
-              {b.confirmedTime && <div><span className="text-neutral-500 block text-[9px]">Confirmed Time</span><span className="text-white">{b.confirmedTime}</span></div>}
-              {b.meetingVenue && <div><span className="text-neutral-500 block text-[9px]">Meeting Venue</span><span className="text-white">{b.meetingVenue}</span></div>}
-              {b.virtualLink && <div><span className="text-neutral-500 block text-[9px]">Virtual Link</span><span className="text-gold-500">{b.virtualLink}</span></div>}
-              {b.dressCode && <div><span className="text-neutral-500 block text-[9px]">Dress Code</span><span className="text-white">{b.dressCode}</span></div>}
-              {b.arrivalInstructions && <div className="sm:col-span-2"><span className="text-neutral-500 block text-[9px]">Arrival Instructions</span><span className="text-white">{b.arrivalInstructions}</span></div>}
+              {b.confirmedDate && <div><span className="text-neutral-500 block text-[11px]">Confirmed Date</span><span className="text-white">{b.confirmedDate}</span></div>}
+              {b.confirmedTime && <div><span className="text-neutral-500 block text-[11px]">Confirmed Time</span><span className="text-white">{b.confirmedTime}</span></div>}
+              {b.meetingVenue && <div><span className="text-neutral-500 block text-[11px]">Meeting Venue</span><span className="text-white">{b.meetingVenue}</span></div>}
+              {b.virtualLink && <div><span className="text-neutral-500 block text-[11px]">Virtual Link</span><span className="text-gold-500">{b.virtualLink}</span></div>}
+              {b.dressCode && <div><span className="text-neutral-500 block text-[11px]">Dress Code</span><span className="text-white">{b.dressCode}</span></div>}
+              {b.arrivalInstructions && <div className="sm:col-span-2"><span className="text-neutral-500 block text-[11px]">Arrival Instructions</span><span className="text-white">{b.arrivalInstructions}</span></div>}
             </div>
           </div>
         )}
@@ -271,7 +271,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
         {/* Cancelled Reason */}
         {isCancelled && b.cancelledReason && (
           <div className="rounded-xl border border-red-500/20 bg-red-500/[0.02] p-4 space-y-2">
-            <h4 className="text-[9px] font-mono text-red-400 uppercase tracking-widest font-bold">Cancellation Reason</h4>
+            <h4 className="text-[11px] font-mono text-red-400 uppercase tracking-widest font-bold">Cancellation Reason</h4>
             <p className="text-[11px] text-neutral-300">{b.cancelledReason}</p>
           </div>
         )}
@@ -279,7 +279,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
         {/* Progress Tracker */}
         {!isPast && (
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4">
-            <h4 className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest font-bold flex items-center gap-1.5">
+            <h4 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold flex items-center gap-1.5">
               <Clock className="h-3 w-3" /> Booking Progress
             </h4>
             <div className="relative">
@@ -289,7 +289,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
                 return (
                   <div key={step.key} className="flex items-start gap-3 pb-4 last:pb-0">
                     <div className="flex flex-col items-center">
-                      <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center text-[9px] font-bold ${
+                      <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center text-[11px] font-bold ${
                         isDone ? 'border-gold-500 bg-gold-500 text-neutral-950' :
                         isCurrent ? 'border-gold-500/50 bg-gold-500/10 text-gold-500' :
                         'border-neutral-800 bg-neutral-900/40 text-neutral-600'
@@ -313,7 +313,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
         {/* Admin Notes */}
         {b.adminNotes && (
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-2">
-            <h4 className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Administrator Notes</h4>
+            <h4 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Administrator Notes</h4>
             <p className="text-[11px] text-neutral-300 whitespace-pre-line">{b.adminNotes}</p>
           </div>
         )}
@@ -321,7 +321,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
         {/* Timeline */}
         {b.timeline && b.timeline.length > 0 && (
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-3">
-            <h4 className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Booking Timeline</h4>
+            <h4 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Booking Timeline</h4>
             <div className="space-y-3">
               {b.timeline.map((entry: TimelineEntry, i: number) => (
                 <div key={i} className="flex gap-3">
@@ -332,7 +332,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
                   <div className="flex-1 min-w-0 pb-1">
                     <p className="text-xs font-bold text-neutral-200">{entry.event}</p>
                     {entry.note && <p className="text-[10px] text-neutral-500 mt-0.5">{entry.note}</p>}
-                    <p className="text-[8px] font-mono text-neutral-600 mt-0.5">{formatDate(entry.date)} {formatTime(entry.date)}</p>
+                    <p className="text-[10px] font-mono text-neutral-600 mt-0.5">{formatDate(entry.date)} {formatTime(entry.date)}</p>
                   </div>
                 </div>
               ))}
@@ -409,7 +409,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
           {/* Active Bookings */}
           {activeBookings.length > 0 && (
             <div className="space-y-3">
-              <h3 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Active Bookings</h3>
+              <h3 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Active Bookings</h3>
               {activeBookings.map((b) => (
                 <div
                   key={b.id}
@@ -427,7 +427,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h4 className="text-sm font-bold text-white group-hover:text-gold-500/80 transition-colors">{b.experienceTitle}</h4>
-                        <span className={`px-1.5 py-0.5 rounded text-[7px] font-mono font-bold uppercase border ${getStatusColor(b.status)}`}>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${getStatusColor(b.status)}`}>
                           {STATUS_STEPS.find(s => s.key === b.status)?.label || b.status}
                         </span>
                       </div>
@@ -450,7 +450,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
           {/* Past Experiences */}
           {pastBookings.length > 0 && (
             <div className="space-y-3">
-              <h3 className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Past Experiences</h3>
+              <h3 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Past Experiences</h3>
               <div className="grid gap-3 sm:grid-cols-2">
                 {pastBookings.map((b) => (
                   <div
@@ -468,11 +468,11 @@ export default function FanExperienceBookings({ showToast }: Props) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-xs font-bold text-neutral-300 group-hover:text-white transition-colors">{b.experienceTitle}</h4>
-                        <div className="flex items-center gap-2 text-[9px] text-neutral-600 mt-0.5">
+                        <div className="flex items-center gap-2 text-[11px] text-neutral-600 mt-0.5">
                           <span>{formatDate(b.submittedDate || b.createdAt)}</span>
                           <span className={`uppercase ${b.status === 'completed' ? 'text-blue-500' : 'text-red-400'}`}>{STATUS_STEPS.find(s => s.key === b.status)?.label || b.status}</span>
                         </div>
-                        <p className="text-[8px] font-mono text-neutral-600 mt-0.5">{b.bookingReference}</p>
+                        <p className="text-[10px] font-mono text-neutral-600 mt-0.5">{b.bookingReference}</p>
                       </div>
                     </div>
                   </div>

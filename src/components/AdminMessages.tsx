@@ -309,7 +309,7 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
             </p>
             <button
               onClick={() => { setShowNewChat(true); fetchUsers(); }}
-              className="flex items-center gap-1 px-2 py-1 rounded text-[9px] font-mono text-gold-500 hover:bg-neutral-900 transition-all"
+              className="flex items-center gap-1 px-2 py-1 rounded text-[11px] font-mono text-gold-500 hover:bg-neutral-900 transition-all"
             >+ New</button>
           </div>
 
@@ -341,9 +341,9 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
               />
               <div className="flex gap-2">
                 <button onClick={handleCreateConvAsAdmin}
-                  className="flex-1 py-1.5 rounded bg-gold-500 text-neutral-950 text-[9px] font-mono font-bold uppercase">Send</button>
+                  className="flex-1 py-1.5 rounded bg-gold-500 text-neutral-950 text-[11px] font-mono font-bold uppercase">Send</button>
                 <button onClick={() => { setShowNewChat(false); setSelectedUserId(''); setNewSubject(''); setNewFirstMsg(''); }}
-                  className="px-3 py-1.5 rounded border border-neutral-800 text-neutral-500 text-[9px] font-mono uppercase">Cancel</button>
+                  className="px-3 py-1.5 rounded border border-neutral-800 text-neutral-500 text-[11px] font-mono uppercase">Cancel</button>
               </div>
             </div>
           )}
@@ -365,13 +365,13 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
                   <div className="flex items-center justify-between">
                     <p className="text-[11px] font-bold text-white truncate">{conv.subject}</p>
                     {(conv.unread_count || 0) > 0 && (
-                      <span className="h-4 min-w-4 rounded-full bg-gold-500 text-neutral-950 text-[8px] font-mono font-bold flex items-center justify-center px-1">
+                      <span className="h-4 min-w-4 rounded-full bg-gold-500 text-neutral-950 text-[10px] font-mono font-bold flex items-center justify-center px-1">
                         {conv.unread_count}
                       </span>
                     )}
                   </div>
-                  <p className="text-[9px] text-neutral-500 mt-0.5">{conv.profiles?.name || 'Unknown'}</p>
-                  <p className="text-[9px] text-neutral-600 truncate mt-0.5">{conv.last_message || 'No messages yet'}</p>
+                  <p className="text-[11px] text-neutral-500 mt-0.5">{conv.profiles?.name || 'Unknown'}</p>
+                  <p className="text-[11px] text-neutral-600 truncate mt-0.5">{conv.last_message || 'No messages yet'}</p>
                 </button>
               ))
             )}
@@ -393,15 +393,15 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
               {/* Chat Header */}
               <div className="px-4 py-3 border-b border-neutral-900 flex items-center gap-3">
                 <div className="h-8 w-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center">
-                  <span className="text-[9px] font-mono font-bold text-gold-500">
+                  <span className="text-[11px] font-mono font-bold text-gold-500">
                     {(selectedConv.profiles?.name || 'U').slice(0, 2).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-bold text-white">{selectedConv.subject}</p>
-                  <p className="text-[9px] text-neutral-500 font-mono">{selectedConv.profiles?.name || 'Unknown'} · {selectedConv.profiles?.email || ''}</p>
+                  <p className="text-[11px] text-neutral-500 font-mono">{selectedConv.profiles?.name || 'Unknown'} · {selectedConv.profiles?.email || ''}</p>
                 </div>
-                <div className={`px-2 py-1 rounded-full text-[8px] font-mono uppercase ${
+                <div className={`px-2 py-1 rounded-full text-[10px] font-mono uppercase ${
                   selectedConv.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
                   'bg-neutral-900 text-neutral-500 border border-neutral-800'
                 }`}>
@@ -418,7 +418,7 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
                 ) : (
                   messages.map(msg => (
                     <div key={msg.id} className={`flex gap-3 ${msg.sender === 'admin' ? 'flex-row-reverse' : 'flex-row'}`}>
-                      <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[9px] ${
+                      <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[11px] ${
                         msg.sender === 'admin' ? 'bg-neutral-950 border-gold-800/35 text-gold-500' : 'bg-neutral-900 border-neutral-800 text-white'
                       }`}>
                         {msg.sender === 'admin' ? 'GA' : (selectedConv.profiles?.name || 'U').slice(0, 2).toUpperCase()}
@@ -429,7 +429,7 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
                         }`}>
                           {msg.text}
                         </div>
-                        <p className="text-[9px] text-neutral-600 font-mono">
+                        <p className="text-[11px] text-neutral-600 font-mono">
                           {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           {msg.sender === 'admin' && msg.read && (
                             <CheckCircle className="inline h-3 w-3 ml-1 text-emerald-500" />

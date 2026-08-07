@@ -243,7 +243,7 @@ export default function JournalSection() {
                     <button
                       key={cat}
                       onClick={() => setActiveCategory(cat)}
-                      className={`px-4 py-1.5 rounded-lg text-[9px] font-mono tracking-wider uppercase border transition-all ${
+                      className={`px-4 py-1.5 rounded-lg text-[11px] font-mono tracking-wider uppercase border transition-all ${
                         activeCategory === cat
                           ? 'bg-gold-500 border-gold-400 text-neutral-950 font-bold'
                           : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
@@ -304,7 +304,7 @@ export default function JournalSection() {
 
                         {/* Text */}
                         <div className="p-6 space-y-3 text-left">
-                          <div className="flex items-center gap-2.5 text-[9px] font-mono text-gold-500/80 uppercase">
+                          <div className="flex items-center gap-2.5 text-[11px] font-mono text-gold-500/80 uppercase">
                             <span>{entry.date}</span>
                             <span>•</span>
                             <span>{entry.readTime}</span>
@@ -401,7 +401,7 @@ export default function JournalSection() {
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[9px] font-mono text-neutral-600 uppercase mr-1">Share</span>
+                  <span className="text-[11px] font-mono text-neutral-600 uppercase mr-1">Share</span>
                   <button onClick={() => handleShare('twitter')} className="p-2 rounded bg-neutral-950 text-neutral-500 hover:text-blue-400 border border-neutral-900 hover:border-blue-800/40 transition-colors" title="Share on X">
                     <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                   </button>
@@ -476,7 +476,7 @@ export default function JournalSection() {
                           <div className="pl-4 border-l border-gold-500/20 space-y-3 pt-1">
                             {cmt.replies.map((reply) => (
                               <div key={reply.id} className="bg-neutral-900/10 p-2.5 rounded-lg border border-neutral-900/30 space-y-1">
-                                <div className="flex justify-between items-center text-[9px] font-mono text-neutral-500">
+                                <div className="flex justify-between items-center text-[11px] font-mono text-neutral-500">
                                   <span className="text-neutral-300 font-semibold">{reply.author}</span>
                                   <span>{reply.time}</span>
                                 </div>
@@ -507,14 +507,14 @@ export default function JournalSection() {
                                 <button
                                   type="submit"
                                   disabled={!(newReplyText[cmt.id] || '').trim()}
-                                  className="px-3 bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-neutral-950 font-bold rounded text-[9px] uppercase tracking-wide transition-colors"
+                                  className="px-3 bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-neutral-950 font-bold rounded text-[11px] uppercase tracking-wide transition-colors"
                                 >
                                   Reply
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => setActiveReplyId(null)}
-                                  className="px-2 bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white rounded text-[9px] transition-colors"
+                                  className="px-2 bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white rounded text-[11px] transition-colors"
                                 >
                                   Cancel
                                 </button>

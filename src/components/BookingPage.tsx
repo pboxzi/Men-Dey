@@ -300,7 +300,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
         }`}
       />
       {errors[field] && (
-        <p className="text-[9px] text-red-400 flex items-center gap-1">
+        <p className="text-[11px] text-red-400 flex items-center gap-1">
           <AlertCircle className="h-2.5 w-2.5" /> {errors[field]}
         </p>
       )}
@@ -426,13 +426,13 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
             <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/60 to-transparent" />
             <div className="absolute inset-0 p-5 md:p-7 flex flex-col justify-center">
               <div className="space-y-2 max-w-2xl">
-                <div className="flex items-center gap-2 text-[8px] font-mono text-neutral-500 uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
                   <Sparkles className="h-3 w-3 text-gold-500" />
                   {exp.category}
                 </div>
                 <h1 className="font-serif text-xl md:text-3xl font-bold text-white">{exp.title}</h1>
                 <p className="text-[11px] text-neutral-400 leading-relaxed max-w-xl line-clamp-2">{exp.short_description || exp.description}</p>
-                <div className="flex items-center gap-3 text-[9px] font-mono text-neutral-500 pt-1">
+                <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500 pt-1">
                   <span className="flex items-center gap-1"><MapPin className="h-2.5 w-2.5" />{exp.location}</span>
                   <span className="flex items-center gap-1"><Clock className="h-2.5 w-2.5" />{exp.duration}</span>
                   <span className="flex items-center gap-1"><Users className="h-2.5 w-2.5" />{spotsLeft} spots left</span>
@@ -459,7 +459,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                   const isDone = step > s.id;
                   return (
                     <React.Fragment key={s.id}>
-                      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[8px] font-mono uppercase tracking-wider transition-all ${
+                      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all ${
                         isActive ? 'bg-gold-500 text-neutral-950 font-bold' :
                         isDone ? 'text-gold-500' : 'text-neutral-600'
                       }`}>
@@ -487,7 +487,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
 
                     {/* Personal Info */}
                     <div className="p-4 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-2">
-                      <div className="flex items-center gap-2 text-[9px] font-mono text-gold-500 uppercase tracking-wider">
+                      <div className="flex items-center gap-2 text-[11px] font-mono text-gold-500 uppercase tracking-wider">
                         <Heart className="h-3 w-3" /> Your Details
                       </div>
                       <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px]">
@@ -500,7 +500,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
 
                     {/* Experience Summary */}
                     <div className="p-4 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-2">
-                      <div className="flex items-center gap-2 text-[9px] font-mono text-gold-500 uppercase tracking-wider">
+                      <div className="flex items-center gap-2 text-[11px] font-mono text-gold-500 uppercase tracking-wider">
                         <Star className="h-3 w-3" /> Your Selection
                       </div>
                       <div className="space-y-1.5 text-[11px]">
@@ -521,8 +521,8 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                         onChange={(e) => updateForm('participants', parseInt(e.target.value) || 1)}
                         className={`w-full bg-neutral-900 border rounded-lg px-3.5 py-2.5 text-white text-xs outline-none transition-colors ${errors.participants ? 'border-red-500/50' : 'border-neutral-800 focus:border-gold-500/40'}`}
                       />
-                      <p className="text-[9px] text-neutral-600 font-mono">{spotsLeft} spots available (max {exp.max_guests})</p>
-                      {errors.participants && <p className="text-[9px] text-red-400 flex items-center gap-1"><AlertCircle className="h-2.5 w-2.5" /> {errors.participants}</p>}
+                      <p className="text-[11px] text-neutral-600 font-mono">{spotsLeft} spots available (max {exp.max_guests})</p>
+                      {errors.participants && <p className="text-[11px] text-red-400 flex items-center gap-1"><AlertCircle className="h-2.5 w-2.5" /> {errors.participants}</p>}
                     </div>
 
                     <div className="space-y-1.5">
@@ -566,7 +566,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                             <p className="text-[10px] text-neutral-400 mt-1">{method.detail}</p>
                           </div>
                           {form.communicationMethod === method.id && (
-                            <div className="flex items-center gap-1 text-[9px] font-mono text-emerald-400">
+                            <div className="flex items-center gap-1 text-[11px] font-mono text-emerald-400">
                               <CheckCircle className="h-3 w-3" /> Perfect choice!
                             </div>
                           )}
@@ -575,7 +575,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                     </div>
 
                     {errors.communicationMethod && (
-                      <p className="text-[9px] text-red-400 flex items-center gap-1"><AlertCircle className="h-2.5 w-2.5" /> {errors.communicationMethod}</p>
+                      <p className="text-[11px] text-red-400 flex items-center gap-1"><AlertCircle className="h-2.5 w-2.5" /> {errors.communicationMethod}</p>
                     )}
 
                     <div className="p-4 bg-gold-500/[0.02] border border-gold-500/10 rounded-xl flex items-start gap-3 text-[10px] text-neutral-400 leading-relaxed">
@@ -606,7 +606,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="p-3 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-2">
-                        <h5 className="text-[8px] font-mono text-gold-500 uppercase tracking-wider font-bold">You</h5>
+                        <h5 className="text-[10px] font-mono text-gold-500 uppercase tracking-wider font-bold">You</h5>
                         <div className="space-y-1 text-[11px]">
                           <p><span className="text-neutral-500">Name</span> <span className="text-white ml-2">{personalInfo.fullName}</span></p>
                           <p><span className="text-neutral-500">Email</span> <span className="text-white ml-2">{personalInfo.email}</span></p>
@@ -614,7 +614,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                         </div>
                       </div>
                       <div className="p-3 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-2">
-                        <h5 className="text-[8px] font-mono text-gold-500 uppercase tracking-wider font-bold">When</h5>
+                        <h5 className="text-[10px] font-mono text-gold-500 uppercase tracking-wider font-bold">When</h5>
                         <div className="space-y-1 text-[11px]">
                           <p><span className="text-neutral-500">Date</span> <span className="text-white ml-2">{form.preferredDate}</span></p>
                           <p><span className="text-neutral-500">Time</span> <span className="text-white ml-2">{form.preferredTime}</span></p>
@@ -625,13 +625,13 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
 
                     {form.specialRequests && (
                       <div className="p-3 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-1">
-                        <h5 className="text-[8px] font-mono text-gold-500 uppercase tracking-wider">Special Wishes</h5>
+                        <h5 className="text-[10px] font-mono text-gold-500 uppercase tracking-wider">Special Wishes</h5>
                         <p className="text-[11px] text-neutral-300">{form.specialRequests}</p>
                       </div>
                     )}
 
                     <div className="p-3 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-1">
-                      <h5 className="text-[8px] font-mono text-gold-500 uppercase tracking-wider">Contact Via</h5>
+                      <h5 className="text-[10px] font-mono text-gold-500 uppercase tracking-wider">Contact Via</h5>
                       <div className="flex items-center gap-2 text-[11px]">
                         {form.communicationMethod === 'whatsapp' ? <MessageCircle className="h-4 w-4 text-emerald-400" /> : <Mail className="h-4 w-4 text-blue-400" />}
                         <span className="text-white capitalize">{form.communicationMethod}</span>

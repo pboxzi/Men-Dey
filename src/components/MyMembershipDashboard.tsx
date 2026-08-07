@@ -318,28 +318,28 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
                 <span className="font-serif text-base font-bold tracking-widest text-white">GA</span>
                 <div className="h-3 w-[1px] bg-neutral-800" />
                 <div className="flex flex-col">
-                  <span className="font-serif text-[9px] font-bold tracking-wider text-neutral-300">GILLIAN ANDERSON</span>
+                  <span className="font-serif text-[11px] font-bold tracking-wider text-neutral-300">GILLIAN ANDERSON</span>
                   <span className="font-mono text-[5px] tracking-[0.2em] text-gold-500">OFFICIAL SANCTUARY</span>
                 </div>
               </div>
-              <span className="font-mono text-[8px] font-bold text-neutral-500 tracking-wider">MEMBER CARD</span>
+              <span className="font-mono text-[10px] font-bold text-neutral-500 tracking-wider">MEMBER CARD</span>
             </div>
             <div className="flex gap-4 items-center z-10 pt-4">
               <div className="h-14 w-14 rounded-full border border-neutral-800 bg-neutral-900 overflow-hidden flex items-center justify-center shrink-0">
                 {membership.profile_photo ? <img src={membership.profile_photo} alt="Member profile photo" loading="lazy" className="h-full w-full object-cover" /> : <User className="h-6 w-6 text-neutral-700" />}
               </div>
               <div className="space-y-1 text-left">
-                <span className="text-[8px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>
                 <h5 className="font-serif text-sm font-bold text-white tracking-wide truncate max-w-[180px]">{membership.card_name || 'Member'}</h5>
                 <div className="flex items-center gap-2">
-                  <span className={`text-[8px] font-mono font-bold uppercase ${style.icon_color}`}>{membership.tier_name}</span>
+                  <span className={`text-[10px] font-mono font-bold uppercase ${style.icon_color}`}>{membership.tier_name}</span>
                   <span className="h-1.5 w-1.5 rounded-full bg-neutral-800" />
-                  <span className="text-[8px] font-mono text-neutral-400">PENDING</span>
+                  <span className="text-[10px] font-mono text-neutral-400">PENDING</span>
                 </div>
               </div>
             </div>
             <div className="flex justify-between items-end border-t border-neutral-900 pt-3 z-10">
-              <div className="text-left font-mono text-[7px] text-neutral-500">
+              <div className="text-left font-mono text-[10px] text-neutral-500">
                 <span className="block">SERIAL NUMBER</span>
                 <span className="font-semibold text-neutral-300">{membership.card_serial}</span>
               </div>
@@ -393,20 +393,20 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
 {membership.profile_photo ? <img src={membership.profile_photo} alt="Member profile photo" loading="lazy" className="h-full w-full object-cover" /> : <User className="h-7 w-7 text-neutral-700" />}
             </div>
             <div className="space-y-1 text-left">
-                <span className="text-[8px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>
                 <h5 className="font-serif text-base font-bold text-white tracking-wide truncate max-w-[200px]">{membership.card_name || 'Member'}</h5>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className={`text-[9px] font-mono font-bold uppercase ${style.icon_color}`}>{membership.tier_name}</span>
+                  <span className={`text-[11px] font-mono font-bold uppercase ${style.icon_color}`}>{membership.tier_name}</span>
                   <span className="h-1.5 w-1.5 rounded-full bg-neutral-800" />
-                  <span className="text-[8px] font-mono text-green-500">ACTIVE</span>
+                  <span className="text-[10px] font-mono text-green-500">ACTIVE</span>
               </div>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-neutral-900/60 pt-3 z-10 text-left">
-            <div><span className="text-[7px] font-mono text-neutral-500 uppercase block">Membership #</span><span className="text-[10px] font-mono font-bold text-neutral-200">{membership.membership_number || 'N/A'}</span></div>
-            <div><span className="text-[7px] font-mono text-neutral-500 uppercase block">Serial</span><span className="text-[10px] font-mono font-bold text-neutral-200">{membership.card_serial}</span></div>
-            <div><span className="text-[7px] font-mono text-neutral-500 uppercase block">Activated</span><span className="text-[10px] font-mono font-bold text-neutral-200">{membership.activation_date ? new Date(membership.activation_date).toLocaleDateString() : 'N/A'}</span></div>
-            <div><span className="text-[7px] font-mono text-neutral-500 uppercase block">Expires</span><span className="text-[10px] font-mono font-bold text-neutral-200">{membership.expiration_date ? new Date(membership.expiration_date).toLocaleDateString() : 'Never'}</span></div>
+            <div><span className="text-[10px] font-mono text-neutral-500 uppercase block">Membership #</span><span className="text-[10px] font-mono font-bold text-neutral-200">{membership.membership_number || 'N/A'}</span></div>
+            <div><span className="text-[10px] font-mono text-neutral-500 uppercase block">Serial</span><span className="text-[10px] font-mono font-bold text-neutral-200">{membership.card_serial}</span></div>
+            <div><span className="text-[10px] font-mono text-neutral-500 uppercase block">Activated</span><span className="text-[10px] font-mono font-bold text-neutral-200">{membership.activation_date ? new Date(membership.activation_date).toLocaleDateString() : 'N/A'}</span></div>
+            <div><span className="text-[10px] font-mono text-neutral-500 uppercase block">Expires</span><span className="text-[10px] font-mono font-bold text-neutral-200">{membership.expiration_date ? new Date(membership.expiration_date).toLocaleDateString() : 'Never'}</span></div>
           </div>
         </div>
 
@@ -513,7 +513,7 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
             >
               <div className="h-2 w-2 rounded-full bg-gold-500 animate-pulse" />
               <div className="flex-1 text-xs text-left">
-                <p className="font-mono text-gold-500 uppercase tracking-widest font-bold text-[9px]">SYSTEM MSG</p>
+                <p className="font-mono text-gold-500 uppercase tracking-widest font-bold text-[11px]">SYSTEM MSG</p>
                 <p className="text-white mt-0.5 leading-tight">{toast.message}</p>
               </div>
             </motion.div>

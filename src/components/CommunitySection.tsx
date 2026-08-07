@@ -336,7 +336,7 @@ export default function CommunitySection() {
               <div className="absolute inset-0 bg-gradient-to-b from-gold-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <stat.icon className={`h-5 w-5 ${stat.color} mx-auto relative`} />
               <span className={`block text-xl font-bold ${stat.color} relative`}>{stat.value}</span>
-              <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest relative">{stat.label}</span>
+              <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest relative">{stat.label}</span>
             </motion.div>
           ))}
         </motion.div>
@@ -361,7 +361,7 @@ export default function CommunitySection() {
                   <h3 className="font-serif text-sm tracking-widest text-gold-300 uppercase font-bold">
                     Share Your Light
                   </h3>
-                  <p className="text-[9px] font-mono text-neutral-600">Your voice matters here</p>
+                  <p className="text-[11px] font-mono text-neutral-600">Your voice matters here</p>
                 </div>
               </div>
 
@@ -426,7 +426,7 @@ export default function CommunitySection() {
                         type="button"
                         title={cat.desc}
                         onClick={() => setPostCategory(cat.id)}
-                        className={`flex-1 flex flex-col items-center gap-1 px-2 py-2.5 rounded-lg text-[9px] font-mono tracking-wider uppercase border transition-all duration-200 ${
+                        className={`flex-1 flex flex-col items-center gap-1 px-2 py-2.5 rounded-lg text-[11px] font-mono tracking-wider uppercase border transition-all duration-200 ${
                           postCategory === cat.id
                             ? 'bg-gold-500 border-gold-400 text-neutral-950 font-bold scale-[1.02] shadow-lg shadow-gold-500/20'
                             : 'bg-neutral-900/80 border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700'
@@ -454,7 +454,7 @@ export default function CommunitySection() {
                     className="w-full bg-neutral-900/80 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-white outline-none focus:border-gold-500/40 focus:bg-neutral-900 resize-none leading-relaxed placeholder-neutral-600 transition-all duration-300"
                   />
                   <div className="flex justify-end">
-                    <span className={`text-[9px] font-mono transition-colors duration-300 ${postContent.length > 450 ? 'text-red-400' : 'text-neutral-600'}`}>
+                    <span className={`text-[11px] font-mono transition-colors duration-300 ${postContent.length > 450 ? 'text-red-400' : 'text-neutral-600'}`}>
                       {postContent.length}/500
                     </span>
                   </div>
@@ -501,8 +501,8 @@ export default function CommunitySection() {
                         <div className="h-10 w-10 rounded-full bg-neutral-900/80 border border-neutral-800 flex items-center justify-center">
                           <Upload className="h-4 w-4 text-neutral-500" />
                         </div>
-                        <p className="font-mono text-[9px] text-neutral-400">Drop an image here or click to browse</p>
-                        <p className="text-[8px] text-neutral-600">PNG, JPG &middot; up to 5MB</p>
+                        <p className="font-mono text-[11px] text-neutral-400">Drop an image here or click to browse</p>
+                        <p className="text-[10px] text-neutral-600">PNG, JPG &middot; up to 5MB</p>
                       </>
                     )}
                   </div>
@@ -561,7 +561,7 @@ export default function CommunitySection() {
                       <button
                         key={cat.id}
                         onClick={() => setActiveCategory(cat.id)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-mono tracking-wider uppercase border transition-all duration-200 ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono tracking-wider uppercase border transition-all duration-200 ${
                           activeCategory === cat.id
                             ? 'bg-gold-500 border-gold-400 text-neutral-950 font-bold shadow-sm'
                             : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-700'
@@ -569,7 +569,7 @@ export default function CommunitySection() {
                       >
                         <IconComp className="h-3 w-3" />
                         {cat.label}
-                        <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[8px] font-medium ${
+                        <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium ${
                           activeCategory === cat.id ? 'bg-neutral-950/20 text-neutral-950' : 'bg-neutral-900 text-neutral-500'
                         }`}>
                           {count}
@@ -589,7 +589,7 @@ export default function CommunitySection() {
                       <button
                         key={sort.id}
                         onClick={() => setActiveSort(sort.id)}
-                        className={`flex items-center gap-1 px-2.5 py-1 rounded text-[8px] font-mono uppercase tracking-wider transition-all ${
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-mono uppercase tracking-wider transition-all ${
                           activeSort === sort.id
                             ? 'bg-neutral-900 text-gold-500'
                             : 'text-neutral-500 hover:text-white'
@@ -600,7 +600,7 @@ export default function CommunitySection() {
                       </button>
                     ))}
                   </div>
-                  <span className="text-[9px] font-mono text-neutral-600 min-w-[5rem] text-right">
+                  <span className="text-[11px] font-mono text-neutral-600 min-w-[5rem] text-right">
                     {filteredHighlights.length} {filteredHighlights.length === 1 ? 'story' : 'stories'}
                   </span>
                 </div>
@@ -639,14 +639,14 @@ export default function CommunitySection() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${
                           (hl.category || 'FAN ART') === 'FAN ART' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
                           (hl.category || 'FAN ART') === 'LETTERS' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
                           'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                         }`}>
                           {hl.category || 'FAN ART'}
                         </span>
-                        <span className="text-[9px] font-mono text-neutral-600 flex items-center gap-1">
+                        <span className="text-[11px] font-mono text-neutral-600 flex items-center gap-1">
                           <Clock className="h-2.5 w-2.5" />
                           {getRelativeTime(hl.created_at)}
                         </span>
@@ -697,9 +697,9 @@ export default function CommunitySection() {
                       <div className="ml-auto">
                         {deleteConfirmId === hl.id ? (
                           <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-red-500/10 border border-red-500/30">
-                            <span className="text-[8px] font-mono text-red-400 uppercase">Remove?</span>
-                            <button onClick={() => handleDeletePost(hl.id)} className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[8px] font-mono uppercase">Yes</button>
-                            <button onClick={() => setDeleteConfirmId(null)} className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[8px] font-mono uppercase">No</button>
+                            <span className="text-[10px] font-mono text-red-400 uppercase">Remove?</span>
+                            <button onClick={() => handleDeletePost(hl.id)} className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[10px] font-mono uppercase">Yes</button>
+                            <button onClick={() => setDeleteConfirmId(null)} className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[10px] font-mono uppercase">No</button>
                           </div>
                         ) : (
                           displayName && hl.username === displayName && (
@@ -736,7 +736,7 @@ export default function CommunitySection() {
                                 <div key={comment.id} className="p-3.5 rounded-xl border border-neutral-900/60 bg-neutral-900/15 space-y-3 text-xs">
                                   <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500">
                                     <span className="text-gold-500/90 font-bold flex items-center gap-1.5">
-                                      <span className="h-5 w-5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[9px] font-medium text-gold-500 shrink-0">
+                                      <span className="h-5 w-5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[11px] font-medium text-gold-500 shrink-0">
                                         {comment.avatarText}
                                       </span>
                                       {comment.username}
@@ -750,9 +750,9 @@ export default function CommunitySection() {
                                     <div className="pl-4 ml-2 border-l border-gold-500/15 space-y-3 pt-1">
                                       {comment.replies.map((reply) => (
                                         <div key={reply.id} className="bg-neutral-950/40 p-2.5 rounded-lg border border-neutral-900/40 space-y-1.5">
-                                          <div className="flex justify-between items-center text-[9px] font-mono text-neutral-500">
+                                          <div className="flex justify-between items-center text-[11px] font-mono text-neutral-500">
                                             <span className="text-neutral-300 font-semibold flex items-center gap-1">
-                                              <span className="h-4.5 w-4.5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[8px] font-medium text-neutral-400 shrink-0">
+                                              <span className="h-4.5 w-4.5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-medium text-neutral-400 shrink-0">
                                                 {reply.avatarText}
                                               </span>
                                               {reply.username}
@@ -804,7 +804,7 @@ export default function CommunitySection() {
                           </div>
 
                           <div className="border-t border-neutral-900/60 pt-3.5 space-y-2">
-                            <span className="text-[9px] font-mono uppercase tracking-wider text-neutral-500 flex items-center gap-1.5">
+                            <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 flex items-center gap-1.5">
                               <Heart className="h-2.5 w-2.5" />
                               Leave a kind word
                             </span>

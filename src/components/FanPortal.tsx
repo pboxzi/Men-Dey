@@ -1129,7 +1129,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <Mail className="h-7 w-7" />
                 </div>
                 <div className="space-y-2">
-                  <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest block font-bold">
+                  <span className="text-[11px] font-mono text-gold-500 uppercase tracking-widest block font-bold">
                     CHECK YOUR INBOX
                   </span>
                   <h4 className="font-serif text-xl font-bold tracking-wider text-white">
@@ -1183,7 +1183,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                   {/* Title */}
                   <div className="space-y-2">
-                    <span className="text-[9px] font-mono text-gold-500 uppercase tracking-[0.2em] block font-bold">
+                    <span className="text-[11px] font-mono text-gold-500 uppercase tracking-[0.2em] block font-bold">
                       WELCOME TO YOUR SANCTUARY
                     </span>
                     <h4 className="font-serif text-2xl font-bold tracking-wider text-white">
@@ -1248,7 +1248,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   >
                     ENTER MY PORTAL
                   </button>
-                  <p className="text-[8px] text-neutral-600 font-mono uppercase tracking-widest">
+                  <p className="text-[10px] text-neutral-600 font-mono uppercase tracking-widest">
                     Find your portal anytime in the profile menu above
                   </p>
                 </div>
@@ -1307,7 +1307,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 <form onSubmit={handleAuthSubmit} className="space-y-3.5">
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Full Name</label>
+                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Full Name</label>
                       <input
                         type="text"
                         required
@@ -1320,7 +1320,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   )}
 
                   <div>
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Email</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Email</label>
                     <input
                       type="email"
                       required
@@ -1332,7 +1332,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   </div>
 
                   <div>
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Password</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Password</label>
                     <input
                       type="password"
                       required
@@ -1345,7 +1345,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Confirm Password</label>
+                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Confirm Password</label>
                       <input
                         type="password"
                         required
@@ -1359,7 +1359,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Country</label>
+                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Country</label>
                       <select
                         value={authCountry}
                         onChange={(e) => setAuthCountry(e.target.value)}
@@ -1392,7 +1392,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">City / State</label>
+                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">City / State</label>
                       <input
                         type="text"
                         required
@@ -1406,7 +1406,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">How did you discover Gillian?</label>
+                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">How did you discover Gillian?</label>
                       <select
                         required
                         value={authHowHeard}
@@ -1431,7 +1431,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">What do you love most about Gillian?</label>
+                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">What do you love most about Gillian?</label>
                       <input
                         type="text"
                         required
@@ -1477,7 +1477,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <span className="text-xs sm:text-sm font-bold tracking-wider text-white leading-tight">
                     Gillian Anderson
                   </span>
-                  <span className="font-mono text-[7px] tracking-[0.2em] text-gold-500/60 font-semibold uppercase leading-none">
+                  <span className="font-mono text-[10px] tracking-[0.2em] text-gold-500/60 font-semibold uppercase leading-none">
                     Fan Portal
                   </span>
                 </div>
@@ -1491,7 +1491,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
               <NotificationBell />
 
-              <div className="h-7 w-7 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-500/5 border border-gold-500/25 flex items-center justify-center text-[9px] font-bold text-gold-500 font-serif">
+              <div className="h-7 w-7 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-500/5 border border-gold-500/25 flex items-center justify-center text-[11px] font-bold text-gold-500 font-serif">
                 {authName.slice(0, 1).toUpperCase()}
               </div>
             </div>
@@ -1515,7 +1515,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <Home className="h-4 w-4 shrink-0 text-neutral-600" />
                   <span>Back to Site</span>
                 </button>
-                <span className="text-[7px] font-mono font-semibold tracking-[0.2em] text-neutral-600 uppercase pl-3 pb-2 block">
+                <span className="text-[10px] font-mono font-semibold tracking-[0.2em] text-neutral-600 uppercase pl-3 pb-2 block">
                   Navigation
                 </span>
                 {[
@@ -1574,11 +1574,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     </div>
                     <div className="flex flex-col leading-tight min-w-0">
                       <span className="text-xs font-medium text-neutral-100 truncate">{authName}</span>
-                      <span className="text-[7px] font-mono text-neutral-500 uppercase tracking-wider">{displayRank.name}</span>
+                      <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">{displayRank.name}</span>
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <div className="flex justify-between text-[8px] font-mono text-neutral-500">
+                    <div className="flex justify-between text-[10px] font-mono text-neutral-500">
                       <span>Progress</span>
                       <span className="text-gold-500/60">{Math.round(progressPercent)}%</span>
                     </div>
@@ -1589,7 +1589,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       />
                     </div>
                   </div>
-                  <div className="flex items-center justify-between text-[7px] font-mono text-neutral-600 pt-1 border-t border-neutral-900/60">
+                  <div className="flex items-center justify-between text-[10px] font-mono text-neutral-600 pt-1 border-t border-neutral-900/60">
                     <span>ID: {user?.id?.substring(0, 8).toUpperCase() || 'PENDING'}</span>
                     <span>{authCountry.toUpperCase()}</span>
                   </div>
@@ -1635,7 +1635,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.2 }}
                           >
-                            <span className="inline-block px-2 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/20 font-mono text-[7px] text-gold-500/80 tracking-[0.15em] uppercase font-semibold">
+                            <span className="inline-block px-2 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/20 font-mono text-[10px] text-gold-500/80 tracking-[0.15em] uppercase font-semibold">
                               {displayRank.name}
                             </span>
                           </motion.div>
@@ -1679,7 +1679,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       className="hidden md:flex flex-col items-center justify-center h-18 w-18 rounded-2xl bg-gradient-to-b from-neutral-900/90 to-neutral-950/90 border border-neutral-800/80 font-mono shrink-0 shadow-2xl shadow-black/40"
                     >
                       <span className="text-2xl font-bold text-white leading-none tracking-tight">{new Date().getDate()}</span>
-                      <span className="text-[7px] font-semibold text-gold-500/70 tracking-widest mt-0.5 uppercase">{new Date().toLocaleString('en', { month: 'short' })}</span>
+                      <span className="text-[10px] font-semibold text-gold-500/70 tracking-widest mt-0.5 uppercase">{new Date().toLocaleString('en', { month: 'short' })}</span>
                     </motion.div>
                   </div>
 
@@ -1721,7 +1721,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                       {/* Navigation guide */}
                       <div className="space-y-2">
-                        <p className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Navigate Your Portal</p>
+                        <p className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Navigate Your Portal</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                           <div className="flex items-start gap-2.5 p-3 rounded-xl bg-neutral-900/40 border border-neutral-800/60 hover:border-neutral-700/60 transition-colors">
                             <LayoutGrid className="h-3.5 w-3.5 text-gold-500 shrink-0 mt-0.5" />
@@ -1813,30 +1813,30 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             <div className="flex-1 min-w-0">
                               <p className="font-sans text-[11px] font-bold text-white leading-tight truncate">{c?.card_name || 'Member'}</p>
                               <div className="flex items-center gap-1">
-                                <span className="font-sans text-[8px] text-gold-500/90 font-semibold truncate">{c?.tier_name || stat.fallbackName}</span>
+                                <span className="font-sans text-[10px] text-gold-500/90 font-semibold truncate">{c?.tier_name || stat.fallbackName}</span>
                                 {isActive && <span className="h-1 w-1 rounded-full bg-green-500" />}
                               </div>
                             </div>
                           </div>
                           <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 border-t border-gold-500/10 pt-1.5">
                             <div>
-                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Member #</span>
-                              <span className="font-sans text-[8px] text-neutral-200 font-semibold truncate block">{c?.membership_number || '—'}</span>
+                              <span className="font-sans text-[10px] text-neutral-500 font-medium uppercase tracking-wider block">Member #</span>
+                              <span className="font-sans text-[10px] text-neutral-200 font-semibold truncate block">{c?.membership_number || '—'}</span>
                             </div>
                             <div>
-                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Serial</span>
-                              <span className="font-sans text-[8px] text-neutral-200 font-semibold truncate block">{c?.card_serial || '—'}</span>
+                              <span className="font-sans text-[10px] text-neutral-500 font-medium uppercase tracking-wider block">Serial</span>
+                              <span className="font-sans text-[10px] text-neutral-200 font-semibold truncate block">{c?.card_serial || '—'}</span>
                             </div>
                             <div>
-                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Activated</span>
-                              <span className="font-sans text-[8px] text-neutral-200 font-semibold">{c?.activation_date ? new Date(c.activation_date).toLocaleDateString() : '—'}</span>
+                              <span className="font-sans text-[10px] text-neutral-500 font-medium uppercase tracking-wider block">Activated</span>
+                              <span className="font-sans text-[10px] text-neutral-200 font-semibold">{c?.activation_date ? new Date(c.activation_date).toLocaleDateString() : '—'}</span>
                             </div>
                             <div>
-                              <span className="font-sans text-[7px] text-neutral-500 font-medium uppercase tracking-wider block">Expires</span>
-                              <span className="font-sans text-[8px] text-neutral-200 font-semibold">{c?.expiration_date ? new Date(c.expiration_date).toLocaleDateString() : '—'}</span>
+                              <span className="font-sans text-[10px] text-neutral-500 font-medium uppercase tracking-wider block">Expires</span>
+                              <span className="font-sans text-[10px] text-neutral-200 font-semibold">{c?.expiration_date ? new Date(c.expiration_date).toLocaleDateString() : '—'}</span>
                             </div>
                           </div>
-                          {!c && <p className="font-mono text-[7px] text-neutral-600 mt-1">No card</p>}
+                          {!c && <p className="font-mono text-[10px] text-neutral-600 mt-1">No card</p>}
                         </motion.div>
                       );
                     }
@@ -1862,7 +1862,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         <p className={`font-elegant text-2xl font-bold tracking-tight ${textAccent[stat.accent]}`}>
                           {String(stat.value)}
                         </p>
-                        <p className="font-mono text-[8px] text-neutral-600 uppercase tracking-wider mt-1 font-medium">{stat.label}</p>
+                        <p className="font-mono text-[10px] text-neutral-600 uppercase tracking-wider mt-1 font-medium">{stat.label}</p>
                       </motion.div>
                     );
                   })}
@@ -1877,9 +1877,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       <div className="h-6 w-6 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
                         <Compass className="h-3 w-3 text-gold-500/70" />
                       </div>
-                      <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Your Journey</span>
+                      <span className="font-mono text-[11px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Your Journey</span>
                       <span className="h-px flex-1 bg-gradient-to-r from-neutral-900/80 to-transparent" />
-                      <button onClick={() => setActiveTab('My Journey')} className="font-mono text-[7px] text-neutral-600 hover:text-gold-500/60 uppercase tracking-wider transition-colors">View all</button>
+                      <button onClick={() => setActiveTab('My Journey')} className="font-mono text-[10px] text-neutral-600 hover:text-gold-500/60 uppercase tracking-wider transition-colors">View all</button>
                     </div>
 
                     {journeyLog.length > 0 ? (
@@ -1904,7 +1904,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                 {log.description && (
                                   <p className="text-[11px] text-neutral-500 font-sans mt-0.5 leading-relaxed line-clamp-2">{log.description}</p>
                                 )}
-                                <p className="font-mono text-[7px] text-neutral-700 mt-1 tracking-wide">{log.date || (log.created_at ? new Date(log.created_at).toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' }) : '')}</p>
+                                <p className="font-mono text-[10px] text-neutral-700 mt-1 tracking-wide">{log.date || (log.created_at ? new Date(log.created_at).toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' }) : '')}</p>
                               </div>
                             </motion.div>
                           ))}
@@ -1958,7 +1958,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
                           <Users className="h-3 w-3 text-gold-500/70" />
                         </div>
-                        <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Community</span>
+                        <span className="font-mono text-[11px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Community</span>
                       </div>
                       <div className="p-4 space-y-2">
                         {(clubDiscussions[activeCountryClub] || []).length > 0 ? (
@@ -1972,9 +1972,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                 {post.text.length > 80 ? post.text.substring(0, 80) + '…' : post.text}
                               </p>
                               <div className="flex items-center gap-2 mt-1.5">
-                                <span className="font-mono text-[7px] text-neutral-500">{post.author}</span>
+                                <span className="font-mono text-[10px] text-neutral-500">{post.author}</span>
                                 <span className="h-1 w-1 rounded-full bg-neutral-700" />
-                                <span className="font-mono text-[7px] text-neutral-500">{post.replies?.length || 0} replies</span>
+                                <span className="font-mono text-[10px] text-neutral-500">{post.replies?.length || 0} replies</span>
                               </div>
                             </button>
                           ))
@@ -1985,7 +1985,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           </button>
                         )}
                         <button onClick={() => setActiveTab('Community')}
-                          className="w-full text-center pt-3 border-t border-neutral-900/30 font-mono text-[7px] text-neutral-600 hover:text-gold-500/60 uppercase tracking-wider transition-colors"
+                          className="w-full text-center pt-3 border-t border-neutral-900/30 font-mono text-[10px] text-neutral-600 hover:text-gold-500/60 uppercase tracking-wider transition-colors"
                         >
                           Browse all discussions
                         </button>
@@ -2002,7 +2002,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
                           <LayoutGrid className="h-3 w-3 text-gold-500/70" />
                         </div>
-                        <span className="font-mono text-[9px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Quick Access</span>
+                        <span className="font-mono text-[11px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Quick Access</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         {[
@@ -2080,7 +2080,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           </div>
                           <div>
                             <p className="font-elegant text-sm font-bold text-neutral-100 group-hover:text-white transition-colors tracking-wide">{card.label}</p>
-                            <p className="font-mono text-[8px] text-neutral-500 mt-0.5">{card.sub}</p>
+                            <p className="font-mono text-[10px] text-neutral-500 mt-0.5">{card.sub}</p>
                           </div>
                         </div>
                         {/* Shine sweep on hover */}
@@ -2198,7 +2198,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
                                 <div className="absolute bottom-2 left-2">
-                                  <span className="px-1.5 py-0.5 rounded text-[7px] font-mono uppercase tracking-wider border bg-neutral-900/80 border-neutral-800 text-neutral-400">
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border bg-neutral-900/80 border-neutral-800 text-neutral-400">
                                     {exp.category}
                                   </span>
                                 </div>
@@ -2206,7 +2206,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               <div className="p-3 space-y-2 flex-1">
                                 <h3 className="text-xs font-bold text-white leading-snug line-clamp-1">{exp.title}</h3>
                                 <p className="text-[10px] text-neutral-400 line-clamp-2">{exp.description}</p>
-                                <div className="flex items-center gap-2 text-[8px] font-mono text-neutral-500 pt-1.5 border-t border-neutral-900/60">
+                                <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500 pt-1.5 border-t border-neutral-900/60">
                                   <span className="flex items-center gap-1"><MapPin className="h-2.5 w-2.5" />{exp.location}</span>
                                   <span className="flex items-center gap-1"><Clock className="h-2.5 w-2.5" />{exp.duration}</span>
                                 </div>
@@ -2217,7 +2217,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                   <button
                                     onClick={() => !isFull && navigate(`/experiences/book/${exp.id}`)}
                                     disabled={isFull}
-                                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[8px] font-mono tracking-wider uppercase transition-all ${
+                                    className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-mono tracking-wider uppercase transition-all ${
                                       isFull
                                         ? 'bg-neutral-900 text-neutral-600 cursor-not-allowed'
                                         : 'bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold'
@@ -2347,18 +2347,18 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               </div>
                               <div>
                                 <span className="text-xs font-semibold text-white">{post.username}</span>
-                                <span className="text-[9px] font-mono text-neutral-500 ml-2">{post.handle}</span>
+                                <span className="text-[11px] font-mono text-neutral-500 ml-2">{post.handle}</span>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider border ${
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${
                                 post.category === 'FAN ART' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
                                 post.category === 'LETTERS' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
                                 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                               }`}>
                                 {post.category || 'Story'}
                               </span>
-                              <span className="text-[9px] font-mono text-neutral-600 flex items-center gap-1">
+                              <span className="text-[11px] font-mono text-neutral-600 flex items-center gap-1">
                                 <Clock className="h-2.5 w-2.5" />
                                 {(post as Record<string, unknown>).created_at ? getRelativeTime((post as Record<string, unknown>).created_at as string) : ''}
                               </span>
@@ -2401,9 +2401,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             <div className="ml-auto">
                               {deleteConfirmId === post.id ? (
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-red-500/10 border border-red-500/30">
-                                  <span className="text-[8px] font-mono text-red-400 uppercase">Remove?</span>
-                                  <button onClick={() => handlePostDelete(post.id)} className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[8px] font-mono uppercase">Yes</button>
-                                  <button onClick={() => setDeleteConfirmId(null)} className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[8px] font-mono uppercase">No</button>
+                                  <span className="text-[10px] font-mono text-red-400 uppercase">Remove?</span>
+                                  <button onClick={() => handlePostDelete(post.id)} className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[10px] font-mono uppercase">Yes</button>
+                                  <button onClick={() => setDeleteConfirmId(null)} className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[10px] font-mono uppercase">No</button>
                                 </div>
                               ) : (
                                 (user?.user_metadata?.name || authName) && post.username === (user?.user_metadata?.name || authName) && (
@@ -2423,7 +2423,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                   <div key={comment.id} className="p-3 rounded-lg border border-neutral-900/60 bg-neutral-900/15 space-y-2 text-xs">
                                     <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500">
                                       <span className="text-gold-500/90 font-bold flex items-center gap-1.5">
-                                        <span className="h-5 w-5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[9px] font-medium text-gold-500 shrink-0">
+                                        <span className="h-5 w-5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[11px] font-medium text-gold-500 shrink-0">
                                           {comment.avatarText || comment.username?.charAt(0).toUpperCase() || '?'}
                                         </span>
                                         {comment.username}
@@ -2436,9 +2436,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                       <div className="pl-4 ml-2 border-l border-gold-500/15 space-y-2 pt-1">
                                         {comment.replies.map((reply) => (
                                           <div key={reply.id} className="bg-neutral-950/40 p-2 rounded-lg border border-neutral-900/40 space-y-1">
-                                            <div className="flex justify-between items-center text-[9px] font-mono text-neutral-500">
+                                            <div className="flex justify-between items-center text-[11px] font-mono text-neutral-500">
                                               <span className="text-neutral-300 font-semibold flex items-center gap-1">
-                                                <span className="h-4.5 w-4.5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[8px] font-medium text-neutral-400 shrink-0">
+                                                <span className="h-4.5 w-4.5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-medium text-neutral-400 shrink-0">
                                                   {reply.avatarText || reply.username?.charAt(0).toUpperCase() || '?'}
                                                 </span>
                                                 {reply.username}
@@ -2546,7 +2546,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                   <div className="pl-4 border-l-2 border-gold-500/20 space-y-2.5 pt-1">
                                     {disc.replies.map((reply) => (
                                       <div key={reply.id} className="bg-neutral-950/40 p-2.5 rounded-lg border border-neutral-900/40 space-y-1">
-                                        <div className="flex justify-between items-center text-[9px] font-mono text-neutral-500">
+                                        <div className="flex justify-between items-center text-[11px] font-mono text-neutral-500">
                                           <span className="text-neutral-400 font-semibold flex items-center gap-1">
                                             <User className="h-3 w-3 text-neutral-600" /> {reply.author}
                                           </span>
@@ -2609,7 +2609,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             <div key={item.id} className="p-3 border border-neutral-900/50 rounded bg-neutral-900/10 space-y-2 text-xs hover:border-gold-500/20 transition-all">
                               <div className="flex justify-between items-start">
                                 <div>
-                                  <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[8px] font-mono uppercase font-bold border border-gold-800/20 mb-1">
+                                  <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[10px] font-mono uppercase font-bold border border-gold-800/20 mb-1">
                                     {item.category}
                                   </span>
                                   <h4 className="font-bold text-white">{item.title}</h4>
@@ -2625,7 +2625,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                 </button>
                               </div>
                               <p className="text-neutral-400 text-[11px] leading-relaxed">{item.description}</p>
-                              <p className="text-[9px] font-mono text-neutral-500">Created by: <span className="text-neutral-400">{item.author}</span></p>
+                              <p className="text-[11px] font-mono text-neutral-500">Created by: <span className="text-neutral-400">{item.author}</span></p>
                             </div>
                           ))
                         )}
@@ -2782,7 +2782,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             <h4 className="text-xs font-bold text-white">{badge.title}</h4>
                             <p className="text-[10px] text-neutral-500 leading-normal">{badge.desc}</p>
                           </div>
-                          <p className="text-[9px] text-gold-500 font-mono uppercase tracking-widest font-semibold pt-1 border-t border-neutral-900 w-full">Unlocked: {badge.date}</p>
+                          <p className="text-[11px] text-gold-500 font-mono uppercase tracking-widest font-semibold pt-1 border-t border-neutral-900 w-full">Unlocked: {badge.date}</p>
                         </div>
                       ))}
                     </div>
@@ -2872,14 +2872,14 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           <p className="text-white font-bold text-[11px]">{notif.title}</p>
                           <p className="text-neutral-400 leading-normal">{notif.message}</p>
                           <div className="flex items-center gap-3">
-                            <p className="text-[9px] font-mono text-neutral-500">{new Date(notif.created_at).toLocaleString()}</p>
+                            <p className="text-[11px] font-mono text-neutral-500">{new Date(notif.created_at).toLocaleString()}</p>
                             {!notif.is_read && (
                               <button
                                 onClick={async () => {
                                   await supabase.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', notif.id);
                                   setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: true } : n));
                                 }}
-                                className="text-[9px] font-mono text-gold-500/70 hover:text-gold-500 cursor-pointer"
+                                className="text-[11px] font-mono text-gold-500/70 hover:text-gold-500 cursor-pointer"
                               >
                                 Mark Read
                               </button>
@@ -3042,7 +3042,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       { name: 'Gibson Gold', colorBg: 'bg-[#dfba89]', colorText: 'text-[#dfba89]', desc: 'Original Elegant' },
                       { name: 'Scully Red', colorBg: 'bg-[#dc2626]', colorText: 'text-[#dc2626]', desc: 'Forensic Crimson' },
                       { name: 'X-Files Green', colorBg: 'bg-[#16a34a]', colorText: 'text-[#16a34a]', desc: 'Extraterrestrial Glow' },
-                      { name: 'Cyber Blue', colorBg: 'bg-[#0284c7]', colorText: 'text-[#0284c7]', desc: 'Therapist Azure' }
+                      { name: 'Cyber Blue', colorBg: 'bg-[#0284c7]', colorText: 'text-[#0284c7]', desc: 'Therapist Azure' },
+                      { name: 'Violet Reign', colorBg: 'bg-[#9333ea]', colorText: 'text-[#9333ea]', desc: 'Royal Luxury' },
+                      { name: 'Rose Quartz', colorBg: 'bg-[#e11d48]', colorText: 'text-[#e11d48]', desc: 'Romantic Blush' },
+                      { name: 'Midnight Teal', colorBg: 'bg-[#0d9488]', colorText: 'text-[#0d9488]', desc: 'Deep Serenity' },
+                      { name: 'Obsidian Silver', colorBg: 'bg-[#64748b]', colorText: 'text-[#64748b]', desc: 'Steel Modern' }
                     ].map((pal) => {
                       const isSelected = portalAccent === pal.name;
                       return (
@@ -3086,7 +3090,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               <p className={`text-xs font-bold font-mono tracking-wide ${isSelected ? 'text-white' : 'text-neutral-300'}`}>
                                 {pal.name}
                               </p>
-                              <p className="text-[9px] text-neutral-500 uppercase tracking-wider">
+                              <p className="text-[11px] text-neutral-500 uppercase tracking-wider">
                                 {pal.desc}
                               </p>
                             </div>
@@ -3131,7 +3135,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     className="flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all text-neutral-500"
                   >
                     <Home className="h-5 w-5" strokeWidth={1.5} />
-                    <span className="text-[8px] font-bold tracking-widest uppercase">Site</span>
+                    <span className="text-[10px] font-bold tracking-widest uppercase">Site</span>
                   </button>
                 );
               }
@@ -3144,7 +3148,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${isSelected ? 'text-gold-500' : 'text-neutral-500'}`}
                 >
                   <Icon className="h-5 w-5" strokeWidth={isSelected ? 2.5 : 1.5} />
-                  <span className="text-[8px] font-bold tracking-widest uppercase">{item.label}</span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase">{item.label}</span>
                 </button>
               );
             })}
@@ -3153,7 +3157,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${isMoreMenuOpen ? 'text-gold-500' : 'text-neutral-500'}`}
             >
               <Menu className="h-5 w-5" strokeWidth={isMoreMenuOpen ? 2.5 : 1.5} />
-              <span className="text-[8px] font-bold tracking-widest uppercase">More</span>
+              <span className="text-[10px] font-bold tracking-widest uppercase">More</span>
             </button>
           </div>
 
@@ -3201,7 +3205,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           }`}
                         >
                           <Icon className="h-5 w-5" />
-                          <span className="text-[9px] font-bold tracking-wider uppercase">{item.label}</span>
+                          <span className="text-[11px] font-bold tracking-wider uppercase">{item.label}</span>
                         </button>
                       );
                     })}
@@ -3215,7 +3219,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
       {/* FOOTER BAR */}
       <footer className="border-t border-white/[0.03] bg-[#070709] py-5 px-4 md:px-8 hidden md:block">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-[9px] font-mono text-white/20">
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-[11px] font-mono text-white/20">
           <span>&copy; 2026 Gillian Anderson Co-op. All rights reserved.</span>
           <div className="flex gap-5">
             <button onClick={() => setIsTermsOpen(true)} className="hover:text-gold-500/60 transition-colors bg-transparent border-none cursor-pointer">Terms</button>
@@ -3256,7 +3260,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
               <form onSubmit={handlePortalMembershipRequest} className="space-y-4 text-xs">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-400 uppercase">DESIRED TIER</label>
+                  <label className="text-[11px] font-mono text-neutral-400 uppercase">DESIRED TIER</label>
                   <div className="grid gap-2">
                     {(backendContent?.membershipTiers || []).filter((t: { id: string; name: string; price: string }) => {
                       if (!membership) return true;
@@ -3268,7 +3272,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       >
                         <div>
                           <p className="text-xs font-bold text-white">{t.name}</p>
-                          <p className="text-[9px] font-mono text-neutral-500">{t.price}</p>
+                          <p className="text-[11px] font-mono text-neutral-500">{t.price}</p>
                         </div>
                         {mTierId === t.id && <Check className="h-4 w-4 text-gold-500" />}
                       </button>
@@ -3281,7 +3285,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-400 uppercase">CONTACT METHOD</label>
+                    <label className="text-[11px] font-mono text-neutral-400 uppercase">CONTACT METHOD</label>
                     <div className="flex gap-2">
                       {(['whatsapp', 'email'] as const).map(m => (
                         <button key={m} type="button" onClick={() => setMContact(m)}
@@ -3298,7 +3302,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-400 uppercase">CONTACT INFO</label>
+                    <label className="text-[11px] font-mono text-neutral-400 uppercase">CONTACT INFO</label>
                     <input type="text" required value={mContactVal} onChange={(e) => setMContactVal(e.target.value)}
                       placeholder={mContact === 'whatsapp' ? '+1 (555) 000-0000' : 'you@example.com'}
                       className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50" />
@@ -3306,7 +3310,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-400 uppercase">WHY DO YOU WISH TO UPGRADE?</label>
+                  <label className="text-[11px] font-mono text-neutral-400 uppercase">WHY DO YOU WISH TO UPGRADE?</label>
                   <textarea required rows={3} value={mReason} onChange={(e) => setMReason(e.target.value)}
                     placeholder="Tell us why you'd like to upgrade and what benefits you're most excited about."
                     className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50 resize-none leading-relaxed" />
@@ -3351,7 +3355,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
               <form onSubmit={handleUploadCreation} className="space-y-4 text-xs">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase">TITLE</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase">TITLE</label>
                   <input
                     type="text"
                     required
@@ -3363,7 +3367,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase">CATEGORY</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase">CATEGORY</label>
                   <select
                     value={uploadCategory}
                     onChange={(e) => setUploadCategory(e.target.value as 'Fan Art' | 'Fan Story' | 'Fan Video' | 'Photography')}
@@ -3377,7 +3381,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase">DESCRIPTION</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase">DESCRIPTION</label>
                   <textarea
                     required
                     rows={4}
@@ -3438,7 +3442,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     Experiencing coordination issues? Submit a message directly to Sarah and our security compliance team.
                   </p>
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase">MESSAGE</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase">MESSAGE</label>
                     <textarea
                       required
                       rows={3}
@@ -3499,7 +3503,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
           >
             <div className={`h-2 w-2 rounded-full ${toast.type === 'error' ? 'bg-red-500' : 'bg-gold-500'} animate-pulse`} />
             <div className="flex-1 text-xs text-left">
-              <p className={`font-mono uppercase tracking-widest font-bold text-[9px] ${toast.type === 'error' ? 'text-red-400' : 'text-gold-500'}`}>
+              <p className={`font-mono uppercase tracking-widest font-bold text-[11px] ${toast.type === 'error' ? 'text-red-400' : 'text-gold-500'}`}>
                 {toast.type === 'error' ? 'NOTICE' : 'SYSTEM MSG'}
               </p>
               <p className="text-white mt-0.5 leading-tight">{toast.message}</p>

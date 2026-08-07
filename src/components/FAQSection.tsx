@@ -204,7 +204,7 @@ export default function FAQSection() {
       <div className="mx-auto max-w-4xl px-4 md:px-6 relative z-10 space-y-12">
         {/* Section Header */}
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[9px] font-mono tracking-widest uppercase font-bold">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[11px] font-mono tracking-widest uppercase font-bold">
             <HelpCircle className="h-3.5 w-3.5 animate-pulse" />
             COMMUNITY KNOWLEDGEBASE
           </div>
@@ -245,7 +245,7 @@ export default function FAQSection() {
               <button
                 key={cat.value}
                 onClick={() => setActiveCategory(cat.value as 'all' | 'community' | 'membership' | 'events' | 'experiences' | 'portal' | 'advocacy')}
-                className={`px-3 py-1.5 text-[9px] font-bold tracking-widest transition-all rounded-lg uppercase min-h-[32px] ${
+                className={`px-3 py-1.5 text-[11px] font-bold tracking-widest transition-all rounded-lg uppercase min-h-[32px] ${
                   activeCategory === cat.value
                     ? 'text-gold-500 bg-gold-500/10 border border-gold-500/30'
                     : 'text-neutral-400 hover:text-white bg-neutral-950/60 border border-transparent hover:border-neutral-800'

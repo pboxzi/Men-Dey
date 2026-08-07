@@ -30,7 +30,7 @@ export default function JournalModal({ isOpen, onClose, entry }: JournalModalPro
           />
           <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/40 to-transparent" />
           <div className="absolute bottom-4 left-4 right-4 space-y-1">
-            <span className="text-[9px] font-mono font-medium text-gold-500 bg-black/60 px-2 py-0.5 rounded border border-neutral-800">
+            <span className="text-[11px] font-mono font-medium text-gold-500 bg-black/60 px-2 py-0.5 rounded border border-neutral-800">
               {entry.category.toUpperCase()}
             </span>
             <h4 className="font-serif text-lg md:text-xl text-white tracking-wide">

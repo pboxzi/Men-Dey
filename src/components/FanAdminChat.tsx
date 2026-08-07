@@ -209,7 +209,7 @@ export default function FanAdminChat({ userId, showToast }: Props) {
             <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">Conversations</p>
             <button
               onClick={() => setShowNewChat(true)}
-              className="flex items-center gap-1 px-2 py-1 rounded text-[9px] font-mono text-gold-500 hover:bg-neutral-900 transition-all"
+              className="flex items-center gap-1 px-2 py-1 rounded text-[11px] font-mono text-gold-500 hover:bg-neutral-900 transition-all"
             >
               <Plus className="h-3 w-3" /> New
             </button>
@@ -228,9 +228,9 @@ export default function FanAdminChat({ userId, showToast }: Props) {
               />
               <div className="flex gap-2">
                 <button onClick={handleCreateConv}
-                  className="flex-1 py-1.5 rounded bg-gold-500 text-neutral-950 text-[9px] font-mono font-bold uppercase">Start</button>
+                  className="flex-1 py-1.5 rounded bg-gold-500 text-neutral-950 text-[11px] font-mono font-bold uppercase">Start</button>
                 <button onClick={() => { setShowNewChat(false); setNewSubject(''); }}
-                  className="px-3 py-1.5 rounded border border-neutral-800 text-neutral-500 text-[9px] font-mono uppercase">Cancel</button>
+                  className="px-3 py-1.5 rounded border border-neutral-800 text-neutral-500 text-[11px] font-mono uppercase">Cancel</button>
               </div>
             </div>
           )}
@@ -251,7 +251,7 @@ export default function FanAdminChat({ userId, showToast }: Props) {
                   }`}
                 >
                   <p className="text-[11px] font-bold text-white truncate">{conv.subject}</p>
-                  <p className="text-[9px] text-neutral-500 mt-0.5">
+                  <p className="text-[11px] text-neutral-500 mt-0.5">
                     {new Date(conv.last_message_at).toLocaleDateString()} · {conv.status}
                   </p>
                 </button>
@@ -275,11 +275,11 @@ export default function FanAdminChat({ userId, showToast }: Props) {
               {/* Chat Header */}
               <div className="px-4 py-3 border-b border-neutral-900 flex items-center gap-3">
                 <div className="h-8 w-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center">
-                  <span className="text-[9px] font-mono font-bold text-gold-500">GA</span>
+                  <span className="text-[11px] font-mono font-bold text-gold-500">GA</span>
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-bold text-white">{selectedConv.subject}</p>
-                  <p className="text-[9px] text-neutral-500 font-mono">
+                  <p className="text-[11px] text-neutral-500 font-mono">
                     {selectedConv.status === 'active' ? 'Active' : 'Closed'}
                   </p>
                 </div>
@@ -294,7 +294,7 @@ export default function FanAdminChat({ userId, showToast }: Props) {
                 )}
                 {messages.map(msg => (
                   <div key={msg.id} className={`flex gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                    <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[9px] ${
+                    <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[11px] ${
                       msg.sender === 'user' ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-950 border-gold-800/35 text-gold-500'
                     }`}>
                       {msg.sender === 'user' ? 'YOU' : 'GA'}
@@ -305,7 +305,7 @@ export default function FanAdminChat({ userId, showToast }: Props) {
                       }`}>
                         {msg.text}
                       </div>
-                      <p className="text-[9px] text-neutral-600 font-mono">
+                      <p className="text-[11px] text-neutral-600 font-mono">
                         {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         {msg.sender === 'user' && msg.read && <CheckCircle className="inline h-3 w-3 ml-1 text-emerald-500" />}
                       </p>

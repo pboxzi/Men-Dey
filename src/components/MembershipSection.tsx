@@ -440,7 +440,7 @@ export default function MembershipSection() {
                   <span className="font-mono text-[6px] tracking-[0.2em] text-gold-500">OFFICIAL SANCTUARY</span>
                 </div>
               </div>
-              <span className="font-mono text-[9px] font-bold text-neutral-500 tracking-wider">MEMBER CARD</span>
+              <span className="font-mono text-[11px] font-bold text-neutral-500 tracking-wider">MEMBER CARD</span>
             </div>
 
             {/* Middle section with photo */}
@@ -453,23 +453,23 @@ export default function MembershipSection() {
                 )}
               </div>
               <div className="space-y-1 text-left">
-                <span className="text-[9px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>
+                <span className="text-[11px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>
                 <h5 className="font-serif text-base font-bold text-white tracking-wide truncate max-w-[220px]">{myMembership.card_name}</h5>
                 <div className="flex items-center gap-2">
                   <span className={`text-[10px] font-mono font-bold uppercase ${ts.icon}`}>{myMembership.tier_name}</span>
                   <span className="h-1.5 w-1.5 rounded-full bg-neutral-800" />
-                  <span className="text-[9px] font-mono text-neutral-400">#{myMembership.membership_number?.split('-').pop() || 'N/A'}</span>
+                  <span className="text-[11px] font-mono text-neutral-400">#{myMembership.membership_number?.split('-').pop() || 'N/A'}</span>
                 </div>
               </div>
             </div>
 
             {/* Bottom section */}
             <div className="flex justify-between items-end border-t border-neutral-900/60 pt-3 z-10">
-              <div className="text-left font-mono text-[8px] text-neutral-500 space-y-0.5">
+              <div className="text-left font-mono text-[10px] text-neutral-500 space-y-0.5">
                 <span className="block">MEMBER SINCE</span>
                 <span className="font-semibold text-neutral-300 text-[10px]">{myMembership.activation_date ? new Date(myMembership.activation_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A'}</span>
               </div>
-              <div className="text-right font-mono text-[8px] text-neutral-500 space-y-0.5">
+              <div className="text-right font-mono text-[10px] text-neutral-500 space-y-0.5">
                 <span className="block">EXPIRES</span>
                 <span className={`font-semibold text-[10px] ${myMembership.expiration_date && new Date(myMembership.expiration_date) < new Date() ? 'text-red-400' : 'text-neutral-300'}`}>
                   {myMembership.expiration_date ? new Date(myMembership.expiration_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Lifetime'}
@@ -493,7 +493,7 @@ export default function MembershipSection() {
               { label: 'Expires', value: myMembership.expiration_date ? new Date(myMembership.expiration_date).toLocaleDateString() : 'Lifetime', mono: false },
             ].map(d => (
               <div key={d.label} className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-3 text-center space-y-0.5">
-                <p className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">{d.label}</p>
+                <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">{d.label}</p>
                 <p className={`text-[10px] text-white font-semibold ${d.mono ? 'font-mono' : ''} truncate`}>{d.value}</p>
               </div>
             ))}
@@ -666,7 +666,7 @@ export default function MembershipSection() {
               >
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-mono border border-neutral-800 px-2 py-0.5 rounded bg-neutral-900 text-neutral-400 uppercase">
+                    <span className="text-[11px] font-mono border border-neutral-800 px-2 py-0.5 rounded bg-neutral-900 text-neutral-400 uppercase">
                       Tier {tier.sort_order}
                     </span>
                     <Crown className={`h-4.5 w-4.5 ${isSelected ? tier.icon_color : 'text-neutral-700'}`} />
@@ -743,7 +743,7 @@ export default function MembershipSection() {
                       <span className="text-[10px] font-mono text-emerald-400">PHOTO MOUNTED</span>
                     </div>
                   ) : (
-                    <><Upload className="h-4.5 w-4.5 text-neutral-500 mb-1" /><p className="font-mono text-[9px] text-neutral-400">DRAG & DROP OR BROWSE PHOTO</p></>
+                    <><Upload className="h-4.5 w-4.5 text-neutral-500 mb-1" /><p className="font-mono text-[11px] text-neutral-400">DRAG & DROP OR BROWSE PHOTO</p></>
                   )}
                 </div>
                 {photoError && <p className="text-[10px] text-red-500 font-mono">{photoError}</p>}
@@ -767,28 +767,28 @@ export default function MembershipSection() {
                     <span className="font-serif text-base font-bold tracking-widest text-white">GA</span>
                     <div className="h-3 w-[1px] bg-neutral-800" />
                     <div className="flex flex-col">
-                      <span className="font-serif text-[9px] font-bold tracking-wider text-neutral-300">GILLIAN ANDERSON</span>
+                      <span className="font-serif text-[11px] font-bold tracking-wider text-neutral-300">GILLIAN ANDERSON</span>
                       <span className="font-mono text-[5px] tracking-[0.2em] text-gold-500">OFFICIAL SANCTUARY</span>
                     </div>
                   </div>
-                  <span className="font-mono text-[8px] font-bold text-neutral-500 tracking-wider">MEMBER CARD</span>
+                  <span className="font-mono text-[10px] font-bold text-neutral-500 tracking-wider">MEMBER CARD</span>
                 </div>
                 <div className="flex gap-4 items-center z-10 pt-4">
                   <div className="h-14 w-14 rounded-full border border-neutral-800 bg-neutral-900 overflow-hidden flex items-center justify-center shrink-0">
                     {userPhoto ? <img src={userPhoto} alt="Face" loading="lazy" className="h-full w-full object-cover" /> : <User className="h-6 w-6 text-neutral-700" />}
                   </div>
                   <div className="space-y-1 text-left">
-                    <span className="text-[8px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>
                     <h5 className="font-serif text-sm font-bold text-white tracking-wide truncate max-w-[180px]">{cardName || 'Member'}</h5>
                     <div className="flex items-center gap-2">
-                      <span className={`text-[8px] font-mono font-bold uppercase ${activeTier.icon_color}`}>{activeTier.name}</span>
+                      <span className={`text-[10px] font-mono font-bold uppercase ${activeTier.icon_color}`}>{activeTier.name}</span>
                       <span className="h-1.5 w-1.5 rounded-full bg-neutral-800" />
-                      <span className="text-[8px] font-mono text-neutral-400">ISSUED {new Date().getFullYear()}</span>
+                      <span className="text-[10px] font-mono text-neutral-400">ISSUED {new Date().getFullYear()}</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex justify-between items-end border-t border-neutral-900 pt-3 z-10">
-                  <div className="text-left font-mono text-[7px] text-neutral-500">
+                  <div className="text-left font-mono text-[10px] text-neutral-500">
                     <span className="block">SERIAL NUMBER</span>
                     <span className="font-semibold text-neutral-300 flex items-center gap-1">
                       {cardSerial}
@@ -869,7 +869,7 @@ export default function MembershipSection() {
           >
             <div className="h-2 w-2 rounded-full bg-gold-500 animate-pulse" />
             <div className="flex-1 text-xs text-left">
-              <p className="font-mono text-gold-500 uppercase tracking-widest font-bold text-[9px]">SYSTEM MSG</p>
+              <p className="font-mono text-gold-500 uppercase tracking-widest font-bold text-[11px]">SYSTEM MSG</p>
               <p className="text-white mt-0.5 leading-tight">{toast.message}</p>
             </div>
           </motion.div>

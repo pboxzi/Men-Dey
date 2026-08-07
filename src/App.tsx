@@ -401,7 +401,7 @@ export default function App() {
               <span className="text-[11px] sm:text-[13px] font-bold tracking-[0.12em] text-white leading-tight truncate">
                 GILLIAN ANDERSON
               </span>
-              <span className="text-[7px] sm:text-[9px] font-mono tracking-[0.2em] text-gold-500/70 leading-tight">
+              <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.2em] text-gold-500/70 leading-tight">
                 OFFICIAL
               </span>
             </div>
@@ -443,11 +443,11 @@ export default function App() {
             {!user ? (
               <div className="flex items-center gap-1 sm:gap-1.5">
                 <button onClick={() => navigate('/portal?mode=login')}
-                  className="px-2 sm:px-3 py-1.5 text-[9px] font-bold tracking-widest text-neutral-300 hover:text-white border border-neutral-800 hover:border-gold-500/30 rounded-lg transition-all shrink-0">
+                  className="px-2 sm:px-3 py-1.5 text-[11px] font-bold tracking-widest text-neutral-300 hover:text-white border border-neutral-800 hover:border-gold-500/30 rounded-lg transition-all shrink-0">
                   SIGN IN
                 </button>
                 <button onClick={() => navigate('/portal?mode=register')}
-                  className="px-2 sm:px-3 py-1.5 text-[9px] font-bold tracking-widest text-neutral-950 bg-gold-500 hover:bg-gold-400 rounded-lg transition-all shrink-0">
+                  className="px-2 sm:px-3 py-1.5 text-[11px] font-bold tracking-widest text-neutral-950 bg-gold-500 hover:bg-gold-400 rounded-lg transition-all shrink-0">
                   REGISTER
                 </button>
               </div>
@@ -476,7 +476,7 @@ export default function App() {
                               </div>
                               <div>
                                 <p className="text-xs font-bold text-gold-500 tracking-wide">MY PORTAL</p>
-                                <p className="text-[9px] text-neutral-400 tracking-wide">Your personal sanctuary</p>
+                                <p className="text-[11px] text-neutral-400 tracking-wide">Your personal sanctuary</p>
                               </div>
                             </button>
                           </div>
@@ -489,7 +489,7 @@ export default function App() {
                             </div>
                             <div>
                               <p className="text-[11px] font-semibold text-neutral-200 tracking-wide">Sign Out</p>
-                              <p className="text-[9px] text-neutral-500 tracking-wide">See you soon</p>
+                              <p className="text-[11px] text-neutral-500 tracking-wide">See you soon</p>
                             </div>
                           </button>
                         </div>
@@ -569,7 +569,7 @@ export default function App() {
                   </motion.div>
 
                   {/* Vertical Navigation Slide Counts */}
-                  <div className="absolute left-5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 font-mono text-[9px] text-neutral-500 z-10">
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 font-mono text-[11px] text-neutral-500 z-10">
                     <span className="text-gold-500 font-bold text-xs">{activeSlide.number}</span>
                     <div className="h-10 w-[1px] bg-neutral-800" />
                     <span className="font-semibold">05</span>
@@ -744,21 +744,21 @@ export default function App() {
                       30+
                       <Compass className="h-3 w-3 text-gold-500/60 group-hover:rotate-45 transition-transform" />
                     </span>
-                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Years on Stage & Screen</span>
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Years on Stage & Screen</span>
                   </div>
                   <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
                     <span className="font-serif text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-1">
                       2x
                       <Award className="h-3 w-3 text-amber-500/60 group-hover:scale-110 transition-transform animate-pulse" />
                     </span>
-                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Emmys & Golden Globes</span>
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Emmys & Golden Globes</span>
                   </div>
                   <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
                     <span className="font-serif text-base sm:text-lg font-bold text-gold-500 tracking-tight flex items-center gap-1">
                       100%
                       <Sparkles className="h-3 w-3 text-gold-500/60 group-hover:scale-110 transition-transform" />
                     </span>
-                    <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Empowering Advocacy</span>
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Empowering Advocacy</span>
                   </div>
                 </motion.div>
 
@@ -768,7 +768,7 @@ export default function App() {
                     {[1, 2, 3, 4].map((num) => (
                       <div
                         key={num}
-                        className="h-7 w-7 rounded-full border border-neutral-950 bg-neutral-900 flex items-center justify-center text-[9px] font-mono font-bold text-neutral-300 overflow-hidden shadow-inner"
+                        className="h-7 w-7 rounded-full border border-neutral-950 bg-neutral-900 flex items-center justify-center text-[11px] font-mono font-bold text-neutral-300 overflow-hidden shadow-inner"
                       >
                         {['AM', 'JW', 'ND', 'KR'][num - 1]}
                       </div>
@@ -778,7 +778,7 @@ export default function App() {
                     <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
                       24.2M+ Subscribers & Followers
                     </span>
-                    <span className="text-[9px] font-mono text-gold-500/80 font-bold">
+                    <span className="text-[11px] font-mono text-gold-500/80 font-bold">
                       Worldwide Community
                     </span>
                   </div>
@@ -827,7 +827,7 @@ export default function App() {
                     <h3 className="text-xs font-semibold text-white tracking-wider uppercase">
                       A message to you all
                     </h3>
-                    <p className="text-[9px] font-mono text-neutral-500 tracking-widest">
+                    <p className="text-[11px] font-mono text-neutral-500 tracking-widest">
                       ARCHIVE PREVIEW
                     </p>
                   </div>
@@ -907,7 +907,7 @@ export default function App() {
 
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-10 sm:space-y-16 relative z-10">
                       <div className="text-center space-y-4">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[9px] font-mono tracking-widest uppercase font-bold">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[11px] font-mono tracking-widest uppercase font-bold">
                           <Star className="h-3 w-3 animate-pulse" />
                           GET INVOLVED
                         </div>
@@ -938,7 +938,7 @@ export default function App() {
                             <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
                           </div>
 
-                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                          <div className="absolute top-4 right-4 font-mono text-[11px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
                             01
                           </div>
                           <div className="space-y-4 relative z-10">
@@ -954,7 +954,7 @@ export default function App() {
                               </p>
                             </div>
                           </div>
-                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
+                          <span className="text-[11px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
                             LEARN MORE <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
                           </span>
                         </button>
@@ -976,7 +976,7 @@ export default function App() {
                             <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
                           </div>
 
-                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                          <div className="absolute top-4 right-4 font-mono text-[11px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
                             02
                           </div>
                           <div className="space-y-4 relative z-10">
@@ -992,7 +992,7 @@ export default function App() {
                               </p>
                             </div>
                           </div>
-                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
+                          <span className="text-[11px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
                             SEE TIERS <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
                           </span>
                         </button>
@@ -1014,7 +1014,7 @@ export default function App() {
                             <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
                           </div>
 
-                          <div className="absolute top-4 right-4 font-mono text-[9px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                          <div className="absolute top-4 right-4 font-mono text-[11px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
                             03
                           </div>
                           <div className="space-y-4 relative z-10">
@@ -1030,7 +1030,7 @@ export default function App() {
                               </p>
                             </div>
                           </div>
-                          <span className="text-[9px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
+                          <span className="text-[11px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
                             VIEW EVENTS <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
                           </span>
                         </button>
@@ -1166,12 +1166,12 @@ export default function App() {
 
             {/* Right Column: Social Links (3 Cols) */}
             <div className="md:col-span-3 text-center md:text-right space-y-3">
-              <span className="text-[9px] font-mono text-neutral-500 tracking-widest uppercase block">
+              <span className="text-[11px] font-mono text-neutral-500 tracking-widest uppercase block">
                 FOLLOW GILLIAN
               </span>
               <div className="flex justify-center md:justify-end items-center gap-3">
                 <a
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/gilliananderson"
                   target="_blank"
                   rel="noreferrer"
                   className="p-1.5 rounded bg-neutral-950 border border-neutral-900/80 text-neutral-400 hover:text-gold-500 hover:border-gold-500/40 transition-colors"
@@ -1180,7 +1180,7 @@ export default function App() {
                   <Instagram className="h-4 w-4" />
                 </a>
                 <a
-                  href="https://spotify.com"
+                  href="https://open.spotify.com/artist/5K4W6rqBFWDnAN6FQUkS6x"
                   target="_blank"
                   rel="noreferrer"
                   className="p-1.5 rounded bg-neutral-950 border border-neutral-900/80 text-neutral-400 hover:text-gold-500 hover:border-gold-500/40 transition-colors"
@@ -1189,7 +1189,7 @@ export default function App() {
                   <Music className="h-4 w-4" />
                 </a>
                 <a
-                  href="https://youtube.com"
+                  href="https://www.youtube.com/@GillianAnderson"
                   target="_blank"
                   rel="noreferrer"
                   className="p-1.5 rounded bg-neutral-950 border border-neutral-900/80 text-neutral-400 hover:text-gold-500 hover:border-gold-500/40 transition-colors"
@@ -1257,28 +1257,28 @@ export default function App() {
         <button onClick={() => { navigateTo('landing', 'HOME'); setMobileExploreOpen(false); }}
           className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${activeNav === 'HOME' && viewMode === 'landing' ? 'text-gold-500' : 'text-neutral-500'}`}>
           <Home className="h-5 w-5" strokeWidth={activeNav === 'HOME' && viewMode === 'landing' ? 2.5 : 1.5} />
-          <span className="text-[8px] font-bold tracking-widest uppercase">Home</span>
+          <span className="text-[10px] font-bold tracking-widest uppercase">Home</span>
         </button>
 
         {/* Explore */}
         <button onClick={() => setMobileExploreOpen(!mobileExploreOpen)}
           className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${mobileExploreOpen ? 'text-gold-500' : 'text-neutral-500'}`}>
           <Compass className="h-5 w-5" strokeWidth={mobileExploreOpen ? 2.5 : 1.5} />
-          <span className="text-[8px] font-bold tracking-widest uppercase">Explore</span>
+          <span className="text-[10px] font-bold tracking-widest uppercase">Explore</span>
         </button>
 
         {/* Portal */}
         <button onClick={() => { if (!user) { navigate('/portal?mode=login'); } else { navigate('/portal'); } setMobileExploreOpen(false); }}
           className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${location.pathname === '/portal' ? 'text-gold-500' : 'text-neutral-500'}`}>
           <Sparkles className="h-5 w-5" strokeWidth={location.pathname === '/portal' ? 2.5 : 1.5} />
-          <span className="text-[8px] font-bold tracking-widest uppercase">Portal</span>
+          <span className="text-[10px] font-bold tracking-widest uppercase">Portal</span>
         </button>
 
         {/* Events */}
         <button onClick={() => { handleNavClick('EVENTS'); setMobileExploreOpen(false); }}
           className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${activeNav === 'EVENTS' ? 'text-gold-500' : 'text-neutral-500'}`}>
           <Calendar className="h-5 w-5" strokeWidth={activeNav === 'EVENTS' ? 2.5 : 1.5} />
-          <span className="text-[8px] font-bold tracking-widest uppercase">Events</span>
+          <span className="text-[10px] font-bold tracking-widest uppercase">Events</span>
         </button>
       </div>
 
@@ -1319,7 +1319,7 @@ export default function App() {
                   <button key={item.label} onClick={() => { handleNavClick(item.nav); setMobileExploreOpen(false); }}
                     className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all min-h-[80px] ${activeNav === item.nav ? 'border-gold-500/30 bg-gold-500/5 text-gold-500' : 'border-neutral-800/60 bg-neutral-900/30 text-neutral-400 hover:text-white hover:border-neutral-700'}`}>
                     {item.icon}
-                    <span className="text-[9px] font-bold tracking-widest uppercase">{item.label}</span>
+                    <span className="text-[11px] font-bold tracking-widest uppercase">{item.label}</span>
                   </button>
                 ))}
               </div>

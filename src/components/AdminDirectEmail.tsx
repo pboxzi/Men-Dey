@@ -220,7 +220,7 @@ export default function AdminDirectEmail({ showToast }: Props) {
                               <p className="text-[10px] text-neutral-500 truncate">{u.email}</p>
                             </div>
                             {u.role === 'admin' && (
-                              <span className="text-[8px] font-mono font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded">ADMIN</span>
+                              <span className="text-[10px] font-mono font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded">ADMIN</span>
                             )}
                           </button>
                         ))
@@ -255,7 +255,7 @@ export default function AdminDirectEmail({ showToast }: Props) {
                 onChange={(e) => setBody(e.target.value)}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2.5 text-xs text-white outline-none focus:border-red-500/40 placeholder:text-neutral-600 leading-relaxed font-sans resize-none"
               />
-              <p className="text-[9px] font-mono text-neutral-600">
+              <p className="text-[11px] font-mono text-neutral-600">
                 Supports plain text or HTML. If HTML, include full &lt;!DOCTYPE&gt; wrapper.
               </p>
             </div>
@@ -324,14 +324,14 @@ export default function AdminDirectEmail({ showToast }: Props) {
                 <div key={e.id} className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-3 space-y-1">
                   <div className="flex items-center justify-between">
                     <p className="text-[10px] font-mono text-neutral-400 truncate">{e.recipient_email}</p>
-                    <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
                       e.status === 'sent' ? 'text-green-400 bg-green-500/10' : 'text-red-400 bg-red-500/10'
                     }`}>
                       {e.status.toUpperCase()}
                     </span>
                   </div>
                   <p className="text-xs text-white font-semibold truncate">{e.subject}</p>
-                  <p className="text-[9px] text-neutral-600">{new Date(e.created_at).toLocaleString()}</p>
+                  <p className="text-[11px] text-neutral-600">{new Date(e.created_at).toLocaleString()}</p>
                 </div>
               ))
             )}

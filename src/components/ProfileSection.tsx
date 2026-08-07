@@ -131,7 +131,7 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
             <div className="leading-tight text-left">
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="text-base font-bold text-white">{authName}</h3>
-                <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[9px] font-mono font-bold tracking-wider uppercase ${rank.badgeColor}`}>
+                <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[11px] font-mono font-bold tracking-wider uppercase ${rank.badgeColor}`}>
                   <span>{rank.icon}</span>
                   <span>{rank.name}</span>
                 </span>
@@ -142,7 +142,7 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
 
           {/* Loyalty Progress */}
           <div className="w-full md:w-64 space-y-2 bg-neutral-900/30 border border-neutral-900/50 p-3 rounded-xl text-left">
-            <div className="flex justify-between items-center text-[9px] font-mono">
+            <div className="flex justify-between items-center text-[11px] font-mono">
               <span className="text-neutral-500 uppercase tracking-widest font-semibold">CO-OP LOYALTY RANK</span>
               <span className="text-gold-500 font-bold">{loyaltyPoints.toLocaleString()} PTS</span>
             </div>
@@ -154,7 +154,7 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
                 transition={{ duration: 0.8, ease: 'easeOut' }}
               />
             </div>
-            <div className="flex justify-between items-center text-[8px] font-mono text-neutral-500 leading-tight">
+            <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500 leading-tight">
               <span>{rank.min} PTS</span>
               <span className="text-neutral-400 font-medium truncate max-w-[150px]">Next: {rank.next} ({rank.max} PTS)</span>
             </div>
@@ -167,15 +167,15 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Crown className="h-4 w-4 text-gold-500" />
-                <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Official Membership</span>
+                <span className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Official Membership</span>
               </div>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-green-500/20 bg-green-500/5 text-green-500 text-[8px] font-mono font-bold uppercase">Active</span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-green-500/20 bg-green-500/5 text-green-500 text-[10px] font-mono font-bold uppercase">Active</span>
             </div>
             <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-[11px]">
-              <div><span className="text-neutral-500 block text-[9px]">Tier</span><span className="text-white font-bold">{membership.tier_name}</span></div>
-              <div><span className="text-neutral-500 block text-[9px]">Member #</span><span className="text-white font-mono">{membership.membership_number || 'N/A'}</span></div>
-              <div><span className="text-neutral-500 block text-[9px]">Activated</span><span className="text-white">{membership.activation_date ? new Date(membership.activation_date).toLocaleDateString() : 'N/A'}</span></div>
-              <div><span className="text-neutral-500 block text-[9px]">Expires</span><span className="text-white">{membership.expiration_date ? new Date(membership.expiration_date).toLocaleDateString() : 'Never'}</span></div>
+              <div><span className="text-neutral-500 block text-[11px]">Tier</span><span className="text-white font-bold">{membership.tier_name}</span></div>
+              <div><span className="text-neutral-500 block text-[11px]">Member #</span><span className="text-white font-mono">{membership.membership_number || 'N/A'}</span></div>
+              <div><span className="text-neutral-500 block text-[11px]">Activated</span><span className="text-white">{membership.activation_date ? new Date(membership.activation_date).toLocaleDateString() : 'N/A'}</span></div>
+              <div><span className="text-neutral-500 block text-[11px]">Expires</span><span className="text-white">{membership.expiration_date ? new Date(membership.expiration_date).toLocaleDateString() : 'Never'}</span></div>
             </div>
           </div>
         )}
@@ -184,15 +184,15 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
         {(profile?.city || profile?.how_heard_about || profile?.favorite_thing) && (
           <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-3">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Registration Details</span>
-              <span className="text-[8px] font-mono text-neutral-600 bg-neutral-900 px-1.5 py-0.5 rounded">Admin only can edit</span>
+              <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest">Registration Details</span>
+              <span className="text-[10px] font-mono text-neutral-600 bg-neutral-900 px-1.5 py-0.5 rounded">Admin only can edit</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {profile?.city && (
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5">
                     <MapPin className="h-3 w-3 text-gold-500" />
-                    <span className="text-[8px] font-mono text-neutral-500 uppercase">City / State</span>
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase">City / State</span>
                   </div>
                   <p className="text-xs text-white pl-4.5">{profile.city}</p>
                 </div>
@@ -201,7 +201,7 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5">
                     <Radio className="h-3 w-3 text-gold-500" />
-                    <span className="text-[8px] font-mono text-neutral-500 uppercase">Discovered Gillian Via</span>
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase">Discovered Gillian Via</span>
                   </div>
                   <p className="text-xs text-white pl-4.5">{profile.how_heard_about}</p>
                 </div>
@@ -211,7 +211,7 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5">
                   <Heart className="h-3 w-3 text-gold-500" />
-                  <span className="text-[8px] font-mono text-neutral-500 uppercase">What You Love About Gillian</span>
+                  <span className="text-[10px] font-mono text-neutral-500 uppercase">What You Love About Gillian</span>
                 </div>
                 <p className="text-xs text-white leading-relaxed pl-4.5">{profile.favorite_thing}</p>
               </div>
@@ -223,14 +223,14 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
         <div className="space-y-5 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
+              <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
                 <User className="h-3 w-3 text-gold-500" /> FULL NAME
               </label>
               <input type="text" value={authName} onChange={(e) => onAuthNameChange(e.target.value)}
                 className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2.5 text-white outline-none focus:border-gold-500/50 transition-colors" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
+              <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
                 <Mail className="h-3 w-3 text-gold-500" /> EMAIL ADDRESS
               </label>
               <input type="email" value={authEmail} disabled
@@ -240,14 +240,14 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
+              <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
                 <Phone className="h-3 w-3 text-gold-500" /> PRIMARY CONTACT
               </label>
               <input type="text" value={contact} onChange={(e) => setContact(e.target.value)} placeholder="Phone or messaging handle"
                 className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2.5 text-white outline-none focus:border-gold-500/50 transition-colors" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
+              <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
                 <MapPin className="h-3 w-3 text-gold-500" /> COUNTRY
               </label>
               <select value={authCountry} onChange={(e) => onAuthCountryChange(e.target.value)}
@@ -258,7 +258,7 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
+            <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
               <Film className="h-3 w-3 text-gold-500" /> FAVORITE GILLIAN MOVIE / PROJECT
             </label>
             <input type="text" value={favoriteMovie} onChange={(e) => setFavoriteMovie(e.target.value)} placeholder="e.g. The X-Files, The Crown, Sex Education, etc."
@@ -266,7 +266,7 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
+            <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
               <BookOpen className="h-3 w-3 text-gold-500" /> BIOGRAPHY / STORY
             </label>
             <textarea rows={4} value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Tell the Sanctuary community about yourself..."

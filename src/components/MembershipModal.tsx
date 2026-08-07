@@ -140,10 +140,10 @@ export default function MembershipModal({ isOpen, onClose }: MembershipModalProp
                 >
                   <div className="flex justify-between items-center w-full mb-1">
                     <Crown className={`h-4.5 w-4.5 ${tier.iconColor}`} />
-                    <span className="text-[9px] font-mono font-semibold text-gold-500">{tier.price}</span>
+                    <span className="text-[11px] font-mono font-semibold text-gold-500">{tier.price}</span>
                   </div>
                   <span className="text-[11px] font-bold text-white leading-tight mb-1">{tier.name}</span>
-                  <ul className="text-[8px] text-neutral-500 space-y-0.5 list-disc pl-3 flex-1 mt-1 leading-snug">
+                  <ul className="text-[10px] text-neutral-500 space-y-0.5 list-disc pl-3 flex-1 mt-1 leading-snug">
                     {tier.benefits.slice(0, 3).map((b, idx) => (
                       <li key={idx}>{b}</li>
                     ))}
@@ -314,7 +314,7 @@ export default function MembershipModal({ isOpen, onClose }: MembershipModalProp
             <p className="text-xs italic text-gold-500 font-serif leading-relaxed">
               "Every connection, every bridge starts with simple transparency. Thank you for your compassion and support of youth mentoring programs. It means a lot. Be compassionate."
             </p>
-            <p className="text-[9px] text-neutral-500 font-mono mt-2 uppercase tracking-widest">— GILLIAN ANDERSON</p>
+            <p className="text-[11px] text-neutral-500 font-mono mt-2 uppercase tracking-widest">— GILLIAN ANDERSON</p>
           </div>
 
           <button

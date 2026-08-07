@@ -283,7 +283,7 @@ export default function AdminRewards({ showToast }: Props) {
           >
             <tab.icon className="h-3.5 w-3.5" />
             {tab.label}
-            <span className={`ml-1 px-1.5 py-0.5 rounded text-[8px] font-bold ${
+            <span className={`ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${
               activeSubTab === tab.id ? 'bg-neutral-950/30 text-neutral-950' : 'bg-neutral-900 text-neutral-500'
             }`}>{tab.count}</span>
           </button>
@@ -361,7 +361,7 @@ export default function AdminRewards({ showToast }: Props) {
                   </div>
                   <div className="flex items-center gap-1">
                     <button onClick={() => handleToggleActive(reward.id, reward.active)}
-                      className={`px-2 py-1 rounded text-[8px] font-mono uppercase ${
+                      className={`px-2 py-1 rounded text-[10px] font-mono uppercase ${
                         reward.active ? 'bg-emerald-500/10 text-emerald-400' : 'bg-neutral-900 text-neutral-600'
                       }`}>
                       {reward.active ? 'Live' : 'Off'}
@@ -371,11 +371,11 @@ export default function AdminRewards({ showToast }: Props) {
                 <p className="text-[10px] text-neutral-500 leading-relaxed">{reward.description}</p>
                 <div className="flex gap-2 pt-1 border-t border-neutral-900">
                   <button onClick={() => startEdit(reward)}
-                    className="flex items-center gap-1 text-[9px] text-neutral-500 hover:text-white font-mono uppercase">
+                    className="flex items-center gap-1 text-[11px] text-neutral-500 hover:text-white font-mono uppercase">
                     <Edit3 className="h-3 w-3" /> Edit
                   </button>
                   <button onClick={() => handleDeleteReward(reward.id)}
-                    className="flex items-center gap-1 text-[9px] text-red-500/60 hover:text-red-400 font-mono uppercase">
+                    className="flex items-center gap-1 text-[11px] text-red-500/60 hover:text-red-400 font-mono uppercase">
                     <Trash2 className="h-3 w-3" /> Delete
                   </button>
                 </div>
@@ -404,7 +404,7 @@ export default function AdminRewards({ showToast }: Props) {
                       <span className="text-2xl">{badge.icon}</span>
                       <div>
                         <h4 className="text-xs font-bold text-white">{badge.title}</h4>
-                        <p className="text-[9px] text-neutral-500">{badge.profiles?.name || 'Unknown'}</p>
+                        <p className="text-[11px] text-neutral-500">{badge.profiles?.name || 'Unknown'}</p>
                       </div>
                     </div>
                     <button onClick={() => handleDeleteBadge(badge.id)}
@@ -413,7 +413,7 @@ export default function AdminRewards({ showToast }: Props) {
                     </button>
                   </div>
                   <p className="text-[10px] text-neutral-500 leading-relaxed">{badge.description}</p>
-                  <p className="text-[9px] text-gold-500 font-mono uppercase tracking-widest pt-1 border-t border-neutral-900">
+                  <p className="text-[11px] text-gold-500 font-mono uppercase tracking-widest pt-1 border-t border-neutral-900">
                     Unlocked: {new Date(badge.created_at).toLocaleDateString()}
                   </p>
                 </div>
@@ -456,11 +456,11 @@ export default function AdminRewards({ showToast }: Props) {
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-neutral-900">
-                    <th className="text-left px-4 py-3 text-[9px] font-mono text-neutral-500 uppercase tracking-widest">#</th>
-                    <th className="text-left px-4 py-3 text-[9px] font-mono text-neutral-500 uppercase tracking-widest">User</th>
-                    <th className="text-left px-4 py-3 text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Email</th>
-                    <th className="text-right px-4 py-3 text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Points</th>
-                    <th className="text-right px-4 py-3 text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Last Updated</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-mono text-neutral-500 uppercase tracking-widest">#</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-mono text-neutral-500 uppercase tracking-widest">User</th>
+                    <th className="text-left px-4 py-3 text-[11px] font-mono text-neutral-500 uppercase tracking-widest">Email</th>
+                    <th className="text-right px-4 py-3 text-[11px] font-mono text-neutral-500 uppercase tracking-widest">Points</th>
+                    <th className="text-right px-4 py-3 text-[11px] font-mono text-neutral-500 uppercase tracking-widest">Last Updated</th>
                   </tr>
                 </thead>
                 <tbody>

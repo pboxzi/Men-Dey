@@ -355,7 +355,7 @@ function CatalogueTab({ showToast }: Props) {
               { label: 'Spots', value: `${exp.spots - exp.spotsTaken} / ${exp.spots}` }, { label: 'Type', value: exp.is_virtual ? 'Virtual' : 'Physical' },
             ].map(s => (
               <div key={s.label} className="bg-neutral-900/40 border border-neutral-900 rounded-lg p-3">
-                <span className="text-[8px] font-mono text-neutral-500 uppercase">{s.label}</span>
+                <span className="text-[10px] font-mono text-neutral-500 uppercase">{s.label}</span>
                 <p className="text-xs font-bold text-white mt-1">{s.value}</p>
               </div>
             ))}
@@ -402,90 +402,90 @@ function CatalogueTab({ showToast }: Props) {
       {(editing || form.title) && (
         <div className="rounded-xl border border-gold-500/20 bg-neutral-950/60 p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">
+            <h3 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">
               {editing ? `Edit: ${editing.title}` : 'New Experience'}
             </h3>
             <button onClick={() => { setEditing(null); setForm({ ...DEFAULT_FORM }); }} className="text-neutral-500 hover:text-white"><X className="h-4 w-4" /></button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Title *</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Title *</label>
               <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Category</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Category</label>
               <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40">
                 {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Tier</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Tier</label>
               <select value={form.tier} onChange={e => setForm({ ...form, tier: e.target.value })}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40">
                 <option value="Scully">Scully</option><option value="Gibson">Gibson</option><option value="Milburn">Milburn</option>
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Duration</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Duration</label>
               <input type="text" value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })} placeholder="e.g. 2 Hours"
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Location</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Location</label>
               <input type="text" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} placeholder="e.g. London, UK"
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Price</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Price</label>
               <input type="text" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} placeholder="e.g. $2,500"
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Type</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Type</label>
               <select value={form.capacity} onChange={e => setForm({ ...form, capacity: e.target.value, is_virtual: e.target.value === 'Virtual' })}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40">
                 <option value="Physical">Physical</option><option value="Virtual">Virtual</option>
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Spots</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Spots</label>
               <input type="number" min={1} value={form.spots} onChange={e => setForm({ ...form, spots: parseInt(e.target.value) || 1 })}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Max Guests</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Max Guests</label>
               <input type="number" min={1} value={form.max_guests} onChange={e => setForm({ ...form, max_guests: parseInt(e.target.value) || 1 })}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Sort Order</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Sort Order</label>
               <input type="number" value={form.sort_order} onChange={e => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Image URL</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Image URL</label>
               <input type="text" value={form.image} onChange={e => setForm({ ...form, image: e.target.value })} placeholder="https://..."
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Gallery Images (comma-separated URLs)</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Gallery Images (comma-separated URLs)</label>
               <input type="text" value={form.gallery_images} onChange={e => setForm({ ...form, gallery_images: e.target.value })}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1 sm:col-span-3">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Short Description</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Short Description</label>
               <textarea rows={2} value={form.short_description} onChange={e => setForm({ ...form, short_description: e.target.value })}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40 resize-none" />
             </div>
             <div className="space-y-1 sm:col-span-3">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Full Description</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Full Description</label>
               <textarea rows={4} value={form.full_description} onChange={e => setForm({ ...form, full_description: e.target.value })}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40 resize-none" />
             </div>
             <div className="space-y-1 sm:col-span-3">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Booking Requirements</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Booking Requirements</label>
               <textarea rows={2} value={form.booking_requirements} onChange={e => setForm({ ...form, booking_requirements: e.target.value })}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40 resize-none" />
             </div>
@@ -530,21 +530,21 @@ function CatalogueTab({ showToast }: Props) {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
                 <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
-                  {exp.featured && <span className="px-1.5 py-0.5 rounded text-[7px] font-mono uppercase bg-gold-500/10 border border-gold-500/20 text-gold-500">Featured</span>}
-                  {exp.is_virtual && <span className="px-1.5 py-0.5 rounded text-[7px] font-mono uppercase bg-blue-500/10 border border-blue-500/20 text-blue-400">Virtual</span>}
-                  {!exp.published && <span className="px-1.5 py-0.5 rounded text-[7px] font-mono uppercase bg-amber-500/10 border border-amber-500/20 text-amber-400">Draft</span>}
-                  {exp.archived && <span className="px-1.5 py-0.5 rounded text-[7px] font-mono uppercase bg-red-500/10 border border-red-500/20 text-red-400">Archived</span>}
+                  {exp.featured && <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-gold-500/10 border border-gold-500/20 text-gold-500">Featured</span>}
+                  {exp.is_virtual && <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-blue-500/10 border border-blue-500/20 text-blue-400">Virtual</span>}
+                  {!exp.published && <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-amber-500/10 border border-amber-500/20 text-amber-400">Draft</span>}
+                  {exp.archived && <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-red-500/10 border border-red-500/20 text-red-400">Archived</span>}
                 </div>
                 <div className="absolute bottom-2 left-2">
-                  <span className={`px-1.5 py-0.5 rounded text-[7px] font-mono uppercase border ${(CATEGORY_META[exp.category]?.color) || 'bg-neutral-900/80 border-neutral-800 text-neutral-400'}`}>
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono uppercase border ${(CATEGORY_META[exp.category]?.color) || 'bg-neutral-900/80 border-neutral-800 text-neutral-400'}`}>
                     {exp.category}
                   </span>
                 </div>
               </div>
               <div className="p-3 space-y-2">
                 <h3 className="text-xs font-bold text-white leading-snug line-clamp-1">{exp.title}</h3>
-                <p className="text-[9px] font-mono text-neutral-500">{exp.duration} — {exp.price}</p>
-                <div className="flex items-center gap-1.5 text-[8px] text-neutral-500">
+                <p className="text-[11px] font-mono text-neutral-500">{exp.duration} — {exp.price}</p>
+                <div className="flex items-center gap-1.5 text-[10px] text-neutral-500">
                   <MapPin className="h-2.5 w-2.5" />{exp.location}
                   <Users className="h-2.5 w-2.5 ml-1" />{exp.spots - exp.spotsTaken}/{exp.spots}
                 </div>
@@ -764,7 +764,7 @@ function BookingsTab({ showToast }: Props) {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-serif text-lg font-bold text-white">{experiences[b.experienceId]?.title || b.experienceTitle}</h3>
-                <span className={`px-2 py-0.5 rounded-full text-[8px] font-mono font-bold uppercase border ${getStatusBadge(b.status)}`}>{b.status}</span>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border ${getStatusBadge(b.status)}`}>{b.status}</span>
               </div>
               <p className="text-[10px] font-mono text-neutral-500 mt-1">Ref: {b.bookingReference} | ID: {b.id}</p>
               <p className="text-[10px] font-mono text-neutral-500">Submitted: {formatDate(b.submittedDate || b.createdAt)}</p>
@@ -773,59 +773,59 @@ function BookingsTab({ showToast }: Props) {
           </div>
         </div>
         <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4">
-          <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Update Booking</h4>
+          <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Update Booking</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Status</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Status</label>
               <select value={editStatus} onChange={e => setEditStatus(e.target.value)}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40">
                 {BOOKING_STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Date</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Date</label>
               <input type="date" value={editDate} onChange={e => setEditDate(e.target.value)}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Time</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Time</label>
               <input type="time" value={editTime} onChange={e => setEditTime(e.target.value)}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Meeting Venue</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Meeting Venue</label>
               <input type="text" value={editVenue} onChange={e => setEditVenue(e.target.value)} placeholder="e.g. The Ritz London"
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Virtual Link</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Virtual Link</label>
               <input type="text" value={editVirtualLink} onChange={e => setEditVirtualLink(e.target.value)} placeholder="e.g. https://zoom.us/j/..."
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Dress Code</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Dress Code</label>
               <input type="text" value={editDressCode} onChange={e => setEditDressCode(e.target.value)} placeholder="e.g. Black tie"
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Location</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Location</label>
               <input type="text" value={editLocation} onChange={e => setEditLocation(e.target.value)} placeholder="e.g. London, UK"
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Arrival Instructions</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Arrival Instructions</label>
               <input type="text" value={editArrival} onChange={e => setEditArrival(e.target.value)} placeholder="e.g. Enter through the main lobby..."
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
           </div>
           <div className="space-y-1">
-            <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Admin Notes</label>
+            <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Admin Notes</label>
             <textarea rows={3} value={editNotes} onChange={e => setEditNotes(e.target.value)}
               className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40 resize-none" />
           </div>
           {editStatus === 'cancelled' && (
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-red-400 uppercase tracking-wider">Cancellation Reason *</label>
+              <label className="text-[10px] font-mono text-red-400 uppercase tracking-wider">Cancellation Reason *</label>
               <input type="text" value={editCancelReason} onChange={e => setEditCancelReason(e.target.value)} required
                 className="w-full bg-neutral-900 border border-red-900/50 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-red-500/40" />
             </div>
@@ -841,7 +841,7 @@ function BookingsTab({ showToast }: Props) {
         </div>
         {b.timeline && b.timeline.length > 0 && (
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-3">
-            <h4 className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Activity Timeline</h4>
+            <h4 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Activity Timeline</h4>
             <div className="space-y-3">
               {b.timeline.map((entry: TimelineEntry, i: number) => (
                 <div key={i} className="flex gap-3">
@@ -852,7 +852,7 @@ function BookingsTab({ showToast }: Props) {
                   <div className="flex-1 min-w-0 pb-1">
                     <p className="text-xs font-bold text-neutral-200">{entry.event}</p>
                     {entry.note && <p className="text-[10px] text-neutral-500 mt-0.5">{entry.note}</p>}
-                    <p className="text-[8px] font-mono text-neutral-600 mt-0.5">{formatDate(entry.date)}</p>
+                    <p className="text-[10px] font-mono text-neutral-600 mt-0.5">{formatDate(entry.date)}</p>
                   </div>
                 </div>
               ))}
@@ -861,14 +861,14 @@ function BookingsTab({ showToast }: Props) {
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-1.5 text-[11px]">
-            <h5 className="text-[9px] font-mono text-gold-500 uppercase tracking-wider font-bold">Fan Details</h5>
+            <h5 className="text-[11px] font-mono text-gold-500 uppercase tracking-wider font-bold">Fan Details</h5>
             <p><span className="text-neutral-500">Name:</span> <span className="text-white">{b.fullName}</span></p>
             <p><span className="text-neutral-500">Email:</span> <span className="text-white">{b.email}</span></p>
             <p><span className="text-neutral-500">Phone:</span> <span className="text-white">{b.phone || 'N/A'}</span></p>
             <p><span className="text-neutral-500">Country:</span> <span className="text-white">{b.country}</span></p>
           </div>
           <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-1.5 text-[11px]">
-            <h5 className="text-[9px] font-mono text-gold-500 uppercase tracking-wider font-bold">Booking Details</h5>
+            <h5 className="text-[11px] font-mono text-gold-500 uppercase tracking-wider font-bold">Booking Details</h5>
             <p className="capitalize"><span className="text-neutral-500">Method:</span> <span className="text-white">{b.communicationMethod}</span></p>
             <p><span className="text-neutral-500">Guests:</span> <span className="text-white">{b.participants}</span></p>
             <p><span className="text-neutral-500">Pref. Date:</span> <span className="text-white">{b.preferredDate} {b.preferredTime}</span></p>
@@ -908,7 +908,7 @@ function BookingsTab({ showToast }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[9px] uppercase">
+                <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[11px] uppercase">
                   <th className="px-4 py-3 font-semibold">Reference</th>
                   <th className="px-4 py-3 font-semibold">Fan</th>
                   <th className="px-4 py-3 font-semibold">Experience</th>
@@ -924,16 +924,16 @@ function BookingsTab({ showToast }: Props) {
                     <td className="px-4 py-3.5 font-mono font-semibold text-neutral-300">{b.bookingReference}</td>
                     <td className="px-4 py-3.5">
                       <span className="font-semibold text-white">{b.fullName}</span>
-                      <span className="block text-[9px] text-neutral-500">{b.email}</span>
+                      <span className="block text-[11px] text-neutral-500">{b.email}</span>
                     </td>
                     <td className="px-4 py-3.5 text-neutral-300">{experiences[b.experienceId]?.title || b.experienceTitle}</td>
                     <td className="px-4 py-3.5">
-                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-mono font-bold uppercase border ${getStatusBadge(b.status)}`}>{b.status}</span>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${getStatusBadge(b.status)}`}>{b.status}</span>
                     </td>
                     <td className="px-4 py-3.5 text-neutral-500 capitalize">{b.communicationMethod}</td>
                     <td className="px-4 py-3.5 text-neutral-500 font-mono">{formatDate(b.submittedDate || b.createdAt)}</td>
                     <td className="px-4 py-3.5 text-right">
-                      <button onClick={() => openDetail(b)} className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-[9px] font-mono text-neutral-300 rounded hover:text-white transition-colors">Manage</button>
+                      <button onClick={() => openDetail(b)} className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-[11px] font-mono text-neutral-300 rounded hover:text-white transition-colors">Manage</button>
                     </td>
                   </tr>
                 ))}

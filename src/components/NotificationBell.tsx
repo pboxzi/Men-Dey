@@ -76,7 +76,7 @@ export default function NotificationBell() {
         
         {/* Count Badge */}
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 h-4 min-w-[16px] px-1 flex items-center justify-center bg-gold-500 text-neutral-950 font-bold font-mono text-[8px] rounded-full ring-2 ring-[#050505]">
+          <span className="absolute top-1.5 right-1.5 h-4 min-w-[16px] px-1 flex items-center justify-center bg-gold-500 text-neutral-950 font-bold font-mono text-[10px] rounded-full ring-2 ring-[#050505]">
             {unreadCount}
           </span>
         )}
@@ -99,7 +99,7 @@ export default function NotificationBell() {
                   COMMUNITY NOTIFICATIONS
                 </span>
                 {unreadCount > 0 && (
-                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-gold-500/10 text-gold-400 border border-gold-500/20">
+                  <span className="text-[11px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-gold-500/10 text-gold-400 border border-gold-500/20">
                     {unreadCount} NEW
                   </span>
                 )}
@@ -168,7 +168,7 @@ export default function NotificationBell() {
                         <span className={`text-[10px] font-bold tracking-wide ${notif.read ? 'text-neutral-400' : 'text-neutral-200'}`}>
                           {notif.title}
                         </span>
-                        <span className="text-[8px] font-mono text-neutral-500">{notif.timestamp}</span>
+                        <span className="text-[10px] font-mono text-neutral-500">{notif.timestamp}</span>
                       </div>
                       <p className={`text-[10px] leading-relaxed ${notif.read ? 'text-neutral-500' : 'text-neutral-300'}`}>
                         {notif.message}
@@ -182,17 +182,13 @@ export default function NotificationBell() {
               )}
             </div>
 
-            {/* Simulated actions footer */}
-            <div className="p-2 border-t border-neutral-900 bg-neutral-950 flex items-center justify-between gap-2">
-              <span className="text-[8px] font-mono text-neutral-500 uppercase pl-1.5">
-                Simulated Sandbox State
-              </span>
+            {/* Footer */}
+            <div className="p-2 border-t border-neutral-900 bg-neutral-950">
               <button
-                onClick={handleSimulateUpdate}
-                className="flex items-center gap-1 bg-gold-500/10 hover:bg-gold-500/20 border border-gold-500/20 text-gold-400 rounded px-2.5 py-1 text-[8px] font-mono font-bold tracking-wider transition-all active:scale-95"
+                onClick={() => { setShowNotifications(false); }}
+                className="w-full text-center text-[11px] font-mono text-neutral-500 hover:text-gold-500 transition-colors"
               >
-                <Sparkles className="h-2.5 w-2.5" />
-                SIMULATE REPLY/UPDATE
+                View All Notifications
               </button>
             </div>
           </motion.div>

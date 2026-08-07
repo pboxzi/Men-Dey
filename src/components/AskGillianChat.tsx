@@ -273,7 +273,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
           </div>
           <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full border ${currentStatus.borderColor} bg-neutral-950`}>
             {gillianStatus.status === 'available' ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-            <span className={`text-[9px] font-mono uppercase ${currentStatus.textColor}`}>{currentStatus.label}</span>
+            <span className={`text-[11px] font-mono uppercase ${currentStatus.textColor}`}>{currentStatus.label}</span>
           </div>
         </div>
 
@@ -293,7 +293,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
 
           {messages.map((msg) => (
             <div key={msg.id} className={`flex gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-              <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[9px] ${
+              <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[11px] ${
                 msg.sender === 'user' ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-950 border-gold-800/35 text-gold-500'
               }`}>
                 {msg.sender === 'user' ? 'YOU' : 'GA'}
@@ -304,7 +304,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
                 }`}>
                   {msg.text}
                 </div>
-                <p className="text-[9px] text-neutral-600 font-mono">
+                <p className="text-[11px] text-neutral-600 font-mono">
                   {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   {msg.sender === 'user' && msg.read && <CheckCircle className="inline h-3 w-3 ml-1 text-emerald-500" />}
                 </p>
@@ -314,7 +314,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
 
           {gillianTyping && (
             <div className="flex gap-3">
-              <div className="h-8 w-8 rounded-full border bg-neutral-950 border-gold-800/35 text-gold-500 flex items-center justify-center shrink-0 font-mono font-medium text-[9px]">GA</div>
+              <div className="h-8 w-8 rounded-full border bg-neutral-950 border-gold-800/35 text-gold-500 flex items-center justify-center shrink-0 font-mono font-medium text-[11px]">GA</div>
               <div className="bg-neutral-900 rounded-2xl px-4 py-3 flex items-center gap-1.5">
                 <div className="flex gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60 animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -387,7 +387,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
               <span className="text-base">{tip.icon}</span>
               <div>
                 <p className="text-[10px] font-bold text-white">{tip.label}</p>
-                <p className="text-[9px] text-neutral-500">{tip.desc}</p>
+                <p className="text-[11px] text-neutral-500">{tip.desc}</p>
               </div>
             </div>
           ))}

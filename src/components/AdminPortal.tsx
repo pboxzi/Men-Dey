@@ -587,7 +587,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             <span className="font-serif text-[10px] font-bold tracking-widest text-neutral-300">
               GILLIAN ANDERSON
             </span>
-            <span className="font-mono text-[7px] tracking-[0.2em] text-red-500 font-bold uppercase">
+            <span className="font-mono text-[10px] tracking-[0.2em] text-red-500 font-bold uppercase">
               OFFICIAL MANAGEMENT PORTAL
             </span>
           </div>
@@ -616,7 +616,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             >
               <Bell className="h-4 w-4" />
               {notificationCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[9px] font-bold text-white flex items-center justify-center border border-neutral-950">
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[11px] font-bold text-white flex items-center justify-center border border-neutral-950">
                   {notificationCount}
                 </span>
               )}
@@ -631,7 +631,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       setNotificationCount(0);
                       showToast('Notifications cleared.', 'info');
                     }}
-                    className="text-[9px] font-mono text-neutral-500 hover:text-white"
+                    className="text-[11px] font-mono text-neutral-500 hover:text-white"
                   >
                     Clear all
                   </button>
@@ -657,7 +657,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       >
                         <h5 className="text-xs font-semibold text-white">{n.title}</h5>
                         <p className="text-[10px] text-neutral-400 mt-0.5 line-clamp-2">{n.message}</p>
-                        <span className="text-[8px] font-mono text-neutral-600 mt-1 block">{n.created_at ? new Date(n.created_at).toLocaleDateString() : ''}</span>
+                        <span className="text-[10px] font-mono text-neutral-600 mt-1 block">{n.created_at ? new Date(n.created_at).toLocaleDateString() : ''}</span>
                       </button>
                     ))
                   )}
@@ -680,7 +680,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           >
             <Mail className="h-4 w-4" />
             {notificationCount > 0 && (
-              <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-amber-500 text-[7px] font-bold text-white flex items-center justify-center border border-neutral-950">
+              <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-amber-500 text-[10px] font-bold text-white flex items-center justify-center border border-neutral-950">
                 {notificationCount}
               </span>
             )}
@@ -699,7 +699,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
               </div>
               <div className="hidden md:flex flex-col text-left">
                 <span className="text-xs font-semibold text-white leading-tight">{profile?.name || user?.email?.split('@')[0] || 'Admin'}</span>
-                <span className="text-[9px] font-mono font-bold text-red-400 leading-none">Super Administrator</span>
+                <span className="text-[11px] font-mono font-bold text-red-400 leading-none">Super Administrator</span>
               </div>
               <ChevronDown className={`hidden sm:block h-3.5 w-3.5 text-neutral-500 transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
             </button>
@@ -784,7 +784,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                         <span>{item.name}</span>
                       </div>
                       {item.count !== null && (
-                        <span className="h-4 px-1 min-w-[16px] text-[9px] font-mono font-bold text-neutral-950 rounded flex items-center justify-center bg-red-500">
+                        <span className="h-4 px-1 min-w-[16px] text-[11px] font-mono font-bold text-neutral-950 rounded flex items-center justify-center bg-red-500">
                           {item.count}
                         </span>
                       )}
@@ -827,7 +827,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                         <span>{item.name}</span>
                       </div>
                       {item.count !== null && (
-                        <span className="h-4 px-1 min-w-[16px] text-[9px] font-mono font-bold text-neutral-950 bg-red-500 rounded flex items-center justify-center">
+                        <span className="h-4 px-1 min-w-[16px] text-[11px] font-mono font-bold text-neutral-950 bg-red-500 rounded flex items-center justify-center">
                           {item.count}
                         </span>
                       )}
@@ -841,7 +841,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           {/* Bottom logout branding */}
           <div className="pt-4 border-t border-neutral-900 text-[10px] text-neutral-500 font-mono">
             <p>Version 2.4.0-Prod</p>
-            <p className="mt-0.5 text-[9px] text-neutral-600">© Gillian Anderson representation</p>
+            <p className="mt-0.5 text-[11px] text-neutral-600">© Gillian Anderson representation</p>
           </div>
 
         </aside>
@@ -922,11 +922,11 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 {/* Total Members */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5 relative overflow-hidden">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Members</span>
+                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Members</span>
                     <Users className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalMembers}</h3>
-                  <p className="text-[9px] sm:text-[10px] font-mono text-green-500 flex items-center gap-0.5">
+                  <p className="text-[11px] sm:text-[10px] font-mono text-green-500 flex items-center gap-0.5">
                     <span>Registered</span>
                   </p>
                 </div>
@@ -934,11 +934,11 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 {/* Event Registrations */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Events</span>
+                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Events</span>
                     <Calendar className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.eventRegistrations}</h3>
-                  <p className="text-[9px] sm:text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
+                  <p className="text-[11px] sm:text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
                     <span>Registrations</span>
                   </p>
                 </div>
@@ -946,11 +946,11 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 {/* Experience Bookings */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Bookings</span>
+                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Bookings</span>
                     <Star className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.experienceBookings}</h3>
-                  <p className="text-[9px] sm:text-[10px] font-mono text-green-500 flex items-center gap-0.5">
+                  <p className="text-[11px] sm:text-[10px] font-mono text-green-500 flex items-center gap-0.5">
                     <span>Requests</span>
                   </p>
                 </div>
@@ -958,11 +958,11 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 {/* Pending Memberships */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Pending</span>
+                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Pending</span>
                     <Clock className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-amber-500">{dashboardStats.pendingMemberships + dashboardStats.pendingBookings}</h3>
-                  <p className="text-[9px] sm:text-[10px] font-mono text-amber-500 flex items-center gap-0.5">
+                  <p className="text-[11px] sm:text-[10px] font-mono text-amber-500 flex items-center gap-0.5">
                     <span>Review</span>
                   </p>
                 </div>
@@ -970,11 +970,11 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 {/* Active Conversations */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Chats</span>
+                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Chats</span>
                     <MessageCircle className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.activeConversations}</h3>
-                  <p className="text-[9px] sm:text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
+                  <p className="text-[11px] sm:text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
                     <span>Active</span>
                   </p>
                 </div>
@@ -982,11 +982,11 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 {/* Rewards Redeemed */}
                 <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Rewards</span>
+                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Rewards</span>
                     <Award className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalRewardsRedeemed}</h3>
-                  <p className="text-[9px] sm:text-[10px] font-mono text-purple-500 flex items-center gap-0.5">
+                  <p className="text-[11px] sm:text-[10px] font-mono text-purple-500 flex items-center gap-0.5">
                     <span>Badges</span>
                   </p>
                 </div>
@@ -1059,7 +1059,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                                   {bk.participants || 1}
                                 </td>
                                 <td className="px-3 sm:px-4 py-3.5">
-                                  <span className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold uppercase ${statusColor}`}>
+                                  <span className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full text-[11px] sm:text-[10px] font-mono font-bold uppercase ${statusColor}`}>
                                     <span className={`h-1 w-1 rounded-full ${
                                       statusLabel === 'Confirmed' || statusLabel === 'Completed' ? 'bg-green-500' : statusLabel === 'Cancelled' ? 'bg-red-500' : statusLabel === 'Discussion' ? 'bg-blue-500' : 'bg-amber-500'
                                     }`} />
@@ -1116,17 +1116,17 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <div key={ev.id} className="flex items-start gap-3 p-3 rounded-lg border border-neutral-900/60 bg-neutral-950/20 hover:border-neutral-800 transition-colors group">
                               <div className="h-9 w-9 rounded-lg bg-neutral-950 border border-neutral-900 flex flex-col items-center justify-center shrink-0">
                                 <span className="text-xs font-bold text-white leading-none">{ev.day || '--'}</span>
-                                <span className="text-[7px] font-mono text-gold-500 uppercase">{ev.month?.slice(0, 3) || '---'}</span>
+                                <span className="text-[10px] font-mono text-gold-500 uppercase">{ev.month?.slice(0, 3) || '---'}</span>
                               </div>
                               <div className="flex-1 min-w-0 text-left">
                                 <p className="text-xs font-semibold text-white truncate group-hover:text-gold-500/80 transition-colors">{ev.title}</p>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                  <span className="text-[9px] font-mono text-neutral-500">{ev.event_time || ev.time}</span>
+                                  <span className="text-[11px] font-mono text-neutral-500">{ev.event_time || ev.time}</span>
                                   <span className="h-1 w-1 rounded-full bg-neutral-800" />
-                                  <span className="text-[9px] font-mono text-neutral-500 truncate">{ev.location || 'TBA'}</span>
+                                  <span className="text-[11px] font-mono text-neutral-500 truncate">{ev.location || 'TBA'}</span>
                                 </div>
                               </div>
-                              <span className="shrink-0 self-center text-[8px] font-mono px-1.5 py-0.5 rounded border border-neutral-800 text-neutral-500">
+                              <span className="shrink-0 self-center text-[10px] font-mono px-1.5 py-0.5 rounded border border-neutral-800 text-neutral-500">
                                 {ev.event_type || ev.type || 'Event'}
                               </span>
                             </div>
@@ -1141,7 +1141,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                         <h3 className="text-xs font-mono font-bold tracking-wider text-white uppercase">
                           Recent Activity
                         </h3>
-                        <span className="text-[8px] font-mono bg-green-500/10 text-green-500 px-1.5 py-0.5 rounded font-bold uppercase">
+                        <span className="text-[10px] font-mono bg-green-500/10 text-green-500 px-1.5 py-0.5 rounded font-bold uppercase">
                           LIVE
                         </span>
                       </div>
@@ -1170,7 +1170,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                                   <p className="text-[11px] font-semibold text-white truncate">{act.title}</p>
                                   <p className="text-[10px] text-neutral-500 truncate">{act.message}</p>
                                 </div>
-                                <span className="text-[8px] font-mono text-neutral-600 shrink-0 mt-0.5">
+                                <span className="text-[10px] font-mono text-neutral-600 shrink-0 mt-0.5">
                                   {new Date(act.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                               </div>
@@ -1212,7 +1212,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                         </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                         <span className="text-xl font-bold font-mono text-white leading-none">{dashboardStats.experienceBookings}</span>
-                        <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider mt-0.5">Total</span>
+                        <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider mt-0.5">Total</span>
                       </div>
                       </div>
 
@@ -1240,7 +1240,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       <h4 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase">
                         System Alerts
                       </h4>
-                      <span className="text-[8px] font-mono bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase animate-pulse">
+                      <span className="text-[10px] font-mono bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase animate-pulse">
                         LIVE MONITOR
                       </span>
                     </div>
@@ -1352,7 +1352,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                                   title={`${day.orders} orders`}
                                 />
                               </div>
-                              <span className="text-[7px] font-mono text-neutral-500 leading-none">{day.label}</span>
+                              <span className="text-[10px] font-mono text-neutral-500 leading-none">{day.label}</span>
                             </div>
                           );
                         })}
@@ -1360,7 +1360,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
                       {/* Summary + Legend */}
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 text-[9px] font-mono text-neutral-500">
+                        <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500">
                           <div className="flex items-center gap-1">
                             <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
                             <span>Members</span>
@@ -1374,7 +1374,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <span>Orders</span>
                           </div>
                         </div>
-                        <div className="text-[9px] font-mono text-neutral-500">
+                        <div className="text-[11px] font-mono text-neutral-500">
                           <span className="text-white font-semibold">{activityData.week.bookings + activityData.week.orders + activityData.week.members}</span> this week
                         </div>
                       </div>
@@ -1416,8 +1416,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                         <p className="text-white font-bold text-[11px]">{n.title}</p>
                         <p className="text-neutral-400 leading-relaxed">{n.message}</p>
                         <div className="flex items-center gap-3">
-                          <p className="text-[9px] font-mono text-neutral-500">{new Date(n.created_at).toLocaleString()}</p>
-                          {n.type && <span className="text-[8px] font-mono px-1.5 py-0.5 rounded bg-neutral-900 text-neutral-400">{n.type}</span>}
+                          <p className="text-[11px] font-mono text-neutral-500">{new Date(n.created_at).toLocaleString()}</p>
+                          {n.type && <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-900 text-neutral-400">{n.type}</span>}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
@@ -1430,7 +1430,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             setNotifications(prev => prev.map((x: AdminNotification) => x.id === n.id ? { ...x, is_read: true } : x));
                             setNotificationCount(prev => Math.max(0, prev - 1));
                           }}
-                          className="text-[9px] font-mono text-gold-500/70 hover:text-gold-500 cursor-pointer"
+                          className="text-[11px] font-mono text-gold-500/70 hover:text-gold-500 cursor-pointer"
                         >
                           Mark Read
                         </button>
@@ -1650,7 +1650,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           >
             <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
             <div className="flex-1 text-xs text-left">
-              <p className="font-mono text-red-500 uppercase tracking-widest font-bold text-[9px]">SYSTEM MSG</p>
+              <p className="font-mono text-red-500 uppercase tracking-widest font-bold text-[11px]">SYSTEM MSG</p>
               <p className="text-white mt-0.5 leading-tight">{toast.message}</p>
             </div>
           </motion.div>

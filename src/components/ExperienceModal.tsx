@@ -337,7 +337,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
                     className="w-full rounded border border-neutral-900 bg-neutral-950 px-3.5 py-3 text-xs text-white outline-none focus:border-gold-500/50"
                   />
                 </div>
-                <p className="text-[9px] text-neutral-500 leading-relaxed italic">
+                <p className="text-[11px] text-neutral-500 leading-relaxed italic">
                   * Note: Standard security validation will be carried out on this line. Avoid public handles if security is sensitive.
                 </p>
               </div>
@@ -387,7 +387,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
                 <span className="text-[10px] font-mono text-gold-500 font-bold uppercase tracking-wider">
                   Request: {selectedType}
                 </span>
-                <span className="text-[9px] font-mono text-neutral-500">PHILOSOPHY PROTOCOL</span>
+                <span className="text-[11px] font-mono text-neutral-500">PHILOSOPHY PROTOCOL</span>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 text-xs">
@@ -492,7 +492,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
               <p className="text-xs italic text-gold-500 font-serif leading-relaxed">
                 "Thank you for sharing your story and taking the time to send this request. Connecting with sincerity is what makes this journey special. Be compassionate."
               </p>
-              <p className="text-[9px] text-neutral-500 font-mono mt-2 uppercase tracking-widest">— GILLIAN ANDERSON</p>
+              <p className="text-[11px] text-neutral-500 font-mono mt-2 uppercase tracking-widest">— GILLIAN ANDERSON</p>
             </div>
 
             <button

@@ -222,7 +222,7 @@ export default function EventsSection() {
                       ><ArrowLeft className="h-4 w-4" /></button>
                     )}
                     <div>
-                      <span className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">
+                      <span className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">
                         {step === 'form' ? 'Step 2 of 6 — Your Details' : step === 'review' ? 'Step 4 of 6 — Review' : 'Registration Complete'}
                       </span>
                       <p className="text-[10px] text-neutral-500 mt-0.5 font-mono">{selectedEvent.title}</p>
@@ -240,12 +240,12 @@ export default function EventsSection() {
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-neutral-900/30 border border-neutral-800/60">
                     <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg border border-neutral-800 bg-neutral-950 font-mono shrink-0">
                       <span className="text-sm font-bold text-white leading-none">{selectedEvent.day}</span>
-                      <span className="text-[7px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{selectedEvent.month}</span>
+                      <span className="text-[10px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{selectedEvent.month}</span>
                     </div>
                     <div className="text-[11px] space-y-0.5">
                       <p className="font-bold text-white">{selectedEvent.title}</p>
                       <p className="text-neutral-400 font-mono text-[10px]">{selectedEvent.month} {selectedEvent.day}, 2026 — {selectedEvent.event_time || selectedEvent.time}</p>
-                      <p className="text-neutral-500 font-mono text-[9px]">{selectedEvent.location}</p>
+                      <p className="text-neutral-500 font-mono text-[11px]">{selectedEvent.location}</p>
                     </div>
                   </div>
 
@@ -254,34 +254,34 @@ export default function EventsSection() {
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Full Name *</label>
+                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Full Name *</label>
                           <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Your full name"
                             className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Email Address *</label>
+                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Email Address *</label>
                           <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="your@email.com"
                             className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Phone Number</label>
+                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Phone Number</label>
                           <input type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} placeholder="+1 (555) 000-0000"
                             className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Country</label>
+                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Country</label>
                           <input type="text" value={form.country} onChange={e => setForm(p => ({ ...p, country: e.target.value }))} placeholder="e.g. United States"
                             className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                         </div>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Number of Attendees</label>
+                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Number of Attendees</label>
                           <input type="number" min={1} value={form.attendees} onChange={e => setForm(p => ({ ...p, attendees: Math.max(1, parseInt(e.target.value) || 1) }))}
                             className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Special Requirements</label>
+                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Special Requirements</label>
                           <input type="text" value={form.specialRequests} onChange={e => setForm(p => ({ ...p, specialRequests: e.target.value }))} placeholder="Dietary, accessibility, etc."
                             className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
                         </div>
@@ -289,7 +289,7 @@ export default function EventsSection() {
 
                       {/* Step 3: Communication Method */}
                       <div className="space-y-2 pt-2 border-t border-neutral-800/60">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Preferred Communication Method *</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Preferred Communication Method *</label>
                         <div className="grid grid-cols-2 gap-3">
                           {[
                             { id: 'whatsapp' as const, label: 'WhatsApp', icon: MessageCircle, desc: 'Quick messaging via WhatsApp' },
@@ -307,7 +307,7 @@ export default function EventsSection() {
                               </div>
                               <div>
                                 <p className={`text-xs font-bold ${form.commMethod === opt.id ? 'text-gold-500' : 'text-white'}`}>{opt.label}</p>
-                                <p className="text-[9px] text-neutral-500 mt-0.5">{opt.desc}</p>
+                                <p className="text-[11px] text-neutral-500 mt-0.5">{opt.desc}</p>
                               </div>
                             </button>
                           ))}
@@ -325,7 +325,7 @@ export default function EventsSection() {
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-3 p-4 rounded-xl bg-neutral-900/20 border border-neutral-800/60">
-                          <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Fan Information</h4>
+                          <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Fan Information</h4>
                           <div className="text-[11px] space-y-1">
                             <p><span className="text-neutral-500">Name:</span> <span className="text-white">{form.name}</span></p>
                             <p><span className="text-neutral-500">Email:</span> <span className="text-white">{form.email}</span></p>
@@ -334,7 +334,7 @@ export default function EventsSection() {
                           </div>
                         </div>
                         <div className="space-y-3 p-4 rounded-xl bg-neutral-900/20 border border-neutral-800/60">
-                          <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Registration Details</h4>
+                          <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Registration Details</h4>
                           <div className="text-[11px] space-y-1">
                             <p><span className="text-neutral-500">Attendees:</span> <span className="text-white">{form.attendees}</span></p>
                             <p><span className="text-neutral-500">Special Reqs:</span> <span className="text-white">{form.specialRequests || 'None'}</span></p>
@@ -458,7 +458,7 @@ export default function EventsSection() {
                 <div className="absolute top-0 right-0 w-72 h-72 bg-gold-500/[0.04] rounded-full blur-[100px]" />
                 <div className="relative flex flex-col md:flex-row items-start justify-between gap-6">
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-[9px] font-mono text-neutral-500">
+                    <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-500">
                       <span className="px-2 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-500 uppercase tracking-wider font-semibold">
                         {nextEvent.event_type || nextEvent.type || 'Event'}
                       </span>
@@ -477,7 +477,7 @@ export default function EventsSection() {
                     ].map((u, i) => (
                       <div key={u.l} className="flex flex-col items-center p-3 rounded-lg bg-neutral-900/60 border border-neutral-800 min-w-[56px]">
                         <span className={`text-lg md:text-xl font-bold leading-none ${i === 3 ? 'text-gold-500' : 'text-white'}`}>{String(u.v).padStart(2, '0')}</span>
-                        <span className="text-[7px] text-neutral-500 mt-1 uppercase font-semibold">{u.l}</span>
+                        <span className="text-[10px] text-neutral-500 mt-1 uppercase font-semibold">{u.l}</span>
                       </div>
                     ))}
                   </div>
@@ -487,7 +487,7 @@ export default function EventsSection() {
 
             <div className="space-y-6">
               <div className="flex items-center justify-between border-b border-neutral-900 pb-3">
-                <h3 className="text-[9px] font-mono tracking-widest text-neutral-400 uppercase font-bold">
+                <h3 className="text-[11px] font-mono tracking-widest text-neutral-400 uppercase font-bold">
                   All Gatherings <span className="text-neutral-600 ml-1">({events.length})</span>
                 </h3>
               </div>
@@ -504,7 +504,7 @@ export default function EventsSection() {
                             <span className="text-[6px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{evt.month}</span>
                           </div>
                           <div className="space-y-1 min-w-0">
-                            <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[7px] font-mono uppercase font-bold border border-gold-800/20">
+                            <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[10px] font-mono uppercase font-bold border border-gold-800/20">
                               {evt.event_type || evt.type || 'Event'}
                             </span>
                             <h4 className="text-sm font-bold text-white leading-tight truncate">{evt.title}</h4>

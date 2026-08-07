@@ -215,12 +215,12 @@ export default function AdminJournalCMS({ showToast }: Props) {
 
   const renderDeleteConfirm = (id: string, onConfirm: () => void) => (
     <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-red-500/10 border border-red-500/30">
-      <span className="text-[8px] font-mono text-red-400 uppercase tracking-wider whitespace-nowrap">Confirm?</span>
+      <span className="text-[10px] font-mono text-red-400 uppercase tracking-wider whitespace-nowrap">Confirm?</span>
       <button onClick={onConfirm}
-        className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[8px] font-mono uppercase tracking-widest transition-all"
+        className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[10px] font-mono uppercase tracking-widest transition-all"
       >Yes</button>
       <button onClick={() => setConfirmDelete(null)}
-        className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[8px] font-mono uppercase transition-all"
+        className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[10px] font-mono uppercase transition-all"
       >No</button>
     </div>
   );
@@ -262,7 +262,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
           <div key={s.label} className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-3 text-center">
             <s.icon className={`h-4 w-4 ${s.color} mx-auto`} />
             <p className={`text-lg font-bold font-mono ${s.color}`}>{s.value}</p>
-            <p className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">{s.label}</p>
+            <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">{s.label}</p>
           </div>
         ))}
       </div>
@@ -325,7 +325,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
                       </td>
                       <td className="px-3 py-3">
                         {entry.category ? (
-                          <span className="px-1.5 py-0.5 rounded bg-gold-500/10 border border-gold-500/20 text-[8px] font-mono text-gold-500 uppercase">{entry.category}</span>
+                          <span className="px-1.5 py-0.5 rounded bg-gold-500/10 border border-gold-500/20 text-[10px] font-mono text-gold-500 uppercase">{entry.category}</span>
                         ) : (
                           <span className="text-[10px] font-mono text-neutral-600">-</span>
                         )}
@@ -397,7 +397,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
                       </td>
                       <td className="px-3 py-3 font-mono text-[10px] text-neutral-400">{article.slug || '-'}</td>
                       <td className="px-3 py-3">
-                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] font-mono font-bold uppercase border ${
+                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${
                           article.status === 'published'
                             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                             : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
@@ -416,7 +416,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
                         )}
                       </td>
                       <td className="px-3 py-3">
-                        <span className="px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[8px] font-mono text-neutral-400 uppercase">
+                        <span className="px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[10px] font-mono text-neutral-400 uppercase">
                           {catName(article.category_id)}
                         </span>
                       </td>
@@ -460,41 +460,41 @@ export default function AdminJournalCMS({ showToast }: Props) {
 
               <form onSubmit={saveEntry} className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Title *</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Title *</label>
                   <input type="text" required value={entryTitle} onChange={e => setEntryTitle(e.target.value)} placeholder="Entry title..."
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Category</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Category</label>
                     <input type="text" value={entryCategory} onChange={e => setEntryCategory(e.target.value)} placeholder="e.g. Life, Film..."
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Date</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Date</label>
                     <input type="text" value={entryDate} onChange={e => setEntryDate(e.target.value)} placeholder="e.g. Mar 15, 2025"
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Image URL</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Image URL</label>
                   <input type="text" value={entryImage} onChange={e => setEntryImage(e.target.value)} placeholder="https://..."
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Read Time</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Read Time</label>
                     <input type="text" value={entryReadTime} onChange={e => setEntryReadTime(e.target.value)} placeholder="e.g. 5 min read"
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Excerpt</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Excerpt</label>
                   <textarea rows={2} value={entryExcerpt} onChange={e => setEntryExcerpt(e.target.value)} placeholder="Brief excerpt..."
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40 leading-relaxed" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Content</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Content</label>
                   <textarea rows={6} value={entryContent} onChange={e => setEntryContent(e.target.value)} placeholder="Full content..."
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40 leading-relaxed" />
                 </div>
@@ -531,18 +531,18 @@ export default function AdminJournalCMS({ showToast }: Props) {
 
               <form onSubmit={saveArticle} className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Title *</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Title *</label>
                   <input type="text" required value={articleTitle} onChange={e => setArticleTitle(e.target.value)} placeholder="Article title..."
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Slug</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Slug</label>
                     <input type="text" value={articleSlug} onChange={e => setArticleSlug(e.target.value)} placeholder="article-slug"
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Category</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Category</label>
                     <select value={articleCategoryId} onChange={e => setArticleCategoryId(e.target.value)}
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40"
                     >
@@ -552,30 +552,30 @@ export default function AdminJournalCMS({ showToast }: Props) {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Cover Image URL</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Cover Image URL</label>
                   <input type="text" value={articleCoverImageUrl} onChange={e => setArticleCoverImageUrl(e.target.value)} placeholder="https://..."
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Author</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Author</label>
                     <input type="text" value={articleAuthor} onChange={e => setArticleAuthor(e.target.value)} placeholder="Author name"
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Reading Time (min)</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Reading Time (min)</label>
                     <input type="number" value={articleReadingTime} onChange={e => setArticleReadingTime(Number(e.target.value))}
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Tags (comma-separated)</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Tags (comma-separated)</label>
                   <input type="text" value={articleTags} onChange={e => setArticleTags(e.target.value)} placeholder="tag1, tag2, tag3"
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Status</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Status</label>
                     <select value={articleStatus} onChange={e => setArticleStatus(e.target.value as 'draft' | 'published')}
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40"
                     >
@@ -587,17 +587,17 @@ export default function AdminJournalCMS({ showToast }: Props) {
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input type="checkbox" checked={articleIsFeatured} onChange={e => setArticleIsFeatured(e.target.checked)}
                         className="w-4 h-4 rounded border-neutral-700 bg-neutral-900 text-gold-500 focus:ring-gold-500/40 focus:ring-offset-0" />
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Featured</span>
+                      <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Featured</span>
                     </label>
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Excerpt</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Excerpt</label>
                   <textarea rows={2} value={articleExcerpt} onChange={e => setArticleExcerpt(e.target.value)} placeholder="Brief excerpt..."
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40 leading-relaxed" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Content</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Content</label>
                   <textarea rows={6} value={articleContent} onChange={e => setArticleContent(e.target.value)} placeholder="Full content..."
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40 leading-relaxed" />
                 </div>

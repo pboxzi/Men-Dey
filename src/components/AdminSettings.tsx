@@ -132,7 +132,7 @@ export default function AdminSettings({ showToast }: Props) {
             >
               <group.icon className={`h-4 w-4 ${activeGroup === group.id ? 'text-gold-500' : 'text-neutral-500'}`} />
               {group.label}
-              <span className="ml-auto text-[9px] font-mono text-neutral-600">
+              <span className="ml-auto text-[11px] font-mono text-neutral-600">
                 {settings.filter(s => s.group === group.id).length}
               </span>
             </button>
@@ -278,7 +278,7 @@ export default function AdminSettings({ showToast }: Props) {
                 icon={<Mail className="h-3.5 w-3.5 text-gold-500" />}
               />
               <div className="rounded-lg bg-neutral-900/30 border border-neutral-900 p-3">
-                <p className="text-[9px] text-neutral-500 leading-relaxed">
+                <p className="text-[11px] text-neutral-500 leading-relaxed">
                   Emails are sent automatically when: membership status changes, experience requests are updated,
                   event registrations are confirmed, and admin responds to fan messages.
                   Fans receive notifications in-app and via email if enabled.
@@ -305,7 +305,7 @@ export default function AdminSettings({ showToast }: Props) {
                     <Database className="h-5 w-5 text-amber-500" />
                     <div>
                       <p className="text-[10px] font-mono font-bold text-white">Supabase DB</p>
-                      <p className="text-[9px] text-neutral-500">Automatic backups managed</p>
+                      <p className="text-[11px] text-neutral-500">Automatic backups managed</p>
                     </div>
                   </div>
                   <button
@@ -318,7 +318,7 @@ export default function AdminSettings({ showToast }: Props) {
                     <RefreshCw className="h-5 w-5 text-blue-500 group-hover:rotate-180 transition-transform duration-500" />
                     <div className="text-left">
                       <p className="text-[10px] font-mono font-bold text-white">Refresh Settings</p>
-                      <p className="text-[9px] text-neutral-500">Re-fetch from database</p>
+                      <p className="text-[11px] text-neutral-500">Re-fetch from database</p>
                     </div>
                   </button>
                 </div>
@@ -348,7 +348,7 @@ function SettingInput({
         {icon && <span className="text-neutral-500">{icon}</span>}
         <label className="text-[10px] font-mono font-bold text-white uppercase tracking-widest">{label}</label>
       </div>
-      <p className="text-[9px] text-neutral-500">{description}</p>
+      <p className="text-[11px] text-neutral-500">{description}</p>
       {textarea ? (
         <textarea
           value={value}

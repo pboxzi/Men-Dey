@@ -185,7 +185,7 @@ export default function ExperiencesSection() {
             <div key={stat.label} className="bg-neutral-950/60 backdrop-blur-sm border border-neutral-900 rounded-xl p-4 text-center space-y-1.5 hover:border-neutral-800 transition-all duration-300 group">
               <stat.icon className={`h-4 w-4 ${stat.color} mx-auto group-hover:scale-110 transition-transform duration-300`} />
               <span className={`block text-xl font-bold ${stat.color}`}>{stat.value}</span>
-              <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
+              <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
             </div>
           ))}
         </div>
@@ -213,7 +213,7 @@ export default function ExperiencesSection() {
               <div className="flex items-center justify-center gap-2">
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-mono tracking-wider uppercase border transition-all ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono tracking-wider uppercase border transition-all ${
                     showFilters ? 'bg-gold-500 text-neutral-950 border-gold-500 font-bold' : 'bg-neutral-950 text-neutral-500 border-neutral-900 hover:text-white'
                   }`}
                 >
@@ -235,11 +235,11 @@ export default function ExperiencesSection() {
                     className="overflow-hidden"
                   >
                     <div className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-4 flex flex-wrap items-center gap-3">
-                      <span className="text-[8px] font-mono text-neutral-500 uppercase tracking-widest">Filter by:</span>
+                      <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">Filter by:</span>
 
                       <button
                         onClick={() => setFilterFeatured(!filterFeatured)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-mono uppercase border transition-all ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono uppercase border transition-all ${
                           filterFeatured ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-neutral-900/40 text-neutral-500 border-neutral-800 hover:text-neutral-300'
                         }`}
                       >
@@ -247,7 +247,7 @@ export default function ExperiencesSection() {
                         Featured
                       </button>
 
-                      <div className="flex rounded-lg border border-neutral-800 overflow-hidden text-[9px] font-mono">
+                      <div className="flex rounded-lg border border-neutral-800 overflow-hidden text-[11px] font-mono">
                         {(['all', 'physical', 'virtual'] as const).map((v) => (
                           <button
                             key={v}
@@ -263,7 +263,7 @@ export default function ExperiencesSection() {
 
                       <button
                         onClick={() => setFilterAvailable(!filterAvailable)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-mono uppercase border transition-all ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono uppercase border transition-all ${
                           filterAvailable ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-neutral-900/40 text-neutral-500 border-neutral-800 hover:text-neutral-300'
                         }`}
                       >
@@ -274,7 +274,7 @@ export default function ExperiencesSection() {
                       {(filterFeatured || filterVirtual !== 'all' || filterAvailable) && (
                         <button
                           onClick={() => { setFilterFeatured(false); setFilterVirtual('all'); setFilterAvailable(false); }}
-                          className="text-[9px] font-mono text-neutral-500 hover:text-white ml-auto"
+                          className="text-[11px] font-mono text-neutral-500 hover:text-white ml-auto"
                         >
                           Clear Filters
                         </button>
@@ -295,7 +295,7 @@ export default function ExperiencesSection() {
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[8px] font-mono tracking-wider uppercase border transition-all duration-200 ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-mono tracking-wider uppercase border transition-all duration-200 ${
                       isActive
                         ? 'bg-gold-500 text-neutral-950 border-gold-500 font-bold shadow-[0_0_12px_-2px_rgba(212,175,55,0.3)]'
                         : 'bg-neutral-950/40 text-neutral-500 border-neutral-900 hover:text-white hover:border-neutral-700 hover:bg-neutral-900/40'
@@ -303,7 +303,7 @@ export default function ExperiencesSection() {
                   >
                     {cat !== 'ALL' && <CatIcon className="h-3 w-3" />}
                     {cat === 'ALL' ? 'All' : cat}
-                    <span className={`ml-0.5 px-1 py-0.5 rounded-full text-[7px] ${
+                    <span className={`ml-0.5 px-1 py-0.5 rounded-full text-[10px] ${
                       isActive ? 'bg-neutral-950/20 text-neutral-950' : 'bg-neutral-900 text-neutral-500'
                     }`}>
                       {count}
@@ -344,25 +344,25 @@ export default function ExperiencesSection() {
                         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
                         <div className="absolute top-2 left-2 flex gap-1.5 flex-wrap">
                           {exp.featured && (
-                            <span className="px-1.5 py-0.5 rounded text-[7px] font-mono uppercase tracking-wider bg-gold-500/10 border border-gold-500/20 text-gold-500">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-gold-500/10 border border-gold-500/20 text-gold-500">
                               Featured
                             </span>
                           )}
                           {exp.is_virtual && (
-                            <span className="px-1.5 py-0.5 rounded text-[7px] font-mono uppercase tracking-wider bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-blue-500/10 border border-blue-500/20 text-blue-400">
                               Virtual
                             </span>
                           )}
                         </div>
                         <div className="absolute bottom-2 left-2 flex items-center gap-1.5">
                           {CATEGORY_ICONS[exp.category] && (
-                            <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[7px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || 'bg-neutral-900 text-neutral-400 border-neutral-800'}`}>
+                            <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || 'bg-neutral-900 text-neutral-400 border-neutral-800'}`}>
                               {React.createElement(CATEGORY_ICONS[exp.category], { className: 'h-2.5 w-2.5' })}
                               {exp.category}
                             </span>
                           )}
                           {!CATEGORY_ICONS[exp.category] && (
-                            <span className={`px-1.5 py-0.5 rounded text-[7px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || 'bg-neutral-900 text-neutral-400 border-neutral-800'}`}>
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || 'bg-neutral-900 text-neutral-400 border-neutral-800'}`}>
                               {exp.category}
                             </span>
                           )}
@@ -377,7 +377,7 @@ export default function ExperiencesSection() {
                         <p className="text-[11px] text-neutral-400 leading-relaxed line-clamp-2">
                           {exp.short_description || exp.description}
                         </p>
-                        <div className="flex flex-wrap items-center gap-2 text-[8px] font-mono text-neutral-500 pt-1.5 border-t border-neutral-900/60">
+                        <div className="flex flex-wrap items-center gap-2 text-[10px] font-mono text-neutral-500 pt-1.5 border-t border-neutral-900/60">
                           <span className="flex items-center gap-1">
                             <MapPin className="h-2.5 w-2.5" />
                             {exp.location}
@@ -405,7 +405,7 @@ export default function ExperiencesSection() {
                         <div className="flex gap-1.5">
                           <button
                             onClick={() => openDetail(exp)}
-                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[8px] font-mono tracking-wider uppercase border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-600 transition-all"
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-mono tracking-wider uppercase border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-600 transition-all"
                           >
                             <Eye className="h-3 w-3" />
                             View
@@ -413,7 +413,7 @@ export default function ExperiencesSection() {
                           <button
                             onClick={() => openBooking(exp)}
                             disabled={isFull}
-                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[8px] font-mono tracking-wider uppercase transition-all ${
+                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-mono tracking-wider uppercase transition-all ${
                               isFull
                                 ? 'bg-neutral-900 text-neutral-600 cursor-not-allowed'
                                 : 'bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold'

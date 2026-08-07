@@ -159,23 +159,23 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
             <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 z-30">
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 {exp.featured && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-[8px] font-mono text-gold-500 uppercase tracking-wider backdrop-blur-sm">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-[10px] font-mono text-gold-500 uppercase tracking-wider backdrop-blur-sm">
                     <Star className="h-2.5 w-2.5 fill-gold-500" /> Featured
                   </span>
                 )}
                 {exp.is_virtual && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-[8px] font-mono text-blue-400 uppercase tracking-wider backdrop-blur-sm">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-mono text-blue-400 uppercase tracking-wider backdrop-blur-sm">
                     <Globe className="h-2.5 w-2.5" /> Virtual
                   </span>
                 )}
                 {CATEGORY_ICONS[exp.category] && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neutral-900/80 backdrop-blur-sm border border-neutral-800 text-[8px] font-mono text-neutral-300 uppercase tracking-wider">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neutral-900/80 backdrop-blur-sm border border-neutral-800 text-[10px] font-mono text-neutral-300 uppercase tracking-wider">
                     {React.createElement(CATEGORY_ICONS[exp.category], { className: 'h-2.5 w-2.5' })}
                     {exp.category}
                   </span>
                 )}
                 {!CATEGORY_ICONS[exp.category] && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neutral-900/80 backdrop-blur-sm border border-neutral-800 text-[8px] font-mono text-neutral-300 uppercase tracking-wider">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neutral-900/80 backdrop-blur-sm border border-neutral-800 text-[10px] font-mono text-neutral-300 uppercase tracking-wider">
                     {exp.category}
                   </span>
                 )}
@@ -222,7 +222,7 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
                   ].map((stat) => (
                     <div key={stat.label} className="bg-neutral-900/30 border border-neutral-900/50 rounded-lg p-3 text-center space-y-1 hover:border-neutral-800 transition-colors">
                       <stat.icon className="h-4 w-4 text-gold-500 mx-auto" />
-                      <span className="block text-[9px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
+                      <span className="block text-[11px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
                       <span className="block text-xs font-bold text-white">{stat.value}</span>
                     </div>
                   ))}
@@ -297,7 +297,7 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
               {/* Price Card — Luxurious */}
               <div className="rounded-xl border border-gold-500/20 bg-gradient-to-br from-gold-500/[0.04] via-neutral-950/90 to-neutral-950 p-6 space-y-4 sticky top-24 shadow-[0_0_30px_-10px_rgba(212,175,55,0.08)]">
                 <div className="space-y-1.5">
-                  <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Starting From</span>
+                  <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest">Starting From</span>
                   <p className="font-serif text-3xl font-bold bg-gradient-to-r from-gold-500 to-gold-300 bg-clip-text text-transparent">
                     {exp.price}
                   </p>
@@ -361,7 +361,7 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
                   {!isFull && <ChevronRight className="h-3.5 w-3.5" />}
                 </button>
 
-                <div className="flex items-center gap-2 text-[9px] font-mono text-neutral-500 justify-center">
+                <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-500 justify-center">
                   <Info className="h-3 w-3" />
                   <span>{user ? membership?.status === 'active' ? 'Requires admin confirmation' : 'Active membership required to book' : 'Sign in required to book this experience'}</span>
                 </div>
@@ -369,7 +369,7 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
 
               {/* Experience Details Card */}
               <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-3">
-                <h3 className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Details</h3>
+                <h3 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Details</h3>
                 <div className="space-y-2.5 text-[11px]">
                   <div className="flex justify-between"><span className="text-neutral-500">Tier</span><span className="text-white font-medium">{exp.tier}</span></div>
                   <div className="flex justify-between"><span className="text-neutral-500">Max Guests</span><span className="text-white font-medium">{exp.max_guests}</span></div>

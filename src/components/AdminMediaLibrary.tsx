@@ -206,12 +206,12 @@ export default function AdminMediaLibrary({ showToast }: Props) {
 
   const renderDeleteConfirm = (id: string, onConfirm: () => void) => (
     <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-red-500/10 border border-red-500/30">
-      <span className="text-[8px] font-mono text-red-400 uppercase tracking-wider whitespace-nowrap">Confirm?</span>
+      <span className="text-[10px] font-mono text-red-400 uppercase tracking-wider whitespace-nowrap">Confirm?</span>
       <button onClick={onConfirm}
-        className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[8px] font-mono uppercase tracking-widest transition-all"
+        className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[10px] font-mono uppercase tracking-widest transition-all"
       >Yes</button>
       <button onClick={() => setConfirmDelete(null)}
-        className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[8px] font-mono uppercase transition-all"
+        className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[10px] font-mono uppercase transition-all"
       >No</button>
     </div>
   );
@@ -247,7 +247,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
           <div key={s.label} className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-3 text-center">
             <s.icon className={`h-4 w-4 ${s.color} mx-auto`} />
             <p className={`text-lg font-bold font-mono ${s.color}`}>{s.value}</p>
-            <p className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">{s.label}</p>
+            <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">{s.label}</p>
           </div>
         ))}
       </div>
@@ -282,7 +282,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
             <SortAsc className="h-3 w-3 text-neutral-500 ml-1.5" />
             {['sort_order', 'title', 'likes', 'created_at'].filter(s => s !== 'likes' || activeMediaSubTab === 'photos').map(s => (
               <button key={s} onClick={() => setSortBy(s)}
-                className={`px-2 py-0.5 rounded text-[8px] font-mono uppercase tracking-wider transition-all ${
+                className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider transition-all ${
                   sortBy === s ? 'bg-gold-500/10 text-gold-500 font-bold' : 'text-neutral-500 hover:text-white'
                 }`}
               >{s === 'sort_order' ? 'Order' : s}</button>
@@ -312,7 +312,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                     <div className="w-full h-full flex items-center justify-center"><Image className="h-8 w-8 text-neutral-700" /></div>
                   )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-[9px] font-mono">
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-[11px] font-mono">
                       <Eye className="h-3 w-3" /> View
                     </div>
                   </div>
@@ -320,7 +320,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                 <div className="p-3 space-y-1.5">
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="text-xs font-bold text-white truncate flex-1">{photo.title || 'Untitled'}</h3>
-                    <span className="shrink-0 px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[7px] font-mono text-neutral-400 uppercase">{catName(photo.category_id)}</span>
+                    <span className="shrink-0 px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[10px] font-mono text-neutral-400 uppercase">{catName(photo.category_id)}</span>
                   </div>
                   {photo.description && (
                     <p className="text-[10px] text-neutral-400 line-clamp-2 leading-relaxed">{photo.description}</p>
@@ -378,7 +378,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                         </div>
                       </td>
                       <td className="px-3 py-3">
-                        <span className="px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[8px] font-mono text-neutral-400 uppercase">{catName(video.category_id)}</span>
+                        <span className="px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[10px] font-mono text-neutral-400 uppercase">{catName(video.category_id)}</span>
                       </td>
                       <td className="px-3 py-3">
                         <span className="font-mono text-[10px] text-neutral-400">{video.youtube_id || '-'}</span>
@@ -448,7 +448,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                 )}
 
                 {/* ID display */}
-                <div className="flex items-center gap-2 text-[9px] font-mono text-neutral-600">
+                <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-600">
                   <span>ID: {detailItem.id}</span>
                   {detailItem.created_at && (
                     <span>· Created: {new Date(detailItem.created_at).toLocaleDateString()}</span>
@@ -458,12 +458,12 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                 {/* Editable fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5 sm:col-span-2">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Title</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Title</label>
                     <input type="text" value={editTitle} onChange={e => setEditTitle(e.target.value)}
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Category</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Category</label>
                     <select value={editCategoryId ?? ''} onChange={e => setEditCategoryId(e.target.value ? Number(e.target.value) : null)}
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40"
                     >
@@ -474,22 +474,22 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                   {detailItem._type === 'photos' && (
                     <>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Image URL</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Image URL</label>
                         <input type="text" value={editUrl} onChange={e => setEditUrl(e.target.value)}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                       </div>
                       <div className="space-y-1.5 sm:col-span-2">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Description</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Description</label>
                         <textarea rows={3} value={editDescription} onChange={e => setEditDescription(e.target.value)}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40 leading-relaxed" />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Width</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Width</label>
                         <input type="number" value={editWidth} onChange={e => setEditWidth(Number(e.target.value))}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Height</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Height</label>
                         <input type="number" value={editHeight} onChange={e => setEditHeight(Number(e.target.value))}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                       </div>
@@ -498,12 +498,12 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                   {detailItem._type === 'videos' && (
                     <>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">YouTube ID</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">YouTube ID</label>
                         <input type="text" value={editYoutubeId} onChange={e => setEditYoutubeId(e.target.value)}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Duration</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Duration</label>
                         <input type="text" value={editDuration} onChange={e => setEditDuration(e.target.value)}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                       </div>
@@ -512,7 +512,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                 </div>
 
                 {detailItem.likes !== undefined && (
-                  <div className="text-[9px] font-mono text-neutral-500">
+                  <div className="text-[11px] font-mono text-neutral-500">
                     Likes: <span className="text-white font-bold">{detailItem.likes}</span>
                   </div>
                 )}
@@ -555,13 +555,13 @@ export default function AdminMediaLibrary({ showToast }: Props) {
 
               <form onSubmit={activeMediaSubTab === 'photos' ? addPhoto : addVideo} className="p-5 space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Title *</label>
+                  <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Title *</label>
                   <input type="text" required value={addTitle} onChange={e => setAddTitle(e.target.value)} placeholder="Media title..."
                     className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Category</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Category</label>
                     <select value={addCategoryId ?? ''} onChange={e => setAddCategoryId(e.target.value ? Number(e.target.value) : null)}
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40"
                     >
@@ -571,13 +571,13 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                   </div>
                   {activeMediaSubTab === 'photos' ? (
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Image URL *</label>
+                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Image URL *</label>
                       <input type="text" required value={addUrl} onChange={e => setAddUrl(e.target.value)} placeholder="https://..."
                         className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                     </div>
                   ) : (
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">YouTube ID *</label>
+                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">YouTube ID *</label>
                       <input type="text" required value={addYoutubeId} onChange={e => setAddYoutubeId(e.target.value)} placeholder="e.g. u66sTWpxswM"
                         className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                     </div>
@@ -586,18 +586,18 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                 {activeMediaSubTab === 'photos' ? (
                   <>
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Description</label>
+                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Description</label>
                       <textarea rows={3} value={addDescription} onChange={e => setAddDescription(e.target.value)} placeholder="Photo description..."
                         className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40 leading-relaxed" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Width</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Width</label>
                         <input type="number" value={addWidth} onChange={e => setAddWidth(Number(e.target.value))}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Height</label>
+                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Height</label>
                         <input type="number" value={addHeight} onChange={e => setAddHeight(Number(e.target.value))}
                           className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                       </div>
@@ -605,7 +605,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                   </>
                 ) : (
                   <div className="space-y-1.5">
-                    <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-wider">Duration</label>
+                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Duration</label>
                     <input type="text" value={addDuration} onChange={e => setAddDuration(e.target.value)} placeholder="e.g. 11:42"
                       className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
                   </div>

@@ -194,7 +194,7 @@ export default function AboutSection() {
                       <p className="font-serif italic text-xs text-neutral-300">
                         "I've always been drawn to characters who are unapologetically themselves — complex, flawed, and absolutely refusing to shrink."
                       </p>
-                      <span className="block mt-1.5 font-mono text-[9px] text-gold-500 text-right">
+                      <span className="block mt-1.5 font-mono text-[11px] text-gold-500 text-right">
                         — GILLIAN ANDERSON, SMITHSONIAN 2018
                       </span>
                     </div>
@@ -232,7 +232,7 @@ export default function AboutSection() {
                       <p className="text-[11px] text-neutral-300 font-sans italic">
                         "I was offered half my co-star's salary for the X-Files reboot. I refused. It was shocking, but I stood my ground because it was the right thing to do."
                       </p>
-                      <span className="block text-[8px] font-mono text-neutral-500">
+                      <span className="block text-[10px] font-mono text-neutral-500">
                         — The Guardian, 2016
                       </span>
                     </div>
@@ -245,7 +245,7 @@ export default function AboutSection() {
                       <p className="text-[11px] text-neutral-300 font-sans italic">
                         "Hearing women tell me they became scientists or doctors because of Scully is the most meaningful thing I've ever been part of."
                       </p>
-                      <span className="block text-[8px] font-mono text-neutral-500">
+                      <span className="block text-[10px] font-mono text-neutral-500">
                         — Smithsonian Magazine, 2018
                       </span>
                     </div>
@@ -254,17 +254,17 @@ export default function AboutSection() {
                   <div className="pt-4 border-t border-neutral-900 flex items-center gap-6">
                     <div>
                       <span className="block text-xl font-bold text-white">1993</span>
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">X-Files Debut</span>
+                      <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest">X-Files Debut</span>
                     </div>
                     <div className="h-8 w-[1px] bg-neutral-900" />
                     <div>
                       <span className="block text-xl font-bold text-gold-500">2</span>
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Emmy Awards</span>
+                      <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest">Emmy Awards</span>
                     </div>
                     <div className="h-8 w-[1px] bg-neutral-900" />
                     <div>
                       <span className="block text-xl font-bold text-white">80+</span>
-                      <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Screen Credits</span>
+                      <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest">Screen Credits</span>
                     </div>
                   </div>
                 </div>
@@ -308,7 +308,7 @@ export default function AboutSection() {
                           <span className="text-lg">{film.icon}</span>
                           <div>
                             <span className="block text-xs font-bold leading-snug">{film.title}</span>
-                            <span className="block text-[9px] font-mono text-neutral-500 mt-0.5">{film.year}</span>
+                            <span className="block text-[11px] font-mono text-neutral-500 mt-0.5">{film.year}</span>
                           </div>
                         </div>
                         <ChevronRight className={`h-4 w-4 transition-transform ${selectedFilmIdx === idx ? 'text-gold-500 translate-x-1' : 'text-neutral-700'}`} />
@@ -344,7 +344,7 @@ export default function AboutSection() {
                       {/* Info blocks */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                         <div className="space-y-1">
-                          <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest block">Accolades & Legacy</span>
+                          <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest block">Accolades & Legacy</span>
                           <span className="text-sm font-bold text-white flex items-center gap-1.5">
                             <TrendingUp className="h-4 w-4 text-emerald-500" />
                             {FILMS_DATA[selectedFilmIdx].revenue}
@@ -352,7 +352,7 @@ export default function AboutSection() {
                         </div>
 
                         <div className="space-y-1">
-                          <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest block">Character & Posture Work</span>
+                          <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest block">Character & Posture Work</span>
                           <span className="text-[11px] text-neutral-300 leading-normal block italic font-sans font-medium">
                             {FILMS_DATA[selectedFilmIdx].stuntDetail}
                           </span>
@@ -361,14 +361,14 @@ export default function AboutSection() {
 
                       {/* Trivia section */}
                       <div className="p-4 rounded-lg bg-neutral-900/40 border border-neutral-900 space-y-1.5">
-                        <span className="text-[9px] font-mono text-gold-500 font-bold uppercase tracking-widest block">Did You Know?</span>
+                        <span className="text-[11px] font-mono text-gold-500 font-bold uppercase tracking-widest block">Did You Know?</span>
                         <p className="text-[11px] text-neutral-400 leading-relaxed font-sans">
                           {FILMS_DATA[selectedFilmIdx].trivia}
                         </p>
                       </div>
                     </div>
 
-                    <div className="pt-4 border-t border-neutral-900/80 flex items-center justify-between text-[9px] font-mono text-neutral-500">
+                    <div className="pt-4 border-t border-neutral-900/80 flex items-center justify-between text-[11px] font-mono text-neutral-500">
                       <span>THE SCULLY EFFECT INSPIRED GENERATIONS OF WOMEN IN STEM</span>
                       <span className="text-gold-500/80 uppercase font-semibold">VERIFIED BIOGRAPHY LOG</span>
                     </div>
@@ -408,15 +408,15 @@ export default function AboutSection() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-2">
                     <div className="border border-neutral-900 bg-[#0c0c0c] p-3 rounded-lg text-center space-y-1">
                       <span className="font-mono text-xs font-extrabold text-white">SAYes MENTORING</span>
-                      <span className="block text-[8px] font-mono text-neutral-500 uppercase">1,000+ Youth Mentored Since 2011</span>
+                      <span className="block text-[10px] font-mono text-neutral-500 uppercase">1,000+ Youth Mentored Since 2011</span>
                     </div>
                     <div className="border border-neutral-900 bg-[#0c0c0c] p-3 rounded-lg text-center space-y-1">
                       <span className="font-mono text-xs font-extrabold text-gold-500">CTF PATRON</span>
-                      <span className="block text-[8px] font-mono text-neutral-500 uppercase">NF Research — Testified Before Congress</span>
+                      <span className="block text-[10px] font-mono text-neutral-500 uppercase">NF Research — Testified Before Congress</span>
                     </div>
                     <div className="border border-neutral-900 bg-[#0c0c0c] p-3 rounded-lg text-center space-y-1">
                       <span className="font-mono text-xs font-extrabold text-white">UN WOMEN</span>
-                      <span className="block text-[8px] font-mono text-neutral-500 uppercase">HeForShe Gender Equality Champion</span>
+                      <span className="block text-[10px] font-mono text-neutral-500 uppercase">HeForShe Gender Equality Champion</span>
                     </div>
                   </div>
 
@@ -445,7 +445,7 @@ export default function AboutSection() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
                     
                     {/* Badge */}
-                    <div className="absolute top-4 right-4 bg-neutral-950/95 border border-neutral-800 px-3 py-1.5 rounded-md font-mono text-[9px] text-white tracking-widest uppercase font-semibold">
+                    <div className="absolute top-4 right-4 bg-neutral-950/95 border border-neutral-800 px-3 py-1.5 rounded-md font-mono text-[11px] text-white tracking-widest uppercase font-semibold">
                       CAPE TOWN, SA
                     </div>
 
@@ -497,23 +497,23 @@ export default function AboutSection() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-neutral-300 font-sans">1. We: A Manifesto for Women (2017)</span>
-                        <span className="font-mono text-[9px] text-gold-500 font-semibold">Co-authored with Jennifer Nadel</span>
+                        <span className="font-mono text-[11px] text-gold-500 font-semibold">Co-authored with Jennifer Nadel</span>
                       </div>
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-neutral-300 font-sans">2. A Vision of Fire (2013)</span>
-                        <span className="font-mono text-[9px] text-neutral-400">EarthEnd Saga Book 1 with Jeff Rovin</span>
+                        <span className="font-mono text-[11px] text-neutral-400">EarthEnd Saga Book 1 with Jeff Rovin</span>
                       </div>
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-neutral-300 font-sans">3. A Dream of Ice (2015)</span>
-                        <span className="font-mono text-[9px] text-neutral-400">EarthEnd Saga Book 2</span>
+                        <span className="font-mono text-[11px] text-neutral-400">EarthEnd Saga Book 2</span>
                       </div>
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-neutral-300 font-sans">4. The Sound of Seas (2016)</span>
-                        <span className="font-mono text-[9px] text-neutral-400">EarthEnd Saga Book 3</span>
+                        <span className="font-mono text-[11px] text-neutral-400">EarthEnd Saga Book 3</span>
                       </div>
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-neutral-300 font-sans">5. Want (2024)</span>
-                        <span className="font-mono text-[9px] text-gold-500 font-semibold">Curated anonymous letters on female desire</span>
+                        <span className="font-mono text-[11px] text-gold-500 font-semibold">Curated anonymous letters on female desire</span>
                       </div>
                     </div>
                   </div>
@@ -552,7 +552,7 @@ export default function AboutSection() {
                     <button
                       key={f.id}
                       onClick={() => setKindnessFilter(f.id as typeof kindnessFilter)}
-                      className={`px-3 py-1.5 rounded text-[9px] font-mono tracking-wider transition-colors border ${
+                      className={`px-3 py-1.5 rounded text-[11px] font-mono tracking-wider transition-colors border ${
                         kindnessFilter === f.id
                           ? 'bg-gold-500/10 border-gold-500/40 text-gold-500'
                           : 'bg-neutral-950 border-neutral-900/60 text-neutral-400 hover:text-white'
@@ -572,7 +572,7 @@ export default function AboutSection() {
                     >
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-[8px] font-mono px-2 py-0.5 rounded border border-neutral-800 uppercase text-neutral-400 tracking-widest font-bold">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-neutral-800 uppercase text-neutral-400 tracking-widest font-bold">
                             {item.category === 'stunts' ? 'equality' : item.category}
                           </span>
                           <Gift className="h-3.5 w-3.5 text-gold-500/60" />
@@ -586,7 +586,7 @@ export default function AboutSection() {
                       </div>
 
                       <div className="pt-3 border-t border-neutral-900/60 space-y-1">
-                        <span className="text-[8px] font-mono text-neutral-500 uppercase block tracking-wider">RESPONSE & OUTLOOK</span>
+                        <span className="text-[10px] font-mono text-neutral-500 uppercase block tracking-wider">RESPONSE & OUTLOOK</span>
                         <p className="font-serif italic text-[10px] text-gold-500/90 leading-normal">
                           "{item.quote}"
                         </p>
@@ -715,7 +715,7 @@ export default function AboutSection() {
 
                     {/* Custom title evaluation */}
                     <div className="p-4 rounded-lg bg-neutral-950 border border-neutral-800 inline-block max-w-sm mx-auto">
-                      <span className="block text-[8px] font-mono text-neutral-500 uppercase tracking-widest">YOUR FAN RANK</span>
+                      <span className="block text-[10px] font-mono text-neutral-500 uppercase tracking-widest">YOUR FAN RANK</span>
                       <span className="text-sm font-bold text-gold-500 block uppercase tracking-wide mt-1">
                         {quizScore === 3 ? "👑 Dana Scully / FBI Special Agent" : quizScore === 2 ? "🎭 West End Theater Master" : "📚 Manifesto Feminist Rookie"}
                       </span>

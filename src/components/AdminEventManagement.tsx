@@ -192,7 +192,7 @@ function CatalogueTab({ showToast }: Props) {
           {events.map(ev => (
             <div key={ev.id} className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-3 relative overflow-hidden">
               <div className="flex justify-between items-start">
-                <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[8px] font-mono uppercase font-bold border border-gold-800/20">{ev.event_type || ev.type || 'Event'}</span>
+                <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[10px] font-mono uppercase font-bold border border-gold-800/20">{ev.event_type || ev.type || 'Event'}</span>
                 <div className="flex gap-1.5">
                   {confirmDelete === ev.id ? (
                     <div className="flex gap-1 items-center">
@@ -323,7 +323,7 @@ function RegistrationsTab({ showToast }: Props) {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="font-serif text-lg font-bold text-white">{r.event_title}</h3>
-              <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[8px] font-mono font-bold uppercase border ${getBadge(r.status)}`}>{r.status}</span>
+              <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border ${getBadge(r.status)}`}>{r.status}</span>
               <p className="text-[10px] font-mono text-neutral-500 mt-2">Ticket Ref: {r.ticket_ref}</p>
               <p className="text-[10px] font-mono text-neutral-500">Ticket ID: {r.id}</p>
               <p className="text-[10px] font-mono text-neutral-500">Ticket Type: {r.ticket_type} × {r.ticket_qty}</p>
@@ -332,7 +332,7 @@ function RegistrationsTab({ showToast }: Props) {
           </div>
         </div>
         <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4">
-          <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Fan Details</h4>
+          <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Fan Details</h4>
           <div className="text-[11px] space-y-1">
             <p><span className="text-neutral-500">Name:</span> <span className="text-white">{r.member_name}</span></p>
             <p><span className="text-neutral-500">Email:</span> <span className="text-white">{r.member_email}</span></p>
@@ -340,32 +340,32 @@ function RegistrationsTab({ showToast }: Props) {
           </div>
         </div>
         <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4">
-          <h4 className="text-[9px] font-mono text-gold-500 uppercase tracking-widest font-bold">Manage Registration</h4>
+          <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Manage Registration</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Status</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Status</label>
               <select value={editStatus} onChange={e => setEditStatus(e.target.value)}
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40">
                 {REG_STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Date</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Date</label>
               <input type="text" value={editDate} onChange={e => setEditDate(e.target.value)} placeholder="e.g. August 15, 2026"
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Time</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Time</label>
               <input type="text" value={editTime} onChange={e => setEditTime(e.target.value)} placeholder="e.g. 7:00 PM EST"
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Location</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Location</label>
               <input type="text" value={editLocation} onChange={e => setEditLocation(e.target.value)} placeholder="e.g. The Ryman, Nashville"
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
             </div>
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-[8px] font-mono text-neutral-500 uppercase tracking-wider">Admin Notes</label>
+              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Admin Notes</label>
               <textarea rows={3} value={editNotes} onChange={e => setEditNotes(e.target.value)} placeholder="Notes for the fan..."
                 className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40 resize-none" />
             </div>
@@ -383,7 +383,7 @@ function RegistrationsTab({ showToast }: Props) {
 
         {/* Quick Actions */}
         <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-3">
-          <h4 className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Quick Actions</h4>
+          <h4 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Quick Actions</h4>
           <div className="flex flex-wrap gap-2">
             <button onClick={() => {
               setEditStatus('cancelled');
@@ -492,7 +492,7 @@ function RegistrationsTab({ showToast }: Props) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="text-sm font-bold text-white group-hover:text-gold-500/80 transition-colors">{r.member_name}</h4>
-                    <span className={`px-1.5 py-0.5 rounded text-[7px] font-mono font-bold uppercase border ${getBadge(r.status)}`}>{r.status}</span>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${getBadge(r.status)}`}>{r.status}</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-neutral-500 mt-1">
                     <span>{r.member_email}</span>

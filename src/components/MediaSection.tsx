@@ -529,7 +529,7 @@ export default function MediaSection() {
                         >
                           <div className="h-14 w-20 rounded-lg overflow-hidden border border-neutral-800/80 shrink-0 bg-neutral-900 relative">
                             {item.thumbnail ? (
-                              <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
+                              <img src={item.thumbnail} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
                             ) : (
                               <div className={`w-full h-full flex items-center justify-center ${isCurrent ? 'bg-gold-500/10' : 'bg-neutral-900'}`}>
                                 <Play className={`h-4 w-4 transition-colors ${isCurrent ? 'text-gold-500 fill-gold-500/20' : 'text-neutral-600 group-hover:text-gold-500'}`} />
@@ -582,7 +582,7 @@ export default function MediaSection() {
                         >
                           <div className="aspect-video relative bg-neutral-900">
                             {item.thumbnail ? (
-                              <img src={item.thumbnail} alt={item.title} className="w-full h-full object-cover" />
+                              <img src={item.thumbnail} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
                                 <Play className="h-5 w-5 text-neutral-600" />
@@ -849,7 +849,7 @@ export default function MediaSection() {
                         isActive ? 'border-gold-500 ring-1 sm:ring-2 ring-gold-500/30 scale-110' : 'border-neutral-700 opacity-50 hover:opacity-80 hover:border-neutral-500'
                       }`}
                     >
-                      <img src={photo.url} alt={photo.title} className="w-full h-full object-cover" />
+                      <img src={photo.url} alt={photo.title} loading="lazy" className="w-full h-full object-cover" />
                     </button>
                   );
                 })}

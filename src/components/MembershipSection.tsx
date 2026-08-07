@@ -447,7 +447,7 @@ export default function MembershipSection() {
             <div className="flex gap-4 items-center z-10 pt-2">
               <div className="h-16 w-16 rounded-full border-2 border-gold-500/30 bg-neutral-900 overflow-hidden flex items-center justify-center shrink-0 shadow-lg">
                 {myMembership.profile_photo ? (
-                  <img src={myMembership.profile_photo} alt="" className="h-full w-full object-cover" />
+                  <img src={myMembership.profile_photo} alt="" loading="lazy" className="h-full w-full object-cover" />
                 ) : (
                   <User className="h-7 w-7 text-neutral-700" />
                 )}
@@ -739,7 +739,7 @@ export default function MembershipSection() {
                   <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
                   {userPhoto ? (
                     <div className="flex items-center gap-2.5">
-                      <img src={userPhoto} alt="Preview" className="h-8 w-8 rounded-full object-cover border border-neutral-800" />
+                      <img src={userPhoto} alt="Preview" loading="lazy" className="h-8 w-8 rounded-full object-cover border border-neutral-800" />
                       <span className="text-[10px] font-mono text-emerald-400">PHOTO MOUNTED</span>
                     </div>
                   ) : (
@@ -775,7 +775,7 @@ export default function MembershipSection() {
                 </div>
                 <div className="flex gap-4 items-center z-10 pt-4">
                   <div className="h-14 w-14 rounded-full border border-neutral-800 bg-neutral-900 overflow-hidden flex items-center justify-center shrink-0">
-                    {userPhoto ? <img src={userPhoto} alt="Face" className="h-full w-full object-cover" /> : <User className="h-6 w-6 text-neutral-700" />}
+                    {userPhoto ? <img src={userPhoto} alt="Face" loading="lazy" className="h-full w-full object-cover" /> : <User className="h-6 w-6 text-neutral-700" />}
                   </div>
                   <div className="space-y-1 text-left">
                     <span className="text-[8px] font-mono text-neutral-500 uppercase">OFFICIAL MEMBER</span>

@@ -307,7 +307,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
               <div key={photo.id} className="rounded-xl border border-neutral-900 bg-neutral-950/40 overflow-hidden group hover:border-gold-500/20 transition-all">
                 <div className="relative aspect-[4/3] bg-neutral-900 overflow-hidden cursor-pointer" onClick={() => openDetail(photo, 'photos')}>
                   {photo.url ? (
-                    <img src={photo.url} alt={photo.title || ''} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={photo.url} alt={photo.title || ''} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Image className="h-8 w-8 text-neutral-700" /></div>
                   )}
@@ -427,7 +427,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                 {/* Preview */}
                 {detailItem._type === 'photos' && detailItem.url && (
                   <div className="rounded-lg border border-neutral-900 overflow-hidden bg-neutral-900 max-h-64 flex items-center justify-center">
-                    <img src={detailItem.url} alt="" className="max-w-full max-h-64 object-contain" />
+                    <img src={detailItem.url} alt="" loading="lazy" className="max-w-full max-h-64 object-contain" />
                   </div>
                 )}
                 {detailItem._type === 'videos' && detailItem.youtube_id && (

@@ -335,7 +335,7 @@ export default function ExperiencesSection() {
                       {/* Image Header */}
                       <div className="relative h-36 bg-neutral-900/60 overflow-hidden">
                         {exp.image ? (
-                          <img src={exp.image} alt={exp.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          <img src={exp.image} alt={exp.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <Star className="h-8 w-8 text-neutral-700" />

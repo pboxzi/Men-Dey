@@ -115,7 +115,7 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
             >
               <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
               {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                <img src={avatarUrl} alt="Avatar" loading="lazy" className="h-full w-full object-cover" />
               ) : (
                 <User className="h-8 w-8 text-neutral-600" />
               )}

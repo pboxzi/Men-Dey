@@ -214,10 +214,11 @@ export default function JournalSection() {
                       <div>
                         {/* Thumbnail */}
                         <div className="aspect-[16/10] overflow-hidden bg-neutral-900 relative">
-                          <img
+                           <img
                             src={entry.image}
                             alt={entry.title}
                             referrerPolicy="no-referrer"
+                            loading="lazy"
                             className="h-full w-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
                           />
                         </div>
@@ -295,6 +296,7 @@ export default function JournalSection() {
                   src={selectedEntry.image}
                   alt={selectedEntry.title}
                   referrerPolicy="no-referrer"
+                  loading="lazy"
                   className="w-full h-full object-cover grayscale brightness-90 contrast-105"
                 />
               </div>

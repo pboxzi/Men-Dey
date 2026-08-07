@@ -487,7 +487,7 @@ export default function CommunitySection() {
                     />
                     {postImage ? (
                       <div className="relative w-full aspect-video rounded-lg overflow-hidden">
-                        <img src={postImage} alt="Upload preview" className="w-full h-full object-cover" />
+                        <img src={postImage} alt="Upload preview" loading="lazy" className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); setPostImage(null); }}
@@ -663,6 +663,7 @@ export default function CommunitySection() {
                           src={hl.image}
                           alt="Community Highlight Visual"
                           referrerPolicy="no-referrer"
+                          loading="lazy"
                           className="h-full w-full object-cover brightness-[0.85] saturate-[0.9] group-hover/img:brightness-100 group-hover/img:saturate-100 group-hover/img:scale-[1.02] transition-all duration-700"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-500" />

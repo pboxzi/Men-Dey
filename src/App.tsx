@@ -59,12 +59,11 @@ import AboutSection from './components/AboutSection';
 import JournalSection from './components/JournalSection';
 import MediaSection from './components/MediaSection';
 import CommunitySection from './components/CommunitySection';
-import EventsSection from './components/EventsSection';
-import ExperiencesSection from './components/ExperiencesSection';
-import MembershipSection from './components/MembershipSection';
-
-
 import FAQSection from './components/FAQSection';
+
+const EventsSection = React.lazy(() => import('./components/EventsSection'));
+const ExperiencesSection = React.lazy(() => import('./components/ExperiencesSection'));
+const MembershipSection = React.lazy(() => import('./components/MembershipSection'));
 
 const FanPortal = React.lazy(() => import('./components/FanPortal'));
 const AdminPortal = React.lazy(() => import('./components/AdminPortal'));
@@ -800,6 +799,7 @@ export default function App() {
                       src="/assets/images/gillian_theatre_rehearsal_1783349680324.jpg"
                       alt="Monthly Video Message Thumbnail"
                       referrerPolicy="no-referrer"
+                      loading="lazy"
                       className="h-full w-full object-cover brightness-75 group-hover:scale-105 transition-transform duration-700"
                     />
                     {/* Backdrop Overlay */}
@@ -929,6 +929,7 @@ export default function App() {
                               src="/assets/images/pillar_experiences_1784103582190.jpg"
                               alt="Experiences Background"
                               referrerPolicy="no-referrer"
+                              loading="lazy"
                               className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
@@ -966,6 +967,7 @@ export default function App() {
                               src="/assets/images/pillar_membership_1784103595657.jpg"
                               alt="Membership Background"
                               referrerPolicy="no-referrer"
+                              loading="lazy"
                               className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
@@ -1003,6 +1005,7 @@ export default function App() {
                               src="/assets/images/pillar_events_1784103610855.jpg"
                               alt="Events Background"
                               referrerPolicy="no-referrer"
+                              loading="lazy"
                               className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
@@ -1081,11 +1084,11 @@ export default function App() {
             {activeNav === 'JOURNAL' && <JournalSection />}
             {activeNav === 'MEDIA' && <MediaSection />}
             {activeNav === 'COMMUNITY' && <CommunitySection />}
-            {activeNav === 'EXPERIENCES' && <ExperiencesSection />}
-            {activeNav === 'MEMBERSHIP' && <MembershipSection />}
+            {activeNav === 'EXPERIENCES' && <React.Suspense fallback={null}><ExperiencesSection /></React.Suspense>}
+            {activeNav === 'MEMBERSHIP' && <React.Suspense fallback={null}><MembershipSection /></React.Suspense>}
             {activeNav === 'EVENTS' && (
               <div className="py-8">
-                <EventsSection />
+                <React.Suspense fallback={null}><EventsSection /></React.Suspense>
               </div>
             )}
             {activeNav === 'FAQ' && <FAQSection />}
@@ -1231,7 +1234,7 @@ export default function App() {
           maxWidth="max-w-4xl"
         >
           <div className="p-1">
-            <EventsSection />
+            <React.Suspense fallback={null}><EventsSection /></React.Suspense>
           </div>
         </Modal>
       )}

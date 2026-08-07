@@ -342,7 +342,7 @@ function CatalogueTab({ showToast }: Props) {
         <button onClick={() => setPreviewId(null)} className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase text-neutral-500 hover:text-gold-500 transition-colors">← Back</button>
         <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-6 space-y-4">
           <div className="relative h-48 rounded-lg overflow-hidden bg-neutral-900">
-            {exp.image ? <img src={exp.image} alt={exp.title} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-neutral-600 text-sm">No Image</div>}
+            {exp.image ? <img src={exp.image} alt={exp.title} loading="lazy" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-neutral-600 text-sm">No Image</div>}
             <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
             <div className="absolute bottom-4 left-4">
               <h2 className="font-serif text-xl font-bold text-white">{exp.title}</h2>
@@ -524,7 +524,7 @@ function CatalogueTab({ showToast }: Props) {
             <div key={exp.id} className={`rounded-xl border bg-neutral-950/40 overflow-hidden group transition-all hover:border-gold-500/20 ${exp.archived ? 'border-neutral-900/40 opacity-60' : 'border-neutral-900'}`}>
               <div className="relative h-28 bg-neutral-900/60 overflow-hidden">
                 {exp.image ? (
-                  <img src={exp.image} alt={exp.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={exp.image} alt={exp.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center"><Star className="h-6 w-6 text-neutral-700" /></div>
                 )}

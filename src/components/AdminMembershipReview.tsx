@@ -258,7 +258,7 @@ export default function AdminMembershipReview() {
                 <div className="flex items-center gap-2.5">
                   <div className="h-9 w-9 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center overflow-hidden shrink-0">
                     {req.profile_photo ? (
-                      <img src={req.profile_photo} className="h-full w-full object-cover" />
+                      <img src={req.profile_photo} loading="lazy" className="h-full w-full object-cover" />
                     ) : (
                       <User className="h-4 w-4 text-neutral-500" />
                     )}
@@ -314,7 +314,7 @@ export default function AdminMembershipReview() {
                 <div className="flex items-center gap-3">
                   <div className="h-12 w-12 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center overflow-hidden">
                     {selectedRequest.profile_photo ? (
-                      <img src={selectedRequest.profile_photo} className="h-full w-full object-cover" />
+                      <img src={selectedRequest.profile_photo} loading="lazy" className="h-full w-full object-cover" />
                     ) : (
                       <User className="h-5 w-5 text-neutral-500" />
                     )}

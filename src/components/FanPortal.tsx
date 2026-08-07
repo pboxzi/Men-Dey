@@ -2192,7 +2192,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             <div key={exp.id} className="group bg-neutral-950/40 border border-neutral-900 rounded-xl overflow-hidden hover:border-gold-500/20 hover:shadow-[0_0_20px_-5px_rgba(212,175,55,0.08)] transition-all duration-300 flex flex-col">
                               <div className="relative h-32 bg-neutral-900/60 overflow-hidden">
                                 {exp.image ? (
-                                  <img src={exp.image} alt={exp.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                  <img src={exp.image} alt={exp.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center"><Star className="h-8 w-8 text-neutral-700" /></div>
                                 )}
@@ -2371,7 +2371,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           {/* Post Image */}
                           {post.image && (
                             <div className="relative rounded-xl overflow-hidden border border-neutral-900/60 group/img">
-                              <img src={post.image} alt="" className="w-full h-40 object-cover brightness-[0.85] saturate-[0.9] group-hover/img:brightness-100 group-hover/img:saturate-100 group-hover/img:scale-[1.02] transition-all duration-700" />
+                              <img src={post.image} alt="" loading="lazy" className="w-full h-40 object-cover brightness-[0.85] saturate-[0.9] group-hover/img:brightness-100 group-hover/img:saturate-100 group-hover/img:scale-[1.02] transition-all duration-700" />
                               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-500" />
                             </div>
                           )}

@@ -66,8 +66,8 @@ serve(async (req: Request) => {
     const { data: userData } = await supabase.auth.admin.getUserById(tokenData.user_id)
     const userName = tokenData.user_name || userData?.user?.user_metadata?.name || tokenData.email.split("@")[0]
 
-    // Create profile now that email is confirmed
-    const { error: profileError } = await supabase.from("profiles").upsert({
+    // Create profile now that email is confirmed — this is the ONLY place profiles are created
+    const { error: profileError } = await supabase.from("profiles").insert({
       id: tokenData.user_id,
       name: userName,
       email: tokenData.email,
@@ -79,6 +79,10 @@ serve(async (req: Request) => {
     })
     if (profileError) {
       console.error("Profile creation error:", JSON.stringify(profileError))
+      return new Response(
+        JSON.stringify({ error: "Failed to create profile", details: profileError.message }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      )
     }
 
     // Mark token as used

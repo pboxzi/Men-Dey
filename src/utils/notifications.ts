@@ -26,8 +26,51 @@ interface CreateNotificationOpts {
 
 const SITE_URL = 'https://www.cmagency.me';
 
+// ─── HTML escape utility — prevents XSS in user-supplied text ───
+function esc(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ─── Status label maps — human-readable, no underscores ───
+const EXPERIENCE_STATUS_LABELS: Record<string, string> = {
+  pending: 'Pending Review',
+  under_review: 'Under Review',
+  discussion: 'In Discussion',
+  confirmed: 'Confirmed',
+  active: 'Active',
+  completed: 'Completed',
+  cancelled: 'Cancelled',
+};
+
+const MEMBERSHIP_STATUS_LABELS: Record<string, string> = {
+  active: 'Active',
+  pending: 'Pending Approval',
+  approved: 'Approved',
+  rejected: 'Application Declined',
+  cancelled: 'Cancelled',
+  expired: 'Expired',
+};
+
+function formatExperienceStatus(status: string): string {
+  return EXPERIENCE_STATUS_LABELS[status] || status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function formatMembershipStatus(status: string): string {
+  return MEMBERSHIP_STATUS_LABELS[status] || status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function isExperienceFinal(status: string): boolean {
+  return ['confirmed', 'completed', 'cancelled'].includes(status);
+}
+
 // ─── Base email shell — dark luxury theme ───
 function baseTemplate(accent: string, title: string, body: string, ctaText?: string, ctaUrl?: string): string {
+  // Solid fallback color for Outlook which doesn't support linear-gradient
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
@@ -40,7 +83,7 @@ function baseTemplate(accent: string, title: string, body: string, ctaText?: str
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;border-radius:16px 16px 0 0;">
   <tr><td style="padding:28px 40px;">
     <table width="100%" cellpadding="0" cellspacing="0"><tr>
-      <td><div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,${accent},#b8860b);text-align:center;line-height:40px;font-size:16px;font-weight:800;color:#050505;">GA</div></td>
+      <td><div style="width:40px;height:40px;border-radius:10px;background:${accent};background:linear-gradient(135deg,${accent},#b8860b);text-align:center;line-height:40px;font-size:16px;font-weight:800;color:#050505;">GA</div></td>
       <td style="padding-left:14px;">
         <p style="margin:0;font-size:15px;font-weight:700;color:#fff;letter-spacing:0.5px;">Gillian Anderson</p>
         <p style="margin:2px 0 0;font-size:10px;color:#666;letter-spacing:1.5px;text-transform:uppercase;">Fan Community</p>
@@ -50,12 +93,12 @@ function baseTemplate(accent: string, title: string, body: string, ctaText?: str
   </table>
 </td></tr>
 
-<tr><td style="height:2px;background:linear-gradient(90deg,${accent},transparent);"></td></tr>
+<tr><td style="height:2px;background:${accent};background:linear-gradient(90deg,${accent},transparent);"></td></tr>
 
 <tr><td style="background:#0a0a0a;padding:44px 40px;">
   <h1 style="margin:0 0 24px;font-size:22px;font-weight:700;color:#fff;line-height:1.3;">${title}</h1>
   <div style="font-size:14px;line-height:1.8;color:#a0a0a0;">${body}</div>
-  ${ctaText ? `<table cellpadding="0" cellspacing="0" style="margin:36px 0 0;"><tr><td style="background:linear-gradient(135deg,${accent},#b8860b);border-radius:8px;"><a href="${ctaUrl || SITE_URL}" style="display:inline-block;padding:14px 36px;font-size:12px;font-weight:700;color:#050505;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;">${ctaText}</a></td></tr></table>` : ''}
+  ${ctaText ? `<table cellpadding="0" cellspacing="0" style="margin:36px 0 0;"><tr><td style="background:${accent};background:linear-gradient(135deg,${accent},#b8860b);border-radius:8px;"><a href="${ctaUrl || SITE_URL}" style="display:inline-block;padding:14px 36px;font-size:12px;font-weight:700;color:#050505;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;">${ctaText}</a></td></tr></table>` : ''}
 </td></tr>
 
 <tr><td style="background:#080808;padding:28px 40px;border-radius:0 0 16px 16px;border-top:1px solid #1a1a1a;">
@@ -71,13 +114,13 @@ function baseTemplate(accent: string, title: string, body: string, ctaText?: str
 function infoCard(label: string, value: string, accent = '#d4a853'): string {
   return `<table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 12px;"><tr><td style="padding:14px 20px;background:#111;border-radius:8px;border-left:3px solid ${accent};">
     <p style="margin:0 0 4px;font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;">${label}</p>
-    <p style="margin:0;font-size:15px;color:#fff;font-weight:600;">${value}</p>
+    <p style="margin:0;font-size:15px;color:#fff;font-weight:600;">${esc(value)}</p>
   </td></tr></table>`;
 }
 
 function quoteBlock(text: string): string {
   return `<div style="padding:18px 22px;background:#111;border-left:3px solid #d4a853;border-radius:8px;margin:0 0 24px;">
-    <p style="margin:0;font-size:14px;color:#ccc;line-height:1.7;">"${text}"</p>
+    <p style="margin:0;font-size:14px;color:#ccc;line-height:1.7;">&ldquo;${esc(text)}&rdquo;</p>
   </div>`;
 }
 
@@ -154,26 +197,46 @@ export async function notifyNewMessage(userId: string, senderName: string, previ
   });
 }
 
-// ── 2. MEMBERSHIP APPROVED (gold accent) ──
+// ── 2. MEMBERSHIP STATUS (gold accent) ──
 export async function notifyMembershipStatus(userId: string, status: string, tierName: string) {
   const isApproved = status === 'active';
-  return createNotification({
-    userId, type: 'membership',
-    title: isApproved ? 'Membership Approved' : 'Membership Update',
-    message: isApproved ? `Your ${tierName} membership has been approved.` : `Your membership status: ${status}.`,
-    sendEmail: true,
-    emailSubject: isApproved ? `Welcome to ${tierName} — You're In` : `Membership Status Update`,
-    emailBody: baseTemplate(
-      '#d4af37',
-      isApproved ? `Welcome to ${tierName}` : 'Membership Update',
-      isApproved
-        ? `<p style="margin:0 0 20px;">Your <strong style="color:#d4af37;">${tierName}</strong> membership has been approved. You are now a verified member of the community.</p>
+  const label = formatMembershipStatus(status);
+
+  const statusBody = (() => {
+    switch (status) {
+      case 'active':
+        return `<p style="margin:0 0 20px;">Your <strong style="color:#d4af37;">${esc(tierName)}</strong> membership has been approved. You are now a verified member of the community.</p>
            ${infoCard('Tier', tierName)}
            ${infoCard('Status', 'Active', '#22c55e')}
-           <p style="margin:20px 0 0;font-size:13px;color:#666;">Access your dashboard to view your membership card, track points, and explore exclusive benefits.</p>`
-        : `<p style="margin:0 0 20px;">Your membership status has been updated.</p>
-           ${infoCard('Status', status)}
-           <p style="margin:20px 0 0;font-size:13px;color:#666;">If you have questions about your membership, reach out to our team.</p>`,
+           <p style="margin:20px 0 0;font-size:13px;color:#666;">Access your dashboard to view your membership card, track points, and explore exclusive benefits.</p>`;
+      case 'rejected':
+        return `<p style="margin:0 0 20px;">We have reviewed your <strong style="color:#d4af37;">${esc(tierName)}</strong> membership application. Unfortunately, we are unable to approve it at this time.</p>
+           ${infoCard('Tier', tierName)}
+           ${infoCard('Status', 'Declined', '#ef4444')}
+           <p style="margin:20px 0 0;font-size:13px;color:#666;">If you believe this was an error or would like to reapply, please contact our team through your portal.</p>`;
+      case 'pending':
+        return `<p style="margin:0 0 20px;">Your <strong style="color:#d4af37;">${esc(tierName)}</strong> membership application has been received and is currently being reviewed.</p>
+           ${infoCard('Tier', tierName)}
+           ${infoCard('Status', 'Pending Review', '#f59e0b')}
+           <p style="margin:20px 0 0;font-size:13px;color:#666;">We will notify you once a decision has been made. This typically takes 1-2 business days.</p>`;
+      default:
+        return `<p style="margin:0 0 20px;">Your <strong style="color:#d4af37;">${esc(tierName)}</strong> membership status has been updated.</p>
+           ${infoCard('Tier', tierName)}
+           ${infoCard('Status', label)}
+           <p style="margin:20px 0 0;font-size:13px;color:#666;">If you have any questions about your membership, please reach out to our team through your portal.</p>`;
+    }
+  })();
+
+  return createNotification({
+    userId, type: 'membership',
+    title: isApproved ? 'Membership Approved' : `Membership ${label}`,
+    message: isApproved ? `Your ${tierName} membership has been approved.` : `Your ${tierName} membership status: ${label}.`,
+    sendEmail: true,
+    emailSubject: isApproved ? `Welcome to ${esc(tierName)} — You're In` : `Membership Update — ${esc(label)}`,
+    emailBody: baseTemplate(
+      '#d4af37',
+      isApproved ? `Welcome to ${esc(tierName)}` : `Membership Update`,
+      statusBody,
       'View Membership'
     ),
   });
@@ -181,19 +244,26 @@ export async function notifyMembershipStatus(userId: string, status: string, tie
 
 // ── 3. EXPERIENCE STATUS (purple accent) ──
 export async function notifyExperienceStatus(userId: string, status: string, experienceTitle: string) {
+  const label = formatExperienceStatus(status);
   const statusColor = status === 'confirmed' ? '#22c55e' : status === 'cancelled' ? '#ef4444' : '#d4af37';
+  const final = isExperienceFinal(status);
+
+  const bodyText = final
+    ? `<p style="margin:0 0 20px;">Your experience request has been reviewed by our team. Please find the updated status below.</p>`
+    : `<p style="margin:0 0 20px;">Your experience request is being processed. We will keep you updated as it progresses.</p>`;
+
   return createNotification({
     userId, type: 'experience',
-    title: `Experience ${status}`,
-    message: `Your request for "${experienceTitle}" has been ${status}.`,
+    title: `Experience ${label}`,
+    message: `Your request for "${experienceTitle}" is now: ${label}.`,
     sendEmail: true,
-    emailSubject: `Experience ${status.charAt(0).toUpperCase() + status.slice(1)} — ${experienceTitle}`,
+    emailSubject: `Experience Update — ${label} — ${esc(experienceTitle)}`,
     emailBody: baseTemplate(
       '#a855f7',
-      `Experience ${status.charAt(0).toUpperCase() + status.slice(1)}`,
-      `<p style="margin:0 0 20px;">Your experience request has been reviewed by our team.</p>
+      `Experience ${label}`,
+      `${bodyText}
        ${infoCard('Experience', experienceTitle, '#a855f7')}
-       ${infoCard('Status', status.toUpperCase(), statusColor)}
+       ${infoCard('Status', label, statusColor)}
        <p style="margin:20px 0 0;font-size:13px;color:#666;">Log in to view full details, confirmed date, and next steps.</p>`,
       'View Experience'
     ),
@@ -234,16 +304,16 @@ export async function notifyRewardRedeemed(userId: string, rewardTitle: string, 
 export async function notifyAdminResponse(userId: string, adminName: string, preview: string) {
   return createNotification({
     userId, type: 'message',
-    title: `${adminName} responded`,
+    title: `${adminName} has responded`,
     message: preview.slice(0, 200),
     sendEmail: true,
-    emailSubject: `${adminName} replied to your message`,
+    emailSubject: `${esc(adminName)} Has Responded to Your Message`,
     emailBody: baseTemplate(
       '#3b82f6',
-      `${adminName} replied`,
-      `<p style="margin:0 0 20px;">${adminName} has responded to your message:</p>
+      `${esc(adminName)} Has Responded`,
+      `<p style="margin:0 0 20px;">${esc(adminName)} has sent you a response:</p>
        ${quoteBlock(preview)}
-       <p style="margin:0;font-size:13px;color:#666;">Continue the conversation in your portal.</p>`,
+       <p style="margin:0;font-size:13px;color:#666;">Continue the conversation in your portal for a full history and reply options.</p>`,
       'View Conversation'
     ),
   });
@@ -255,10 +325,11 @@ export async function notifyAnnouncement(userIds: string[], title: string, body:
   for (const userId of userIds) {
     await sendNotificationEmail(userId, title, baseTemplate(
       '#f43f5e',
-      title,
+      esc(title),
       `${quoteBlock(body)}
-       <p style="margin:0;font-size:13px;color:#666;">Log in to view the full announcement.</p>`,
-      'View Announcement'
+       <p style="margin:0;font-size:13px;color:#666;">Log in to your portal to read the full announcement and take any relevant action.</p>`,
+      'View Announcement',
+      `${SITE_URL}/portal`
     ));
   }
 }

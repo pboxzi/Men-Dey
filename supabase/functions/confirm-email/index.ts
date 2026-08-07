@@ -66,8 +66,10 @@ serve(async (req: Request) => {
     const { data: userData } = await supabase.auth.admin.getUserById(tokenData.user_id)
     const userName = tokenData.user_name || userData?.user?.user_metadata?.name || tokenData.email.split("@")[0]
 
-    // Create profile now that email is confirmed — this is the ONLY place profiles are created
-    const { error: profileError } = await supabase.from("profiles").insert({
+    // Create or update profile now that email is confirmed
+    // Uses upsert because: old users may already have a profile from the trigger (before removal)
+    // new users won't have one yet — upsert handles both cases
+    const { error: profileError } = await supabase.from("profiles").upsert({
       id: tokenData.user_id,
       name: userName,
       email: tokenData.email,
@@ -76,7 +78,7 @@ serve(async (req: Request) => {
       how_heard_about: tokenData.how_heard_about || '',
       favorite_thing: tokenData.favorite_thing || '',
       role: "user",
-    })
+    }, { onConflict: 'id' })
     if (profileError) {
       console.error("Profile creation error:", JSON.stringify(profileError))
       return new Response(

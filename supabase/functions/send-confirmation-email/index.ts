@@ -35,7 +35,14 @@ serve(async (req: Request) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     // Clean up any existing tokens for this user
-    await supabase.from("confirmation_tokens").delete().eq("user_id", userId)
+    const { error: deleteError } = await supabase.from("confirmation_tokens").delete().eq("user_id", userId)
+    if (deleteError) {
+      console.error("Token delete error:", JSON.stringify(deleteError))
+      return new Response(
+        JSON.stringify({ error: "Failed to clean up tokens", details: deleteError }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      )
+    }
 
     // Generate confirmation token
     const token = crypto.randomUUID().replace(/-/g, "")
@@ -49,7 +56,7 @@ serve(async (req: Request) => {
     if (tokenError) {
       console.error("Token insert error:", JSON.stringify(tokenError))
       return new Response(
-        JSON.stringify({ error: "Failed to create confirmation token" }),
+        JSON.stringify({ error: "Failed to create confirmation token", details: tokenError }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       )
     }
@@ -154,7 +161,7 @@ serve(async (req: Request) => {
 </html>`
 
     // Send via Resend
-    const senderEmail = "no-reply@gillian-anderson.com"
+    const senderEmail = "admin@cmagency.me"
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {

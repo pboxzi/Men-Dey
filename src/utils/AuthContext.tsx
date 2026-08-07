@@ -103,9 +103,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Send confirmation email via Resend (profile created after confirmation)
     try {
-      await supabase.functions.invoke('send-confirmation-email', {
+      const { data: emailData, error: emailFuncError } = await supabase.functions.invoke('send-confirmation-email', {
         body: { email, userId: data.user.id, userName: name },
       });
+      if (emailFuncError) {
+        logger.warn('Confirmation email function error:', emailFuncError.message, emailData);
+      }
     } catch (emailErr) {
       logger.warn('Confirmation email failed (non-critical):', emailErr);
     }

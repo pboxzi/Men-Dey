@@ -445,7 +445,7 @@ export default function App() {
                 </button>
                 <button onClick={() => navigate('/portal?mode=register')}
                   className="px-2 sm:px-3 py-1.5 text-[9px] font-bold tracking-widest text-neutral-950 bg-gold-500 hover:bg-gold-400 rounded-lg transition-all shrink-0">
-                  JOIN
+                  REGISTER
                 </button>
               </div>
             ) : (
@@ -720,7 +720,7 @@ export default function App() {
                     onClick={() => navigate('/portal?mode=register')}
                     className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold px-6 py-3 rounded-lg text-xs tracking-widest transition-all hover:shadow-[0_0_20px_rgba(212,163,89,0.3)] active:scale-95 shadow-lg shadow-gold-500/10"
                   >
-                    JOIN THE COMMUNITY
+                    REGISTER
                   </button>
                   <button
                     onClick={() => {
@@ -1067,7 +1067,7 @@ export default function App() {
                         onClick={() => user ? navigate('/portal') : navigate('/portal?mode=register')}
                         className="inline-flex items-center gap-2 px-6 py-3 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
                       >
-                        {user ? 'ENTER YOUR PORTAL' : 'JOIN THE COMMUNITY'}
+                        {user ? 'ENTER YOUR PORTAL' : 'REGISTER'}
                         <ArrowRight className="h-4 w-4" />
                       </button>
                     </div>
@@ -1321,7 +1321,7 @@ export default function App() {
                 <div className="px-5 pb-6 pt-2 border-t border-neutral-800/60 space-y-2.5">
                   <button onClick={() => { navigate('/portal?mode=register'); setMobileExploreOpen(false); }}
                     className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-neutral-950 text-[11px] font-bold tracking-widest uppercase transition-colors">
-                    JOIN THE COMMUNITY
+                    REGISTER
                   </button>
                   <button onClick={() => { navigate('/portal?mode=login'); setMobileExploreOpen(false); }}
                     className="w-full py-3 rounded-xl border border-neutral-800 bg-neutral-900/50 hover:bg-neutral-900 text-neutral-300 text-[11px] font-bold tracking-widest uppercase transition-colors">

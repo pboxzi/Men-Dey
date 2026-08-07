@@ -52,7 +52,13 @@ export default function ExperiencesSection() {
     const loadData = async () => {
       try {
         const expRes = await supabase.from('experiences').select('*').order('sort_order').order('title');
-        if (!expRes.error && expRes.data) setExperiences(expRes.data || []);
+        if (!expRes.error && expRes.data) {
+          const mapped = expRes.data.map((d: Record<string, unknown>) => ({
+            ...d,
+            is_virtual: d.capacity === 'virtual',
+          }));
+          setExperiences(mapped as Experience[]);
+        }
       } catch (err) {
         logger.error('Failed to load experiences:', err);
       } finally {

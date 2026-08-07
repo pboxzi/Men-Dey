@@ -36,6 +36,18 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
   const [showBooking, setShowBooking] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [showAllFaq, setShowAllFaq] = useState(false);
+  const [membership, setMembership] = useState<{ status: string; tier_id?: string } | null>(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase.from('membership_applications')
+      .select('status, tier_id')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setMembership(data); });
+  }, [user?.id]);
 
   useEffect(() => {
     setLoading(true);
@@ -323,6 +335,10 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
                       navigate('/portal?mode=login');
                       return;
                     }
+                    if (!membership || membership.status !== 'active') {
+                      navigate('/portal');
+                      return;
+                    }
                     setShowBooking(true);
                   }}
                   disabled={isFull}
@@ -330,11 +346,13 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
                     isFull
                       ? 'bg-neutral-900 text-neutral-600 cursor-not-allowed'
                       : user
-                        ? 'bg-gold-500 hover:bg-gold-400 text-neutral-950 shadow-[0_0_15px_-3px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_-3px_rgba(212,175,55,0.4)]'
+                        ? membership?.status === 'active'
+                          ? 'bg-gold-500 hover:bg-gold-400 text-neutral-950 shadow-[0_0_15px_-3px_rgba(212,175,55,0.3)] hover:shadow-[0_0_20px_-3px_rgba(212,175,55,0.4)]'
+                          : 'bg-neutral-900 border border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:text-white'
                         : 'bg-neutral-900 border border-neutral-800 text-neutral-300 hover:bg-neutral-800 hover:text-white'
                   }`}
                 >
-                  {isFull ? 'Fully Booked' : user ? 'Book Experience' : (
+                  {isFull ? 'Fully Booked' : user ? membership?.status === 'active' ? 'Book Experience' : '🔒 Membership Required' : (
                     <>
                       <Lock className="h-3.5 w-3.5" />
                       Sign in to Book
@@ -345,7 +363,7 @@ export default function ExperienceDetailPage({ experienceId, onBack, onBook }: P
 
                 <div className="flex items-center gap-2 text-[9px] font-mono text-neutral-500 justify-center">
                   <Info className="h-3 w-3" />
-                  <span>{user ? 'Requires admin confirmation' : 'Sign in required to book this experience'}</span>
+                  <span>{user ? membership?.status === 'active' ? 'Requires admin confirmation' : 'Active membership required to book' : 'Sign in required to book this experience'}</span>
                 </div>
               </div>
 

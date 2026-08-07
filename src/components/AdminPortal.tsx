@@ -113,6 +113,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const quickActionsRef = useRef<HTMLDivElement>(null);
+  const [showQuickActions, setShowQuickActions] = useState(false);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -246,7 +247,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const [announceScope, setAnnounceScope] = useState('All Members');
 
   const [showJournalModal, setShowJournalModal] = useState(false);
-  const [showQuickActions, setShowQuickActions] = useState(false);
   const [journalTitle, setJournalTitle] = useState('');
   const [journalCategory, setJournalCategory] = useState('Philanthropy');
   const [journalExcerpt, setJournalExcerpt] = useState('');

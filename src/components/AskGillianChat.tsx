@@ -3,7 +3,7 @@ import { supabase } from '../utils/supabase';
 import { notifyAdmins } from '../utils/notifications';
 import { logger } from '../utils/logger';
 import {
-  Send, Loader2, MessageCircle, Clock, CheckCircle, Wifi, WifiOff
+  Send, Loader2, MessageCircle, Clock, CheckCircle, Wifi, WifiOff, Lock
 } from 'lucide-react';
 
 interface Props {
@@ -32,11 +32,22 @@ export default function AskGillianChat({ userId, showToast }: Props) {
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [gillianTyping, setGillianTyping] = useState(false);
+  const [membership, setMembership] = useState<{ status: string; tier_id?: string } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isUserScrolling = useRef(false);
   const convIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    supabase.from('membership_applications')
+      .select('status, tier_id')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setMembership(data); });
+  }, [userId]);
 
   const scrollToBottom = () => {
     if (!isUserScrolling.current) {
@@ -141,6 +152,11 @@ export default function AskGillianChat({ userId, showToast }: Props) {
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || sending) return;
+
+    if (!membership || membership.status !== 'active') {
+      showToast('Active membership required to chat with Gillian.', 'error');
+      return;
+    }
 
     const msgText = newMessage.trim();
     setNewMessage('');
@@ -314,7 +330,15 @@ export default function AskGillianChat({ userId, showToast }: Props) {
 
         {/* Input */}
         <div className="border-t border-neutral-900 px-4 py-3">
-          {gillianStatus.status !== 'available' && (
+          {(!membership || membership.status !== 'active') ? (
+            <div className="flex items-center gap-3 px-4 py-4 rounded-lg border border-neutral-800 bg-neutral-900/30">
+              <Lock className="h-5 w-5 text-gold-500 shrink-0" />
+              <div className="flex-1">
+                <p className="text-xs font-bold text-white">Membership Required</p>
+                <p className="text-[10px] text-neutral-500 mt-0.5">You need an active membership to chat with Gillian. Upgrade your membership to unlock this feature.</p>
+              </div>
+            </div>
+          ) : gillianStatus.status !== 'available' ? (
             <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${currentStatus.borderColor} ${
               gillianStatus.status === 'busy' ? 'bg-amber-500/5' : 'bg-neutral-900/30'
             }`}>
@@ -326,8 +350,9 @@ export default function AskGillianChat({ userId, showToast }: Props) {
                 <p className="text-[10px] text-neutral-500 mt-0.5">You can still send a message — she will respond when available.</p>
               </div>
             </div>
-          )}
+          ) : null}
 
+          {membership?.status === 'active' && (
           <form onSubmit={handleSend} className="flex gap-2 mt-3">
             <input
               ref={inputRef}
@@ -346,6 +371,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
               {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </button>
           </form>
+          )}
         </div>
       </div>
 

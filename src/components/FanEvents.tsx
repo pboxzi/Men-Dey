@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { openWhatsApp, openEmail } from '../utils/contactSettings';
 import { createNotification } from '../utils/notifications';
+import { ShieldCheck } from 'lucide-react';
 
 interface EventItem {
   id: string; title: string; type: string; day: string; month: string;
@@ -56,6 +57,18 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
   const [saving, setSaving] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [ticketRef, setTicketRef] = useState('');
+  const [membership, setMembership] = useState<{ status: string; tier_id?: string } | null>(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase.from('membership_applications')
+      .select('status, tier_id')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setMembership(data); });
+  }, [user?.id]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -92,6 +105,11 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
   useEffect(() => { void fetchData(); }, [fetchData]);
 
   const startRegistration = (ev: EventItem) => {
+    if (!membership || membership.status !== 'active') {
+      showToast?.('Active membership required to register for events. Please upgrade your membership.', 'error');
+      onNavigate?.('Membership');
+      return;
+    }
     setRegisteringEvent(ev);
     setForm({
       name: profile?.full_name || user?.user_metadata?.name || '',
@@ -675,8 +693,14 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                   </div>
                 </div>
                 <button onClick={() => startRegistration(ev)}
-                  className="w-full mt-3 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 rounded-lg text-xs transition-all uppercase tracking-wider active:scale-[0.98]"
-                >Register Now</button>
+                  className={`w-full mt-3 font-bold py-2.5 rounded-lg text-xs transition-all uppercase tracking-wider active:scale-[0.98] ${
+                    membership?.status === 'active'
+                      ? 'bg-gold-500 hover:bg-gold-400 text-neutral-950'
+                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-400 border border-neutral-700'
+                  }`}
+                >
+                  {membership?.status === 'active' ? 'Register Now' : '🔒 Membership Required'}
+                </button>
               </div>
             ))}
           </div>

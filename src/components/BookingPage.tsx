@@ -91,6 +91,18 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
   const [errors, setErrors] = useState<FormErrors>({});
   const [bookingRef, setBookingRef] = useState('');
   const [submitError, setSubmitError] = useState('');
+  const [membership, setMembership] = useState<{ status: string; tier_id?: string } | null>(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase.from('membership_applications')
+      .select('status, tier_id')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setMembership(data); });
+  }, [user?.id]);
 
   const formDefaults: FormData = {
     preferredDate: '',
@@ -193,6 +205,10 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
   };
 
   const handleSubmit = async () => {
+    if (!membership || membership.status !== 'active') {
+      setSubmitError('Active membership required to book experiences. Please upgrade your membership.');
+      return;
+    }
     setLoading(true);
     setSubmitError('');
     try {

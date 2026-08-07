@@ -183,14 +183,13 @@ export default function MembershipSection() {
       });
       notifyAdmins('membership', 'New Membership Application', `New ${activeTier.name} membership application from ${profile?.name || user.email}.`);
 
-      const msg = encodeURIComponent(
+      const msg =
         `Hi, I'd like to apply for the ${activeTier.name} membership.\n\n` +
         `Name: ${cardName || profile?.name}\n` +
         `Email: ${profile?.email || user.email}\n` +
         `Tier: ${activeTier.name} (${activeTier.price})\n` +
         `Card Serial: ${cardSerial}\n\n` +
-        `Thank you.`
-      );
+        `Thank you.`;
       setTimeout(() => {
         if (commMethod === 'whatsapp') {
           openWhatsApp(msg);
@@ -247,14 +246,13 @@ export default function MembershipSection() {
       });
       notifyAdmins('membership', 'Membership Upgrade Request', `Upgrade request to ${t?.name} from ${profile?.name || user.email}.`);
 
-      const msg = encodeURIComponent(
+      const msg =
         `Hi, I'd like to upgrade my membership.\n\n` +
         `Name: ${myMembership?.card_name || profile?.name}\n` +
         `Current Tier: ${myMembership?.tier_name}\n` +
         `New Tier: ${t?.name} (${t?.price})\n` +
         `Membership #: ${myMembership?.membership_number || 'N/A'}\n\n` +
-        `Thank you.`
-      );
+        `Thank you.`;
       setTimeout(() => {
         if (upgradeCommMethod === 'whatsapp') {
           openWhatsApp(msg);

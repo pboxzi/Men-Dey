@@ -65,9 +65,10 @@ import MembershipSection from './components/MembershipSection';
 
 
 import FAQSection from './components/FAQSection';
-import FanPortal from './components/FanPortal';
-import AdminPortal from './components/AdminPortal';
-import ConfirmEmail from './components/ConfirmEmail';
+
+const FanPortal = React.lazy(() => import('./components/FanPortal'));
+const AdminPortal = React.lazy(() => import('./components/AdminPortal'));
+const ConfirmEmail = React.lazy(() => import('./components/ConfirmEmail'));
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -369,7 +370,7 @@ export default function App() {
   }
 
   if (viewMode === 'confirm-email') {
-    return <ConfirmEmail />;
+    return <React.Suspense fallback={null}><ConfirmEmail /></React.Suspense>;
   }
 
   if (viewMode === 'portal') {
@@ -377,11 +378,11 @@ export default function App() {
       navigate('/admin', { replace: true });
       return null;
     }
-    return <FanPortal onBackToHome={() => navigateTo('landing')} />;
+    return <React.Suspense fallback={null}><FanPortal onBackToHome={() => navigateTo('landing')} /></React.Suspense>;
   }
 
   if (viewMode === 'admin') {
-    return <AdminPortal onBackToHome={() => navigateTo('landing')} />;
+    return <React.Suspense fallback={null}><AdminPortal onBackToHome={() => navigateTo('landing')} /></React.Suspense>;
   }
 
   return (

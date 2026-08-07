@@ -185,10 +185,10 @@ export async function notifyNewMessage(userId: string, senderName: string, previ
     title: `New message from ${senderName}`,
     message: preview.slice(0, 200),
     sendEmail: true,
-    emailSubject: `${senderName} sent you a message`,
+    emailSubject: `${esc(senderName)} Sent You a Message`,
     emailBody: baseTemplate(
       '#3b82f6',
-      `${senderName} sent you a message`,
+      `${esc(senderName)} Sent You a Message`,
       `<p style="margin:0 0 20px;">You have a new message waiting for you.</p>
        ${quoteBlock(preview)}
        <p style="margin:0;font-size:13px;color:#666;">Log in to read the full message and reply.</p>`,
@@ -277,14 +277,14 @@ export async function notifyEventRegistration(userId: string, eventTitle: string
     title: 'Event Registration Confirmed',
     message: `You're registered for "${eventTitle}". Reference: ${ref}`,
     sendEmail: true,
-    emailSubject: `You're Registered — ${eventTitle}`,
+    emailSubject: `You're Registered — ${esc(eventTitle)}`,
     emailBody: baseTemplate(
       '#22c55e',
-      `You're registered for ${eventTitle}`,
+      `You're Registered for ${esc(eventTitle)}`,
       `<p style="margin:0 0 20px;">Your spot has been reserved. We look forward to seeing you there.</p>
        ${infoCard('Event', eventTitle, '#22c55e')}
-       ${infoCard('Reference', ref, '#22c55e')}
-       <p style="margin:20px 0 0;font-size:13px;color:#666;">Save your reference number. Check your dashboard for event details, schedule, and location information.</p>`,
+       ${infoCard('Reference Number', ref, '#22c55e')}
+       <p style="margin:20px 0 0;font-size:13px;color:#666;">Please save your reference number for check-in. Check your portal dashboard for the full event schedule, location details, and any updates.</p>`,
       'View Event Details'
     ),
   });

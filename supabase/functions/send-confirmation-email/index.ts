@@ -6,6 +6,16 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 }
 
+// HTML escape utility — prevents XSS in user-supplied text
+function esc(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders })
@@ -67,12 +77,12 @@ serve(async (req: Request) => {
     }
 
     // Build confirmation URL
-    const siteUrl = Deno.env.get("SITE_URL") || "https://gillian-anderson.com"
+    const siteUrl = Deno.env.get("SITE_URL") || "https://www.cmagency.me"
     const confirmUrl = `${siteUrl}/confirm-email?token=${token}`
 
-    const displayName = userName || email.split("@")[0]
+    const displayName = esc(userName || email.split("@")[0])
 
-    // Beautiful email template
+    // Email template — dark luxury theme, consistent with notification emails
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -80,80 +90,83 @@ serve(async (req: Request) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to the Gillian Anderson Community</title>
 </head>
-<body style="margin:0;padding:0;background-color:#050505;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#050505;padding:40px 20px;">
+<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#050505;padding:40px 16px;">
     <tr>
       <td align="center">
         <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;width:100%;">
-          
-          <!-- Logo / Brand -->
+
+          <!-- Header with brand -->
           <tr>
-            <td align="center" style="padding-bottom:40px;">
-              <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#d4af37 0%,#b8860b 100%);display:inline-block;line-height:60px;text-align:center;font-size:24px;color:#050505;font-weight:bold;">GA</div>
+            <td style="padding:0 0 1px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;border-radius:16px 16px 0 0;">
+                <tr>
+                  <td style="padding:28px 40px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td>
+                          <div style="width:40px;height:40px;border-radius:10px;background:#d4af37;background:linear-gradient(135deg,#d4af37,#b8860b);text-align:center;line-height:40px;font-size:16px;font-weight:800;color:#050505;">GA</div>
+                        </td>
+                        <td style="padding-left:14px;">
+                          <p style="margin:0;font-size:15px;font-weight:700;color:#fff;letter-spacing:0.5px;">Gillian Anderson</p>
+                          <p style="margin:2px 0 0;font-size:10px;color:#666;letter-spacing:1.5px;text-transform:uppercase;">Fan Community</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
-          <!-- Main Card -->
+          <!-- Accent divider -->
           <tr>
-            <td style="background-color:#0a0a0a;border:1px solid #1a1a1a;border-radius:16px;padding:48px 40px;">
-              
-              <!-- Title -->
-              <tr>
-                <td align="center" style="padding-bottom:32px;">
-                  <h1 style="margin:0;font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">
-                    Welcome, <span style="color:#d4af37;">${displayName}</span>
-                  </h1>
-                </td>
-              </tr>
+            <td style="height:2px;background:#d4af37;background:linear-gradient(90deg,#d4af37,transparent);"></td>
+          </tr>
 
-              <!-- Divider -->
-              <tr>
-                <td style="padding-bottom:32px;">
-                  <div style="height:1px;background:linear-gradient(90deg,transparent,#d4af37,transparent);"></div>
-                </td>
-              </tr>
+          <!-- Main card -->
+          <tr>
+            <td style="background:#0a0a0a;padding:44px 40px;">
+
+              <!-- Title -->
+              <h1 style="margin:0 0 24px;font-size:28px;font-weight:700;color:#fff;line-height:1.3;text-align:center;">
+                Welcome, <span style="color:#d4af37;">${displayName}</span>
+              </h1>
 
               <!-- Message -->
-              <tr>
-                <td style="padding-bottom:40px;">
-                  <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#a0a0a0;">
-                    You've taken the first step into something extraordinary. The Gillian Anderson Community is a sanctuary for those who appreciate artistry, advocacy, and authentic connection.
-                  </p>
-                  <p style="margin:0;font-size:15px;line-height:1.7;color:#a0a0a0;">
-                    Confirm your email to unlock your portal and begin your journey.
-                  </p>
-                </td>
-              </tr>
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.8;color:#a0a0a0;">
+                You've taken the first step into something extraordinary. The Gillian Anderson Community is a sanctuary for those who appreciate artistry, advocacy, and authentic connection.
+              </p>
+              <p style="margin:0 0 32px;font-size:15px;line-height:1.8;color:#a0a0a0;">
+                Confirm your email to unlock your portal and begin your journey.
+              </p>
 
-              <!-- CTA Button -->
-              <tr>
-                <td align="center" style="padding-bottom:40px;">
-                  <a href="${confirmUrl}" style="display:inline-block;background:linear-gradient(135deg,#d4af37 0%,#b8860b 100%);color:#050505;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:16px 48px;border-radius:8px;transition:all 0.3s ease;">
-                    Confirm My Email
-                  </a>
-                </td>
-              </tr>
+              <!-- CTA Button — solid fallback for Outlook -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td align="center" style="background:#d4af37;background:linear-gradient(135deg,#d4af37,#b8860b);border-radius:8px;">
+                    <a href="${confirmUrl}" style="display:inline-block;padding:16px 48px;font-size:14px;font-weight:700;color:#050505;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;">
+                      Confirm My Email
+                    </a>
+                  </td>
+                </tr>
+              </table>
 
-              <!-- Expiry Notice -->
-              <tr>
-                <td align="center" style="padding-bottom:32px;">
-                  <p style="margin:0;font-size:12px;color:#666666;">
-                    This link expires in 24 hours. If you didn't create this account, you can safely ignore this email.
-                  </p>
-                </td>
-              </tr>
+              <!-- Expiry notice -->
+              <p style="margin:32px 0 0;font-size:12px;color:#666;text-align:center;">
+                This link expires in 24 hours. If you didn't create this account, you can safely ignore this email.
+              </p>
 
             </td>
           </tr>
 
           <!-- Footer -->
           <tr>
-            <td align="center" style="padding-top:40px;">
-              <p style="margin:0 0 8px;font-size:11px;color:#555555;letter-spacing:1px;text-transform:uppercase;">
-                The Gillian Anderson Community
-              </p>
-              <p style="margin:0;font-size:11px;color:#444444;">
-                A sanctuary for the curious soul
+            <td style="background:#080808;padding:28px 40px;border-radius:0 0 16px 16px;border-top:1px solid #1a1a1a;">
+              <p style="margin:0 0 8px;font-size:10px;color:#444;letter-spacing:1px;text-transform:uppercase;">The Gillian Anderson Community</p>
+              <p style="margin:0;font-size:11px;color:#333;">
+                <a href="${siteUrl}" style="color:#d4a853;text-decoration:none;">Visit Portal</a> &nbsp;&bull;&nbsp;
+                <a href="${siteUrl}/portal?mode=login" style="color:#666;text-decoration:none;">Sign In</a>
               </p>
             </td>
           </tr>

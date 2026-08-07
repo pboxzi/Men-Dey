@@ -96,6 +96,18 @@ export default function JournalSection() {
     }
   }, [location.pathname, JOURNAL_ENTRIES]);
 
+  const setMetaTag = (name: string, content: string) => {
+    const isProperty = name.startsWith('og:');
+    let el = document.querySelector(`meta[${isProperty ? 'property' : 'name'}="${name}"]`) as HTMLMetaElement;
+    if (!el) {
+      el = document.createElement('meta');
+      if (isProperty) el.setAttribute('property', name);
+      else el.setAttribute('name', name);
+      document.head.appendChild(el);
+    }
+    el.setAttribute('content', content);
+  };
+
   // SEO: update document title and meta tags when viewing a post
   useEffect(() => {
     if (selectedEntry) {
@@ -146,18 +158,6 @@ export default function JournalSection() {
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`,
     };
     if (shareUrls[platform]) window.open(shareUrls[platform], '_blank', 'width=600,height=400');
-  };
-
-  const setMetaTag = (name: string, content: string) => {
-    const isProperty = name.startsWith('og:');
-    let el = document.querySelector(`meta[${isProperty ? 'property' : 'name'}="${name}"]`) as HTMLMetaElement;
-    if (!el) {
-      el = document.createElement('meta');
-      if (isProperty) el.setAttribute('property', name);
-      else el.setAttribute('name', name);
-      document.head.appendChild(el);
-    }
-    el.setAttribute('content', content);
   };
 
   const handleClap = (entryId: string) => {

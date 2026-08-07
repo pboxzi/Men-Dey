@@ -50,6 +50,18 @@ export default function EventsSection() {
   const [saving, setSaving] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [ticketRef, setTicketRef] = useState('');
+  const [membership, setMembership] = useState<{ status: string; tier_id?: string } | null>(null);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    supabase.from('membership_applications')
+      .select('status, tier_id')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setMembership(data); });
+  }, [user?.id]);
 
   const events = dbEvents;
   const nextEvent = events[0] || null;
@@ -87,6 +99,10 @@ export default function EventsSection() {
   const startRegistration = (evt: Record<string, unknown>) => {
     if (!user) {
       navigate('/portal?mode=login');
+      return;
+    }
+    if (!membership || membership.status !== 'active') {
+      navigate('/portal');
       return;
     }
     setSelectedEvent(evt);
@@ -504,8 +520,14 @@ export default function EventsSection() {
                         </div>
                       </div>
                       <button onClick={() => startRegistration(evt)}
-                        className="w-full mt-3 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 rounded-lg text-[11px] transition-all uppercase tracking-wider active:scale-[0.98]"
-                      >Register Now</button>
+                        className={`w-full mt-3 font-bold py-2.5 rounded-lg text-[11px] transition-all uppercase tracking-wider active:scale-[0.98] ${
+                          membership?.status === 'active'
+                            ? 'bg-gold-500 hover:bg-gold-400 text-neutral-950'
+                            : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-400 border border-neutral-700'
+                        }`}
+                      >
+                        {membership?.status === 'active' ? 'Register Now' : '🔒 Membership Required'}
+                      </button>
                     </div>
                   </motion.div>
                 ))}

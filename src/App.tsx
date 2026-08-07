@@ -263,7 +263,7 @@ export default function App() {
   };
 
   // Newsletter Subscription submit
-  const handleSubscribeSubmit = (e: React.FormEvent) => {
+  const handleSubscribeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!subscribeEmail) return;
     
@@ -272,6 +272,18 @@ export default function App() {
       setSubscribeError('Please enter a valid email address.');
       return;
     }
+
+    try {
+      const { error } = await supabase.from('newsletter_subscriptions').insert({
+        email: subscribeEmail,
+        is_active: true,
+        source: 'homepage',
+      });
+      if (error && error.code !== '23505') { // 23505 = unique constraint (already subscribed)
+        setSubscribeError('Something went wrong. Please try again.');
+        return;
+      }
+    } catch {}
 
     setSubscribed(true);
     setSubscribeEmail('');

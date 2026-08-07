@@ -136,14 +136,14 @@ export default function AskGillianChat({ userId, showToast }: Props) {
     init();
   }, [userId]);
 
-  // Poll for new messages every 3 seconds
+  // Poll for new messages every 10 seconds
   useEffect(() => {
     if (loading) return;
 
     const interval = setInterval(async () => {
       await fetchStatus();
       await fetchMessages();
-    }, 3000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [loading, fetchMessages]);

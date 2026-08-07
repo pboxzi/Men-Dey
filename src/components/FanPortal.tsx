@@ -1343,6 +1343,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               `}
             >
               <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5 scrollbar-thin">
+                <button
+                  onClick={() => navigate('/')}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-xs transition-all text-left rounded-lg text-neutral-500 hover:text-neutral-200 hover:bg-neutral-900/40 mb-2"
+                >
+                  <Home className="h-4 w-4 shrink-0 text-neutral-600" />
+                  <span>Back to Site</span>
+                </button>
                 <span className="text-[7px] font-mono font-semibold tracking-[0.2em] text-neutral-600 uppercase pl-3 pb-2 block">
                   Navigation
                 </span>

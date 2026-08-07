@@ -720,10 +720,10 @@ export default function App() {
                 {/* Primary Buttons */}
                 <motion.div variants={heroItemVariants} className="flex flex-wrap items-center gap-2 sm:gap-3.5 justify-center lg:justify-start pt-1">
                   <button
-                    onClick={() => navigate('/portal?mode=register')}
+                    onClick={() => user ? navigate('/portal') : navigate('/portal?mode=register')}
                     className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold px-6 py-3 rounded-lg text-xs tracking-widest transition-all hover:shadow-[0_0_20px_rgba(212,163,89,0.3)] active:scale-95 shadow-lg shadow-gold-500/10"
                   >
-                    REGISTER
+                    {user ? 'ENTER YOUR PORTAL' : 'REGISTER'}
                   </button>
                   <button
                     onClick={() => {

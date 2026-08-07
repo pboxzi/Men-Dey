@@ -123,51 +123,127 @@ serve(async (req: Request) => {
   <tr><td align="center">
     <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;width:100%;">
 
+      <!-- Header -->
       <tr><td align="center" style="padding-bottom:40px;">
         <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#d4af37 0%,#b8860b 100%);display:inline-block;line-height:60px;text-align:center;font-size:24px;color:#050505;font-weight:bold;">GA</div>
       </td></tr>
 
+      <!-- Main card -->
       <tr><td style="background-color:#0a0a0a;border:1px solid #1a1a1a;border-radius:16px;padding:48px 40px;">
 
-        <tr><td align="center" style="padding-bottom:32px;">
+        <!-- Title -->
+        <tr><td align="center" style="padding-bottom:24px;">
           <h1 style="margin:0;font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">
             Welcome, <span style="color:#d4af37;">${displayName}</span>
           </h1>
         </td></tr>
 
+        <!-- Subtitle -->
+        <tr><td align="center" style="padding-bottom:32px;">
+          <p style="margin:0;font-size:13px;color:#888;font-style:italic;letter-spacing:0.5px;">
+            "A sanctuary for the curious soul"
+          </p>
+        </td></tr>
+
+        <!-- Divider -->
         <tr><td style="padding-bottom:32px;">
           <div style="height:1px;background:linear-gradient(90deg,transparent,#d4af37,transparent);"></div>
         </td></tr>
 
-        <tr><td style="padding-bottom:40px;">
-          <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#a0a0a0;">
-            Your account has been confirmed and you are now an official member of the Gillian Anderson Community.
+        <!-- Opening -->
+        <tr><td style="padding-bottom:32px;">
+          <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#c0c0c0;">
+            You're in. Your account is confirmed and you now have full access to the Gillian Anderson Community — a curated space built for those who appreciate artistry, advocacy, and authentic connection.
           </p>
-          <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#a0a0a0;">
-            Here is what you can do from your portal:
-          </p>
-          <p style="margin:0 0 8px;font-size:14px;line-height:1.7;color:#a0a0a0;">
-            &bull;&nbsp; Explore experiences and request exclusive encounters
-          </p>
-          <p style="margin:0 0 8px;font-size:14px;line-height:1.7;color:#a0a0a0;">
-            &bull;&nbsp; Join the community and connect with fellow fans
-          </p>
-          <p style="margin:0 0 8px;font-size:14px;line-height:1.7;color:#a0a0a0;">
-            &bull;&nbsp; Track your journey, earn rewards, and unlock badges
-          </p>
-          <p style="margin:0 0 16px;font-size:14px;line-height:1.7;color:#a0a0a0;">
-            &bull;&nbsp; Apply for a membership tier to unlock premium benefits
+          <p style="margin:0;font-size:15px;line-height:1.7;color:#c0c0c0;">
+            Here's what's waiting for you inside:
           </p>
         </td></tr>
 
-        <tr><td align="center" style="padding-bottom:40px;">
+        <!-- Benefits — Experiences -->
+        <tr><td style="padding-bottom:28px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:24px;">
+            <tr><td style="padding:24px;">
+              <p style="margin:0 0 6px;font-size:11px;color:#d4af37;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Exclusive Experiences</p>
+              <p style="margin:0;font-size:14px;line-height:1.6;color:#a0a0a0;">
+                Book private sessions, one-on-one meetings, and special encounters with Gillian. These are limited, personal, and unlike anything available elsewhere. Spots fill fast.
+              </p>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <!-- Benefits — Events -->
+        <tr><td style="padding-bottom:28px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:24px;">
+            <tr><td style="padding:24px;">
+              <p style="margin:0 0 6px;font-size:11px;color:#d4af37;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Members-Only Events</p>
+              <p style="margin:0;font-size:14px;line-height:1.6;color:#a0a0a0;">
+                Join live Q&A sessions, intimate watch parties, and exclusive celebrations. Connect with Gillian and fellow fans in real time — these events are never recorded.
+              </p>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <!-- Benefits — Community -->
+        <tr><td style="padding-bottom:28px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:24px;">
+            <tr><td style="padding:24px;">
+              <p style="margin:0 0 6px;font-size:11px;color:#d4af37;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Community Hub</p>
+              <p style="margin:0;font-size:14px;line-height:1.6;color:#a0a0a0;">
+                Share stories, post photos, and connect with passionate fans from around the world. Your voice matters here — this is your space to belong.
+              </p>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <!-- Benefits — Membership -->
+        <tr><td style="padding-bottom:32px;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#111;border:1px solid #1a1a1a;border-radius:12px;padding:24px;">
+            <tr><td style="padding:24px;">
+              <p style="margin:0 0 6px;font-size:11px;color:#d4af37;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Membership Tiers</p>
+              <p style="margin:0;font-size:14px;line-height:1.6;color:#a0a0a0;">
+                Upgrade to unlock priority booking, early event access, a custom membership card, and direct communication channels. Choose the tier that fits you — each one comes with exclusive perks.
+              </p>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <!-- Divider -->
+        <tr><td style="padding-bottom:32px;">
+          <div style="height:1px;background:linear-gradient(90deg,transparent,#333,transparent);"></div>
+        </td></tr>
+
+        <!-- Quick start -->
+        <tr><td style="padding-bottom:32px;">
+          <p style="margin:0 0 12px;font-size:11px;color:#d4af37;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">Your First Steps</p>
+          <p style="margin:0 0 8px;font-size:13px;color:#888;line-height:1.6;">
+            <span style="color:#fff;font-weight:600;">1.</span>&nbsp; Explore available Experiences and request one that speaks to you
+          </p>
+          <p style="margin:0 0 8px;font-size:13px;color:#888;line-height:1.6;">
+            <span style="color:#fff;font-weight:600;">2.</span>&nbsp; Check upcoming Events and secure your spot before they fill
+          </p>
+          <p style="margin:0 0 8px;font-size:13px;color:#888;line-height:1.6;">
+            <span style="color:#fff;font-weight:600;">3.</span>&nbsp; Upgrade your membership to unlock the full experience
+          </p>
+        </td></tr>
+
+        <!-- CTA -->
+        <tr><td align="center" style="padding-bottom:24px;">
           <a href="${siteUrl}/portal" style="display:inline-block;background:linear-gradient(135deg,#d4af37 0%,#b8860b 100%);color:#050505;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:16px 48px;border-radius:8px;">
             Enter Your Portal
           </a>
         </td></tr>
 
+        <!-- Scarcity note -->
+        <tr><td align="center">
+          <p style="margin:0;font-size:11px;color:#666;line-height:1.5;">
+            Experiences have limited availability. Events fill quickly. The sooner you explore, the more options you'll have.
+          </p>
+        </td></tr>
+
       </td></tr>
 
+      <!-- Footer -->
       <tr><td align="center" style="padding-top:40px;">
         <p style="margin:0 0 8px;font-size:11px;color:#555555;letter-spacing:1px;text-transform:uppercase;">
           The Gillian Anderson Community

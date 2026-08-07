@@ -205,6 +205,42 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     }
   }, [profile, user]);
 
+  // Poll for email confirmation while on "Check your inbox" screen
+  useEffect(() => {
+    if (!showEmailVerification || !authEmail) return;
+
+    const pollForConfirmation = setInterval(async () => {
+      try {
+        // Check if profile exists (means email was confirmed)
+        const { data } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', authEmail)
+          .maybeSingle();
+
+        if (data) {
+          // Profile exists — email confirmed! Check for session
+          clearInterval(pollForConfirmation);
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            // Session active — go to portal
+            setShowEmailVerification(false);
+            navigate('/portal', { replace: true });
+          } else {
+            // No session — switch to login
+            setShowEmailVerification(false);
+            setAuthMode('login');
+            setAuthError('');
+          }
+        }
+      } catch {
+        // Silently continue polling
+      }
+    }, 3000);
+
+    return () => clearInterval(pollForConfirmation);
+  }, [showEmailVerification, authEmail, navigate]);
+
   // Portal State
   const [activeTab, setActiveTab] = useState<'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Ask Gillian' | 'Events' | 'Experiences' | 'Membership' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'>('Dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -1100,9 +1136,20 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     Verify Your Email
                   </h4>
                   <p className="text-xs text-neutral-400 max-w-xs mx-auto leading-relaxed">
-                    We've sent a verification link to <span className="text-gold-500 font-medium">{authEmail}</span>. Please check your inbox (and spam folder) and click the link to activate your account.
+                    We've sent a verification link to <span className="text-gold-500 font-medium">{authEmail}</span>. Please check your inbox (and spam folder) and click the link.
                   </p>
                 </div>
+
+                {/* Live polling indicator */}
+                <div className="flex items-center justify-center gap-2 py-2">
+                  <motion.div
+                    animate={{ scale: [1, 1.3, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="h-2 w-2 rounded-full bg-gold-500"
+                  />
+                  <span className="text-[10px] font-mono text-neutral-500">Watching for confirmation...</span>
+                </div>
+
                 <div className="space-y-3">
                   <button
                     onClick={() => { setShowEmailVerification(false); setAuthMode('login'); }}

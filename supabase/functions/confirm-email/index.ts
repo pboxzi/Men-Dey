@@ -64,14 +64,17 @@ serve(async (req: Request) => {
 
     // Fetch user metadata to get name for profile creation
     const { data: userData } = await supabase.auth.admin.getUserById(tokenData.user_id)
-    const userName = userData?.user?.user_metadata?.name || tokenData.email.split("@")[0]
+    const userName = tokenData.user_name || userData?.user?.user_metadata?.name || tokenData.email.split("@")[0]
 
     // Create profile now that email is confirmed
     const { error: profileError } = await supabase.from("profiles").upsert({
       id: tokenData.user_id,
       name: userName,
       email: tokenData.email,
-      country: "Global",
+      country: tokenData.country || 'Global',
+      city: tokenData.city || '',
+      how_heard_about: tokenData.how_heard_about || '',
+      favorite_thing: tokenData.favorite_thing || '',
       role: "user",
     })
     if (profileError) {

@@ -24,7 +24,7 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
-  signUp: (email: string, password: string, name: string) => Promise<{ error?: string; user?: User }>;
+  signUp: (email: string, password: string, name: string, extra?: { country?: string; city?: string; howHeardAbout?: string; favoriteThing?: string }) => Promise<{ error?: string; user?: User }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error?: string }>;
@@ -89,12 +89,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return {};
   };
 
-  const signUp = async (email: string, password: string, name: string) => {
+  const signUp = async (email: string, password: string, name: string, extra?: { country?: string; city?: string; howHeardAbout?: string; favoriteThing?: string }) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { name },
+        data: { name, country: extra?.country, city: extra?.city, howHeardAbout: extra?.howHeardAbout, favoriteThing: extra?.favoriteThing },
         emailRedirectTo: undefined,
       },
     });
@@ -104,7 +104,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Send confirmation email via Resend (profile created after confirmation)
     try {
       const { data: emailData, error: emailFuncError } = await supabase.functions.invoke('send-confirmation-email', {
-        body: { email, userId: data.user.id, userName: name },
+        body: {
+          email,
+          userId: data.user.id,
+          userName: name,
+          country: extra?.country || 'Global',
+          city: extra?.city || '',
+          howHeardAbout: extra?.howHeardAbout || '',
+          favoriteThing: extra?.favoriteThing || '',
+        },
       });
       if (emailFuncError) {
         logger.warn('Confirmation email function error:', emailFuncError.message, emailData);

@@ -33,11 +33,22 @@ export default function ConfirmEmail() {
         const data = res.data;
         if (data?.success) {
           setStatus('success');
-          setMessage(`Email confirmed for ${data.email}. You can now sign in.`);
-          // Redirect to portal after 3 seconds
-          setTimeout(() => {
-            navigate('/portal?mode=login', { replace: true });
-          }, 3000);
+          setMessage(`Welcome to the community, ${data.email}!`);
+
+          // Try to auto-login: check if there's already a session
+          const { data: { session } } = await supabase.auth.getSession();
+
+          if (session) {
+            // Session exists — go straight to portal
+            setTimeout(() => {
+              navigate('/portal', { replace: true });
+            }, 1500);
+          } else {
+            // No session — go to portal login (profile now exists, they just need to sign in)
+            setTimeout(() => {
+              navigate('/portal?mode=login', { replace: true });
+            }, 1500);
+          }
         } else {
           setStatus('error');
           setMessage(data?.error || 'Confirmation failed.');
@@ -99,11 +110,13 @@ export default function ConfirmEmail() {
         <div className="space-y-2">
           <h1 className="font-serif text-2xl font-bold text-white">
             {status === 'loading' && 'Confirming Your Email...'}
-            {status === 'success' && 'Email Confirmed'}
+            {status === 'success' && 'Welcome In'}
             {status === 'error' && 'Confirmation Failed'}
           </h1>
           <p className="text-sm text-neutral-400 leading-relaxed">
-            {message}
+            {status === 'loading' && 'Verifying your account, please wait...'}
+            {status === 'success' && message}
+            {status === 'error' && message}
           </p>
         </div>
 
@@ -112,10 +125,10 @@ export default function ConfirmEmail() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
-            className="text-xs text-neutral-600"
+            transition={{ delay: 0.5 }}
+            className="text-xs text-neutral-500"
           >
-            Redirecting you to sign in...
+            Taking you to your portal...
           </motion.p>
         )}
 

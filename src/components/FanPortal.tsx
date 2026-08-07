@@ -176,6 +176,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [authPassword, setAuthPassword] = useState('');
   const [authConfirmPassword, setAuthConfirmPassword] = useState('');
   const [authCountry, setAuthCountry] = useState('USA');
+  const [authCity, setAuthCity] = useState('');
+  const [authHowHeard, setAuthHowHeard] = useState('');
+  const [authFavoriteThing, setAuthFavoriteThing] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
@@ -1045,7 +1048,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
           setAuthError('Password must be at least 6 characters.');
           return;
         }
-        const { error, user: newUser } = await signUp(authEmail, authPassword, authName);
+        const { error, user: newUser } = await signUp(authEmail, authPassword, authName, {
+          country: authCountry,
+          city: authCity,
+          howHeardAbout: authHowHeard,
+          favoriteThing: authFavoriteThing,
+        });
         if (error) {
           setAuthError(error);
           return;
@@ -1275,6 +1283,59 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         <option value="Netherlands">Netherlands</option>
                         <option value="Global">Other</option>
                       </select>
+                    </div>
+                  )}
+
+                  {authMode === 'register' && (
+                    <div>
+                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">City / State</label>
+                      <input
+                        type="text"
+                        required
+                        value={authCity}
+                        onChange={(e) => setAuthCity(e.target.value)}
+                        placeholder="e.g. Los Angeles, CA"
+                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
+                      />
+                    </div>
+                  )}
+
+                  {authMode === 'register' && (
+                    <div>
+                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">How did you discover Gillian?</label>
+                      <select
+                        required
+                        value={authHowHeard}
+                        onChange={(e) => setAuthHowHeard(e.target.value)}
+                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-neutral-300 outline-none focus:border-gold-500/50 transition-colors"
+                      >
+                        <option value="">Select one...</option>
+                        <option value="The X-Files">The X-Files</option>
+                        <option value="The Fall">The Fall</option>
+                        <option value="Sex Education">Sex Education</option>
+                        <option value="The Crown">The Crown</option>
+                        <option value="Hannibal">Hannibal</option>
+                        <option value="Viva la Vulva">Viva la Vulva / Activism</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Friend or Family">Friend or Family</option>
+                        <option value="A Press Interview">A Press Interview</option>
+                        <option value="Her Books">Her Books</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {authMode === 'register' && (
+                    <div>
+                      <label className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">What do you love most about Gillian?</label>
+                      <input
+                        type="text"
+                        required
+                        value={authFavoriteThing}
+                        onChange={(e) => setAuthFavoriteThing(e.target.value)}
+                        placeholder="e.g. Her advocacy, her acting range, her humor..."
+                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
+                      />
                     </div>
                   )}
 

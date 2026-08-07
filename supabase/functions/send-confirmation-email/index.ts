@@ -12,7 +12,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { email, userId, userName } = await req.json()
+    const { email, userId, userName, country, city, howHeardAbout, favoriteThing } = await req.json()
 
     if (!email || !userId) {
       return new Response(
@@ -51,6 +51,11 @@ serve(async (req: Request) => {
       email,
       token,
       expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      user_name: userName || '',
+      country: country || 'Global',
+      city: city || '',
+      how_heard_about: howHeardAbout || '',
+      favorite_thing: favoriteThing || '',
     })
 
     if (tokenError) {

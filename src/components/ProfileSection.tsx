@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { User, Upload, Camera, Mail, Phone, MapPin, Globe, Film, BookOpen, Save, Loader2, Crown, CheckCircle2 } from 'lucide-react';
+import { User, Upload, Camera, Mail, Phone, MapPin, Globe, Film, BookOpen, Save, Loader2, Crown, CheckCircle2, Heart, Radio } from 'lucide-react';
 import { useAuth } from '../utils/AuthContext';
 import { supabase } from '../utils/supabase';
 
@@ -177,6 +177,45 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
               <div><span className="text-neutral-500 block text-[9px]">Activated</span><span className="text-white">{membership.activation_date ? new Date(membership.activation_date).toLocaleDateString() : 'N/A'}</span></div>
               <div><span className="text-neutral-500 block text-[9px]">Expires</span><span className="text-white">{membership.expiration_date ? new Date(membership.expiration_date).toLocaleDateString() : 'Never'}</span></div>
             </div>
+          </div>
+        )}
+
+        {/* Registration Details (read-only) */}
+        {(profile?.city || profile?.how_heard_about || profile?.favorite_thing) && (
+          <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-3">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-[9px] font-mono text-neutral-500 uppercase tracking-widest">Registration Details</span>
+              <span className="text-[8px] font-mono text-neutral-600 bg-neutral-900 px-1.5 py-0.5 rounded">Admin only can edit</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {profile?.city && (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="h-3 w-3 text-gold-500" />
+                    <span className="text-[8px] font-mono text-neutral-500 uppercase">City / State</span>
+                  </div>
+                  <p className="text-xs text-white pl-4.5">{profile.city}</p>
+                </div>
+              )}
+              {profile?.how_heard_about && (
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5">
+                    <Radio className="h-3 w-3 text-gold-500" />
+                    <span className="text-[8px] font-mono text-neutral-500 uppercase">Discovered Gillian Via</span>
+                  </div>
+                  <p className="text-xs text-white pl-4.5">{profile.how_heard_about}</p>
+                </div>
+              )}
+            </div>
+            {profile?.favorite_thing && (
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  <Heart className="h-3 w-3 text-gold-500" />
+                  <span className="text-[8px] font-mono text-neutral-500 uppercase">What You Love About Gillian</span>
+                </div>
+                <p className="text-xs text-white leading-relaxed pl-4.5">{profile.favorite_thing}</p>
+              </div>
+            )}
           </div>
         )}
 

@@ -8,6 +8,9 @@ export interface Profile {
   name: string;
   email: string;
   country: string;
+  city: string;
+  how_heard_about: string;
+  favorite_thing: string;
   avatar_text: string;
   avatar_url: string;
   bio: string;

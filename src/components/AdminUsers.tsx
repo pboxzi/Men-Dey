@@ -16,6 +16,9 @@ interface Profile {
   name: string;
   email: string;
   country: string;
+  city: string;
+  how_heard_about: string;
+  favorite_thing: string;
   avatar_text: string;
   role: string;
   created_at: string;
@@ -318,7 +321,9 @@ export default function AdminUsers({ showToast }: Props) {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs">
                   <MapPin className="h-3.5 w-3.5 text-neutral-500" />
-                  <span className="text-neutral-400">{selectedUser.country || 'Not specified'}</span>
+                  <span className="text-neutral-400">
+                    {selectedUser.city ? `${selectedUser.city}, ` : ''}{selectedUser.country || 'Not specified'}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 text-xs">
                   <Calendar className="h-3.5 w-3.5 text-neutral-500" />
@@ -329,6 +334,25 @@ export default function AdminUsers({ showToast }: Props) {
                   <span className="text-neutral-400 font-mono text-[10px]">{selectedUser.id.slice(0, 8)}...</span>
                 </div>
               </div>
+
+              {/* Registration Details */}
+              {(selectedUser.how_heard_about || selectedUser.favorite_thing) && (
+                <div className="space-y-2 pb-4 border-b border-neutral-900">
+                  <h4 className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">About This Member</h4>
+                  {selectedUser.how_heard_about && (
+                    <div className="rounded-lg bg-neutral-900/50 p-3 space-y-1">
+                      <p className="text-[8px] font-mono text-neutral-500 uppercase">Discovered Gillian Via</p>
+                      <p className="text-xs text-white">{selectedUser.how_heard_about}</p>
+                    </div>
+                  )}
+                  {selectedUser.favorite_thing && (
+                    <div className="rounded-lg bg-neutral-900/50 p-3 space-y-1">
+                      <p className="text-[8px] font-mono text-neutral-500 uppercase">What They Love About Gillian</p>
+                      <p className="text-xs text-white leading-relaxed">{selectedUser.favorite_thing}</p>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Stats */}
               <div className="space-y-2 pb-4 border-b border-neutral-900">

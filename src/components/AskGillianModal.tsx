@@ -8,6 +8,7 @@ import Modal from './Modal';
 import { Send, User, MessageCircle, HelpCircle, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useGlobalState } from '../utils/StateContext';
+import { logger } from '../utils/logger';
 
 interface AskGillianModalProps {
   isOpen: boolean;
@@ -70,7 +71,7 @@ export default function AskGillianModal({ isOpen, onClose }: AskGillianModalProp
 
       setMessages((prev) => [...prev, gillianMessage]);
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
         sender: 'gillian',

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
 import { createNotification } from '../utils/notifications';
+import { logger } from '../utils/logger';
 import {
   Users, Search, Loader2, Crown, Shield, Mail, MapPin, Calendar,
   ChevronRight, X, Award, Star, MessageCircle, TrendingUp, Ban, CheckCircle, Trash2
@@ -84,7 +85,7 @@ export default function AdminUsers({ showToast }: Props) {
         journeyLogs: journeyCount ?? 0,
       });
     } catch (e) {
-      console.error('Failed to fetch user stats:', e);
+      logger.error('Failed to fetch user stats:', e);
     }
     setStatsLoading(false);
   };

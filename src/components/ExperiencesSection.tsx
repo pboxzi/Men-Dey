@@ -10,6 +10,7 @@ import {
   ChevronRight, Heart, Palette, Compass, BookOpen, Camera, Ticket,
   Search, Globe, SlidersHorizontal, Eye, Shield, Clock, Zap,
 } from 'lucide-react';
+import { logger } from '../utils/logger';
 
 const CATEGORIES = [
   'ALL', 'Meet & Greet', 'Creative', 'Philanthropy', 'Adventure', 'Literary', 'Behind-the-Scenes',
@@ -53,7 +54,7 @@ export default function ExperiencesSection() {
         const expRes = await supabase.from('experiences').select('*').order('sort_order').order('title');
         if (!expRes.error && expRes.data) setExperiences(expRes.data || []);
       } catch (err) {
-        console.error('Failed to load experiences:', err);
+        logger.error('Failed to load experiences:', err);
       } finally {
         setLoading(false);
       }

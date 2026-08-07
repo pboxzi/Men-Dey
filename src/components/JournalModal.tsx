@@ -6,6 +6,7 @@
 import React from 'react';
 import Modal from './Modal';
 import { Calendar, Clock, BookOpen } from 'lucide-react';
+import DOMPurify from 'dompurify';
 import { JournalEntry } from '../types';
 
 interface JournalModalProps {
@@ -56,7 +57,7 @@ export default function JournalModal({ isOpen, onClose, entry }: JournalModalPro
         {/* Article Body */}
         <div
           className="text-sm text-neutral-300 leading-relaxed space-y-4 [&_p]:leading-relaxed [&_p]:mb-4 [&_blockquote]:border-l-2 [&_blockquote]:border-gold-500 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_blockquote]:font-serif [&_blockquote]:text-base [&_blockquote]:text-gold-200 [&_blockquote]:bg-gold-500/5 [&_blockquote]:rounded [&_blockquote]:my-6"
-          dangerouslySetInnerHTML={{ __html: entry.content }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(entry.content) }}
         />
 
         {/* Footer */}

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
 import { notifyExperienceStatus } from '../utils/notifications';
-import { Experience, ExperienceBooking, TimelineEntry } from '../types';
+import { logger } from '../utils/logger';
+import { Experience, ExperienceBooking, TimelineEntry, ExperienceFormData } from '../types';
 import {
   Search, Plus, Edit3, Trash2, Copy, Eye, ArrowUp, ArrowDown,
   Check, X, Star, MapPin, Users, Clock,
@@ -27,7 +28,7 @@ const CATEGORY_META: Record<string, { color: string; icon: string }> = {
   'Behind-the-Scenes': { color: 'bg-rose-500/10 text-rose-400 border-rose-500/20', icon: 'Camera' },
 };
 
-const DEFAULT_FORM: Record<string, any> = {
+const DEFAULT_FORM: ExperienceFormData = {
   title: '', category: 'Meet & Greet', tier: 'Scully', duration: '',
   location: '', price: '', spots: 10, spotsTaken: 0, description: '',
   short_description: '', full_description: '', image: '',
@@ -91,27 +92,27 @@ function CatalogueTab({ showToast }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterPublished, setFilterPublished] = useState<'all' | 'published' | 'unpublished' | 'archived'>('all');
   const [editing, setEditing] = useState<Experience | null>(null);
-  const [form, setForm] = useState<Record<string, any>>({ ...DEFAULT_FORM });
+  const [form, setForm] = useState<ExperienceFormData>({ ...DEFAULT_FORM });
   const [saving, setSaving] = useState(false);
   const [previewId, setPreviewId] = useState<string | null>(null);
 
-  const mapExpFromDb = (e: any): Experience => {
-    let extras: any = {};
-    try { if (e.details && e.details.length > 0) extras = JSON.parse(e.details[0]); } catch {}
+  const mapExpFromDb = (e: Record<string, unknown>): Experience => {
+    let extras: Record<string, unknown> = {};
+    try { if (e.details && (e.details as string[]).length > 0) extras = JSON.parse((e.details as string[])[0]); } catch {}
     return {
-      id: e.id, title: e.title, category: e.category || 'Meet & Greet', tier: e.tier || 'Gold',
-      duration: e.duration, location: e.location, price: e.price || 'Complimentary',
-      spots: e.spots || 10, spotsTaken: e.spots_taken || 0, description: e.description,
-      short_description: extras.short_description || e.description?.substring(0, 120) || '',
-      full_description: extras.full_description || e.description || '',
-      details: e.details || [], image: e.image || '',
-      gallery_images: extras.gallery_images || e.image || '',
-      is_virtual: extras.is_virtual === true || e.capacity?.toLowerCase() === 'virtual',
-      max_guests: extras.max_guests || e.spots || 10, availability: extras.availability || 'Available',
-      booking_requirements: extras.booking_requirements || e.intensity || '',
+      id: e.id as string, title: e.title as string, category: (e.category as string) || 'Meet & Greet', tier: (e.tier as string) || 'Gold',
+      duration: e.duration as string, location: e.location as string, price: (e.price as string) || 'Complimentary',
+      spots: (e.spots as number) || 10, spotsTaken: (e.spots_taken as number) || 0, description: e.description as string,
+      short_description: (extras.short_description as string) || ((e.description as string)?.substring(0, 120)) || '',
+      full_description: (extras.full_description as string) || (e.description as string) || '',
+      details: (e.details as string[]) || [], image: (e.image as string) || '',
+      gallery_images: (extras.gallery_images as string) || (e.image as string) || '',
+      is_virtual: extras.is_virtual === true || (e.capacity as string)?.toLowerCase() === 'virtual',
+      max_guests: (extras.max_guests as number) || (e.spots as number) || 10, availability: (extras.availability as string) || 'Available',
+      booking_requirements: (extras.booking_requirements as string) || (e.intensity as string) || '',
       featured: extras.featured === true || e.popular === true, published: extras.published !== false,
-      archived: extras.archived === true, popular: e.popular || false,
-      sort_order: e.sort_order || 0, capacity: e.capacity || '', intensity: e.intensity || '',
+      archived: extras.archived === true, popular: (e.popular as boolean) || false,
+      sort_order: (e.sort_order as number) || 0, capacity: (e.capacity as string) || '', intensity: (e.intensity as string) || '',
     };
   };
 
@@ -120,7 +121,7 @@ function CatalogueTab({ showToast }: Props) {
       const { data, error } = await supabase.from('experiences').select('*').order('sort_order').order('title');
       if (!error) setExperiences((data || []).map(mapExpFromDb));
     } catch (err) {
-      console.error('Failed to load experiences:', err);
+      logger.error('Failed to load experiences:', err);
     } finally {
       setLoading(false);
     }
@@ -154,7 +155,7 @@ function CatalogueTab({ showToast }: Props) {
     try {
       const f = form;
       if (editing) {
-        const updates: any = {};
+        const updates: Record<string, unknown> = {};
         if (f.title !== undefined) updates.title = f.title;
         if (f.category !== undefined) updates.category = f.category;
         if (f.tier !== undefined) updates.tier = f.tier;
@@ -172,7 +173,7 @@ function CatalogueTab({ showToast }: Props) {
         if (f.details !== undefined) updates.details = f.details;
         if (f.published !== undefined || f.archived !== undefined) {
           const { data: current } = await supabase.from('experiences').select('details').eq('id', editing.id).single();
-          let details: any = {};
+          let details: Record<string, unknown> = {};
           try { if (current?.details?.length > 0) details = JSON.parse(current.details[0]); } catch {}
           if (f.published !== undefined) details.published = f.published;
           if (f.archived !== undefined) details.archived = f.archived;
@@ -208,8 +209,8 @@ function CatalogueTab({ showToast }: Props) {
       }
       setEditing(null); setForm({ ...DEFAULT_FORM });
       loadExperiences();
-    } catch (err: any) {
-      showToast(err.message || 'Failed to save', 'error');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Failed to save', 'error');
     } finally {
       setSaving(false);
     }
@@ -219,7 +220,7 @@ function CatalogueTab({ showToast }: Props) {
     if (!confirm(`Archive "${exp.title}"? Historical bookings preserved.`)) return;
     try {
       const { data: current } = await supabase.from('experiences').select('details').eq('id', exp.id).single();
-      let details: any = {};
+      let details: Record<string, unknown> = {};
       try { if (current?.details?.length > 0) details = JSON.parse(current.details[0]); } catch {}
       details.archived = true;
       const { error } = await supabase.from('experiences').update({
@@ -228,8 +229,8 @@ function CatalogueTab({ showToast }: Props) {
       if (error) throw new Error(error.message);
       showToast('Experience archived.', 'info');
       loadExperiences();
-    } catch (err: any) {
-      showToast(err.message, 'error');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Failed to archive', 'error');
     }
   };
 
@@ -248,15 +249,15 @@ function CatalogueTab({ showToast }: Props) {
       if (error) throw new Error(error.message);
       showToast('Experience duplicated!', 'success');
       loadExperiences();
-    } catch (err: any) {
-      showToast(err.message, 'error');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Failed to duplicate', 'error');
     }
   };
 
   const togglePublished = async (exp: Experience) => {
     try {
       const { data: current } = await supabase.from('experiences').select('details').eq('id', exp.id).single();
-      let details: any = {};
+      let details: Record<string, unknown> = {};
       try { if (current?.details?.length > 0) details = JSON.parse(current.details[0]); } catch {}
       details.published = !exp.published;
       const { error } = await supabase.from('experiences').update({
@@ -265,8 +266,8 @@ function CatalogueTab({ showToast }: Props) {
       if (error) throw new Error(error.message);
       showToast(exp.published ? 'Unpublished.' : 'Published!', 'success');
       loadExperiences();
-    } catch (err: any) {
-      showToast(err.message, 'error');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Failed to toggle publish', 'error');
     }
   };
 
@@ -317,7 +318,7 @@ function CatalogueTab({ showToast }: Props) {
           max_guests: exp.spots || 10,
           availability: exp.spots - exp.spots_taken > 0 ? 'Available' : 'Fully Booked',
           booking_requirements: exp.intensity || '',
-          featured: (exp as any).featured || false,
+          featured: exp.featured || false,
           published: true, archived: false,
         })];
         const { error } = await supabase.from('experiences').upsert(
@@ -328,8 +329,8 @@ function CatalogueTab({ showToast }: Props) {
       }
       showToast(`Seeded ${count} experiences!`, 'success');
       loadExperiences();
-    } catch (err: any) {
-      showToast(err.message, 'error');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Failed to seed', 'error');
     }
   };
 
@@ -387,7 +388,7 @@ function CatalogueTab({ showToast }: Props) {
           <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search experiences..." className="w-full bg-neutral-950 border border-neutral-900 rounded-lg pl-9 pr-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
         </div>
-        <select value={filterPublished} onChange={e => setFilterPublished(e.target.value as any)}
+        <select value={filterPublished} onChange={e => setFilterPublished(e.target.value as 'all' | 'published' | 'unpublished' | 'archived')}
           className="bg-neutral-950 border border-neutral-900 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40">
           <option value="all">All</option>
           <option value="published">Published</option>
@@ -578,7 +579,7 @@ function BookingsTab({ showToast }: Props) {
   const [selectedBooking, setSelectedBooking] = useState<ExperienceBooking | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [experiences, setExperiences] = useState<Record<string, any>>({});
+  const [experiences, setExperiences] = useState<Record<string, Experience>>({});
 
   const [editStatus, setEditStatus] = useState('');
   const [editDate, setEditDate] = useState('');
@@ -594,7 +595,7 @@ function BookingsTab({ showToast }: Props) {
 
   useEffect(() => { loadBookings(); loadExperiences(); }, []);
 
-  const mapBooking = (r: any): ExperienceBooking => ({
+  const mapBooking = (r: Record<string, unknown>): ExperienceBooking => ({
     id: r.id, experienceId: r.experience_id || '', experienceTitle: r.experience_title || '',
     bookingReference: r.booking_reference || r.id, fullName: r.full_name || '',
     email: r.email || '', phone: r.phone || '', country: r.country || '',
@@ -614,7 +615,7 @@ function BookingsTab({ showToast }: Props) {
       const { data, error } = await supabase.from('experience_requests').select('*').order('created_at', { ascending: false });
       if (!error) setBookings((data || []).map(mapBooking));
     } catch (err) {
-      console.error('Failed to load bookings:', err);
+      logger.error('Failed to load bookings:', err);
     } finally {
       setLoading(false);
     }
@@ -624,8 +625,8 @@ function BookingsTab({ showToast }: Props) {
     try {
       const { data, error } = await supabase.from('experiences').select('*');
       if (!error) {
-        const map: Record<string, any> = {};
-        (data || []).forEach((e: any) => { map[e.id] = e; });
+        const map: Record<string, Experience> = {};
+        (data || []).forEach((e: Record<string, unknown>) => { map[e.id as string] = e as unknown as Experience; });
         setExperiences(map);
       }
     } catch {}
@@ -661,7 +662,7 @@ function BookingsTab({ showToast }: Props) {
   const handleUpdate = async () => {
     setSaving(true);
     try {
-      const updates: any = { updated_at: new Date().toISOString() };
+      const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if (editStatus) updates.status = editStatus;
       if (editDate !== undefined) updates.confirmed_date = editDate;
       if (editTime !== undefined) updates.confirmed_time = editTime;
@@ -673,7 +674,7 @@ function BookingsTab({ showToast }: Props) {
       if (editCancelReason !== undefined) updates.cancelled_reason = editCancelReason;
       if (editLocation !== undefined) updates.confirmed_location = editLocation;
 
-      const timelineEvents: any[] = [];
+      const timelineEvents: { event: string; status: string; note: string }[] = [];
       if (editStatus !== selectedBooking!.status) {
         timelineEvents.push({ event: `Status changed to ${editStatus}`, status: editStatus, note: `Administrator updated status from ${selectedBooking!.status} to ${editStatus}.` });
       }
@@ -682,7 +683,7 @@ function BookingsTab({ showToast }: Props) {
       }
       if (timelineEvents.length > 0) {
         const { data: current } = await supabase.from('experience_requests').select('timeline').eq('id', selectedBooking!.id).single();
-        let existingTimeline: any[] = [];
+        let existingTimeline: TimelineEntry[] = [];
         try {
           const raw = current?.timeline;
           if (raw) {
@@ -715,7 +716,7 @@ function BookingsTab({ showToast }: Props) {
         }
       }
     } catch (err) {
-      console.error('Booking update failed:', err);
+      logger.error('Booking update failed:', err);
       showToast(`Failed to update booking: ${(err as Error)?.message || 'Unknown error'}`, 'error');
     } finally {
       setSaving(false);

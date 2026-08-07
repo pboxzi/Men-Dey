@@ -62,6 +62,8 @@ import AdminUsers from './AdminUsers';
 import AdminSettings from './AdminSettings';
 import AdminMessages from './AdminMessages';
 import { notifyAnnouncement, broadcastNotification } from '../utils/notifications';
+import { logger } from '../utils/logger';
+import type { AdminNotification, ExperienceBooking, AdminEvent, ActivityFeedItem } from '../types';
 
 interface AdminPortalProps {
   onBackToHome: () => void;
@@ -97,65 +99,12 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   const { user, profile, loading: authLoading, signOut } = useAuth();
   const isAdmin = profile?.role === 'admin';
 
-  // Admin auth gate
-  if (!authLoading && (!user || !isAdmin)) {
-    return (
-      <div className="min-h-screen bg-[#070709] text-neutral-200 flex items-center justify-center p-4">
-        <div className="max-w-md w-full text-center space-y-6">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 border border-red-500/20">
-            <Shield className="h-8 w-8 text-red-400" />
-          </div>
-          <div className="space-y-2">
-            <h2 className="font-serif text-xl font-bold text-white tracking-wider">Access Restricted</h2>
-            <p className="text-sm text-neutral-400 leading-relaxed">
-              This area is for administrators only. Please sign in with an admin account to access the management portal.
-            </p>
-          </div>
-          <div className="flex gap-3 justify-center">
-            <button
-              onClick={onBackToHome}
-              className="px-5 py-2.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white text-xs font-mono tracking-wider transition-colors"
-            >
-              ← Back to Home
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-[#070709] text-neutral-200 flex items-center justify-center">
-        <div className="text-center space-y-6 animate-pulse">
-          <div className="mx-auto w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-            <Shield className="h-7 w-7 text-red-400" />
-          </div>
-          <div className="space-y-2">
-            <h1 className="font-serif text-xl font-bold text-white tracking-widest">WELCOME, ADMIN</h1>
-            <p className="text-xs font-mono text-neutral-500 tracking-wider">Preparing your command center...</p>
-          </div>
-          <div className="w-48 h-1 mx-auto bg-neutral-900 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-red-500 to-amber-500 rounded-full" style={{ animation: 'shimmer 1.5s ease-in-out infinite', width: '60%' }} />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // Sidebar Tabs
   const [activeTab, setActiveTab] = useState<string>('Dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Toast notifications state
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
-
-  const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => {
-      setToast(null);
-    }, 4000);
-  };
 
   // Search input
   const [showNotifications, setShowNotifications] = useState(false);
@@ -180,21 +129,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
   // Notifications State (fetched from DB)
   const [notificationCount, setNotificationCount] = useState(0);
-  const [notifications, setNotifications] = useState<any[]>([]);
-
-  const fetchNotifications = async () => {
-    if (!user?.id) return;
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(50);
-    if (!error && data) {
-      setNotifications(data);
-      setNotificationCount(data.filter((n: any) => !n.is_read).length);
-    }
-  };
+  const [notifications, setNotifications] = useState<AdminNotification[]>([]);
 
   useEffect(() => {
     void fetchNotifications();
@@ -202,7 +137,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     return () => clearInterval(interval);
   }, [user?.id]);
 
-  // Request state
   const {
     requests: backendRequests,
     proposalChats: backendProposalChats,
@@ -213,20 +147,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
   const [requests, setRequests] = useState<RequestDetail[]>([]);
 
-  useEffect(() => {
-    if (backendRequests) {
-      setRequests(backendRequests);
-    }
-  }, [backendRequests]);
-
   // Shared Proposal Chats state
   const [proposalChats, setProposalChats] = useState<{ [proposalId: string]: { id: string; sender: 'management' | 'user' | 'system'; text: string; timestamp: string }[] }>({});
-
-  useEffect(() => {
-    if (backendProposalChats) {
-      setProposalChats(backendProposalChats);
-    }
-  }, [backendProposalChats]);
 
   // Live clock tick
   useEffect(() => {
@@ -282,13 +204,131 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     }
   }, [requests, selectedRequest]);
 
-
   // Platform Activity (daily aggregates)
   const [activityData, setActivityData] = useState<{
       today: { bookings: number; orders: number; members: number };
       week: { bookings: number; orders: number; members: number };
       dailyBars: { label: string; bookings: number; orders: number; members: number }[];
   }>({ today: { bookings: 0, orders: 0, members: 0 }, week: { bookings: 0, orders: 0, members: 0 }, dailyBars: [] });
+
+  // Recent Experience Bookings (for dashboard panel)
+  const [recentBookings, setRecentBookings] = useState<ExperienceBooking[]>([]);
+
+  // Dashboard live stats (fetched independently)
+  const [dashboardStats, setDashboardStats] = useState({
+    totalMembers: 0,
+    totalExperiences: 0,
+    experienceBookings: 0,
+    pendingBookings: 0,
+    subscriberCount: 0,
+    eventRegistrations: 0,
+    pendingMemberships: 0,
+    activeConversations: 0,
+    notificationsSent: 0,
+    totalRewardsRedeemed: 0,
+  });
+  const [dashboardEvents, setDashboardEvents] = useState<AdminEvent[]>([]);
+
+  const [bookingStatusCounts, setBookingStatusCounts] = useState({ confirmed: 0, pending: 0, cancelled: 0 });
+
+  // Recent activity feed
+  const [recentActivity, setRecentActivity] = useState<ActivityFeedItem[]>([]);
+
+  // Modal forms
+  const [showAnnounceModal, setShowAnnounceModal] = useState(false);
+  const [announceTitle, setAnnounceTitle] = useState('');
+  const [announceText, setAnnounceText] = useState('');
+  const [announceScope, setAnnounceScope] = useState('All Members');
+
+  const [showJournalModal, setShowJournalModal] = useState(false);
+  const [journalTitle, setJournalTitle] = useState('');
+  const [journalCategory, setJournalCategory] = useState('Philanthropy');
+  const [journalExcerpt, setJournalExcerpt] = useState('');
+  const [journalContent, setJournalContent] = useState('');
+
+  // Add communication log manually
+  const [manualLogNote, setManualLogNote] = useState('');
+  const [manualLogMethod, setManualLogMethod] = useState<'WhatsApp' | 'Email' | 'Telegram'>('WhatsApp');
+  const [manualLogAction, setManualLogAction] = useState('');
+
+  useEffect(() => {
+    fetchDashboardStats();
+    fetchActivityData();
+    fetchRecentBookings();
+    const interval = setInterval(() => {
+      fetchDashboardStats();
+      fetchActivityData();
+      fetchRecentBookings();
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Admin auth gate
+  if (!authLoading && (!user || !isAdmin)) {
+    return (
+      <div className="min-h-screen bg-[#070709] text-neutral-200 flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center space-y-6">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 border border-red-500/20">
+            <Shield className="h-8 w-8 text-red-400" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="font-serif text-xl font-bold text-white tracking-wider">Access Restricted</h2>
+            <p className="text-sm text-neutral-400 leading-relaxed">
+              This area is for administrators only. Please sign in with an admin account to access the management portal.
+            </p>
+          </div>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={onBackToHome}
+              className="px-5 py-2.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white text-xs font-mono tracking-wider transition-colors"
+            >
+              ← Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#070709] text-neutral-200 flex items-center justify-center">
+        <div className="text-center space-y-6 animate-pulse">
+          <div className="mx-auto w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+            <Shield className="h-7 w-7 text-red-400" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="font-serif text-xl font-bold text-white tracking-widest">WELCOME, ADMIN</h1>
+            <p className="text-xs font-mono text-neutral-500 tracking-wider">Preparing your command center...</p>
+          </div>
+          <div className="w-48 h-1 mx-auto bg-neutral-900 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-red-500 to-amber-500 rounded-full" style={{ animation: 'shimmer 1.5s ease-in-out infinite', width: '60%' }} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const showToast = (message: string, type: 'success' | 'info' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(null);
+    }, 4000);
+  };
+
+  const fetchNotifications = async () => {
+    if (!user?.id) return;
+    const { data, error } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (!error && data) {
+      setNotifications(data);
+      setNotificationCount(data.filter((n: AdminNotification) => !n.is_read).length);
+    }
+  };
 
   const fetchActivityData = async () => {
     const now = new Date();
@@ -308,16 +348,16 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       const dayEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1).toISOString();
       return {
         label: day.toLocaleDateString('en-US', { weekday: 'short' }),
-        bookings: (allBookings || []).filter((b: any) => b.created_at && new Date(b.created_at) >= new Date(dayStart) && new Date(b.created_at) < new Date(dayEnd)).length,
+        bookings: (allBookings || []).filter((b: Record<string, unknown>) => b.created_at && new Date(b.created_at as string) >= new Date(dayStart) && new Date(b.created_at as string) < new Date(dayEnd)).length,
         orders: 0,
-        members: (allProfiles || []).filter((p: any) => p.created_at && new Date(p.created_at) >= new Date(dayStart) && new Date(p.created_at) < new Date(dayEnd)).length,
+        members: (allProfiles || []).filter((p: Record<string, unknown>) => p.created_at && new Date(p.created_at as string) >= new Date(dayStart) && new Date(p.created_at as string) < new Date(dayEnd)).length,
       };
     });
 
-    const todayBookings = (allBookings || []).filter((b: any) => b.created_at && new Date(b.created_at) >= new Date(todayStart)).length;
-    const todayMembers = (allProfiles || []).filter((p: any) => p.created_at && new Date(p.created_at) >= new Date(todayStart)).length;
-    const weekBookings = (allBookings || []).filter((b: any) => b.created_at && new Date(b.created_at) >= new Date(weekAgo)).length;
-    const weekMembers = (allProfiles || []).filter((p: any) => p.created_at && new Date(p.created_at) >= new Date(weekAgo)).length;
+    const todayBookings = (allBookings || []).filter((b: Record<string, unknown>) => b.created_at && new Date(b.created_at as string) >= new Date(todayStart)).length;
+    const todayMembers = (allProfiles || []).filter((p: Record<string, unknown>) => p.created_at && new Date(p.created_at as string) >= new Date(todayStart)).length;
+    const weekBookings = (allBookings || []).filter((b: Record<string, unknown>) => b.created_at && new Date(b.created_at as string) >= new Date(weekAgo)).length;
+    const weekMembers = (allProfiles || []).filter((p: Record<string, unknown>) => p.created_at && new Date(p.created_at as string) >= new Date(weekAgo)).length;
 
     setActivityData({
       today: { bookings: todayBookings, orders: 0, members: todayMembers },
@@ -325,9 +365,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       dailyBars,
     });
   };
-
-  // Recent Experience Bookings (for dashboard panel)
-  const [recentBookings, setRecentBookings] = useState<any[]>([]);
 
   const fetchRecentBookings = async () => {
     const { data } = await supabase
@@ -337,26 +374,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       .limit(5);
     if (data) setRecentBookings(data);
   };
-
-  // Dashboard live stats (fetched independently)
-  const [dashboardStats, setDashboardStats] = useState({
-    totalMembers: 0,
-    totalExperiences: 0,
-    experienceBookings: 0,
-    pendingBookings: 0,
-    subscriberCount: 0,
-    eventRegistrations: 0,
-    pendingMemberships: 0,
-    activeConversations: 0,
-    notificationsSent: 0,
-    totalRewardsRedeemed: 0,
-  });
-  const [dashboardEvents, setDashboardEvents] = useState<any[]>([]);
-
-  const [bookingStatusCounts, setBookingStatusCounts] = useState({ confirmed: 0, pending: 0, cancelled: 0 });
-
-  // Recent activity feed
-  const [recentActivity, setRecentActivity] = useState<any[]>([]);
 
   const fetchDashboardStats = async () => {
     const [
@@ -411,30 +428,6 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
     if (activityData) setRecentActivity(activityData);
   };
 
-  useEffect(() => {
-    fetchDashboardStats();
-    fetchActivityData();
-    fetchRecentBookings();
-    const interval = setInterval(() => {
-      fetchDashboardStats();
-      fetchActivityData();
-      fetchRecentBookings();
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Modal forms
-  const [showAnnounceModal, setShowAnnounceModal] = useState(false);
-  const [announceTitle, setAnnounceTitle] = useState('');
-  const [announceText, setAnnounceText] = useState('');
-  const [announceScope, setAnnounceScope] = useState('All Members');
-
-  const [showJournalModal, setShowJournalModal] = useState(false);
-  const [journalTitle, setJournalTitle] = useState('');
-  const [journalCategory, setJournalCategory] = useState('Philanthropy');
-  const [journalExcerpt, setJournalExcerpt] = useState('');
-  const [journalContent, setJournalContent] = useState('');
-
   // Settings State
 
 
@@ -465,7 +458,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       }
       showToast(`Status updated successfully to ${newStatus}`, 'success');
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       showToast('Failed to update status on server.', 'error');
     }
   };
@@ -478,15 +471,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       setAdminTimelineMsg('');
       showToast('Your response has been sent to the member timeline!', 'success');
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       showToast('Failed to send message to member timeline.', 'error');
     }
   };
-
-  // Add communication log manually
-  const [manualLogNote, setManualLogNote] = useState('');
-  const [manualLogMethod, setManualLogMethod] = useState<'WhatsApp' | 'Email' | 'Telegram'>('WhatsApp');
-  const [manualLogAction, setManualLogAction] = useState('');
 
   const handleAddManualLog = async (requestId: string) => {
     const reqObj = requests.find(r => r.id === requestId);
@@ -648,7 +636,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       No notifications yet
                     </div>
                   ) : (
-                    notifications.slice(0, 10).map((n: any) => (
+                    notifications.slice(0, 10).map((n: AdminNotification) => (
                       <button
                         key={n.id}
                         onClick={() => {
@@ -1114,7 +1102,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <p className="text-xs text-neutral-500 font-mono">No events scheduled yet.</p>
                           </div>
                         ) : (
-                          dashboardEvents.slice(0, 5).map((ev: any) => (
+                          dashboardEvents.slice(0, 5).map((ev: AdminEvent) => (
                             <div key={ev.id} className="flex items-start gap-3 p-3 rounded-lg border border-neutral-900/60 bg-neutral-950/20 hover:border-neutral-800 transition-colors group">
                               <div className="h-9 w-9 rounded-lg bg-neutral-950 border border-neutral-900 flex flex-col items-center justify-center shrink-0">
                                 <span className="text-xs font-bold text-white leading-none">{ev.day || '--'}</span>
@@ -1154,7 +1142,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <p className="text-xs text-neutral-500 font-mono">No activity yet.</p>
                           </div>
                         ) : (
-                          recentActivity.map((act: any) => {
+                          recentActivity.map((act: ActivityFeedItem) => {
                             const typeIcon: Record<string, string> = {
                               membership: '👤', experience: '⭐', event: '📅',
                               message: '💬', reward: '🏆', announcement: '📢', system: '⚙️',
@@ -1410,7 +1398,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     No notifications yet.
                   </div>
                 ) : (
-                  notifications.map((n: any) => (
+                  notifications.map((n: AdminNotification) => (
                     <div key={n.id} className={`p-4 rounded-xl border text-xs text-left flex justify-between items-start gap-4 transition-all ${
                       !n.is_read ? 'border-gold-500/30 bg-gold-500/[0.02]' : 'border-neutral-900 bg-neutral-950/40'
                     }`}>
@@ -1429,7 +1417,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                         <button
                           onClick={async () => {
                             await supabase.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', n.id);
-                            setNotifications(prev => prev.map((x: any) => x.id === n.id ? { ...x, is_read: true } : x));
+                            setNotifications(prev => prev.map((x: AdminNotification) => x.id === n.id ? { ...x, is_read: true } : x));
                             setNotificationCount(prev => Math.max(0, prev - 1));
                           }}
                           className="text-[9px] font-mono text-gold-500/70 hover:text-gold-500 cursor-pointer"

@@ -278,16 +278,16 @@ function RegistrationsTab({ showToast }: Props) {
   const openDetail = (r: EventReg) => {
     setSelectedReg(r);
     setEditStatus(r.status);
-    setEditDate((r as any).confirmed_date || '');
-    setEditTime((r as any).confirmed_time || '');
-    setEditLocation((r as any).confirmed_location || '');
-    setEditNotes((r as any).admin_notes || '');
+    setEditDate((r as Record<string, unknown>).confirmed_date as string || '');
+    setEditTime((r as Record<string, unknown>).confirmed_time as string || '');
+    setEditLocation((r as Record<string, unknown>).confirmed_location as string || '');
+    setEditNotes((r as Record<string, unknown>).admin_notes as string || '');
   };
 
   const handleUpdate = async () => {
     if (!selectedReg) return;
     setSaving(true);
-    const updates: any = { status: editStatus };
+    const updates: Record<string, unknown> = { status: editStatus };
     if (editDate !== undefined) updates.confirmed_date = editDate;
     if (editTime !== undefined) updates.confirmed_time = editTime;
     if (editLocation !== undefined) updates.confirmed_location = editLocation;

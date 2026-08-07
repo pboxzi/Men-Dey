@@ -244,7 +244,7 @@ export default function FAQSection() {
             {categories.map((cat) => (
               <button
                 key={cat.value}
-                onClick={() => setActiveCategory(cat.value as any)}
+                onClick={() => setActiveCategory(cat.value as 'all' | 'community' | 'membership' | 'events' | 'experiences' | 'portal' | 'advocacy')}
                 className={`px-3 py-1.5 text-[9px] font-bold tracking-widest transition-all rounded-lg uppercase min-h-[32px] ${
                   activeCategory === cat.value
                     ? 'text-gold-500 bg-gold-500/10 border border-gold-500/30'

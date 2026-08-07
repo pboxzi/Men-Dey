@@ -5,6 +5,13 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from './supabase';
+import { logger } from './logger';
+import type {
+  Slide, JournalEntry, UpcomingEvent, ShopItem, CharityItem,
+  SitePillar, Experience, FaqEntry, CharityPartner, MembershipTier,
+  FilmData, LiteraryWork, KindnessLogEntry, QuizQuestion, RequestType,
+  ProposalChatMessage, CommentRow,
+} from '../types';
 
 // Interfaces for our state
 export interface RequestDetail {
@@ -96,22 +103,22 @@ export interface PortalNotification {
 }
 
 export interface ContentState {
-  heroSlides: any[];
-  journalEntries: any[];
-  journalArticles: any[];
-  upcomingEvents: any[];
-  shopProducts: any[];
-  faqEntries: any[];
-  charityCauses: any[];
-  charityPartners: any[];
-  membershipTiers: any[];
-  experiences: any[];
-  filmsData: any[];
-  literaryWorks: any[];
-  kindnessLog: any[];
-  quizQuestions: any[];
-  sitePillars: any[];
-  requestTypes: any[];
+  heroSlides: Slide[];
+  journalEntries: JournalEntry[];
+  journalArticles: JournalEntry[];
+  upcomingEvents: UpcomingEvent[];
+  shopProducts: ShopItem[];
+  faqEntries: FaqEntry[];
+  charityCauses: CharityItem[];
+  charityPartners: CharityPartner[];
+  membershipTiers: MembershipTier[];
+  experiences: Experience[];
+  filmsData: FilmData[];
+  literaryWorks: LiteraryWork[];
+  kindnessLog: KindnessLogEntry[];
+  quizQuestions: QuizQuestion[];
+  sitePillars: SitePillar[];
+  requestTypes: RequestType[];
 }
 
 interface StateContextType {
@@ -123,13 +130,13 @@ interface StateContextType {
   discussions: { [country: string]: DiscussionPost[] };
   journalComments: { [journalId: string]: JournalComment[] };
   subscribers: string[];
-  proposalChats: { [requestId: string]: any[] };
+  proposalChats: { [requestId: string]: ProposalChatMessage[] };
   notifications: PortalNotification[];
   
   // Mutations
   addRequest: (type: string, date: string, location: string, attendees: string, whatsapp: string, sincerity: string, userDisplayName: string) => Promise<RequestDetail>;
   updateRequestStatus: (requestId: string, status: RequestDetail['status']) => Promise<RequestDetail>;
-  addRequestChatMessage: (requestId: string, sender: 'user' | 'management' | 'system', text: string) => Promise<any>;
+  addRequestChatMessage: (requestId: string, sender: 'user' | 'management' | 'system', text: string) => Promise<ProposalChatMessage>;
   addOrder: (item: string, price: string, userDisplayName: string) => Promise<ShopOrder>;
   addPost: (content: string, image: string | null, username: string, handle: string, category: string) => Promise<CommunityHighlight>;
   likePost: (id: string) => Promise<void>;
@@ -164,7 +171,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   const [discussions, setDiscussions] = useState<{ [country: string]: DiscussionPost[] }>({});
   const [journalComments, setJournalComments] = useState<{ [journalId: string]: JournalComment[] }>({});
   const [subscribers, setSubscribers] = useState<string[]>([]);
-  const [proposalChats, setProposalChats] = useState<{ [requestId: string]: any[] }>({});
+  const [proposalChats, setProposalChats] = useState<{ [requestId: string]: ProposalChatMessage[] }>({});
   const [notifications, setNotifications] = useState<PortalNotification[]>([]);
 
   const addNotification = (title: string, message: string, type: 'reply' | 'update' | 'alert') => {
@@ -192,38 +199,38 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   };
 
   // ─── Server response field mapping helpers ──────────────────
-  const mapRequest = (r: any): RequestDetail => ({
-    id: r.id, type: r.type, member: r.member, memberAvatar: r.member_avatar,
-    status: r.status, updated: r.updated_at || r.submitted_on || '',
-    preferredDate: r.preferred_date, location: r.location,
-    attendees: r.attendees, whatsappNumber: r.whatsapp_number,
-    sincerity: r.sincerity, submittedOn: r.submitted_on, lastUpdated: r.updated_at,
+  const mapRequest = (r: Record<string, unknown>): RequestDetail => ({
+    id: r.id as string, type: r.type as string, member: r.member as string, memberAvatar: r.member_avatar as string,
+    status: r.status as RequestDetail['status'], updated: (r.updated_at as string) || (r.submitted_on as string) || '',
+    preferredDate: r.preferred_date as string, location: r.location as string,
+    attendees: r.attendees as string, whatsappNumber: r.whatsapp_number as string,
+    sincerity: r.sincerity as string, submittedOn: r.submitted_on as string, lastUpdated: r.updated_at as string,
   });
 
-  const mapOrder = (r: any): ShopOrder => ({
-    id: r.id, member: r.member, memberAvatar: r.member_avatar,
-    item: r.item, status: r.status, price: r.price, updated: r.updated_at,
+  const mapOrder = (r: Record<string, unknown>): ShopOrder => ({
+    id: r.id as string, member: r.member as string, memberAvatar: r.member_avatar as string,
+    item: r.item as string, status: r.status as string, price: r.price as string, updated: r.updated_at as string,
   });
 
-  const mapPost = (post: any, comments: any[]): CommunityHighlight => {
+  const mapPost = (post: Record<string, unknown>, comments: CommentRow[]): CommunityHighlight => {
     const postComments = comments
-      .filter((c: any) => c.post_id === post.id && !c.parent_comment_id)
-      .map((c: any) => ({
+      .filter((c) => c.post_id === post.id && !c.parent_comment_id)
+      .map((c) => ({
         id: c.id, username: c.username, avatarText: c.avatar_text,
         content: c.content, timestamp: c.created_at,
         replies: comments
-          .filter((r: any) => r.parent_comment_id === c.id)
-          .map((r: any) => ({
+          .filter((r) => r.parent_comment_id === c.id)
+          .map((r) => ({
             id: r.id, username: r.username, avatarText: r.avatar_text,
             content: r.content, timestamp: r.created_at,
           })),
       }));
     return {
-      id: post.id, username: post.username, handle: post.handle,
-      avatarText: post.avatar_text, image: post.image, content: post.content,
-      likes: post.likes, replies: post.replies_count, liked: post.liked,
-      category: post.category || 'FAN ART', comments: postComments,
-      created_at: post.created_at,
+      id: post.id as string, username: post.username as string, handle: post.handle as string,
+      avatarText: post.avatar_text as string, image: post.image as string, content: post.content as string,
+      likes: post.likes as number, replies: post.replies_count as number, liked: post.liked as boolean,
+      category: (post.category as string) || 'FAN ART', comments: postComments,
+      created_at: post.created_at as string,
     };
   };
 
@@ -254,27 +261,27 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         supabase.from('comments').select('*').order('created_at'),
       ]);
 
-      if (!subsErr) setSubscribers((subsData || []).map((s: any) => s.email));
+      if (!subsErr) setSubscribers((subsData || []).map((s: Record<string, unknown>) => s.email as string));
       if (!reqErr) setRequests((requestsData || []).map(mapRequest));
       if (!ordErr) setOrders((ordersData || []).map(mapOrder));
       if (!postErr && !commErr) {
-        setPosts((postsData || []).map((p: any) => mapPost(p, commentsData || [])));
+        setPosts((postsData || []).map((p) => mapPost(p, commentsData || [])));
       }
       if (!discErr && !discRepErr) {
-        const discussionsMap: Record<string, any[]> = {};
+        const discussionsMap: Record<string, DiscussionPost[]> = {};
         for (const disc of (discussionsData || [])) {
           if (!discussionsMap[disc.country]) discussionsMap[disc.country] = [];
           discussionsMap[disc.country].push({
             id: disc.id, author: disc.author, text: disc.text, time: disc.created_at,
             replies: (discRepliesData || [])
-              .filter((r: any) => r.discussion_id === disc.id)
-              .map((r: any) => ({ id: r.id, author: r.author, text: r.text, time: r.created_at })),
+              .filter((r) => r.discussion_id === disc.id)
+              .map((r) => ({ id: r.id, author: r.author, text: r.text, time: r.created_at })),
           });
         }
         setDiscussions(discussionsMap);
       }
       if (!chatErr) {
-        const chatsMap: Record<string, any[]> = {};
+        const chatsMap: Record<string, ProposalChatMessage[]> = {};
         for (const msg of (proposalChatsData || [])) {
           if (!chatsMap[msg.request_id]) chatsMap[msg.request_id] = [];
           chatsMap[msg.request_id].push({
@@ -284,7 +291,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         setProposalChats(chatsMap);
       }
       if (!jcErr) {
-        const jcMap: Record<string, any[]> = {};
+        const jcMap: Record<string, JournalComment[]> = {};
         for (const jc of (journalCommentsData || [])) {
           if (!jcMap[jc.journal_id]) jcMap[jc.journal_id] = [];
           jcMap[jc.journal_id].push({
@@ -339,7 +346,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         requestTypes: typesRes || [],
       });
     } catch (error) {
-      console.error('Failed to fetch full backend state.', error);
+      logger.error('Failed to fetch full backend state.', error);
     } finally {
       setLoading(false);
     }
@@ -598,19 +605,19 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   };
 
   // ─── Experience helper (used by fetchState) ───────────────
-  const mapExperience = (e: any) => ({
-    id: e.id, title: e.title, category: e.category || 'Meet & Greet', tier: e.tier || 'Gold',
-    duration: e.duration, location: e.location, price: e.price || 'Complimentary',
-    spots: e.spots || 10, spotsTaken: e.spots_taken || 0, description: e.description,
-    short_description: e.short_description || e.description?.substring(0, 120) || '',
-    full_description: e.full_description || e.description || '', details: e.details || [],
-    image: e.image || '', gallery_images: e.gallery_images || e.image || '',
-    is_virtual: e.is_virtual === true || e.capacity?.toLowerCase() === 'virtual',
-    max_guests: e.max_guests || e.spots || 10, availability: e.availability || 'Available',
-    booking_requirements: e.booking_requirements || e.intensity || '',
+  const mapExperience = (e: Record<string, unknown>): Experience => ({
+    id: e.id as string, title: e.title as string, category: (e.category as string) || 'Meet & Greet', tier: (e.tier as string) || 'Gold',
+    duration: e.duration as string, location: e.location as string, price: (e.price as string) || 'Complimentary',
+    spots: (e.spots as number) || 10, spotsTaken: (e.spots_taken as number) || 0, description: e.description as string,
+    short_description: (e.short_description as string) || (e.description as string)?.substring(0, 120) || '',
+    full_description: (e.full_description as string) || (e.description as string) || '', details: (e.details as string[]) || [],
+    image: (e.image as string) || '', gallery_images: (e.gallery_images as string) || (e.image as string) || '',
+    is_virtual: e.is_virtual === true || (e.capacity as string)?.toLowerCase() === 'virtual',
+    max_guests: (e.max_guests as number) || (e.spots as number) || 10, availability: (e.availability as string) || 'Available',
+    booking_requirements: (e.booking_requirements as string) || (e.intensity as string) || '',
     featured: e.featured === true || e.popular === true, published: e.published !== false,
-    archived: e.archived === true, popular: e.popular || false,
-    sort_order: e.sort_order || 0, capacity: e.capacity || '', intensity: e.intensity || '',
+    archived: e.archived === true, popular: e.popular === false,
+    sort_order: (e.sort_order as number) || 0, capacity: (e.capacity as string) || '', intensity: (e.intensity as string) || '',
   });
 
   return (

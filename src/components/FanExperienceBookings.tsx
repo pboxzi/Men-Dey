@@ -8,6 +8,7 @@ import {
   ExternalLink, HelpCircle, Shield, AlertCircle,
 } from 'lucide-react';
 import { openWhatsApp, openEmail } from '../utils/contactSettings';
+import { logger } from '../utils/logger';
 
 interface Props {
   showToast: (msg: string, type?: 'success' | 'info' | 'error') => void;
@@ -48,8 +49,8 @@ const SNAKE_TO_CAMEL: Record<string, string> = {
   user_id: 'userId',
 };
 
-function toCamelCase(row: Record<string, any>): ExperienceBooking {
-  const out: Record<string, any> = {};
+function toCamelCase(row: Record<string, unknown>): ExperienceBooking {
+  const out: Record<string, unknown> = {};
   for (const key of Object.keys(row)) {
     const camel = SNAKE_TO_CAMEL[key] || key;
     out[camel] = row[key];
@@ -73,7 +74,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
   const [bookings, setBookings] = useState<ExperienceBooking[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState<ExperienceBooking | null>(null);
-  const [experiences, setExperiences] = useState<Record<string, any>>({});
+  const [experiences, setExperiences] = useState<Record<string, Record<string, unknown>>>({});
 
   useEffect(() => {
     loadBookings();
@@ -92,10 +93,10 @@ export default function FanExperienceBookings({ showToast }: Props) {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       if (!error && data) {
-        setBookings(data.map((r: any) => toCamelCase(r)));
+        setBookings(data.map((r: Record<string, unknown>) => toCamelCase(r)));
       }
     } catch (err) {
-      console.error('Failed to load bookings:', err);
+      logger.error('Failed to load bookings:', err);
     } finally {
       setLoading(false);
     }
@@ -105,8 +106,8 @@ export default function FanExperienceBookings({ showToast }: Props) {
     try {
       const { data, error } = await supabase.from('experiences').select('*');
       if (!error && data) {
-        const map: Record<string, any> = {};
-        data.forEach((e: any) => { map[e.id] = e; });
+        const map: Record<string, Record<string, unknown>> = {};
+        data.forEach((e: Record<string, unknown>) => { map[e.id as string] = e; });
         setExperiences(map);
       }
     } catch {}
@@ -152,7 +153,7 @@ export default function FanExperienceBookings({ showToast }: Props) {
     if (!confirm('Are you sure you want to withdraw this booking request?')) return;
     try {
       const { data: current } = await supabase.from('experience_requests').select('timeline').eq('id', booking.id).single();
-      let existingTimeline: any[] = [];
+      let existingTimeline: Record<string, unknown>[] = [];
       try {
         const raw = current?.timeline;
         if (raw) {

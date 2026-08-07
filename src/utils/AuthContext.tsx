@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from './supabase';
+import { logger } from './logger';
 import type { User, Session } from '@supabase/supabase-js';
 
 export interface Profile {
@@ -100,29 +101,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) return { error: error.message };
     if (!data.user) return { error: 'Registration failed. Please try again.' };
 
-    // Create profile row immediately (upsert to handle trigger race)
-    const { error: profileError } = await supabase.from('profiles').upsert({
-      id: data.user.id,
-      name,
-      email,
-      country: 'Global',
-      role: 'user',
-    });
-    if (profileError) {
-      console.warn('Profile creation warning:', profileError.message);
-    }
-
-    // Send custom confirmation email via Resend
+    // Send confirmation email via Resend (profile created after confirmation)
     try {
       await supabase.functions.invoke('send-confirmation-email', {
         body: { email, userId: data.user.id, userName: name },
       });
     } catch (emailErr) {
-      console.warn('Confirmation email failed (non-critical):', emailErr);
+      logger.warn('Confirmation email failed (non-critical):', emailErr);
     }
-
-    // Fetch the profile so it's available immediately
-    await fetchProfile(data.user.id);
 
     return { user: data.user };
   };
@@ -143,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const updateProfile = async (updates: Partial<Profile>) => {
     if (!user) return { error: 'Not authenticated' };
     try {
-      const dbUpdates: any = {};
+      const dbUpdates: Record<string, unknown> = {};
       if (updates.name !== undefined) dbUpdates.name = updates.name;
       if (updates.country !== undefined) dbUpdates.country = updates.country;
       if (updates.avatar_text !== undefined) dbUpdates.avatar_text = updates.avatar_text;
@@ -170,7 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Store extra fields in auth user_metadata
-      const metaUpdates: any = {};
+      const metaUpdates: Record<string, unknown> = {};
       if (updates.bio !== undefined) metaUpdates.bio = updates.bio;
       if (updates.favorite_movie !== undefined) metaUpdates.favorite_movie = updates.favorite_movie;
       if (updates.contact !== undefined) metaUpdates.contact = updates.contact;
@@ -183,8 +169,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       return {};
-    } catch (err: any) {
-      return { error: err.message };
+    } catch (err: unknown) {
+      return { error: err instanceof Error ? err.message : String(err) };
     }
   };
 

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import DOMPurify from 'dompurify';
 import { JournalEntry } from '../types';
 import { useGlobalState } from '../utils/StateContext';
+import { logger } from '../utils/logger';
 import { JOURNAL_ENTRIES as STATIC_JOURNAL_ENTRIES } from '../data';
 import {
   BookOpen,
@@ -42,8 +44,8 @@ export default function JournalSection() {
 
   // Map journal_articles to JournalEntry format for display
   const articleEntries: JournalEntry[] = (content.journalArticles || [])
-    .filter((a: any) => a.status === 'published')
-    .map((a: any, i: number) => ({
+    .filter((a: Record<string, unknown>) => a.status === 'published')
+    .map((a: Record<string, unknown>, i: number) => ({
       id: a.id,
       title: a.title,
       category: 'JOURNAL',
@@ -54,7 +56,7 @@ export default function JournalSection() {
       readTime: a.reading_time ? `${a.reading_time} min read` : '',
     }));
   
-  const allEntries = [...articleEntries, ...(content.journalEntries || []).map((e: any, i: number) => ({
+  const allEntries = [...articleEntries, ...(content.journalEntries || []).map((e: Record<string, unknown>, i: number) => ({
     ...e,
     image: LOCAL_IMAGES[(articleEntries.length + i) % LOCAL_IMAGES.length],
   }))];
@@ -95,7 +97,7 @@ export default function JournalSection() {
       await addJournalComment(entryId, newComment.trim(), authorName);
       setNewComment('');
     } catch (err) {
-      console.error(err);
+      logger.error(err);
     }
   };
 
@@ -110,7 +112,7 @@ export default function JournalSection() {
       setNewReplyText((prev) => ({ ...prev, [commentId]: '' }));
       setActiveReplyId(null);
     } catch (err) {
-      console.error(err);
+      logger.error(err);
     }
   };
 
@@ -300,7 +302,7 @@ export default function JournalSection() {
               {/* Body Content */}
               <div
                 className="prose prose-invert max-w-none text-neutral-300 font-sans text-sm leading-relaxed space-y-6 pt-4 border-b border-neutral-900 pb-8 [&_p]:leading-relaxed [&_p]:mb-4 [&_blockquote]:border-l-2 [&_blockquote]:border-gold-500 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_blockquote]:font-serif [&_blockquote]:text-lg [&_blockquote]:text-neutral-200 [&_blockquote]:bg-gold-500/5 [&_blockquote]:rounded-r [&_blockquote]:my-6"
-                dangerouslySetInnerHTML={{ __html: selectedEntry.content }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedEntry.content) }}
               />
 
               {/* Quick Actions Panel */}

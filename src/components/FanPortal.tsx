@@ -9,6 +9,7 @@ import { useGlobalState } from '../utils/StateContext';
 import { useAuth } from '../utils/AuthContext';
 import { supabase } from '../utils/supabase';
 import { notifyRewardRedeemed } from '../utils/notifications';
+import { logger } from '../utils/logger';
 import NotificationBell from './NotificationBell';
 import MyMembershipDashboard from './MyMembershipDashboard';
 import ProfileSection from './ProfileSection';
@@ -60,6 +61,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from '../utils/theme';
 import { TermsOfServiceModal, PrivacyPolicyModal } from './LegalModals';
+import type { Experience, PortalReward, MembershipData, UserBadge, JourneyLogEntry, FanNotification } from '../types';
 import FanEvents from './FanEvents';
 import AskGillianChat from './AskGillianChat';
 import FanAdminChat from './FanAdminChat';
@@ -303,7 +305,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   // Experience browser state
   const [expSubTab, setExpSubTab] = useState<'browse' | 'bookings'>('browse');
-  const [fanExperiences, setFanExperiences] = useState<any[]>([]);
+  const [fanExperiences, setFanExperiences] = useState<Experience[]>([]);
   const [fanExpSearch, setFanExpSearch] = useState('');
   const [fanExpCategory, setFanExpCategory] = useState('ALL');
   const [fanExpLoading, setFanExpLoading] = useState(true);
@@ -319,7 +321,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   }, [expSubTab]);
 
   // Portal rewards from DB
-  const [portalRewards, setPortalRewards] = useState<any[]>([]);
+  const [portalRewards, setPortalRewards] = useState<PortalReward[]>([]);
 
   useEffect(() => {
     void (async () => {
@@ -332,34 +334,34 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
   // Loyalty & Rewards State
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
-  const [membership, setMembership] = useState<any>(null);
+  const [membership, setMembership] = useState<MembershipData | null>(null);
 
-  const normalizeMembership = (row: any): any => {
+  const normalizeMembership = (row: Record<string, unknown>): MembershipData | null => {
     if (!row) return null;
-    let msg: any = {};
-    try { msg = typeof row.message === 'string' ? JSON.parse(row.message) : (row.message || {}); } catch {}
-    let nts: any = {};
-    try { nts = typeof row.notes === 'string' ? JSON.parse(row.notes) : (row.notes || {}); } catch {}
+    let msg: Record<string, unknown> = {};
+    try { msg = typeof row.message === 'string' ? JSON.parse(row.message as string) : ((row.message as Record<string, unknown>) || {}); } catch {}
+    let nts: Record<string, unknown> = {};
+    try { nts = typeof row.notes === 'string' ? JSON.parse(row.notes as string) : ((row.notes as Record<string, unknown>) || {}); } catch {}
     return {
-      id: row.id, user_id: row.user_id,
-      status: row.status === 'suspended' ? 'expired' : row.status,
-      tier_id: msg.tier_id || row.tier,
-      tier_name: msg.tier_name || row.tier,
-      tier_price: msg.tier_price || msg.price || '',
-      card_name: row.full_name || '',
-      card_serial: msg.card_serial || '',
-      member_name: msg.member_name || row.full_name || '',
-      member_email: row.email || '',
-      member_phone: msg.phone || '',
-      member_country: row.country || '',
-      profile_photo: msg.profile_photo || '',
-      comm_method: msg.comm_method || '',
-      membership_number: nts.membership_number || '',
-      activation_date: row.reviewed_at || '',
-      expiration_date: nts.expiration_date || '',
-      cancel_reason: nts.cancel_reason || '',
-      admin_notes: nts.admin_notes || '',
-      created_at: row.created_at,
+      id: row.id as string, user_id: row.user_id as string,
+      status: (row.status as string) === 'suspended' ? 'expired' : (row.status as string),
+      tier_id: (msg.tier_id as string) || (row.tier as string) || '',
+      tier_name: (msg.tier_name as string) || (row.tier as string) || '',
+      tier_price: (msg.tier_price as string) || (msg.price as string) || '',
+      card_name: (row.full_name as string) || '',
+      card_serial: (msg.card_serial as string) || '',
+      member_name: (msg.member_name as string) || (row.full_name as string) || '',
+      member_email: (row.email as string) || '',
+      member_phone: (msg.phone as string) || '',
+      member_country: (row.country as string) || '',
+      profile_photo: (msg.profile_photo as string) || '',
+      comm_method: (msg.comm_method as string) || '',
+      membership_number: (nts.membership_number as string) || '',
+      activation_date: (row.reviewed_at as string) || '',
+      expiration_date: (nts.expiration_date as string) || '',
+      cancel_reason: (nts.cancel_reason as string) || '',
+      admin_notes: (nts.admin_notes as string) || '',
+      created_at: row.created_at as string,
     };
   };
 
@@ -389,16 +391,16 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   } : rank;
 
   const progressPercent = Math.min(100, Math.max(0, ((loyaltyPoints - displayRank.min) / (displayRank.max - displayRank.min)) * 100));
-  const [badges, setBadges] = useState([]);
+  const [badges, setBadges] = useState<UserBadge[]>([]);
 
   useEffect(() => {
     if (!user?.id) return;
     void (async () => {
       try {
         const { data, error } = await supabase.from('user_badges').select('*').eq('user_id', user.id);
-        if (error) { console.warn('user_badges query error:', error.message); return; }
+        if (error) { logger.warn('user_badges query error:', error.message); return; }
         if (data) setBadges(data);
-      } catch (e) { console.warn('user_badges fetch failed:', e); }
+      } catch (e) { logger.warn('user_badges fetch failed:', e); }
     })();
   }, [user]);
 
@@ -413,19 +415,19 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
           supabase.from('event_registrations').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
           supabase.from('profiles').select('created_at').eq('id', user.id).maybeSingle(),
         ]);
-        results.forEach((r, i) => { if (r.error) console.warn(`fanStats query ${i} error:`, r.error.message); });
+        results.forEach((r, i) => { if (r.error) logger.warn(`fanStats query ${i} error:`, r.error.message); });
         const [{ count: bookingCount }, { count: eventCount }, { data: prof }] = results;
         setFanStats({
           bookings: bookingCount ?? 0,
           events: eventCount ?? 0,
           memberSince: prof?.created_at || '',
         });
-      } catch (e) { console.error('fanStats fetch failed:', e); }
+      } catch (e) { logger.error('fanStats fetch failed:', e); }
     })();
   }, [user, activeTab]);
 
   // Kindness log & Journey timeline State
-  const [journeyLog, setJourneyLog] = useState([]);
+  const [journeyLog, setJourneyLog] = useState<JourneyLogEntry[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -441,7 +443,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         .order('created_at', { ascending: false });
 
       const journeyEntries = (!journeyError && journeyData) ? journeyData : [];
-      const bookingEntries = (bookings || []).map((b: any) => ({
+      const bookingEntries = (bookings || []).map((b: Record<string, unknown>) => ({
         id: `bk-${b.id}`,
         title: `Booked: ${b.experience_title}`,
         description: `Booking submitted for "${b.experience_title}"`,
@@ -450,8 +452,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       }));
 
       // Merge, dedup by title
-      const allTitles = new Set(bookingEntries.map((e: any) => e.title));
-      const uniqueJourney = journeyEntries.filter((e: any) => !allTitles.has(e.title));
+      const allTitles = new Set(bookingEntries.map((e: { title: string }) => e.title));
+      const uniqueJourney = journeyEntries.filter((e: Record<string, unknown>) => !allTitles.has(e.title as string));
       setJourneyLog([...bookingEntries, ...uniqueJourney]);
     })();
   }, [user]);
@@ -489,7 +491,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   // (request wizard step removed — feature deprecated)
 
   // Notifications State (per-user from notifications table)
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<FanNotification[]>([]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -916,7 +918,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     setMUpgrading(true);
     try {
       const tiers = backendContent?.membershipTiers || [];
-      const t = tiers.find((x: any) => x.id === mTierId);
+      const t = tiers.find((x: Record<string, unknown>) => x.id === mTierId);
       const serial = `GA-MEM-${Date.now().toString(36).toUpperCase()}`;
       const messageData = {
         card_serial: serial, comm_method: mContact,
@@ -936,8 +938,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       setMReason('');
       setMContactVal('');
       setActiveTab('Membership');
-    } catch (err: any) {
-      showToast(err.message || 'Network error', 'error');
+    } catch (err: unknown) {
+      showToast((err instanceof Error ? err.message : null) || 'Network error', 'error');
     }
     setMUpgrading(false);
   };
@@ -1366,7 +1368,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     <button
                       key={item.name}
                       onClick={() => {
-                        setActiveTab(item.name as any);
+                        setActiveTab(item.name as 'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Ask Gillian' | 'Events' | 'Experiences' | 'Membership' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings');
                         setSelectedRequestId(null);
                         setIsMobileMenuOpen(false);
                       }}
@@ -1567,7 +1569,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     },
                     { label: 'Bookings', value: fanStats.bookings.toString(), accent: 'blue', icon: '★' },
                     { label: 'Events', value: fanStats.events.toString(), accent: 'emerald', icon: '●' },
-                  ].map((stat: any, i) => {
+                  ].map((stat: { isCard?: boolean; card?: MembershipData | null; fallbackName?: string; label?: string; value?: string; accent?: string; icon?: string }, i) => {
                     if (stat.isCard) {
                       const c = stat.card;
                       const isActive = c?.status === 'active';
@@ -1714,7 +1716,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                     <FanEvents
                       embedded
-                      onNavigate={setActiveTab as any}
+                      onNavigate={setActiveTab as (tab: string) => void}
                       showToast={showToast}
                       addJourneyMilestone={addJourneyMilestone}
                       pushNotification={pushNotification}
@@ -1953,12 +1955,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {(fanExpCategory === 'ALL'
                           ? fanExperiences
-                          : fanExperiences.filter((e: any) => e.category === fanExpCategory)
-                        ).filter((e: any) => {
+                          : fanExperiences.filter((e: Experience) => e.category === fanExpCategory)
+                        ).filter((e: Experience) => {
                           if (!fanExpSearch.trim()) return true;
                           const q = fanExpSearch.toLowerCase();
                           return e.title?.toLowerCase().includes(q) || e.description?.toLowerCase().includes(q);
-                        }).map((exp: any) => {
+                        }).map((exp: Experience) => {
                           const spotsLeft = (exp.spots || 10) - (exp.spots_taken || 0);
                           const isFull = spotsLeft <= 0;
                           return (
@@ -2133,7 +2135,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               </span>
                               <span className="text-[9px] font-mono text-neutral-600 flex items-center gap-1">
                                 <Clock className="h-2.5 w-2.5" />
-                                {(post as any).created_at ? getRelativeTime((post as any).created_at) : ''}
+                                {(post as Record<string, unknown>).created_at ? getRelativeTime((post as Record<string, unknown>).created_at as string) : ''}
                               </span>
                             </div>
                           </div>
@@ -2966,7 +2968,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       return (
                         <button
                           key={item.nav}
-                          onClick={() => { setActiveTab(item.nav as any); setSelectedRequestId(null); setIsMoreMenuOpen(false); }}
+                          onClick={() => { setActiveTab(item.nav as 'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Ask Gillian' | 'Events' | 'Experiences' | 'Membership' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'); setSelectedRequestId(null); setIsMoreMenuOpen(false); }}
                           className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
                             isSelected
                               ? 'bg-gold-500/10 border-gold-500/30 text-gold-500'
@@ -3031,11 +3033,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 <div className="space-y-1.5">
                   <label className="text-[9px] font-mono text-neutral-400 uppercase">DESIRED TIER</label>
                   <div className="grid gap-2">
-                    {(backendContent?.membershipTiers || []).filter((t: any) => {
+                    {(backendContent?.membershipTiers || []).filter((t: { id: string; name: string; price: string }) => {
                       if (!membership) return true;
                       const order = ['scully', 'gibson', 'milburn'];
                       return order.indexOf(t.id) > order.indexOf(membership.tier_id);
-                    }).map((t: any) => (
+                    }).map((t: { id: string; name: string; price: string }) => (
                       <button key={t.id} type="button" onClick={() => setMTierId(t.id)}
                         className={`flex items-center justify-between p-3 rounded-lg border transition-all text-left ${mTierId === t.id ? 'border-gold-500/50 bg-gold-500/5' : 'border-neutral-900 hover:border-neutral-800 bg-neutral-950'}`}
                       >
@@ -3139,7 +3141,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <label className="text-[9px] font-mono text-neutral-500 uppercase">CATEGORY</label>
                   <select
                     value={uploadCategory}
-                    onChange={(e) => setUploadCategory(e.target.value as any)}
+                    onChange={(e) => setUploadCategory(e.target.value as 'Fan Art' | 'Fan Story' | 'Fan Video' | 'Photography')}
                     className="w-full rounded border border-neutral-900 bg-[#0c0c0e] px-3.5 py-2 text-white outline-none focus:border-gold-500/50"
                   >
                     <option value="Fan Art">Fan Art</option>

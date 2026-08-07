@@ -14,8 +14,8 @@ export default function AdminMediaLibrary({ showToast }: Props) {
   const [activeMediaSubTab, setActiveMediaSubTab] = useState<'photos' | 'videos'>('photos');
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ photos: 0, videos: 0 });
-  const [photos, setPhotos] = useState<any[]>([]);
-  const [videos, setVideos] = useState<any[]>([]);
+  const [photos, setPhotos] = useState<Record<string, unknown>[]>([]);
+  const [videos, setVideos] = useState<Record<string, unknown>[]>([]);
   const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
@@ -82,7 +82,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
     showToast('Video removed', 'info');
   };
 
-  const openDetail = (item: any, type: 'photos' | 'videos') => {
+  const openDetail = (item: Record<string, unknown>, type: 'photos' | 'videos') => {
     setDetailItem({ ...item, _type: type });
     setEditTitle(item.title || '');
     setEditDescription(item.description || '');
@@ -98,7 +98,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
     if (!detailItem) return;
     setSaving(true);
     const table = detailItem._type === 'photos' ? 'photos' : 'videos';
-    const updates: any = { title: editTitle, category_id: editCategoryId };
+    const updates: Record<string, unknown> = { title: editTitle, category_id: editCategoryId };
     if (table === 'photos') {
       updates.description = editDescription;
       updates.url = editUrl;
@@ -124,7 +124,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
     setSaving(false);
   };
 
-  const nextId = (prefix: string, existing: any[]) => {
+  const nextId = (prefix: string, existing: Record<string, unknown>[]) => {
     const nums = existing.map(e => {
       const m = e.id?.match(new RegExp(`^${prefix}-(\\d+)$`));
       return m ? parseInt(m[1], 10) : 0;

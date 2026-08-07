@@ -38,7 +38,7 @@ interface RegistrationForm {
 export default function EventsSection() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
-  const [dbEvents, setDbEvents] = useState<any[]>([]);
+  const [dbEvents, setDbEvents] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -84,7 +84,7 @@ export default function EventsSection() {
     setSubmitError('');
   };
 
-  const startRegistration = (evt: any) => {
+  const startRegistration = (evt: Record<string, unknown>) => {
     if (!user) {
       navigate('/portal?mode=login');
       return;
@@ -476,7 +476,7 @@ export default function EventsSection() {
                 </h3>
               </div>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {events.map((evt: any, i: number) => (
+                {events.map((evt: Record<string, unknown>, i: number) => (
                   <motion.div key={evt.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 + i * 0.03 }}
                     className="rounded-xl border border-neutral-900 bg-neutral-950/30 overflow-hidden flex flex-col"
                   >

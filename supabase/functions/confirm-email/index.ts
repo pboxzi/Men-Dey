@@ -62,6 +62,22 @@ serve(async (req: Request) => {
       )
     }
 
+    // Fetch user metadata to get name for profile creation
+    const { data: userData } = await supabase.auth.admin.getUserById(tokenData.user_id)
+    const userName = userData?.user?.user_metadata?.name || tokenData.email.split("@")[0]
+
+    // Create profile now that email is confirmed
+    const { error: profileError } = await supabase.from("profiles").upsert({
+      id: tokenData.user_id,
+      name: userName,
+      email: tokenData.email,
+      country: "Global",
+      role: "user",
+    })
+    if (profileError) {
+      console.error("Profile creation error:", JSON.stringify(profileError))
+    }
+
     // Mark token as used
     await supabase
       .from("confirmation_tokens")

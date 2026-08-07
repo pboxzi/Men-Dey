@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useGlobalState } from '../utils/StateContext';
+import type { FilmData, LiteraryWork, KindnessLogEntry, QuizQuestion } from '../types';
 import {
   BookOpen,
   Film,
@@ -38,7 +39,7 @@ export default function AboutSection() {
   const [showExplanation, setShowExplanation] = useState(false);
 
   // Film Explorer Data (from DB)
-  const FILMS_DATA = (content.filmsData || []).map((f: any) => ({
+  const FILMS_DATA = (content.filmsData || []).map((f: Record<string, unknown>) => ({
     title: f.title,
     role: f.role,
     year: f.year,
@@ -50,14 +51,14 @@ export default function AboutSection() {
   }));
 
   // Literary Works Audiobook List (from DB)
-  const LITERARY_WORKS = (content.literaryWorks || []).map((w: any) => ({
+  const LITERARY_WORKS = (content.literaryWorks || []).map((w: Record<string, unknown>) => ({
     title: w.title,
     duration: w.duration,
     vibe: w.vibe,
   }));
 
   // Kindness Acts Data (from DB)
-  const KINDNESS_LOG = (content.kindnessLog || []).map((k: any) => ({
+  const KINDNESS_LOG = (content.kindnessLog || []).map((k: Record<string, unknown>) => ({
     id: k.id,
     title: k.title,
     category: k.category,
@@ -66,7 +67,7 @@ export default function AboutSection() {
   }));
 
   // Quiz Questions Data (from DB)
-  const QUIZ_QUESTIONS = (content.quizQuestions || []).map((q: any) => ({
+  const QUIZ_QUESTIONS = (content.quizQuestions || []).map((q: Record<string, unknown>) => ({
     question: q.question,
     options: q.options,
     correct: q.correct,
@@ -149,7 +150,7 @@ export default function AboutSection() {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id as typeof activeTab)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-bold tracking-widest uppercase border transition-all duration-300 ${
                   isSelected
                     ? 'bg-gold-500 border-gold-400 text-neutral-950 shadow-lg shadow-gold-500/10 font-bold scale-[1.02]'
@@ -550,7 +551,7 @@ export default function AboutSection() {
                   ].map(f => (
                     <button
                       key={f.id}
-                      onClick={() => setKindnessFilter(f.id as any)}
+                      onClick={() => setKindnessFilter(f.id as typeof kindnessFilter)}
                       className={`px-3 py-1.5 rounded text-[9px] font-mono tracking-wider transition-colors border ${
                         kindnessFilter === f.id
                           ? 'bg-gold-500/10 border-gold-500/40 text-gold-500'

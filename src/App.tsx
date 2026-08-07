@@ -140,20 +140,28 @@ export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
+    let rafId: number | null = null;
     const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalScroll > 0) {
-        const progress = (window.scrollY / totalScroll) * 100;
-        setScrollProgress(progress);
-      } else {
-        setScrollProgress(0);
-      }
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+        if (totalScroll > 0) {
+          const progress = (window.scrollY / totalScroll) * 100;
+          setScrollProgress(progress);
+        } else {
+          setScrollProgress(0);
+        }
+        rafId = null;
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, [location.pathname]);
 
   // Global Scroll Reset when navigation changes

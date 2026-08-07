@@ -16,10 +16,10 @@ export default function AdminCommunityManagement({ showToast }: Props) {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ posts: 0, comments: 0, discussions: 0, replies: 0, fanCreations: 0 });
 
-  const [posts, setPosts] = useState<any[]>([]);
-  const [comments, setComments] = useState<any[]>([]);
-  const [discussions, setDiscussions] = useState<any[]>([]);
-  const [fanCreations, setFanCreations] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Record<string, unknown>[]>([]);
+  const [comments, setComments] = useState<Record<string, unknown>[]>([]);
+  const [discussions, setDiscussions] = useState<Record<string, unknown>[]>([]);
+  const [fanCreations, setFanCreations] = useState<Record<string, unknown>[]>([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('ALL');
@@ -28,8 +28,8 @@ export default function AdminCommunityManagement({ showToast }: Props) {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   // Detail modal
-  const [detailPost, setDetailPost] = useState<any | null>(null);
-  const [detailComments, setDetailComments] = useState<any[]>([]);
+  const [detailPost, setDetailPost] = useState<Record<string, unknown> | null>(null);
+  const [detailComments, setDetailComments] = useState<Record<string, unknown>[]>([]);
   const [adminCommentText, setAdminCommentText] = useState('');
   const [flagReason, setFlagReason] = useState('');
 
@@ -128,7 +128,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
     showToast('Admin comment posted', 'success');
   };
 
-  const openDetail = async (post: any) => {
+  const openDetail = async (post: Record<string, unknown>) => {
     setDetailPost(post);
     const { data } = await supabase.from('comments').select('*').eq('post_id', post.id).order('created_at');
     setDetailComments(data || []);
@@ -138,7 +138,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
     .filter(c => c.post_id === postId && !c.parent_comment_id)
     .map(c => ({
       ...c,
-      replies: comments.filter((r: any) => r.parent_comment_id === c.id),
+      replies: comments.filter((r: Record<string, unknown>) => r.parent_comment_id === c.id),
     }));
 
   const categories = ['ALL', 'FAN ART', 'LETTERS', 'ENCOUNTERS'];
@@ -629,7 +629,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                         <p className="text-xs text-neutral-200 leading-relaxed">{comment.content}</p>
                         {comment.replies && comment.replies.length > 0 && (
                           <div className="pl-4 ml-2 border-l border-gold-500/15 space-y-2 pt-1">
-                            {comment.replies.map((reply: any) => (
+                            {comment.replies.map((reply: Record<string, unknown>) => (
                               <div key={reply.id} className="bg-neutral-950/40 p-2 rounded-lg border border-neutral-900/40 space-y-1">
                                 <div className="flex justify-between items-center text-[9px] font-mono text-neutral-500">
                                   <span className="text-neutral-300 font-semibold">{reply.username}</span>

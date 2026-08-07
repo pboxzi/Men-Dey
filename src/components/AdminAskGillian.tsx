@@ -77,7 +77,7 @@ export default function AdminAskGillian({ showToast, adminUserId }: Props) {
 
   // Fetch all conversations with user info
   const fetchConversations = async () => {
-    let query = supabase
+    const query = supabase
       .from('ask_gillian_conversations')
       .select('*')
       .order('last_message_at', { ascending: false });

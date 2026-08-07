@@ -14,15 +14,15 @@ export default function AdminJournalCMS({ showToast }: Props) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const [entries, setEntries] = useState<any[]>([]);
-  const [articles, setArticles] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [entries, setEntries] = useState<Record<string, unknown>[]>([]);
+  const [articles, setArticles] = useState<Record<string, unknown>[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   // Edit/Create modal state
-  const [editModal, setEditModal] = useState<{ mode: 'create' | 'edit'; table: 'journal_entries' | 'journal_articles'; data?: any } | null>(null);
+  const [editModal, setEditModal] = useState<{ mode: 'create' | 'edit'; table: 'journal_entries' | 'journal_articles'; data?: Record<string, unknown> } | null>(null);
 
   // journal_entries fields
   const [entryTitle, setEntryTitle] = useState('');
@@ -77,7 +77,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
     setEntryExcerpt(''); setEntryReadTime(''); setEntryContent('');
   };
 
-  const openEditEntry = (entry: any) => {
+  const openEditEntry = (entry: Record<string, unknown>) => {
     setEditModal({ mode: 'edit', table: 'journal_entries', data: entry });
     setEntryTitle(entry.title || '');
     setEntryCategory(entry.category || '');
@@ -95,7 +95,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
     setArticleAuthor(''); setArticleReadingTime(0); setArticleIsFeatured(false); setArticleStatus('draft');
   };
 
-  const openEditArticle = (article: any) => {
+  const openEditArticle = (article: Record<string, unknown>) => {
     setEditModal({ mode: 'edit', table: 'journal_articles', data: article });
     setArticleTitle(article.title || '');
     setArticleSlug(article.slug || '');
@@ -157,7 +157,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
     if (!articleTitle.trim()) return;
     setSaving(true);
     const tags = articleTags.split(',').map(t => t.trim()).filter(Boolean);
-    const payload: any = {
+    const payload: Record<string, unknown> = {
       title: articleTitle.trim(), slug: articleSlug.trim() || null,
       excerpt: articleExcerpt.trim() || null, content: articleContent.trim() || null,
       cover_image_url: articleCoverImageUrl.trim() || null,

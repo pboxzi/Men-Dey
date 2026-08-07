@@ -69,7 +69,7 @@ export default function AdminRewards({ showToast }: Props) {
     const { data } = await supabase.from('user_badges').select('*').order('created_at', { ascending: false });
     if (data) {
       const withProfiles = await Promise.all(
-        data.map(async (b: any) => {
+        data.map(async (b: Record<string, unknown>) => {
           const { data: profile } = await supabase
             .from('profiles')
             .select('name, email')
@@ -86,7 +86,7 @@ export default function AdminRewards({ showToast }: Props) {
     const { data } = await supabase.from('loyalty_points').select('*').order('total', { ascending: false });
     if (data) {
       const withProfiles = await Promise.all(
-        data.map(async (p: any) => {
+        data.map(async (p: Record<string, unknown>) => {
           const { data: profile } = await supabase
             .from('profiles')
             .select('name, email')

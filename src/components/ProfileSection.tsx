@@ -13,7 +13,7 @@ interface Props {
   rank: { name: string; icon: string; badgeColor: string; min: number; max: number; next: string };
   progressPercent: number;
   loyaltyPoints: number;
-  membership: any;
+  membership: Record<string, unknown>;
   showToast: (msg: string, type?: 'success' | 'info' | 'error') => void;
 }
 
@@ -75,7 +75,7 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
 
   const handleSave = async () => {
     setSaving(true);
-    const updates: any = { name: authName };
+    const updates: Record<string, unknown> = { name: authName };
     if (authCountry) updates.country = authCountry;
     updates.bio = bio;
     updates.favorite_movie = favoriteMovie;

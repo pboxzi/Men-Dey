@@ -48,8 +48,8 @@ export default function MediaSection() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from('videos').select('id, title, duration, youtube_id, subtitles, sort_order').order('sort_order').then(({ data, error }) => error || !data ? FALLBACK_VIDEOS : data.map((v: any) => ({ id: v.id, title: v.title, category: 'Uncategorized', duration: v.duration, youtubeId: v.youtube_id, subtitles: v.subtitles || [], sort_order: v.sort_order, videoPlaceholderText: v.title }))),
-      supabase.from('photos').select('id, title, url, description, likes, width, height, sort_order').order('sort_order').then(({ data, error }) => error || !data ? FALLBACK_PHOTOS : data.map((p: any) => ({ id: p.id, title: p.title, category: 'Uncategorized', url: p.url, description: p.description, likes: p.likes || 0, width: p.width, height: p.height }))),
+      supabase.from('videos').select('id, title, duration, youtube_id, subtitles, sort_order').order('sort_order').then(({ data, error }) => error || !data ? FALLBACK_VIDEOS : data.map((v: Record<string, unknown>) => ({ id: v.id, title: v.title, category: 'Uncategorized', duration: v.duration, youtubeId: v.youtube_id, subtitles: v.subtitles || [], sort_order: v.sort_order, videoPlaceholderText: v.title }))),
+      supabase.from('photos').select('id, title, url, description, likes, width, height, sort_order').order('sort_order').then(({ data, error }) => error || !data ? FALLBACK_PHOTOS : data.map((p: Record<string, unknown>) => ({ id: p.id, title: p.title, category: 'Uncategorized', url: p.url, description: p.description, likes: p.likes || 0, width: p.width, height: p.height }))),
     ]).then(([v, p]) => {
       setVideos(v);
       setPhotos(p);
@@ -79,7 +79,7 @@ export default function MediaSection() {
           videoId: selectedVideo.youtubeId,
           playerVars: { controls: 1, autoplay: 0 },
           events: {
-            onError: (e: any) => { setVideoLoading(false); if (e.data === 101 || e.data === 150) setEmbedError(true); },
+            onError: (e: Record<string, unknown>) => { setVideoLoading(false); if (e.data === 101 || e.data === 150) setEmbedError(true); },
             onReady: () => { setEmbedError(false); setVideoLoading(false); },
           }
         });
@@ -102,7 +102,7 @@ export default function MediaSection() {
         videoId: selectedVideo.youtubeId,
         playerVars: { controls: 1, autoplay: 0 },
         events: {
-          onError: (e: any) => { setVideoLoading(false); if (e.data === 101 || e.data === 150) setEmbedError(true); },
+          onError: (e: Record<string, unknown>) => { setVideoLoading(false); if (e.data === 101 || e.data === 150) setEmbedError(true); },
           onReady: () => { setEmbedError(false); setVideoLoading(false); },
         }
       });

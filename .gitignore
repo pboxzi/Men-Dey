@@ -31,3 +31,7 @@ junit.xml
 # cypress
 *.crt
 node_modules
+
+# Debug files (NEVER commit secrets)
+temp_debug.mjs
+temp_debug.*

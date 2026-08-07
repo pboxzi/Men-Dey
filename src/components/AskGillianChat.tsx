@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../utils/supabase';
 import { notifyAdmins } from '../utils/notifications';
+import { logger } from '../utils/logger';
 import {
   Send, Loader2, MessageCircle, Clock, CheckCircle, Wifi, WifiOff
 } from 'lucide-react';
@@ -55,7 +56,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
       const { data } = await supabase.from('ask_gillian_status').select('*').limit(1).maybeSingle();
       if (data) setGillianStatus(data);
     } catch (e) {
-      console.error('Failed to fetch status:', e);
+      logger.error('Failed to fetch status:', e);
     }
   };
 
@@ -70,7 +71,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
         .order('created_at', { ascending: true });
       if (data) setMessages(data);
     } catch (e) {
-      console.error('Failed to fetch messages:', e);
+      logger.error('Failed to fetch messages:', e);
     }
   }, []);
 
@@ -103,7 +104,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
         return newConv.id;
       }
     } catch (e) {
-      console.error('Failed to ensure conversation:', e);
+      logger.error('Failed to ensure conversation:', e);
     }
     return null;
   };
@@ -116,7 +117,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
         const convId = await ensureConversation();
         if (convId) await fetchMessages();
       } catch (e) {
-        console.error('Init failed:', e);
+        logger.error('Init failed:', e);
       } finally {
         setLoading(false);
       }

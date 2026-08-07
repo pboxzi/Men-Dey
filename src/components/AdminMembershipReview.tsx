@@ -20,7 +20,7 @@ interface MembershipRequest {
   created_at: string;
 }
 
-const normalizeMembership = (r: any): MembershipRequest => {
+const normalizeMembership = (r: Record<string, unknown>): MembershipRequest => {
   const msg = typeof r.message === 'string' ? JSON.parse(r.message || '{}') : (r.message || {});
   const notes = typeof r.notes === 'string' ? JSON.parse(r.notes || '{}') : (r.notes || {});
   return {
@@ -94,7 +94,7 @@ export default function AdminMembershipReview() {
 
   const handleAction = async (id: string, status: string) => {
     setActionLoading(id);
-    const body: any = { status };
+    const body: Record<string, unknown> = { status };
     if (status === 'active') {
       body.membership_number = `GA-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
       body.activation_date = new Date().toISOString();
@@ -104,12 +104,12 @@ export default function AdminMembershipReview() {
     }
     try {
       const { data: current } = await supabase.from('membership_applications').select('*').eq('id', id).single();
-      let notes: any = {};
+      let notes: Record<string, unknown> = {};
       try { notes = typeof current?.notes === 'string' ? JSON.parse(current.notes) : (current?.notes || {}); } catch {}
       notes.membership_number = body.membership_number || notes.membership_number;
       notes.expiration_date = body.expiration_date || notes.expiration_date;
       if (adminNote.trim()) notes.admin_notes = notes.admin_notes ? notes.admin_notes + '\n' + adminNote.trim() : adminNote.trim();
-      const updates: any = { status, updated_at: new Date().toISOString() };
+      const updates: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
       if (status === 'active') {
         updates.reviewed_at = new Date().toISOString();
         updates.notes = JSON.stringify(notes);
@@ -133,7 +133,7 @@ export default function AdminMembershipReview() {
     setActionLoading(id);
     try {
       const { data: current } = await supabase.from('membership_applications').select('*').eq('id', id).single();
-      let notes: any = {};
+      let notes: Record<string, unknown> = {};
       try { notes = typeof current?.notes === 'string' ? JSON.parse(current.notes) : (current?.notes || {}); } catch {}
       const exp = new Date();
       exp.setFullYear(exp.getFullYear() + 1);

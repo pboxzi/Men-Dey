@@ -7,6 +7,8 @@ import { useAuth } from '../utils/AuthContext';
 import { useGlobalState } from '../utils/StateContext';
 import { supabase } from '../utils/supabase';
 import { createNotification, notifyAdmins } from '../utils/notifications';
+import { logger } from '../utils/logger';
+import type { MembershipTier } from '../types';
 
 interface MembershipData {
   id: string; user_id: string; status: string;
@@ -23,12 +25,12 @@ interface MembershipData {
 
 const TIER_ORDER = ['scully', 'gibson', 'milburn'];
 
-function normalizeMembership(row: any): MembershipData | null {
+function normalizeMembership(row: Record<string, unknown>): MembershipData | null {
   if (!row) return null;
-  let msg: any = {};
-  try { msg = typeof row.message === 'string' ? JSON.parse(row.message) : (row.message || {}); } catch {}
-  let nts: any = {};
-  try { nts = typeof row.notes === 'string' ? JSON.parse(row.notes) : (row.notes || {}); } catch {}
+  let msg: Record<string, unknown> = {};
+  try { msg = typeof row.message === 'string' ? JSON.parse(row.message) : ((row.message as Record<string, unknown>) || {}); } catch {}
+  let nts: Record<string, unknown> = {};
+  try { nts = typeof row.notes === 'string' ? JSON.parse(row.notes) : ((row.notes as Record<string, unknown>) || {}); } catch {}
   return {
     id: row.id, user_id: row.user_id,
     status: row.status === 'suspended' ? 'expired' : row.status,
@@ -57,7 +59,7 @@ export default function MembershipSection() {
   const { user, profile } = useAuth();
   const { content } = useGlobalState();
 
-  const tiers = (content?.membershipTiers || []).filter((t: any) => TIER_ORDER.includes(t.id)).sort((a: any, b: any) => TIER_ORDER.indexOf(a.id) - TIER_ORDER.indexOf(b.id));
+  const tiers = (content?.membershipTiers || []).filter((t: Record<string, unknown>) => TIER_ORDER.includes(t.id as string)).sort((a: Record<string, unknown>, b: Record<string, unknown>) => TIER_ORDER.indexOf(a.id as string) - TIER_ORDER.indexOf(b.id as string));
   const [selectedTier, setSelectedTier] = useState<string>('');
   const [cardName, setCardName] = useState('');
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
@@ -97,20 +99,20 @@ export default function MembershipSection() {
     void (async () => {
       try {
         const { data, error } = await supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
-        if (error) console.warn('membership_applications query error:', error.message);
+        if (error) logger.warn('membership_applications query error:', error.message);
         if (!cancelled) {
           setMyMembership(normalizeMembership(data));
           setCheckingMembership(false);
         }
       } catch (e) {
-        console.error('membership_applications fetch failed:', e);
+        logger.error('membership_applications fetch failed:', e);
         if (!cancelled) setCheckingMembership(false);
       }
     })();
     return () => { cancelled = true; clearTimeout(timeout); };
   }, [user]);
 
-  const activeTier = tiers.find((t: any) => t.id === selectedTier) || tiers[0] || null;
+  const activeTier = tiers.find((t: Record<string, unknown>) => t.id === selectedTier) || tiers[0] || null;
 
   const generateSerial = (tierName: string) => {
     const cleanTier = tierName.toUpperCase().replace(/\s+/g, '').substring(0, 3);
@@ -151,7 +153,7 @@ export default function MembershipSection() {
         member_name: profile?.name || user.email || '',
         member_email: profile?.email || user.email || '',
         member_phone: '',
-        member_country: (profile as any)?.country || 'Global',
+        member_country: (profile as Record<string, unknown>)?.country || 'Global',
         profile_photo: userPhoto || profile?.avatar_text || '',
         comm_method: commMethod,
       };
@@ -196,8 +198,8 @@ export default function MembershipSection() {
           openEmail('Membership Application - ' + activeTier.name, msg);
         }
       }, 800);
-    } catch (err: any) {
-      showToast(err.message || 'Network error', 'error');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Network error', 'error');
     }
     setSubmitting(false);
   };
@@ -206,7 +208,7 @@ export default function MembershipSection() {
     if (!user || !upgradeTier || !upgradeCommMethod) return;
     setUpgrading(true);
     try {
-      const t = tiers.find((x: any) => x.id === upgradeTier);
+      const t = tiers.find((x: Record<string, unknown>) => x.id === upgradeTier);
       const body = {
         user_id: user.id,
         tier_id: upgradeTier,
@@ -217,7 +219,7 @@ export default function MembershipSection() {
         member_name: profile?.name || user.email || '',
         member_email: profile?.email || user.email || '',
         member_phone: '',
-        member_country: (profile as any)?.country || 'Global',
+        member_country: (profile as Record<string, unknown>)?.country || 'Global',
         profile_photo: myMembership?.profile_photo || profile?.avatar_text || '',
         comm_method: upgradeCommMethod,
       };
@@ -260,8 +262,8 @@ export default function MembershipSection() {
           openEmail('Membership Upgrade - ' + (t?.name || ''), msg);
         }
       }, 800);
-    } catch (err: any) {
-      showToast(err.message || 'Network error', 'error');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Network error', 'error');
     }
     setUpgrading(false);
   };
@@ -364,7 +366,7 @@ export default function MembershipSection() {
     }
   };
 
-  const higherTiers = tiers.filter((t: any) => {
+  const higherTiers = tiers.filter((t: Record<string, unknown>) => {
     if (!myMembership) return true;
     const currentIdx = TIER_ORDER.indexOf(myMembership.tier_id);
     const tierIdx = TIER_ORDER.indexOf(t.id);
@@ -405,7 +407,7 @@ export default function MembershipSection() {
   // ── Active member view with upgrade option ──
   if (user && myMembership?.status === 'active') {
     const tierStyle = (id: string) => {
-      const t = tiers.find((x: any) => x.id === id);
+      const t = tiers.find((x: Record<string, unknown>) => x.id === id);
       return { bg: t?.bg_color || 'from-neutral-900 via-neutral-950 to-neutral-950', border: t?.border_color || 'border-neutral-800', icon: t?.icon_color || 'text-neutral-400' };
     };
     const ts = tierStyle(myMembership.tier_id);
@@ -500,11 +502,11 @@ export default function MembershipSection() {
           </div>
 
           {/* Benefits */}
-          {tiers.find((t: any) => t.id === myMembership.tier_id)?.benefits?.length > 0 && (
+          {tiers.find((t: Record<string, unknown>) => t.id === myMembership.tier_id)?.benefits?.length > 0 && (
             <div className="max-w-lg mx-auto w-full space-y-3">
               <h4 className="text-[10px] font-mono text-gold-500 uppercase tracking-widest font-bold text-center">Your {myMembership.tier_name} Benefits</h4>
               <div className="grid gap-2">
-                {tiers.find((t: any) => t.id === myMembership.tier_id).benefits.map((b: string, i: number) => (
+                {tiers.find((t: Record<string, unknown>) => t.id === myMembership.tier_id).benefits.map((b: string, i: number) => (
                   <div key={i} className="flex items-start gap-2.5 text-xs text-neutral-300 bg-neutral-950/20 border border-neutral-900 rounded-lg px-3.5 py-2.5">
                     <Check className="h-3.5 w-3.5 text-gold-500 shrink-0 mt-0.5" />
                     <span>{b}</span>
@@ -544,7 +546,7 @@ export default function MembershipSection() {
                   <p className="text-xs text-neutral-500">Choose your new tier. You will be upgraded from <span className="text-gold-500">{myMembership.tier_name}</span>.</p>
                 </div>
                 <div className="space-y-3">
-                  {higherTiers.map((t: any) => (
+                  {higherTiers.map((t: Record<string, unknown>) => (
                     <button key={t.id} onClick={() => setUpgradeTier(t.id)}
                       className={`w-full flex items-center justify-between p-4 rounded-lg border transition-all text-left ${upgradeTier === t.id ? 'border-gold-500/50 bg-gold-500/5' : 'border-neutral-900 hover:border-neutral-800 bg-neutral-950'}`}
                     >
@@ -658,7 +660,7 @@ export default function MembershipSection() {
 
         {/* Tier Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-          {tiers.map((tier: any) => {
+          {tiers.map((tier: Record<string, unknown>) => {
             const isSelected = tier.id === selectedTier;
             return (
               <div key={tier.id} onClick={() => setSelectedTier(tier.id)}

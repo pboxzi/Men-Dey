@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Crown, Clock, CheckCircle2, XCircle, RefreshCw, ShieldAlert, AlertTriangle, Loader2, Download, Copy, User, ArrowUp, MessageCircle, Mail, Check } from 'lucide-react';
 import { supabase } from '../utils/supabase';
+import { logger } from '../utils/logger';
 import { openWhatsApp, openEmail } from '../utils/contactSettings';
 
 interface MembershipData {
@@ -23,17 +24,17 @@ interface Props {
   authName: string;
   rank: { name: string; min: number; max: number; next: string };
   progressPercent: number;
-  content: any;
+  content: Record<string, unknown>;
 }
 
 const TIER_ORDER = ['scully', 'gibson', 'milburn'];
 
-function normalizeMembership(row: any): MembershipData | null {
+function normalizeMembership(row: Record<string, unknown>): MembershipData | null {
   if (!row) return null;
-  let msg: any = {};
-  try { msg = typeof row.message === 'string' ? JSON.parse(row.message) : (row.message || {}); } catch {}
-  let nts: any = {};
-  try { nts = typeof row.notes === 'string' ? JSON.parse(row.notes) : (row.notes || {}); } catch {}
+  let msg: Record<string, unknown> = {};
+  try { msg = typeof row.message === 'string' ? JSON.parse(row.message) : ((row.message as Record<string, unknown>) || {}); } catch {}
+  let nts: Record<string, unknown> = {};
+  try { nts = typeof row.notes === 'string' ? JSON.parse(row.notes) : ((row.notes as Record<string, unknown>) || {}); } catch {}
   return {
     id: row.id, user_id: row.user_id,
     status: row.status === 'suspended' ? 'expired' : row.status,
@@ -72,9 +73,9 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
   const [upgradeCommMethod, setUpgradeCommMethod] = useState<'whatsapp' | 'email' | null>(null);
   const [upgrading, setUpgrading] = useState(false);
 
-  const tiers: any[] = (content?.membershipTiers || []).filter((t: any) => TIER_ORDER.includes(t.id)).sort((a: any, b: any) => TIER_ORDER.indexOf(a.id) - TIER_ORDER.indexOf(b.id));
+  const tiers: Record<string, unknown>[] = (content?.membershipTiers || []).filter((t: Record<string, unknown>) => TIER_ORDER.includes(t.id as string)).sort((a: Record<string, unknown>, b: Record<string, unknown>) => TIER_ORDER.indexOf(a.id as string) - TIER_ORDER.indexOf(b.id as string));
 
-  const higherTiers = tiers.filter((t: any) => {
+  const higherTiers = tiers.filter((t: Record<string, unknown>) => {
     if (!membership) return true;
     const currentIdx = TIER_ORDER.indexOf(membership.tier_id);
     const tierIdx = TIER_ORDER.indexOf(t.id);
@@ -87,13 +88,13 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
     void (async () => {
       try {
         const { data, error } = await supabase.from('membership_applications').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle();
-        if (error) console.warn('membership_applications query error:', error.message);
+        if (error) logger.warn('membership_applications query error:', error.message);
         if (!cancelled) {
           setMembership(normalizeMembership(data));
           setLoading(false);
         }
       } catch (e) {
-        console.warn('membership_applications fetch failed:', e);
+        logger.warn('membership_applications fetch failed:', e);
         if (!cancelled) setLoading(false);
       }
     })();
@@ -104,7 +105,7 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
     if (!userId || !upgradeTier || !upgradeCommMethod) return;
     setUpgrading(true);
     try {
-      const t = tiers.find((x: any) => x.id === upgradeTier);
+      const t = tiers.find((x: Record<string, unknown>) => x.id === upgradeTier);
       const body = {
         user_id: userId,
         tier_id: upgradeTier,
@@ -145,8 +146,8 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
           openEmail('Membership Upgrade - ' + (t?.name || ''), msg);
         }
       }, 800);
-    } catch (err: any) {
-      showToast(err.message || 'Network error', 'error');
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Network error', 'error');
     }
     setUpgrading(false);
   };
@@ -251,11 +252,11 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
   };
 
   const getTierBenefits = (tierId: string) => {
-    return tiers.find((t: any) => t.id === tierId)?.benefits || [];
+    return tiers.find((t: Record<string, unknown>) => t.id === tierId)?.benefits || [];
   };
 
   const getTierStyle = (tierId: string) => {
-    const t = tiers.find((x: any) => x.id === tierId);
+    const t = tiers.find((x: Record<string, unknown>) => x.id === tierId);
     return {
       bg_color: t?.bg_color || 'from-neutral-900 via-neutral-950 to-neutral-950',
       border_color: t?.border_color || 'border-neutral-800',
@@ -460,7 +461,7 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
                   <p className="text-xs text-neutral-500">Choose your new tier. You will be upgraded from <span className="text-gold-500">{membership.tier_name}</span>.</p>
                 </div>
                 <div className="space-y-3">
-                  {higherTiers.map((t: any) => (
+                  {higherTiers.map((t: Record<string, unknown>) => (
                     <button key={t.id} onClick={() => setUpgradeTier(t.id)}
                       className={`w-full flex items-center justify-between p-4 rounded-lg border transition-all text-left ${upgradeTier === t.id ? 'border-gold-500/50 bg-gold-500/5' : 'border-neutral-900 hover:border-neutral-800 bg-neutral-950'}`}
                     >

@@ -252,3 +252,203 @@ export interface TimelineEntry {
   status: string;
   note?: string;
 }
+
+// ─── New interfaces for StateContext & Components ──────────
+
+export interface FaqEntry {
+  id: string;
+  question: string;
+  answer: string;
+  sort_order: number;
+}
+
+export interface CharityPartner {
+  id: string;
+  name: string;
+  description: string;
+  url?: string;
+}
+
+export interface MembershipTier {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  sort_order: number;
+}
+
+export interface FilmData {
+  id: string;
+  title: string;
+  year: string;
+  role: string;
+  description: string;
+  image: string;
+  sort_order: number;
+}
+
+export interface LiteraryWork {
+  id: string;
+  title: string;
+  author: string;
+  description: string;
+  image: string;
+  sort_order: number;
+}
+
+export interface KindnessLogEntry {
+  id: string;
+  title: string;
+  description: string;
+  color: string;
+  created_at: string;
+  sort_order: number;
+}
+
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  answer: string;
+  explanation: string;
+}
+
+export interface RequestType {
+  id: string;
+  type: string;
+  description: string;
+  sort_order: number;
+}
+
+export interface ProposalChatMessage {
+  id: string;
+  sender: 'user' | 'management' | 'system';
+  text: string;
+  timestamp: string;
+}
+
+export interface MembershipData {
+  id: string;
+  user_id: string;
+  status: string;
+  tier_id: string;
+  tier_name: string;
+  tier_price: string;
+  card_name: string;
+  card_serial: string;
+  member_name: string;
+  member_email: string;
+  member_phone: string;
+  member_country: string;
+  profile_photo: string;
+  comm_method: string;
+  membership_number: string;
+  activation_date: string;
+  expiration_date: string;
+  cancel_reason: string;
+  admin_notes: string;
+  created_at: string;
+}
+
+export interface PortalReward {
+  id: string;
+  title: string;
+  description: string;
+  cost: number;
+  icon: string;
+}
+
+export interface UserBadge {
+  id: string;
+  title: string;
+  desc: string;
+  date: string;
+  icon: string;
+}
+
+export interface JourneyLogEntry {
+  id: string;
+  title: string;
+  description?: string;
+  date?: string;
+  color?: string;
+  created_at?: string;
+}
+
+export interface FanNotification {
+  id: string;
+  text: string;
+  time: string;
+  unread: boolean;
+  is_read?: boolean;
+  title?: string;
+  message?: string;
+  type?: string;
+  created_at?: string;
+}
+
+export interface AdminNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: string;
+  is_read: boolean;
+  read_at?: string;
+  created_at: string;
+}
+
+export interface AdminEvent {
+  id: string;
+  title: string;
+  day: string;
+  month: string;
+  location: string;
+  time: string;
+  event_type: string;
+  created_at: string;
+}
+
+export interface ActivityFeedItem {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  created_at: string;
+}
+
+export interface FanCreation {
+  id: string;
+  title: string;
+  category: string;
+  author: string;
+  description: string;
+  likes: number;
+  created_at: string;
+}
+
+export interface ExperienceFormData {
+  title: string;
+  category: string;
+  tier: string;
+  duration: string;
+  location: string;
+  price: string;
+  spots: number;
+  description: string;
+  short_description: string;
+  full_description: string;
+  details: string[];
+  image: string;
+  gallery_images: string;
+  is_virtual: boolean;
+  max_guests: number;
+  availability: string;
+  booking_requirements: string;
+  featured: boolean;
+  published: boolean;
+  archived: boolean;
+  popular: boolean;
+  sort_order: number;
+  capacity: string;
+  intensity: string;
+}

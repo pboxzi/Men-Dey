@@ -33,8 +33,7 @@ import {
   BookOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { PaletteType, applyTheme, ThemeMode, applyMode, getStoredMode, toggleMode } from './utils/theme';
-import ThemeToggle from './components/ThemeToggle';
+import { PaletteType, applyTheme } from './utils/theme';
 import { useAuth } from './utils/AuthContext';
 
 // Import Types
@@ -91,18 +90,9 @@ export default function App() {
     if (saved) {
       applyTheme(saved);
     }
-    // Load saved theme mode
-    const savedMode = getStoredMode();
-    applyMode(savedMode);
-    setThemeMode(savedMode);
-
     const handleThemeChange = (e: StorageEvent) => {
       if (e.key === 'kr_portal_accent' && e.newValue) {
         applyTheme(e.newValue as PaletteType);
-      }
-      if (e.key === 'kr_theme_mode' && e.newValue) {
-        setThemeMode(e.newValue as ThemeMode);
-        applyMode(e.newValue as ThemeMode);
       }
     };
     window.addEventListener('storage', handleThemeChange);
@@ -146,15 +136,6 @@ export default function App() {
   // Mobile navigation collapsible menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
-
-  // Theme mode (dark/light)
-  const [themeMode, setThemeMode] = useState<ThemeMode>(getStoredMode());
-
-  const handleThemeToggle = () => {
-    const newMode = toggleMode(themeMode);
-    setThemeMode(newMode);
-    applyMode(newMode);
-  };
 
   // Scroll progress indicator state for long-form content navigation
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -365,7 +346,7 @@ export default function App() {
   // Loading gate: show welcome skeleton while profile loads after sign-in
   if (authLoading && user) {
     return (
-      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center transition-colors duration-300">
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <div className="text-center space-y-6 animate-pulse">
           <div className="mx-auto w-16 h-16 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
             <Star className="h-7 w-7 text-gold-500" />
@@ -405,9 +386,9 @@ export default function App() {
   }
 
   return (
-      <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans selection:bg-gold-500 selection:text-neutral-950 pb-24 lg:pb-0 w-full max-w-full transition-colors duration-300">
+      <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-24 lg:pb-0 w-full max-w-full">
       {/* 1. Header (Navbar) */}
-      <header className="sticky top-0 z-40 w-full border-b border-[var(--border-primary)] bg-[var(--bg-primary)]/95 backdrop-blur-md transition-colors duration-300">
+      <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md">
         <div className="flex items-center px-2 py-2.5 sm:px-4 md:px-6 gap-2 sm:gap-4 w-full min-w-0">
           {/* Logo */}
           <a href="/" className="flex items-center gap-2 group shrink-0 min-w-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
@@ -456,9 +437,6 @@ export default function App() {
 
           {/* Right Header Actions */}
           <div className="flex items-center gap-2 shrink-0 ml-auto">
-            {/* Theme Toggle */}
-            <ThemeToggle mode={themeMode} onToggle={handleThemeToggle} />
-
             {/* Auth Buttons (logged out) or Profile Menu (logged in) */}
             {!user ? (
               <div className="flex items-center gap-1 sm:gap-1.5">
@@ -533,7 +511,7 @@ export default function App() {
 
       {/* 2. Hero Section */}
       {activeNav === 'HOME' && (
-        <section className="relative overflow-hidden bg-[var(--bg-primary)] py-10 md:py-24 border-b border-[var(--border-primary)] transition-colors duration-300">
+        <section className="relative overflow-hidden bg-[#050505] py-10 md:py-24 border-b border-neutral-900/60">
           {/* Elegant Architectural Tech-Arts Grid Background */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c0c0c_1px,transparent_1px),linear-gradient(to_bottom,#0c0c0c_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] pointer-events-none" />
           

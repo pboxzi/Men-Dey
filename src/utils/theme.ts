@@ -1,5 +1,4 @@
 export type PaletteType = 'Gibson Gold' | 'Scully Red' | 'X-Files Green' | 'Cyber Blue';
-export type ThemeMode = 'dark' | 'light';
 
 export const PALETTES: Record<PaletteType, Record<string, string>> = {
   'Gibson Gold': {
@@ -52,40 +51,10 @@ export const PALETTES: Record<PaletteType, Record<string, string>> = {
   }
 };
 
-const THEME_KEY = 'kr_theme_mode';
-
-function getStoredTheme(): ThemeMode {
-  try {
-    return (localStorage.getItem(THEME_KEY) as ThemeMode) || 'dark';
-  } catch {
-    return 'dark';
-  }
-}
-
 export function applyTheme(palette: PaletteType) {
   const variables = PALETTES[palette] || PALETTES['Gibson Gold'];
   const root = document.documentElement;
   Object.entries(variables).forEach(([key, value]) => {
     root.style.setProperty(key, value);
   });
-}
-
-export function applyMode(mode: ThemeMode) {
-  const root = document.documentElement;
-  if (mode === 'light') {
-    root.setAttribute('data-theme', 'light');
-  } else {
-    root.removeAttribute('data-theme');
-  }
-  try {
-    localStorage.setItem(THEME_KEY, mode);
-  } catch {}
-}
-
-export function getStoredMode(): ThemeMode {
-  return getStoredTheme();
-}
-
-export function toggleMode(current: ThemeMode): ThemeMode {
-  return current === 'dark' ? 'light' : 'dark';
 }

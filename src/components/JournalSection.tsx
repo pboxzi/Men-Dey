@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import DOMPurify from 'dompurify';
 import { JournalEntry } from '../types';
@@ -30,7 +30,8 @@ interface JournalComment {
 
 export default function JournalSection() {
   const { journalComments: comments, addJournalComment, content } = useGlobalState();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   
   const LOCAL_IMAGES = [
     '/assets/images/gillian_investigator_look_1783349694204.jpg',
@@ -83,23 +84,25 @@ export default function JournalSection() {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [newReplyText, setNewReplyText] = useState<{ [commentId: string]: string }>({});
 
-  // URL-based routing: sync selectedEntry with ?post=slug param
+  // URL-based routing: read slug from /journal/:slug path
   useEffect(() => {
-    const slug = searchParams.get('post');
+    const pathParts = location.pathname.split('/');
+    const slug = pathParts[1] === 'journal' && pathParts[2] ? pathParts[2] : null;
     if (slug && JOURNAL_ENTRIES.length > 0) {
       const entry = JOURNAL_ENTRIES.find(e => e.id === slug || e.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') === slug);
       if (entry) setSelectedEntry(entry);
     } else if (!slug) {
       setSelectedEntry(null);
     }
-  }, [searchParams, JOURNAL_ENTRIES]);
+  }, [location.pathname, JOURNAL_ENTRIES]);
 
   // SEO: update document title and meta tags when viewing a post
   useEffect(() => {
     if (selectedEntry) {
       const title = `${selectedEntry.title} | Gillian Anderson Community`;
       const description = selectedEntry.excerpt || selectedEntry.title;
-      const url = `${window.location.origin}/journal?post=${selectedEntry.id}`;
+      const slug = selectedEntry.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const url = `${window.location.origin}/journal/${slug}`;
       const image = selectedEntry.image?.startsWith('http') ? selectedEntry.image : `${window.location.origin}${selectedEntry.image}`;
 
       document.title = title;
@@ -122,17 +125,19 @@ export default function JournalSection() {
 
   const handleSelectEntry = (entry: JournalEntry) => {
     setSelectedEntry(entry);
-    setSearchParams({ post: entry.id });
+    const slug = entry.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    navigate(`/journal/${slug}`, { replace: true });
   };
 
   const handleBackToList = () => {
     setSelectedEntry(null);
-    setSearchParams({});
+    navigate('/journal', { replace: true });
   };
 
   const handleShare = (platform: string) => {
     if (!selectedEntry) return;
-    const url = `${window.location.origin}/journal?post=${selectedEntry.id}`;
+    const slug = selectedEntry.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const url = `${window.location.origin}/journal/${slug}`;
     const text = `${selectedEntry.title} — Gillian Anderson Community`;
     const shareUrls: Record<string, string> = {
       twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`,

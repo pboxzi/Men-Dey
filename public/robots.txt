@@ -4,3 +4,4 @@ Disallow: /portal
 Disallow: /confirm-email
 
 Sitemap: https://www.cmagency.me/sitemap.xml
+Sitemap: https://wmhndjdxvxtozeyesvsy.supabase.co/functions/v1/generate-sitemap

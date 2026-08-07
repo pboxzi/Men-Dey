@@ -120,6 +120,7 @@ export default function App() {
     if (pathname === '/admin') return { vm: 'admin' as const, nav: 'HOME' };
     if (pathname === '/confirm-email') return { vm: 'confirm-email' as const, nav: 'HOME' };
     if (pathname.startsWith('/experiences/book/')) return { vm: 'landing' as const, nav: 'EXPERIENCES' };
+    if (pathname.startsWith('/journal/')) return { vm: 'landing' as const, nav: 'JOURNAL' };
     const nav = pathToNav[pathname] || 'HOME';
     return { vm: 'landing' as const, nav };
   };

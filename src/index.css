@@ -34,9 +34,51 @@
   }
 }
 
+/* ─── Theme Variables (Dark Default) ─── */
+:root {
+  --bg-primary: #050505;
+  --bg-secondary: #0a0a0a;
+  --bg-card: #070707;
+  --bg-elevated: #0d0d0d;
+  --bg-hover: #111111;
+  --bg-input: #0a0a0a;
+  --text-primary: #f5f5f5;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  --border-primary: rgba(255,255,255,0.08);
+  --border-subtle: rgba(255,255,255,0.04);
+  --shadow-color: rgba(0,0,0,0.6);
+  --overlay-bg: rgba(0,0,0,0.85);
+  --scrollbar-track: #0d0d0d;
+  --scrollbar-thumb: #262626;
+  --translate-widget-bg: rgba(5,5,5,0.9);
+  --grayscale-hero: grayscale(1);
+}
+
+/* ─── Light Mode ─── */
+[data-theme="light"] {
+  --bg-primary: #fafaf8;
+  --bg-secondary: #f5f3f0;
+  --bg-card: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: #f0eeeb;
+  --bg-input: #f5f3f0;
+  --text-primary: #1a1a1a;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  --border-primary: rgba(0,0,0,0.1);
+  --border-subtle: rgba(0,0,0,0.05);
+  --shadow-color: rgba(0,0,0,0.08);
+  --overlay-bg: rgba(255,255,255,0.85);
+  --scrollbar-track: #f0eeeb;
+  --scrollbar-thumb: #c8c5c0;
+  --translate-widget-bg: rgba(245,243,240,0.95);
+  --grayscale-hero: grayscale(0);
+}
+
 body {
-  background-color: #050505;
-  color: #f5f5f5;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-family: var(--font-sans);
   overflow-x: clip;
 }
@@ -52,10 +94,10 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0d0d0d;
+  background: var(--scrollbar-track);
 }
 ::-webkit-scrollbar-thumb {
-  background: #262626;
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -80,8 +122,8 @@ body {
 
 /* Google Translate Widget Styling */
 #google_translate_element {
-  background: rgba(5, 5, 5, 0.9);
-  border: 1px solid rgba(223, 186, 137, 0.3);
+  background: var(--translate-widget-bg);
+  border: 1px solid var(--border-primary);
   border-radius: 8px;
   padding: 4px 8px;
   backdrop-filter: blur(10px);
@@ -98,14 +140,14 @@ body {
 }
 
 #google_translate_element .goog-te-gadget-simple .goog-te-menu-value {
-  color: #dfba89 !important;
+  color: var(--gold-500) !important;
   font-family: 'JetBrains Mono', monospace !important;
   font-size: 10px !important;
   letter-spacing: 0.05em !important;
 }
 
 #google_translate_element .goog-te-gadget-simple .goog-te-menu-value:hover {
-  color: #fff !important;
+  color: var(--text-primary) !important;
 }
 
 #google_translate_element .goog-te-gadget-simple .goog-te-menu-value span {
@@ -119,9 +161,9 @@ body {
 
 /* Style the dropdown */
 #google_translate_element select.goog-te-combo {
-  background: #0a0a0a !important;
-  color: #dfba89 !important;
-  border: 1px solid rgba(223, 186, 137, 0.3) !important;
+  background: var(--bg-input) !important;
+  color: var(--gold-500) !important;
+  border: 1px solid var(--border-primary) !important;
   border-radius: 4px !important;
   padding: 2px 4px !important;
   font-family: 'JetBrains Mono', monospace !important;
@@ -186,5 +228,54 @@ body {
 #crisp-chatbox iframe {
   max-height: 500px !important;
   height: 500px !important;
+}
+
+/* ─── Theme-aware utilities ─── */
+.bg-theme-primary { background-color: var(--bg-primary); }
+.bg-theme-secondary { background-color: var(--bg-secondary); }
+.bg-theme-card { background-color: var(--bg-card); }
+.bg-theme-elevated { background-color: var(--bg-elevated); }
+.bg-theme-hover { background-color: var(--bg-hover); }
+.text-theme-primary { color: var(--text-primary); }
+.text-theme-secondary { color: var(--text-secondary); }
+.text-theme-muted { color: var(--text-muted); }
+.border-theme { border-color: var(--border-primary); }
+.border-theme-subtle { border-color: var(--border-subtle); }
+
+/* Light mode: override grayscale on hero images */
+[data-theme="light"] .grayscale-hero {
+  filter: grayscale(0) !important;
+}
+
+/* Light mode: soften card backgrounds */
+[data-theme="light"] .card-adaptive {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-primary) !important;
+}
+
+/* Light mode: adjust text colors on key sections */
+[data-theme="light"] .text-adaptive {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="light"] .text-adaptive-secondary {
+  color: var(--text-secondary) !important;
+}
+
+/* Light mode: override selection colors */
+[data-theme="light"] ::selection {
+  background-color: var(--gold-500);
+  color: #1a1a1a;
+}
+
+/* Light mode: override Google Translate widget */
+[data-theme="light"] #google_translate_element {
+  background: rgba(245, 243, 240, 0.95) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light mode: Crisp chat bottom adjustment */
+[data-theme="light"] #crisp-chatbox {
+  background: var(--bg-elevated) !important;
 }
 

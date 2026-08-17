@@ -3,10 +3,12 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { CheckCircle, XCircle, Loader2, Mail } from 'lucide-react';
 import { supabase } from '../utils/supabase';
+import { useAuth } from '../utils/AuthContext';
 
 export default function ConfirmEmail() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { refreshProfile, session } = useAuth();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
 
@@ -32,6 +34,7 @@ export default function ConfirmEmail() {
 
         const data = res.data;
         if (data?.success) {
+          await refreshProfile();
           setStatus('success');
           setMessage(`Your email has been confirmed. You can now sign in to your account.`);
         } else {
@@ -45,7 +48,7 @@ export default function ConfirmEmail() {
     };
 
     confirmEmail();
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, refreshProfile]);
 
   return (
     <div className="min-h-screen bg-[#050505] flex items-center justify-center px-4">
@@ -108,10 +111,10 @@ export default function ConfirmEmail() {
         {/* Actions */}
         {status === 'success' && (
           <button
-            onClick={() => navigate('/portal?mode=login', { replace: true })}
+            onClick={() => navigate(session ? '/portal' : '/portal?mode=login', { replace: true })}
             className="px-6 py-3 bg-gold-500 text-neutral-950 text-xs font-bold tracking-wider uppercase rounded-lg hover:bg-gold-400 transition-colors"
           >
-            Sign In Now
+            {session ? 'Enter Your Portal' : 'Sign In Now'}
           </button>
         )}
 

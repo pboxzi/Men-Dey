@@ -165,7 +165,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   // Authentication
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, session, profile, loading: sessionLoading, signIn, signUp, signOut, updateProfile } = useAuth();
+  const { user, session, profile, loading: sessionLoading, signIn, signUp, signOut, refreshProfile, updateProfile } = useAuth();
   const isLoggedIn = !!user;
 
   const [authMode, setAuthMode] = useState<'login' | 'register'>(
@@ -221,6 +221,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
         if (data) {
           // Profile exists — email confirmed! Check for session
           clearInterval(pollForConfirmation);
+          await refreshProfile();
           const { data: { session } } = await supabase.auth.getSession();
           if (session) {
             // Session active — go to portal

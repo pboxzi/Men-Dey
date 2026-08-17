@@ -35,10 +35,16 @@ interface RegistrationForm {
   attendees: number; specialRequests: string; commMethod: 'whatsapp' | 'email';
 }
 
+interface AdminEvent {
+  id: string; title: string; day: string; month: string; location: string;
+  event_time?: string; time?: string; event_type?: string; type?: string;
+  description?: string; created_at?: string;
+}
+
 export default function EventsSection() {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
-  const [dbEvents, setDbEvents] = useState<Record<string, unknown>[]>([]);
+  const [dbEvents, setDbEvents] = useState<AdminEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -96,7 +102,7 @@ export default function EventsSection() {
     setSubmitError('');
   };
 
-  const startRegistration = (evt: Record<string, unknown>) => {
+  const startRegistration = (evt: AdminEvent) => {
     if (!user) {
       navigate('/portal?mode=login');
       return;
@@ -492,7 +498,7 @@ export default function EventsSection() {
                 </h3>
               </div>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {events.map((evt: Record<string, unknown>, i: number) => (
+                {events.map((evt, i) => (
                   <motion.div key={evt.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 + i * 0.03 }}
                     className="rounded-xl border border-neutral-900 bg-neutral-950/30 overflow-hidden flex flex-col"
                   >

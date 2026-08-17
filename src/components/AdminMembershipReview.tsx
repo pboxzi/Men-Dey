@@ -13,6 +13,7 @@ interface MembershipRequest {
   card_name: string; card_serial: string;
   member_name: string; member_email: string; member_phone: string; member_country: string;
   profile_photo: string;
+  full_name?: string;
   comm_method: string;
   membership_number: string;
   activation_date: string; expiration_date: string;
@@ -20,7 +21,7 @@ interface MembershipRequest {
   created_at: string;
 }
 
-const normalizeMembership = (r: Record<string, unknown>): MembershipRequest => {
+const normalizeMembership = (r: Record<string, any>): MembershipRequest => {
   const msg = typeof r.message === 'string' ? JSON.parse(r.message || '{}') : (r.message || {});
   const notes = typeof r.notes === 'string' ? JSON.parse(r.notes || '{}') : (r.notes || {});
   return {

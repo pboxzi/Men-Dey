@@ -354,7 +354,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     if (expSubTab === 'browse') {
       setFanExpLoading(true);
       supabase.from('experiences').select('*').order('sort_order').order('title').then(({ data, error }) => {
-        if (!error && data) setFanExperiences(data || []);
+        if (!error && data) setFanExperiences(data.map((d: Record<string, unknown>) => ({
+          ...d,
+          spotsTaken: (d.spots_taken as number) || 0,
+          is_virtual: d.capacity === 'virtual',
+        })) as Experience[]);
         setFanExpLoading(false);
       });
     }
@@ -410,13 +414,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     supabase.from('loyalty_points').select('total').eq('user_id', user.id).limit(1)
       .then(({ data, error }) => {
         if (!error && data && data.length > 0) setLoyaltyPoints(data[0].total);
-      })
-      .catch(() => {});
+      });
     supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle()
       .then(({ data, error }) => {
         if (data) setMembership(normalizeMembership(data));
-      })
-      .catch(() => {});
+      });
   }, [user]);
 
   const rank = getLoyaltyRank(loyaltyPoints);
@@ -869,7 +871,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       if (r.id === requestId) {
         return {
           ...r,
-          status: newStatus,
+          status: newStatus as RequestDetail['status'],
           lastUpdated: timestamp
         };
       }
@@ -905,9 +907,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
     // Update status reactively. If targetStatus is supplied, use it; otherwise update to In Discussion if it was Submitted.
     const reqObj = userRequests.find(r => r.id === requestId);
-    let nextStatus = reqObj?.status || 'In Discussion';
+    let nextStatus: RequestDetail['status'] = reqObj?.status || 'In Discussion';
     if (targetStatus) {
-      nextStatus = targetStatus;
+      nextStatus = targetStatus as RequestDetail['status'];
     } else if (reqObj?.status === 'Submitted') {
       nextStatus = 'In Discussion';
     }
@@ -958,7 +960,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
     setMUpgrading(true);
     try {
       const tiers = backendContent?.membershipTiers || [];
-      const t = tiers.find((x: Record<string, unknown>) => x.id === mTierId);
+      const t = tiers.find((x) => x.id === mTierId);
       const serial = `GA-MEM-${Date.now().toString(36).toUpperCase()}`;
       const messageData = {
         card_serial: serial, comm_method: mContact,
@@ -2108,7 +2110,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
             {/* VIEW RENDERING 4: MEMBERSHIP (Status-aware dashboard) */}
             {activeTab === 'Membership' && (
-              <MyMembershipDashboard userId={user?.id} authName={authName} rank={displayRank} progressPercent={progressPercent} content={backendContent} />
+              <MyMembershipDashboard userId={user?.id} authName={authName} rank={displayRank} progressPercent={progressPercent} content={backendContent as unknown as Record<string, unknown>} />
             )}
 
             {/* VIEW RENDERING 5: EXPERIENCES */}
@@ -2187,7 +2189,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           const q = fanExpSearch.toLowerCase();
                           return e.title?.toLowerCase().includes(q) || e.description?.toLowerCase().includes(q);
                         }).map((exp: Experience) => {
-                          const spotsLeft = (exp.spots || 10) - (exp.spots_taken || 0);
+                          const spotsLeft = (exp.spots || 10) - (exp.spotsTaken || 0);
                           const isFull = spotsLeft <= 0;
                           return (
                             <div key={exp.id} className="group bg-neutral-950/40 border border-neutral-900 rounded-xl overflow-hidden hover:border-gold-500/20 hover:shadow-[0_0_20px_-5px_rgba(212,175,55,0.08)] transition-all duration-300 flex flex-col">
@@ -2361,7 +2363,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               </span>
                               <span className="text-[11px] font-mono text-neutral-600 flex items-center gap-1">
                                 <Clock className="h-2.5 w-2.5" />
-                                {(post as Record<string, unknown>).created_at ? getRelativeTime((post as Record<string, unknown>).created_at as string) : ''}
+                                {(post as unknown as Record<string, unknown>).created_at ? getRelativeTime((post as unknown as Record<string, unknown>).created_at as string) : ''}
                               </span>
                             </div>
                           </div>

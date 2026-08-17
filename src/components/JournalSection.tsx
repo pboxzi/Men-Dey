@@ -46,20 +46,20 @@ export default function JournalSection() {
   ];
 
   // Map journal_articles to JournalEntry format for display
-  const articleEntries: JournalEntry[] = (content.journalArticles || [])
-    .filter((a: Record<string, unknown>) => a.status === 'published')
-    .map((a: Record<string, unknown>, i: number) => ({
-      id: a.id,
-      title: a.title,
+  const articleEntries = ((content.journalArticles || []) as unknown as Record<string, unknown>[])
+    .filter((a) => a.status === 'published')
+    .map((a, i): JournalEntry => ({
+      id: a.id as string,
+      title: a.title as string,
       category: 'JOURNAL',
-      date: a.created_at ? new Date(a.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '',
+      date: a.created_at ? new Date(a.created_at as string).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '',
       image: LOCAL_IMAGES[i % LOCAL_IMAGES.length],
-      excerpt: a.excerpt || '',
-      content: a.content || '',
+      excerpt: (a.excerpt as string) || '',
+      content: (a.content as string) || '',
       readTime: a.reading_time ? `${a.reading_time} min read` : '',
     }));
   
-  const allEntries = [...articleEntries, ...(content.journalEntries || []).map((e: Record<string, unknown>, i: number) => ({
+  const allEntries: JournalEntry[] = [...articleEntries, ...(content.journalEntries || []).map((e, i) => ({
     ...e,
     image: LOCAL_IMAGES[(articleEntries.length + i) % LOCAL_IMAGES.length],
   }))];

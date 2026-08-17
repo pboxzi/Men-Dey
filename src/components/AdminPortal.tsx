@@ -378,7 +378,37 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
       .select('*')
       .order('created_at', { ascending: false })
       .limit(5);
-    if (data) setRecentBookings(data);
+    if (data) setRecentBookings(data.map((r: Record<string, unknown>) => ({
+      id: r.id as string,
+      experienceId: r.experience_id as string || '',
+      experienceTitle: r.experience_title as string || '',
+      bookingReference: r.booking_reference as string || r.id as string,
+      fullName: r.full_name as string || '',
+      email: r.email as string || '',
+      phone: r.phone as string || '',
+      country: r.country as string || '',
+      preferredDate: r.preferred_date as string || '',
+      preferredTime: r.preferred_time as string || '',
+      participants: (r.participants as number) || 1,
+      specialRequests: r.special_requests as string || '',
+      communicationMethod: (r.communication_method as 'whatsapp' | 'email') || 'email',
+      status: (r.status as ExperienceBooking['status']) || 'pending',
+      confirmedDate: r.confirmed_date as string || '',
+      confirmedTime: r.confirmed_time as string || '',
+      confirmedLocation: r.confirmed_location as string || '',
+      meetingVenue: r.meeting_venue as string || '',
+      virtualLink: r.virtual_link as string || '',
+      dressCode: r.dress_code as string || '',
+      arrivalInstructions: r.arrival_instructions as string || '',
+      adminNotes: r.admin_notes as string || '',
+      cancelledReason: r.cancelled_reason as string || '',
+      submittedDate: r.submitted_date as string || '',
+      createdAt: r.created_at as string || '',
+      userId: r.user_id as string || '',
+      memberName: r.member_name as string || '',
+      memberAvatar: r.member_avatar as string || '',
+      timeline: [],
+    } as ExperienceBooking)));
   }
 
   async function fetchDashboardStats() {
@@ -1028,8 +1058,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                         <tbody className="divide-y divide-neutral-900/60">
                           {(searchQuery
                             ? recentBookings.filter(bk =>
-                                (bk.member_name || bk.full_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                (bk.booking_reference || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                (bk.memberName || bk.fullName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                (bk.bookingReference || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                                 (bk.id || '').toString().toLowerCase().includes(searchQuery.toLowerCase())
                               )
                             : recentBookings
@@ -1042,18 +1072,18 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             return (
                               <tr key={bk.id} className="hover:bg-neutral-950/40 transition-colors">
                                 <td className="px-4 sm:px-5 py-3.5 font-mono font-semibold text-neutral-300 text-[11px]">
-                                  {bk.booking_reference || bk.id?.toString().slice(0, 8)}
+                                  {bk.bookingReference || bk.id?.toString().slice(0, 8)}
                                 </td>
                                 <td className="px-3 sm:px-4 py-3.5">
                                   <div className="flex items-center gap-2">
                                     <div className="h-6 w-6 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-mono text-gold-500 font-bold shrink-0">
-                                      {bk.member_avatar || (bk.member_name || '?').slice(0, 2).toUpperCase()}
+                                      {bk.memberAvatar || (bk.memberName || '?').slice(0, 2).toUpperCase()}
                                     </div>
-                                    <span className="text-neutral-300 font-medium text-[11px]">{bk.member_name || bk.full_name || 'Anonymous'}</span>
+                                    <span className="text-neutral-300 font-medium text-[11px]">{bk.memberName || bk.fullName || 'Anonymous'}</span>
                                   </div>
                                 </td>
                                 <td className="hidden sm:table-cell px-3 sm:px-4 py-3.5 text-neutral-400 font-mono text-[11px]">
-                                  {bk.preferred_date || bk.confirmed_date || '-'}
+                                  {bk.preferredDate || bk.confirmedDate || '-'}
                                 </td>
                                 <td className="hidden md:table-cell px-3 sm:px-4 py-3.5 text-neutral-300 font-mono">
                                   {bk.participants || 1}
@@ -1121,13 +1151,13 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                               <div className="flex-1 min-w-0 text-left">
                                 <p className="text-xs font-semibold text-white truncate group-hover:text-gold-500/80 transition-colors">{ev.title}</p>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                  <span className="text-[11px] font-mono text-neutral-500">{ev.event_time || ev.time}</span>
+                                  <span className="text-[11px] font-mono text-neutral-500">{ev.time || 'TBA'}</span>
                                   <span className="h-1 w-1 rounded-full bg-neutral-800" />
                                   <span className="text-[11px] font-mono text-neutral-500 truncate">{ev.location || 'TBA'}</span>
                                 </div>
                               </div>
                               <span className="shrink-0 self-center text-[10px] font-mono px-1.5 py-0.5 rounded border border-neutral-800 text-neutral-500">
-                                {ev.event_type || ev.type || 'Event'}
+                                {ev.event_type || 'Event'}
                               </span>
                             </div>
                           ))

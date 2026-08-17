@@ -39,7 +39,7 @@ export default function AboutSection() {
   const [showExplanation, setShowExplanation] = useState(false);
 
   // Film Explorer Data (from DB)
-  const FILMS_DATA = (content.filmsData || []).map((f: Record<string, unknown>) => ({
+  const FILMS_DATA = (content.filmsData as any[] || []).map((f) => ({
     title: f.title,
     role: f.role,
     year: f.year,
@@ -51,14 +51,14 @@ export default function AboutSection() {
   }));
 
   // Literary Works Audiobook List (from DB)
-  const LITERARY_WORKS = (content.literaryWorks || []).map((w: Record<string, unknown>) => ({
+  const LITERARY_WORKS = (content.literaryWorks as any[] || []).map((w) => ({
     title: w.title,
     duration: w.duration,
     vibe: w.vibe,
   }));
 
   // Kindness Acts Data (from DB)
-  const KINDNESS_LOG = (content.kindnessLog || []).map((k: Record<string, unknown>) => ({
+  const KINDNESS_LOG = (content.kindnessLog as any[] || []).map((k) => ({
     id: k.id,
     title: k.title,
     category: k.category,
@@ -67,7 +67,7 @@ export default function AboutSection() {
   }));
 
   // Quiz Questions Data (from DB)
-  const QUIZ_QUESTIONS = (content.quizQuestions || []).map((q: Record<string, unknown>) => ({
+  const QUIZ_QUESTIONS = (content.quizQuestions as any[] || []).map((q) => ({
     question: q.question,
     options: q.options,
     correct: q.correct,

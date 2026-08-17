@@ -31,7 +31,7 @@ const CATEGORY_META: Record<string, { color: string; icon: string }> = {
 const DEFAULT_FORM: ExperienceFormData = {
   title: '', category: 'Meet & Greet', tier: 'Scully', duration: '',
   location: '', price: '', spots: 10, spotsTaken: 0, description: '',
-  short_description: '', full_description: '', image: '',
+  short_description: '', full_description: '', details: [], image: '',
   gallery_images: '', is_virtual: false, max_guests: 10,
   availability: 'Available', booking_requirements: '',
   featured: false, published: true, archived: false, popular: false,
@@ -163,7 +163,7 @@ function CatalogueTab({ showToast }: Props) {
         if (f.location !== undefined) updates.location = f.location;
         if (f.price !== undefined) updates.price = f.price;
         if (f.spots !== undefined) updates.spots = f.spots;
-        if (f.spots_taken !== undefined) updates.spots_taken = f.spots_taken;
+        if (f.spotsTaken !== undefined) updates.spots_taken = f.spotsTaken;
         if (f.description !== undefined) updates.description = f.description;
         if (f.image !== undefined) updates.image = f.image;
         if (f.popular !== undefined) updates.popular = f.popular;
@@ -199,7 +199,7 @@ function CatalogueTab({ showToast }: Props) {
         const { error } = await supabase.from('experiences').insert({
           id, title: f.title || 'Untitled', category: f.category || 'Meet & Greet',
           tier: f.tier || 'Gold', duration: f.duration || '', location: f.location || '',
-          price: f.price || 'Complimentary', spots: f.spots || 10, spots_taken: f.spots_taken || 0,
+          price: f.price || 'Complimentary', spots: f.spots || 10, spots_taken: f.spotsTaken || 0,
           description: f.description || '', details: detailsArr, image: f.image || '',
           popular: f.popular || false, sort_order: f.sort_order || 0,
           capacity: f.capacity || '', intensity: f.intensity || '',
@@ -596,18 +596,18 @@ function BookingsTab({ showToast }: Props) {
   useEffect(() => { loadBookings(); loadExperiences(); }, []);
 
   const mapBooking = (r: Record<string, unknown>): ExperienceBooking => ({
-    id: r.id, experienceId: r.experience_id || '', experienceTitle: r.experience_title || '',
-    bookingReference: r.booking_reference || r.id, fullName: r.full_name || '',
-    email: r.email || '', phone: r.phone || '', country: r.country || '',
-    preferredDate: r.preferred_date || '', preferredTime: r.preferred_time || '',
-    participants: r.participants || 1, specialRequests: r.special_requests || '',
-    communicationMethod: r.communication_method || 'email', status: r.status || 'pending',
-    confirmedDate: r.confirmed_date || '', confirmedTime: r.confirmed_time || '',
-    confirmedLocation: r.confirmed_location || '', meetingVenue: r.meeting_venue || '',
-    virtualLink: r.virtual_link || '', dressCode: r.dress_code || '',
-    arrivalInstructions: r.arrival_instructions || '', adminNotes: r.admin_notes || '',
-    cancelledReason: r.cancelled_reason || '', submittedDate: r.submitted_date || '',
-    createdAt: r.created_at || '', userId: r.user_id || '', timeline: [],
+    id: (r.id as string) || '', experienceId: (r.experience_id as string) || '', experienceTitle: (r.experience_title as string) || '',
+    bookingReference: (r.booking_reference as string) || (r.id as string) || '', fullName: (r.full_name as string) || '',
+    email: (r.email as string) || '', phone: (r.phone as string) || '', country: (r.country as string) || '',
+    preferredDate: (r.preferred_date as string) || '', preferredTime: (r.preferred_time as string) || '',
+    participants: (r.participants as number) || 1, specialRequests: (r.special_requests as string) || '',
+    communicationMethod: (r.communication_method as 'whatsapp' | 'email') || 'email', status: (r.status as ExperienceBooking['status']) || 'pending',
+    confirmedDate: (r.confirmed_date as string) || '', confirmedTime: (r.confirmed_time as string) || '',
+    confirmedLocation: (r.confirmed_location as string) || '', meetingVenue: (r.meeting_venue as string) || '',
+    virtualLink: (r.virtual_link as string) || '', dressCode: (r.dress_code as string) || '',
+    arrivalInstructions: (r.arrival_instructions as string) || '', adminNotes: (r.admin_notes as string) || '',
+    cancelledReason: (r.cancelled_reason as string) || '', submittedDate: (r.submitted_date as string) || '',
+    createdAt: (r.created_at as string) || '', userId: (r.user_id as string) || '', timeline: [],
   });
 
   async function loadBookings() {
@@ -711,7 +711,7 @@ function BookingsTab({ showToast }: Props) {
 
         // Notify the fan if status changed
         if (editStatus !== selectedBooking!.status) {
-          const expTitle = experiences.find(e => e.id === selectedBooking!.experienceId)?.title || 'Experience';
+          const expTitle = Object.values(experiences).find(e => e.id === selectedBooking!.experienceId)?.title || 'Experience';
           notifyExperienceStatus(selectedBooking!.userId, editStatus, expTitle);
         }
       }

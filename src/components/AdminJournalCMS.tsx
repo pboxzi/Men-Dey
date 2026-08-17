@@ -16,7 +16,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
 
   const [entries, setEntries] = useState<Record<string, unknown>[]>([]);
   const [articles, setArticles] = useState<Record<string, unknown>[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -65,7 +65,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
 
   const nextEntryId = () => {
     const nums = entries.map(e => {
-      const m = e.id?.match(/^journal-(\d+)$/);
+      const m = (e.id as string)?.match(/^journal-(\d+)$/);
       return m ? parseInt(m[1], 10) : 0;
     }).filter(n => !isNaN(n));
     return `journal-${(Math.max(0, ...nums) + 1).toString()}`;
@@ -79,13 +79,13 @@ export default function AdminJournalCMS({ showToast }: Props) {
 
   const openEditEntry = (entry: Record<string, unknown>) => {
     setEditModal({ mode: 'edit', table: 'journal_entries', data: entry });
-    setEntryTitle(entry.title || '');
-    setEntryCategory(entry.category || '');
-    setEntryDate(entry.date || '');
-    setEntryImage(entry.image || '');
-    setEntryExcerpt(entry.excerpt || '');
-    setEntryReadTime(entry.read_time || '');
-    setEntryContent(entry.content || '');
+    setEntryTitle((entry.title as string) || '');
+    setEntryCategory((entry.category as string) || '');
+    setEntryDate((entry.date as string) || '');
+    setEntryImage((entry.image as string) || '');
+    setEntryExcerpt((entry.excerpt as string) || '');
+    setEntryReadTime((entry.read_time as string) || '');
+    setEntryContent((entry.content as string) || '');
   };
 
   const openCreateArticle = () => {
@@ -97,17 +97,17 @@ export default function AdminJournalCMS({ showToast }: Props) {
 
   const openEditArticle = (article: Record<string, unknown>) => {
     setEditModal({ mode: 'edit', table: 'journal_articles', data: article });
-    setArticleTitle(article.title || '');
-    setArticleSlug(article.slug || '');
-    setArticleExcerpt(article.excerpt || '');
-    setArticleContent(article.content || '');
-    setArticleCoverImageUrl(article.cover_image_url || '');
-    setArticleCategoryId(article.category_id || '');
-    setArticleTags(article.tags ? article.tags.join(', ') : '');
-    setArticleAuthor(article.author || '');
-    setArticleReadingTime(article.reading_time || 0);
-    setArticleIsFeatured(article.is_featured || false);
-    setArticleStatus(article.status || 'draft');
+    setArticleTitle((article.title as string) || '');
+    setArticleSlug((article.slug as string) || '');
+    setArticleExcerpt((article.excerpt as string) || '');
+    setArticleContent((article.content as string) || '');
+    setArticleCoverImageUrl((article.cover_image_url as string) || '');
+    setArticleCategoryId((article.category_id as string) || '');
+    setArticleTags(article.tags ? (article.tags as string[]).join(', ') : '');
+    setArticleAuthor((article.author as string) || '');
+    setArticleReadingTime((article.reading_time as number) || 0);
+    setArticleIsFeatured((article.is_featured as boolean) || false);
+    setArticleStatus((article.status as 'draft' | 'published') || 'draft');
   };
 
   const saveEntry = async (e: React.FormEvent) => {
@@ -135,11 +135,11 @@ export default function AdminJournalCMS({ showToast }: Props) {
         date: entryDate.trim() || null, image: entryImage.trim() || null,
         excerpt: entryExcerpt.trim() || null, read_time: entryReadTime.trim() || null,
         content: entryContent.trim() || null,
-      }).eq('id', editModal.data.id);
+      }).eq('id', editModal.data.id as string);
       if (error) {
         showToast(`Failed to update: ${error.message}`, 'error');
       } else {
-        setEntries(prev => prev.map(entry => entry.id === editModal.data.id ? {
+        setEntries(prev => prev.map(entry => entry.id === editModal.data!.id ? {
           ...entry, title: entryTitle.trim(), category: entryCategory.trim() || null,
           date: entryDate.trim() || null, image: entryImage.trim() || null,
           excerpt: entryExcerpt.trim() || null, read_time: entryReadTime.trim() || null,
@@ -175,11 +175,11 @@ export default function AdminJournalCMS({ showToast }: Props) {
         setEditModal(null);
       }
     } else if (editModal?.data) {
-      const { error } = await supabase.from('journal_articles').update(payload).eq('id', editModal.data.id);
+      const { error } = await supabase.from('journal_articles').update(payload).eq('id', editModal.data.id as string);
       if (error) {
         showToast(`Failed to update: ${error.message}`, 'error');
       } else {
-        setArticles(prev => prev.map(a => a.id === editModal.data.id ? { ...a, ...payload } : a));
+        setArticles(prev => prev.map(a => a.id === editModal.data!.id ? { ...a, ...payload } : a));
         showToast('Article updated', 'success');
         setEditModal(null);
       }
@@ -204,13 +204,13 @@ export default function AdminJournalCMS({ showToast }: Props) {
   const filteredEntries = entries.filter(en => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
-    return en.title?.toLowerCase().includes(q) || en.category?.toLowerCase().includes(q);
+    return (en.title as string)?.toLowerCase().includes(q) || (en.category as string)?.toLowerCase().includes(q);
   });
 
   const filteredArticles = articles.filter(ar => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
-    return ar.title?.toLowerCase().includes(q) || ar.author?.toLowerCase().includes(q);
+    return (ar.title as string)?.toLowerCase().includes(q) || (ar.author as string)?.toLowerCase().includes(q);
   });
 
   const renderDeleteConfirm = (id: string, onConfirm: () => void) => (
@@ -314,42 +314,42 @@ export default function AdminJournalCMS({ showToast }: Props) {
                 </thead>
                 <tbody className="divide-y divide-neutral-900/40">
                   {filteredEntries.map(entry => (
-                    <tr key={entry.id} className="hover:bg-neutral-950/40 transition-all">
+                    <tr key={entry.id as string} className="hover:bg-neutral-950/40 transition-all">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <div className="h-7 w-7 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0">
                             <FileText className="h-3.5 w-3.5 text-gold-500" />
                           </div>
-                          <span className="text-white font-semibold text-[11px] truncate max-w-[180px]">{entry.title}</span>
+                          <span className="text-white font-semibold text-[11px] truncate max-w-[180px]">{entry.title as string}</span>
                         </div>
                       </td>
                       <td className="px-3 py-3">
                         {entry.category ? (
-                          <span className="px-1.5 py-0.5 rounded bg-gold-500/10 border border-gold-500/20 text-[10px] font-mono text-gold-500 uppercase">{entry.category}</span>
+                          <span className="px-1.5 py-0.5 rounded bg-gold-500/10 border border-gold-500/20 text-[10px] font-mono text-gold-500 uppercase">{entry.category as string}</span>
                         ) : (
                           <span className="text-[10px] font-mono text-neutral-600">-</span>
                         )}
                       </td>
-                      <td className="px-3 py-3 font-mono text-neutral-400 text-[10px]">{entry.date || '-'}</td>
+                      <td className="px-3 py-3 font-mono text-neutral-400 text-[10px]">{(entry.date as string) || '-'}</td>
                       <td className="px-3 py-3">
                         {entry.read_time ? (
                           <span className="inline-flex items-center gap-1 text-[10px] font-mono text-neutral-400">
-                            <Clock className="h-3 w-3" /> {entry.read_time}
+                            <Clock className="h-3 w-3" /> {entry.read_time as string}
                           </span>
                         ) : (
                           <span className="text-[10px] font-mono text-neutral-600">-</span>
                         )}
                       </td>
                       <td className="px-3 py-3">
-                        <p className="text-[10px] text-neutral-400 line-clamp-2 max-w-[200px]">{entry.excerpt || '-'}</p>
+                        <p className="text-[10px] text-neutral-400 line-clamp-2 max-w-[200px]">{(entry.excerpt as string) || '-'}</p>
                       </td>
                       <td className="px-3 py-3 text-center">
                         <div className="flex items-center justify-center gap-1">
                           <button onClick={() => openEditEntry(entry)}
                             className="p-1.5 rounded text-neutral-500 hover:text-gold-400 hover:bg-neutral-800 transition-all" title="Edit"
                           ><Edit3 className="h-3.5 w-3.5" /></button>
-                          {confirmDelete === entry.id ? renderDeleteConfirm(entry.id, () => deleteEntry(entry.id)) : (
-                            <button onClick={() => setConfirmDelete(entry.id)}
+                          {confirmDelete === entry.id ? renderDeleteConfirm(entry.id as string, () => deleteEntry(entry.id as string)) : (
+                            <button onClick={() => setConfirmDelete(entry.id as string)}
                               className="p-1.5 rounded text-neutral-500 hover:text-red-400 hover:bg-neutral-800 transition-all" title="Delete"
                             ><Trash2 className="h-3.5 w-3.5" /></button>
                           )}
@@ -386,16 +386,16 @@ export default function AdminJournalCMS({ showToast }: Props) {
                 </thead>
                 <tbody className="divide-y divide-neutral-900/40">
                   {filteredArticles.map(article => (
-                    <tr key={article.id} className="hover:bg-neutral-950/40 transition-all">
+                    <tr key={article.id as string} className="hover:bg-neutral-950/40 transition-all">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <div className="h-7 w-7 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0">
                             <FileText className="h-3.5 w-3.5 text-sky-400" />
                           </div>
-                          <span className="text-white font-semibold text-[11px] truncate max-w-[180px]">{article.title}</span>
+                          <span className="text-white font-semibold text-[11px] truncate max-w-[180px]">{article.title as string}</span>
                         </div>
                       </td>
-                      <td className="px-3 py-3 font-mono text-[10px] text-neutral-400">{article.slug || '-'}</td>
+                      <td className="px-3 py-3 font-mono text-[10px] text-neutral-400">{(article.slug as string) || '-'}</td>
                       <td className="px-3 py-3">
                         <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${
                           article.status === 'published'
@@ -403,7 +403,7 @@ export default function AdminJournalCMS({ showToast }: Props) {
                             : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
                         }`}>
                           {article.status === 'published' ? <CheckCircle className="h-2.5 w-2.5" /> : <Clock className="h-2.5 w-2.5" />}
-                          {article.status || 'draft'}
+                          {(article.status as string) || 'draft'}
                         </span>
                       </td>
                       <td className="px-3 py-3">
@@ -417,17 +417,17 @@ export default function AdminJournalCMS({ showToast }: Props) {
                       </td>
                       <td className="px-3 py-3">
                         <span className="px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[10px] font-mono text-neutral-400 uppercase">
-                          {catName(article.category_id)}
+                          {catName(article.category_id as string | null)}
                         </span>
                       </td>
-                      <td className="px-3 py-3 text-[11px] text-neutral-300">{article.author || '-'}</td>
+                      <td className="px-3 py-3 text-[11px] text-neutral-300">{(article.author as string) || '-'}</td>
                       <td className="px-3 py-3 text-center">
                         <div className="flex items-center justify-center gap-1">
                           <button onClick={() => openEditArticle(article)}
                             className="p-1.5 rounded text-neutral-500 hover:text-gold-400 hover:bg-neutral-800 transition-all" title="Edit"
                           ><Edit3 className="h-3.5 w-3.5" /></button>
-                          {confirmDelete === article.id ? renderDeleteConfirm(article.id, () => deleteArticle(article.id)) : (
-                            <button onClick={() => setConfirmDelete(article.id)}
+                          {confirmDelete === article.id ? renderDeleteConfirm(article.id as string, () => deleteArticle(article.id as string)) : (
+                            <button onClick={() => setConfirmDelete(article.id as string)}
                               className="p-1.5 rounded text-neutral-500 hover:text-red-400 hover:bg-neutral-800 transition-all" title="Delete"
                             ><Trash2 className="h-3.5 w-3.5" /></button>
                           )}

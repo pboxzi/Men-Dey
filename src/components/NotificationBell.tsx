@@ -185,7 +185,7 @@ export default function NotificationBell() {
             {/* Footer */}
             <div className="p-2 border-t border-neutral-900 bg-neutral-950">
               <button
-                onClick={() => { setShowNotifications(false); }}
+                onClick={() => { setIsOpen(false); }}
                 className="w-full text-center text-[11px] font-mono text-neutral-500 hover:text-gold-500 transition-colors"
               >
                 View All Notifications

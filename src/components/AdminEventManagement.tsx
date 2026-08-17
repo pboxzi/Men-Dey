@@ -14,6 +14,7 @@ interface EventReg {
   id: string; event_id: string; event_title: string; member_name: string;
   member_email: string; ticket_ref: string; status: string;
   created_at: string; ticket_type: string; ticket_qty: number;
+  user_id: string;
 }
 
 interface Props {
@@ -278,10 +279,10 @@ function RegistrationsTab({ showToast }: Props) {
   const openDetail = (r: EventReg) => {
     setSelectedReg(r);
     setEditStatus(r.status);
-    setEditDate((r as Record<string, unknown>).confirmed_date as string || '');
-    setEditTime((r as Record<string, unknown>).confirmed_time as string || '');
-    setEditLocation((r as Record<string, unknown>).confirmed_location as string || '');
-    setEditNotes((r as Record<string, unknown>).admin_notes as string || '');
+    setEditDate((r as unknown as Record<string, unknown>).confirmed_date as string || '');
+    setEditTime((r as unknown as Record<string, unknown>).confirmed_time as string || '');
+    setEditLocation((r as unknown as Record<string, unknown>).confirmed_location as string || '');
+    setEditNotes((r as unknown as Record<string, unknown>).admin_notes as string || '');
   };
 
   const handleUpdate = async () => {

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { User, Upload, Camera, Mail, Phone, MapPin, Globe, Film, BookOpen, Save, Loader2, Crown, CheckCircle2, Heart, Radio } from 'lucide-react';
 import { useAuth } from '../utils/AuthContext';
 import { supabase } from '../utils/supabase';
+import type { MembershipData } from '../types';
 
 interface Props {
   authName: string;
@@ -13,7 +14,7 @@ interface Props {
   rank: { name: string; icon: string; badgeColor: string; min: number; max: number; next: string };
   progressPercent: number;
   loyaltyPoints: number;
-  membership: Record<string, unknown>;
+  membership: MembershipData | null;
   showToast: (msg: string, type?: 'success' | 'info' | 'error') => void;
 }
 

@@ -48,8 +48,8 @@ export default function MediaSection() {
 
   useEffect(() => {
     Promise.all([
-      supabase.from('videos').select('id, title, duration, youtube_id, subtitles, sort_order').order('sort_order').then(({ data, error }) => error || !data ? FALLBACK_VIDEOS : data.map((v: Record<string, unknown>) => ({ id: v.id, title: v.title, category: 'Uncategorized', duration: v.duration, youtubeId: v.youtube_id, subtitles: v.subtitles || [], sort_order: v.sort_order, videoPlaceholderText: v.title }))),
-      supabase.from('photos').select('id, title, url, description, likes, width, height, sort_order').order('sort_order').then(({ data, error }) => error || !data ? FALLBACK_PHOTOS : data.map((p: Record<string, unknown>) => ({ id: p.id, title: p.title, category: 'Uncategorized', url: p.url, description: p.description, likes: p.likes || 0, width: p.width, height: p.height }))),
+      supabase.from('videos').select('id, title, duration, youtube_id, subtitles, sort_order').order('sort_order').then(({ data, error }) => error || !data ? FALLBACK_VIDEOS : data.map((v: Record<string, unknown>) => ({ id: v.id, title: v.title, category: 'Uncategorized', duration: v.duration, youtubeId: v.youtube_id, subtitles: v.subtitles || [], sort_order: v.sort_order, videoPlaceholderText: v.title })) as MediaItem[]),
+      supabase.from('photos').select('id, title, url, description, likes, width, height, sort_order').order('sort_order').then(({ data, error }) => error || !data ? FALLBACK_PHOTOS : data.map((p: Record<string, unknown>) => ({ id: p.id, title: p.title, category: 'Uncategorized', url: p.url, description: p.description, likes: p.likes || 0, width: p.width, height: p.height })) as PhotoItem[]),
     ]).then(([v, p]) => {
       setVideos(v);
       setPhotos(p);

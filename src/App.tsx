@@ -35,6 +35,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from './utils/theme';
 import { useAuth } from './utils/AuthContext';
+import { supabase } from './utils/supabase';
 
 // Import Types
 import { JournalEntry, MediaItem } from './types';
@@ -336,7 +337,7 @@ export default function App() {
       opacity: 1,
       y: 0,
       transition: {
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 80,
         damping: 15,
       },
@@ -350,7 +351,7 @@ export default function App() {
       scale: 1,
       y: 0,
       transition: {
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 70,
         damping: 16,
       },

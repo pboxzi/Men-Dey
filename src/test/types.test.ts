@@ -55,7 +55,7 @@ describe('Type definitions', () => {
   it('ExperienceFormData has all fields', () => {
     const form: ExperienceFormData = {
       title: '', category: '', tier: '', duration: '', location: '',
-      price: '', spots: 0, description: '', short_description: '',
+      price: '', spots: 0, spotsTaken: 0, description: '', short_description: '',
       full_description: '', details: [], image: '', gallery_images: '',
       is_virtual: false, max_guests: 0, availability: '',
       booking_requirements: '', featured: false, published: true,

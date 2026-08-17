@@ -26,39 +26,42 @@ function formatTime(d: string) {
   return isNaN(dt.getTime()) ? d : dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 
-const SNAKE_TO_CAMEL: Record<string, string> = {
-  experience_id: 'experienceId',
-  experience_title: 'experienceTitle',
-  booking_reference: 'bookingReference',
-  full_name: 'fullName',
-  preferred_date: 'preferredDate',
-  preferred_time: 'preferredTime',
-  special_requests: 'specialRequests',
-  communication_method: 'communicationMethod',
-  confirmed_date: 'confirmedDate',
-  confirmed_time: 'confirmedTime',
-  confirmed_location: 'confirmedLocation',
-  meeting_venue: 'meetingVenue',
-  virtual_link: 'virtualLink',
-  dress_code: 'dressCode',
-  arrival_instructions: 'arrivalInstructions',
-  admin_notes: 'adminNotes',
-  cancelled_reason: 'cancelledReason',
-  submitted_date: 'submittedDate',
-  created_at: 'createdAt',
-  user_id: 'userId',
-};
-
 function toCamelCase(row: Record<string, unknown>): ExperienceBooking {
-  const out: Record<string, unknown> = {};
-  for (const key of Object.keys(row)) {
-    const camel = SNAKE_TO_CAMEL[key] || key;
-    out[camel] = row[key];
-  }
-  if (out.timeline && typeof out.timeline === 'string') {
-    try { out.timeline = JSON.parse(out.timeline); } catch { out.timeline = []; }
-  }
-  return out as ExperienceBooking;
+  return {
+    id: (row.id as string) || '',
+    experienceId: (row.experience_id as string) || '',
+    experienceTitle: (row.experience_title as string) || '',
+    bookingReference: (row.booking_reference as string) || (row.id as string) || '',
+    fullName: (row.full_name as string) || '',
+    email: (row.email as string) || '',
+    phone: (row.phone as string) || '',
+    country: (row.country as string) || '',
+    preferredDate: (row.preferred_date as string) || '',
+    preferredTime: (row.preferred_time as string) || '',
+    participants: (row.participants as number) || 1,
+    specialRequests: (row.special_requests as string) || '',
+    communicationMethod: (row.communication_method as 'whatsapp' | 'email') || 'email',
+    status: (row.status as ExperienceBooking['status']) || 'pending',
+    confirmedDate: (row.confirmed_date as string) || '',
+    confirmedTime: (row.confirmed_time as string) || '',
+    confirmedLocation: (row.confirmed_location as string) || '',
+    meetingVenue: (row.meeting_venue as string) || '',
+    virtualLink: (row.virtual_link as string) || '',
+    dressCode: (row.dress_code as string) || '',
+    arrivalInstructions: (row.arrival_instructions as string) || '',
+    adminNotes: (row.admin_notes as string) || '',
+    cancelledReason: (row.cancelled_reason as string) || '',
+    submittedDate: (row.submitted_date as string) || '',
+    createdAt: (row.created_at as string) || '',
+    userId: (row.user_id as string) || '',
+    timeline: (() => {
+      const raw = row.timeline;
+      if (!raw) return [];
+      if (typeof raw === 'string') { try { return JSON.parse(raw); } catch { return []; } }
+      if (Array.isArray(raw)) return raw;
+      return [];
+    })() as ExperienceBooking['timeline'],
+  };
 }
 
 const STATUS_STEPS = [
@@ -177,9 +180,9 @@ export default function FanExperienceBookings({ showToast }: Props) {
     }
   };
 
-  const expImg = (booking: ExperienceBooking) => {
+  const expImg = (booking: ExperienceBooking): string => {
     const exp = experiences[booking.experienceId];
-    return exp?.image || '';
+    return (exp?.image as string) || '';
   };
 
   if (selectedBooking) {

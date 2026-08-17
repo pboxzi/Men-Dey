@@ -7,6 +7,50 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
+interface Post {
+  id: string;
+  username: string;
+  handle: string;
+  content: string;
+  category: string;
+  likes: number;
+  replies_count: number;
+  created_at: string;
+  pinned: boolean;
+  flagged: boolean;
+  flag_reason: string;
+  avatar_text: string;
+  image: string;
+}
+
+interface Comment {
+  id: string;
+  post_id: string;
+  username: string;
+  avatar_text: string;
+  content: string;
+  created_at: string;
+  parent_comment_id?: string | null;
+}
+
+interface Discussion {
+  id: string;
+  author: string;
+  text: string;
+  country: string;
+  created_at: string;
+}
+
+interface FanCreation {
+  id: string;
+  author: string;
+  title: string;
+  description: string;
+  category: string;
+  likes: number;
+  created_at: string;
+}
+
 interface Props {
   showToast: (msg: string, type: 'success' | 'info' | 'error') => void;
 }
@@ -16,10 +60,10 @@ export default function AdminCommunityManagement({ showToast }: Props) {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ posts: 0, comments: 0, discussions: 0, replies: 0, fanCreations: 0 });
 
-  const [posts, setPosts] = useState<Record<string, unknown>[]>([]);
-  const [comments, setComments] = useState<Record<string, unknown>[]>([]);
-  const [discussions, setDiscussions] = useState<Record<string, unknown>[]>([]);
-  const [fanCreations, setFanCreations] = useState<Record<string, unknown>[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [discussions, setDiscussions] = useState<Discussion[]>([]);
+  const [fanCreations, setFanCreations] = useState<FanCreation[]>([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('ALL');
@@ -28,8 +72,8 @@ export default function AdminCommunityManagement({ showToast }: Props) {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   // Detail modal
-  const [detailPost, setDetailPost] = useState<Record<string, unknown> | null>(null);
-  const [detailComments, setDetailComments] = useState<Record<string, unknown>[]>([]);
+  const [detailPost, setDetailPost] = useState<Post | null>(null);
+  const [detailComments, setDetailComments] = useState<Comment[]>([]);
   const [adminCommentText, setAdminCommentText] = useState('');
   const [flagReason, setFlagReason] = useState('');
 
@@ -53,10 +97,10 @@ export default function AdminCommunityManagement({ showToast }: Props) {
       posts: pc ?? 0, comments: cc ?? 0, discussions: dc ?? 0,
       replies: drc ?? 0, fanCreations: fc ?? 0,
     });
-    if (p) setPosts(p);
-    if (cm) setComments(cm);
-    if (d) setDiscussions(d);
-    if (f) setFanCreations(f);
+    if (p) setPosts(p as Post[]);
+    if (cm) setComments(cm as Comment[]);
+    if (d) setDiscussions(d as Discussion[]);
+    if (f) setFanCreations(f as FanCreation[]);
     setLoading(false);
   };
 
@@ -128,17 +172,17 @@ export default function AdminCommunityManagement({ showToast }: Props) {
     showToast('Admin comment posted', 'success');
   };
 
-  const openDetail = async (post: Record<string, unknown>) => {
+  const openDetail = async (post: Post) => {
     setDetailPost(post);
     const { data } = await supabase.from('comments').select('*').eq('post_id', post.id).order('created_at');
-    setDetailComments(data || []);
+    setDetailComments((data || []) as Comment[]);
   };
 
   const getPostComments = (postId: string) => comments
     .filter(c => c.post_id === postId && !c.parent_comment_id)
     .map(c => ({
       ...c,
-      replies: comments.filter((r: Record<string, unknown>) => r.parent_comment_id === c.id),
+      replies: comments.filter(r => r.parent_comment_id === c.id),
     }));
 
   const categories = ['ALL', 'FAN ART', 'LETTERS', 'ENCOUNTERS'];
@@ -629,7 +673,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                         <p className="text-xs text-neutral-200 leading-relaxed">{comment.content}</p>
                         {comment.replies && comment.replies.length > 0 && (
                           <div className="pl-4 ml-2 border-l border-gold-500/15 space-y-2 pt-1">
-                            {comment.replies.map((reply: Record<string, unknown>) => (
+                            {comment.replies.map(reply => (
                               <div key={reply.id} className="bg-neutral-950/40 p-2 rounded-lg border border-neutral-900/40 space-y-1">
                                 <div className="flex justify-between items-center text-[11px] font-mono text-neutral-500">
                                   <span className="text-neutral-300 font-semibold">{reply.username}</span>

@@ -78,7 +78,7 @@ export default function AdminRewards({ showToast }: Props) {
           return { ...b, profiles: profile || { name: 'Unknown', email: '' } };
         })
       );
-      setUserBadges(withProfiles);
+      setUserBadges(withProfiles as unknown as UserBadge[]);
     }
   };
 
@@ -95,7 +95,7 @@ export default function AdminRewards({ showToast }: Props) {
           return { ...p, profiles: profile || { name: 'Unknown', email: '' } };
         })
       );
-      setUserPoints(withProfiles);
+      setUserPoints(withProfiles as unknown as UserPoints[]);
     }
   };
 

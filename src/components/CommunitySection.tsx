@@ -57,7 +57,7 @@ export default function CommunitySection() {
 
   // Toast notifications
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
-  const toastTimer = useRef<ReturnType<typeof setTimeout>>();
+  const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const showToast = useCallback((message: string, type: 'success' | 'error') => {
     if (toastTimer.current) clearTimeout(toastTimer.current);

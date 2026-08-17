@@ -5,6 +5,7 @@ import { Crown, Clock, CheckCircle2, XCircle, RefreshCw, ShieldAlert, AlertTrian
 import { supabase } from '../utils/supabase';
 import { logger } from '../utils/logger';
 import { openWhatsApp, openEmail } from '../utils/contactSettings';
+import type { MembershipTier } from '../types';
 
 interface MembershipData {
   id: string; user_id: string; status: string;
@@ -36,25 +37,25 @@ function normalizeMembership(row: Record<string, unknown>): MembershipData | nul
   let nts: Record<string, unknown> = {};
   try { nts = typeof row.notes === 'string' ? JSON.parse(row.notes) : ((row.notes as Record<string, unknown>) || {}); } catch {}
   return {
-    id: row.id, user_id: row.user_id,
-    status: row.status === 'suspended' ? 'expired' : row.status,
-    tier_id: msg.tier_id || row.tier,
-    tier_name: msg.tier_name || row.tier,
-    tier_price: msg.tier_price || msg.price || '',
-    card_name: row.full_name || '',
-    card_serial: msg.card_serial || '',
-    member_name: msg.member_name || row.full_name || '',
-    member_email: row.email || '',
-    member_phone: msg.phone || '',
-    member_country: row.country || '',
-    profile_photo: msg.profile_photo || '',
-    comm_method: msg.comm_method || '',
-    membership_number: nts.membership_number || '',
-    activation_date: row.reviewed_at || '',
-    expiration_date: nts.expiration_date || '',
-    cancel_reason: nts.cancel_reason || '',
-    admin_notes: nts.admin_notes || '',
-    created_at: row.created_at,
+    id: row.id as string, user_id: row.user_id as string,
+    status: (row.status === 'suspended' ? 'expired' : row.status) as string,
+    tier_id: (msg.tier_id || row.tier) as string,
+    tier_name: (msg.tier_name || row.tier) as string,
+    tier_price: (msg.tier_price || msg.price || '') as string,
+    card_name: (row.full_name || '') as string,
+    card_serial: (msg.card_serial || '') as string,
+    member_name: (msg.member_name || row.full_name || '') as string,
+    member_email: (row.email || '') as string,
+    member_phone: (msg.phone || '') as string,
+    member_country: (row.country || '') as string,
+    profile_photo: (msg.profile_photo || '') as string,
+    comm_method: (msg.comm_method || '') as string,
+    membership_number: (nts.membership_number || '') as string,
+    activation_date: (row.reviewed_at || '') as string,
+    expiration_date: (nts.expiration_date || '') as string,
+    cancel_reason: (nts.cancel_reason || '') as string,
+    admin_notes: (nts.admin_notes || '') as string,
+    created_at: row.created_at as string,
   };
 }
 
@@ -73,9 +74,9 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
   const [upgradeCommMethod, setUpgradeCommMethod] = useState<'whatsapp' | 'email' | null>(null);
   const [upgrading, setUpgrading] = useState(false);
 
-  const tiers: Record<string, unknown>[] = (content?.membershipTiers || []).filter((t: Record<string, unknown>) => TIER_ORDER.includes(t.id as string)).sort((a: Record<string, unknown>, b: Record<string, unknown>) => TIER_ORDER.indexOf(a.id as string) - TIER_ORDER.indexOf(b.id as string));
+  const tiers: MembershipTier[] = (content?.membershipTiers as MembershipTier[] || []).filter((t) => TIER_ORDER.includes(t.id)).sort((a, b) => TIER_ORDER.indexOf(a.id) - TIER_ORDER.indexOf(b.id));
 
-  const higherTiers = tiers.filter((t: Record<string, unknown>) => {
+  const higherTiers = tiers.filter((t) => {
     if (!membership) return true;
     const currentIdx = TIER_ORDER.indexOf(membership.tier_id);
     const tierIdx = TIER_ORDER.indexOf(t.id);
@@ -105,7 +106,7 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
     if (!userId || !upgradeTier || !upgradeCommMethod) return;
     setUpgrading(true);
     try {
-      const t = tiers.find((x: Record<string, unknown>) => x.id === upgradeTier);
+      const t = tiers.find((x) => x.id === upgradeTier);
       const body = {
         user_id: userId,
         tier_id: upgradeTier,
@@ -251,11 +252,11 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
   };
 
   const getTierBenefits = (tierId: string) => {
-    return tiers.find((t: Record<string, unknown>) => t.id === tierId)?.benefits || [];
+    return tiers.find((t) => t.id === tierId)?.benefits || [];
   };
 
   const getTierStyle = (tierId: string) => {
-    const t = tiers.find((x: Record<string, unknown>) => x.id === tierId);
+    const t = tiers.find((x) => x.id === tierId);
     return {
       bg_color: t?.bg_color || 'from-neutral-900 via-neutral-950 to-neutral-950',
       border_color: t?.border_color || 'border-neutral-800',
@@ -460,7 +461,7 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
                   <p className="text-xs text-neutral-500">Choose your new tier. You will be upgraded from <span className="text-gold-500">{membership.tier_name}</span>.</p>
                 </div>
                 <div className="space-y-3">
-                  {higherTiers.map((t: Record<string, unknown>) => (
+                  {higherTiers.map((t) => (
                     <button key={t.id} onClick={() => setUpgradeTier(t.id)}
                       className={`w-full flex items-center justify-between p-4 rounded-lg border transition-all text-left ${upgradeTier === t.id ? 'border-gold-500/50 bg-gold-500/5' : 'border-neutral-900 hover:border-neutral-800 bg-neutral-950'}`}
                     >

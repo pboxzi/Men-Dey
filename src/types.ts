@@ -175,6 +175,7 @@ export interface JournalComment {
   author: string;
   text: string;
   created_at: string;
+  replies?: JournalComment[];
 }
 
 export interface CommentRow {
@@ -243,6 +244,8 @@ export interface ExperienceBooking {
   submittedDate: string;
   createdAt: string;
   userId: string;
+  memberName?: string;
+  memberAvatar?: string;
   timeline: TimelineEntry[];
 }
 
@@ -275,6 +278,10 @@ export interface MembershipTier {
   price: string;
   description: string;
   sort_order: number;
+  bg_color: string;
+  border_color: string;
+  icon_color: string;
+  benefits: string[];
 }
 
 export interface FilmData {
@@ -427,6 +434,7 @@ export interface FanCreation {
 }
 
 export interface ExperienceFormData {
+  id?: string;
   title: string;
   category: string;
   tier: string;
@@ -434,6 +442,7 @@ export interface ExperienceFormData {
   location: string;
   price: string;
   spots: number;
+  spotsTaken: number;
   description: string;
   short_description: string;
   full_description: string;

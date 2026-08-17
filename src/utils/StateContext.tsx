@@ -69,6 +69,7 @@ export interface CommunityHighlight {
   liked: boolean;
   category: string;
   comments: PostComment[];
+  created_at?: string;
 }
 
 export interface DiscussionReply {
@@ -91,6 +92,7 @@ export interface JournalComment {
   author: string;
   text: string;
   time: string;
+  replies?: JournalComment[];
 }
 
 export interface PortalNotification {
@@ -139,6 +141,7 @@ interface StateContextType {
   addRequestChatMessage: (requestId: string, sender: 'user' | 'management' | 'system', text: string) => Promise<ProposalChatMessage>;
   addOrder: (item: string, price: string, userDisplayName: string) => Promise<ShopOrder>;
   addPost: (content: string, image: string | null, username: string, handle: string, category: string) => Promise<CommunityHighlight>;
+  deletePost: (id: string) => Promise<void>;
   likePost: (id: string) => Promise<void>;
   commentPost: (postId: string, content: string, username: string) => Promise<PostComment>;
   replyComment: (postId: string, commentId: string, content: string, username: string) => Promise<CommentReply>;

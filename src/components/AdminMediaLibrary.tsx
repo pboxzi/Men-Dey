@@ -84,14 +84,14 @@ export default function AdminMediaLibrary({ showToast }: Props) {
 
   const openDetail = (item: Record<string, unknown>, type: 'photos' | 'videos') => {
     setDetailItem({ ...item, _type: type });
-    setEditTitle(item.title || '');
-    setEditDescription(item.description || '');
-    setEditCategoryId(item.category_id ?? null);
-    setEditYoutubeId(item.youtube_id || item.youtubeId || '');
-    setEditDuration(item.duration || '');
-    setEditUrl(item.url || '');
-    setEditWidth(item.width || 0);
-    setEditHeight(item.height || 0);
+    setEditTitle((item.title as string) || '');
+    setEditDescription((item.description as string) || '');
+    setEditCategoryId((item.category_id as number) ?? null);
+    setEditYoutubeId((item.youtube_id as string) || (item.youtubeId as string) || '');
+    setEditDuration((item.duration as string) || '');
+    setEditUrl((item.url as string) || '');
+    setEditWidth((item.width as number) || 0);
+    setEditHeight((item.height as number) || 0);
   };
 
   const saveDetail = async () => {
@@ -126,7 +126,7 @@ export default function AdminMediaLibrary({ showToast }: Props) {
 
   const nextId = (prefix: string, existing: Record<string, unknown>[]) => {
     const nums = existing.map(e => {
-      const m = e.id?.match(new RegExp(`^${prefix}-(\\d+)$`));
+      const m = (e.id as string)?.match(new RegExp(`^${prefix}-(\\d+)$`));
       return m ? parseInt(m[1], 10) : 0;
     }).filter(n => !isNaN(n));
     return `${prefix}-${(Math.max(0, ...nums) + 1).toString()}`;
@@ -178,30 +178,30 @@ export default function AdminMediaLibrary({ showToast }: Props) {
 
   const filteredPhotos = photos
     .filter(p => {
-      const name = catName(p.category_id);
+      const name = catName(p.category_id as number | null);
       if (categoryFilter !== 'ALL' && name !== categoryFilter) return false;
       if (!searchQuery) return true;
       const q = searchQuery.toLowerCase();
-      return p.title?.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q);
+      return (p.title as string)?.toLowerCase().includes(q) || (p.description as string)?.toLowerCase().includes(q);
     })
     .sort((a, b) => {
-      if (sortBy === 'title') return a.title?.localeCompare(b.title);
-      if (sortBy === 'likes') return (b.likes ?? 0) - (a.likes ?? 0);
-      if (sortBy === 'created_at') return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
-      return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+      if (sortBy === 'title') return (a.title as string)?.localeCompare(b.title as string);
+      if (sortBy === 'likes') return ((b.likes as number) ?? 0) - ((a.likes as number) ?? 0);
+      if (sortBy === 'created_at') return new Date((b.created_at as string) || '0').getTime() - new Date((a.created_at as string) || '0').getTime();
+      return ((a.sort_order as number) ?? 0) - ((b.sort_order as number) ?? 0);
     });
 
   const filteredVideos = videos
     .filter(v => {
-      const name = catName(v.category_id);
+      const name = catName(v.category_id as number | null);
       if (categoryFilter !== 'ALL' && name !== categoryFilter) return false;
       if (!searchQuery) return true;
-      return v.title?.toLowerCase().includes(searchQuery.toLowerCase());
+      return (v.title as string)?.toLowerCase().includes(searchQuery.toLowerCase());
     })
     .sort((a, b) => {
-      if (sortBy === 'title') return a.title?.localeCompare(b.title);
-      if (sortBy === 'created_at') return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
-      return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+      if (sortBy === 'title') return (a.title as string)?.localeCompare(b.title as string);
+      if (sortBy === 'created_at') return new Date((b.created_at as string) || '0').getTime() - new Date((a.created_at as string) || '0').getTime();
+      return ((a.sort_order as number) ?? 0) - ((b.sort_order as number) ?? 0);
     });
 
   const renderDeleteConfirm = (id: string, onConfirm: () => void) => (
@@ -304,10 +304,10 @@ export default function AdminMediaLibrary({ showToast }: Props) {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filteredPhotos.map(photo => (
-              <div key={photo.id} className="rounded-xl border border-neutral-900 bg-neutral-950/40 overflow-hidden group hover:border-gold-500/20 transition-all">
+              <div key={photo.id as string} className="rounded-xl border border-neutral-900 bg-neutral-950/40 overflow-hidden group hover:border-gold-500/20 transition-all">
                 <div className="relative aspect-[4/3] bg-neutral-900 overflow-hidden cursor-pointer" onClick={() => openDetail(photo, 'photos')}>
                   {photo.url ? (
-                    <img src={photo.url} alt={photo.title || ''} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={photo.url as string} alt={(photo.title as string) || ''} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Image className="h-8 w-8 text-neutral-700" /></div>
                   )}
@@ -319,23 +319,23 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                 </div>
                 <div className="p-3 space-y-1.5">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-xs font-bold text-white truncate flex-1">{photo.title || 'Untitled'}</h3>
-                    <span className="shrink-0 px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[10px] font-mono text-neutral-400 uppercase">{catName(photo.category_id)}</span>
+                    <h3 className="text-xs font-bold text-white truncate flex-1">{(photo.title as string) || 'Untitled'}</h3>
+                    <span className="shrink-0 px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[10px] font-mono text-neutral-400 uppercase">{catName(photo.category_id as number | null)}</span>
                   </div>
                   {photo.description && (
-                    <p className="text-[10px] text-neutral-400 line-clamp-2 leading-relaxed">{photo.description}</p>
+                    <p className="text-[10px] text-neutral-400 line-clamp-2 leading-relaxed">{photo.description as string}</p>
                   )}
                   <div className="flex items-center justify-between pt-1">
                     <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500">
-                      <span>{photo.likes ?? 0} likes</span>
-                      {photo.width && photo.height && <span>{photo.width}×{photo.height}</span>}
+                      <span>{(photo.likes as number) ?? 0} likes</span>
+                      {photo.width && photo.height && <span>{photo.width as number}×{photo.height as number}</span>}
                     </div>
                     <div className="flex items-center gap-1">
                       <button onClick={() => openDetail(photo, 'photos')}
                         className="p-1 rounded text-neutral-500 hover:text-gold-400 hover:bg-neutral-800 transition-all" title="Edit"
                       ><Edit3 className="h-3.5 w-3.5" /></button>
-                      {confirmDelete === photo.id ? renderDeleteConfirm(photo.id, () => deletePhoto(photo.id)) : (
-                        <button onClick={() => setConfirmDelete(photo.id)}
+                      {confirmDelete === photo.id ? renderDeleteConfirm(photo.id as string, () => deletePhoto(photo.id as string)) : (
+                        <button onClick={() => setConfirmDelete(photo.id as string)}
                           className="p-1 rounded text-neutral-500 hover:text-red-400 hover:bg-neutral-800 transition-all" title="Delete"
                         ><Trash2 className="h-3.5 w-3.5" /></button>
                       )}
@@ -368,31 +368,31 @@ export default function AdminMediaLibrary({ showToast }: Props) {
                 </thead>
                 <tbody className="divide-y divide-neutral-900/40">
                   {filteredVideos.map(video => (
-                    <tr key={video.id} className="hover:bg-neutral-950/40 transition-all">
+                    <tr key={video.id as string} className="hover:bg-neutral-950/40 transition-all">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <div className="h-7 w-7 rounded bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0">
                             <Film className="h-3.5 w-3.5 text-rose-400" />
                           </div>
-                          <span className="text-white font-semibold text-[11px]">{video.title}</span>
+                          <span className="text-white font-semibold text-[11px]">{video.title as string}</span>
                         </div>
                       </td>
                       <td className="px-3 py-3">
-                        <span className="px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[10px] font-mono text-neutral-400 uppercase">{catName(video.category_id)}</span>
+                        <span className="px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-[10px] font-mono text-neutral-400 uppercase">{catName(video.category_id as number | null)}</span>
                       </td>
                       <td className="px-3 py-3">
-                        <span className="font-mono text-[10px] text-neutral-400">{video.youtube_id || '-'}</span>
+                        <span className="font-mono text-[10px] text-neutral-400">{(video.youtube_id as string) || '-'}</span>
                       </td>
                       <td className="px-3 py-3">
-                        <span className="font-mono text-[10px] text-neutral-400">{video.duration || '-'}</span>
+                        <span className="font-mono text-[10px] text-neutral-400">{(video.duration as string) || '-'}</span>
                       </td>
                       <td className="px-3 py-3 text-center">
                         <div className="flex items-center justify-center gap-1">
                           <button onClick={() => openDetail(video, 'videos')}
                             className="p-1.5 rounded text-neutral-500 hover:text-gold-400 hover:bg-neutral-800 transition-all" title="Edit"
                           ><Edit3 className="h-3.5 w-3.5" /></button>
-                          {confirmDelete === video.id ? renderDeleteConfirm(video.id, () => deleteVideo(video.id)) : (
-                            <button onClick={() => setConfirmDelete(video.id)}
+                          {confirmDelete === video.id ? renderDeleteConfirm(video.id as string, () => deleteVideo(video.id as string)) : (
+                            <button onClick={() => setConfirmDelete(video.id as string)}
                               className="p-1.5 rounded text-neutral-500 hover:text-red-400 hover:bg-neutral-800 transition-all" title="Delete"
                             ><Trash2 className="h-3.5 w-3.5" /></button>
                           )}

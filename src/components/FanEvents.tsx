@@ -83,20 +83,20 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
       return;
     }
     const regMap = new Map<string, Partial<EventItem>>();
-    if (regRes.data) regRes.data.forEach((r: Record<string, unknown>) => regMap.set(r.event_id as string, {
+    if (regRes.data) regRes.data.forEach((r: any) => regMap.set(r.event_id as string, {
       regId: r.id, ticketRef: r.ticket_ref || '', regStatus: r.status || 'pending', created_at: r.created_at,
       attendees: r.ticket_qty, specialRequests: r.special_requests, commMethod: r.communication_method,
       confirmedDate: r.confirmed_date, confirmedTime: r.confirmed_time, confirmedLocation: r.confirmed_location,
       adminNotes: r.admin_notes,
     }));
     if (evRes.data) {
-      setEvents(evRes.data.map((e: Record<string, unknown>) => {
+      setEvents(evRes.data.map((e: any) => {
         const reg = regMap.get(e.id);
         return {
           id: e.id, title: e.title, type: e.event_type || e.type || 'Event', day: e.day, month: e.month,
           location: e.location, time: e.event_time || e.time, description: e.description,
           registered: !!reg, ...reg,
-        };
+        } as EventItem;
       }));
     }
     setLoading(false);
@@ -112,7 +112,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
     }
     setRegisteringEvent(ev);
     setForm({
-      name: profile?.full_name || user?.user_metadata?.name || '',
+      name: profile?.name || user?.user_metadata?.name || '',
       email: user?.email || '',
       phone: user?.user_metadata?.phone || '',
       country: profile?.country || user?.user_metadata?.country || '',

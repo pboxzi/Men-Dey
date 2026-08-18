@@ -37,7 +37,7 @@ function normalizeMembership(row: Record<string, unknown>): MembershipData | nul
     tier_id: (msg.tier_id || row.tier) as string,
     tier_name: (msg.tier_name || row.tier) as string,
     tier_price: (msg.tier_price || msg.price || '') as string,
-    card_name: (row.full_name || '') as string,
+    card_name: (row.full_name || msg.card_name || row.card_name || '') as string,
     card_serial: (msg.card_serial || '') as string,
     member_name: (msg.member_name || row.full_name || '') as string,
     member_email: (row.email || '') as string,
@@ -62,6 +62,7 @@ export default function MembershipSection() {
   const tiers: MembershipTier[] = (content?.membershipTiers || []).filter((t) => TIER_ORDER.includes(t.id)).sort((a, b) => TIER_ORDER.indexOf(a.id) - TIER_ORDER.indexOf(b.id));
   const [selectedTier, setSelectedTier] = useState<string>('');
   const [cardName, setCardName] = useState('');
+  const [memberPhone, setMemberPhone] = useState('');
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [copiedSerial, setCopiedSerial] = useState(false);
@@ -93,9 +94,6 @@ export default function MembershipSection() {
   useEffect(() => {
     if (!user) { setCheckingMembership(false); return; }
     let cancelled = false;
-    const timeout = setTimeout(() => {
-      if (!cancelled) { setCheckingMembership(false); }
-    }, 5000);
     void (async () => {
       try {
         const { data, error } = await supabase.from('membership_applications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
@@ -109,7 +107,7 @@ export default function MembershipSection() {
         if (!cancelled) setCheckingMembership(false);
       }
     })();
-    return () => { cancelled = true; clearTimeout(timeout); };
+    return () => { cancelled = true; };
   }, [user]);
 
   const activeTier = tiers.find((t) => t.id === selectedTier) || tiers[0] || null;
@@ -152,13 +150,20 @@ export default function MembershipSection() {
         card_serial: cardSerial,
         member_name: profile?.name || user.email || '',
         member_email: profile?.email || user.email || '',
-        member_phone: '',
+        member_phone: memberPhone || '',
         member_country: (profile as unknown as Record<string, unknown>)?.country || 'Global',
         profile_photo: userPhoto || profile?.avatar_text || '',
         comm_method: commMethod,
       };
       const tierMap: Record<string, string> = { scully: 'basic', gibson: 'premium', milburn: 'vip', upgrade_pending: 'upgrade_pending' };
       const messageData = { card_serial: body.card_serial, comm_method: body.comm_method, tier_price: body.tier_price, tier_name: body.tier_name, tier_id: body.tier_id, profile_photo: body.profile_photo, phone: body.member_phone || '', member_name: body.member_name || '' };
+      const { data: existing } = await supabase.from('membership_applications')
+        .select('id').eq('user_id', user.id).in('status', ['pending', 'upgrade_pending']).maybeSingle();
+      if (existing) {
+        showToast('You already have a pending application.', 'error');
+        setSubmitting(false);
+        return;
+      }
       const { data, error } = await supabase.from('membership_applications').insert({
         user_id: body.user_id, email: body.member_email || '', full_name: body.card_name,
         country: body.member_country || 'Global', tier: tierMap[body.tier_id] || 'basic',
@@ -314,7 +319,8 @@ export default function MembershipSection() {
 
       ctx.fillStyle = 'rgba(255,255,255,0.4)';
       ctx.font = '10px monospace';
-      ctx.fillText('ISSUED ' + new Date().getFullYear(), 160, 282);
+      const year = myMembership?.activation_date ? new Date(myMembership.activation_date).getFullYear() : new Date().getFullYear();
+      ctx.fillText('ISSUED ' + year, 160, 282);
 
       if (userPhoto) {
         const img = new Image();
@@ -727,6 +733,11 @@ export default function MembershipSection() {
               <div className="space-y-1.5">
                 <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">MEMBER NAME <span className="text-red-500">*</span></label>
                 <input type="text" value={cardName} onChange={(e) => setCardName(e.target.value)} placeholder="Your name on card" maxLength={30}
+                  className="w-full bg-neutral-900 border border-neutral-800 rounded px-3.5 py-2.5 text-white outline-none focus:border-gold-500/40" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">PHONE</label>
+                <input type="tel" value={memberPhone} onChange={(e) => setMemberPhone(e.target.value)} placeholder="+1 (555) 000-0000" maxLength={20}
                   className="w-full bg-neutral-900 border border-neutral-800 rounded px-3.5 py-2.5 text-white outline-none focus:border-gold-500/40" />
               </div>
               <div className="space-y-1.5">

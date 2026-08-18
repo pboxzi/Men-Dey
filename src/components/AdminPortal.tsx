@@ -1419,7 +1419,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           )}
 
           {/* ACTIVE VIEW: MEMBERSHIPS APPLICATIONS MANAGER */}
-          {activeTab === 'Memberships' && <AdminMembershipReview />}
+          {activeTab === 'Memberships' && <AdminMembershipReview showToast={showToast} />}
           {activeTab === 'Experiences' && <AdminExperiences showToast={showToast} />}
 
           {/* ACTIVE VIEW: EVENTS */}

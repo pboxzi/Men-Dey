@@ -71,7 +71,11 @@ const STATUS_LABELS: Record<string, string> = {
   cancelled: 'Cancelled',
 };
 
-export default function AdminMembershipReview() {
+interface Props {
+  showToast: (msg: string, type: 'success' | 'info' | 'error') => void;
+}
+
+export default function AdminMembershipReview({ showToast }: Props) {
   const [requests, setRequests] = useState<MembershipRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -124,9 +128,23 @@ export default function AdminMembershipReview() {
         if (selectedRequest?.id === id) setSelectedRequest(norm);
 
         // Notify the fan
-        notifyMembershipStatus(data.user_id, status, data.tier || 'Membership');
+        const msg = JSON.parse(data.message || '{}');
+        notifyMembershipStatus(data.user_id, status, msg.tier_name || data.tier || 'Membership');
+        if (status === 'active') {
+          await supabase.from('membership_applications')
+            .update({ status: 'superseded', updated_at: new Date().toISOString() })
+            .eq('user_id', data.user_id)
+            .eq('status', 'active')
+            .neq('id', data.id);
+        }
+        showToast('Membership status updated!', 'success');
+        setSelectedRequest(null);
+        setShowDetail(false);
+        fetchRequests();
       }
-    } catch {}
+    } catch (err) {
+      showToast('Action failed: ' + (err as Error).message, 'error');
+    }
     setActionLoading(null);
   };
 
@@ -145,8 +163,14 @@ export default function AdminMembershipReview() {
       if (!error && data) {
         setRequests(prev => prev.map(r => r.id === id ? normalizeMembership(data) : r));
         if (selectedRequest?.id === id) setSelectedRequest(normalizeMembership(data));
+        showToast('Membership extended!', 'success');
+        setSelectedRequest(null);
+        setShowDetail(false);
+        fetchRequests();
       }
-    } catch {}
+    } catch (err) {
+      showToast('Action failed: ' + (err as Error).message, 'error');
+    }
     setActionLoading(null);
   };
 
@@ -164,7 +188,8 @@ export default function AdminMembershipReview() {
   };
 
   const filtered = requests.filter(r => {
-    if (filterTab !== 'all' && r.status !== filterTab) return false;
+    if (filterTab === 'pending' && r.status !== 'pending' && r.status !== 'upgrade_pending') return false;
+    if (filterTab !== 'all' && filterTab !== 'pending' && r.status !== filterTab) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return r.member_name?.toLowerCase().includes(q) ||

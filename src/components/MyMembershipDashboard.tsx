@@ -38,11 +38,11 @@ function normalizeMembership(row: Record<string, unknown>): MembershipData | nul
   try { nts = typeof row.notes === 'string' ? JSON.parse(row.notes) : ((row.notes as Record<string, unknown>) || {}); } catch {}
   return {
     id: row.id as string, user_id: row.user_id as string,
-    status: (row.status === 'suspended' ? 'expired' : row.status) as string,
+    status: row.status as string,
     tier_id: (msg.tier_id || row.tier) as string,
     tier_name: (msg.tier_name || row.tier) as string,
     tier_price: (msg.tier_price || msg.price || '') as string,
-    card_name: (row.full_name || '') as string,
+    card_name: (row.full_name || msg.card_name || row.card_name || '') as string,
     card_serial: (msg.card_serial || '') as string,
     member_name: (msg.member_name || row.full_name || '') as string,
     member_email: (row.email || '') as string,
@@ -536,7 +536,7 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
           <AlertTriangle className="h-10 w-10 text-red-500 mx-auto" />
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-red-500/20 bg-red-500/5 text-red-500 text-[10px] font-mono"><XCircle className="h-3 w-3" /> Expired</div>
           <p className="text-xs text-neutral-400">Your membership has expired. Renew to regain access to benefits.</p>
-          <button className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">Renew Membership</button>
+          <button onClick={() => navigate('/')} className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">Renew Membership</button>
         </div>
       </div>
     );
@@ -554,7 +554,7 @@ export default function MyMembershipDashboard({ userId, authName, rank, progress
           <ShieldAlert className="h-10 w-10 text-neutral-500 mx-auto" />
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-800 bg-neutral-900 text-neutral-500 text-[10px] font-mono"><XCircle className="h-3 w-3" /> Cancelled</div>
           {membership.cancel_reason && <p className="text-xs text-neutral-500">Reason: {membership.cancel_reason}</p>}
-          <button className="border border-neutral-900 hover:border-gold-500/40 text-neutral-400 hover:text-white font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">Reapply</button>
+          <button onClick={() => navigate('/')} className="border border-neutral-900 hover:border-gold-500/40 text-neutral-400 hover:text-white font-bold py-2.5 px-6 rounded tracking-widest uppercase text-xs transition-all">Reapply</button>
         </div>
       </div>
     );

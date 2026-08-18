@@ -1246,7 +1246,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                   {/* CTA */}
                   <button
-                    onClick={() => { setShowWelcome(false); setActiveTab('Dashboard'); }}
+                    onClick={async () => {
+                      if (!profile) {
+                        await refreshProfile();
+                      }
+                      setShowWelcome(false);
+                      setActiveTab('Dashboard');
+                    }}
                     className="w-full py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 text-neutral-950 font-bold text-sm tracking-wider hover:from-gold-400 hover:to-amber-400 transition-all shadow-lg shadow-gold-500/10 active:scale-[0.98]"
                   >
                     ENTER MY PORTAL

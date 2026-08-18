@@ -41,6 +41,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const setProfileFromData = useCallback(async (data: Record<string, unknown>) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    const userMeta = user?.user_metadata || {};
+    setProfile({
+      ...data,
+      bio: userMeta.bio || '',
+      favorite_movie: userMeta.favorite_movie || '',
+      contact: userMeta.contact || '',
+      avatar_url: userMeta.avatar_url || '',
+    } as Profile);
+  }, []);
+
   const fetchProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from('profiles')
@@ -48,43 +60,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .eq('id', userId)
       .single();
     if (!error && data) {
-      const { data: { user } } = await supabase.auth.getUser();
-      const userMeta = user?.user_metadata || {};
-      setProfile({
-        ...data,
-        bio: userMeta.bio || '',
-        favorite_movie: userMeta.favorite_movie || '',
-        contact: userMeta.contact || '',
-        avatar_url: userMeta.avatar_url || '',
-      } as Profile);
-    } else if (error) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const userMeta = user.user_metadata || {};
-        const profileData = {
-          id: user.id,
-          name: userMeta.name || user.email?.split('@')[0] || 'Fan',
-          email: user.email || '',
-          country: userMeta.country || 'Global',
-          city: userMeta.city || '',
-          how_heard_about: userMeta.howHeardAbout || '',
-          favorite_thing: userMeta.favoriteThing || '',
-          role: 'user' as const,
-          avatar_text: (userMeta.name?.[0] || 'F').toUpperCase(),
-          bio: userMeta.bio || '',
-          favorite_movie: userMeta.favorite_movie || '',
-          contact: userMeta.contact || '',
-          avatar_url: userMeta.avatar_url || '',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        const { error: insertError } = await supabase.from('profiles').insert(profileData);
-        if (!insertError) {
-          setProfile(profileData as Profile);
+      await setProfileFromData(data);
+      return;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    const { data: retryData, error: retryError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    if (!retryError && retryData) {
+      await setProfileFromData(retryData);
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const userMeta = user.user_metadata || {};
+      const profileData = {
+        id: user.id,
+        name: userMeta.name || user.email?.split('@')[0] || 'Fan',
+        email: user.email || '',
+        country: userMeta.country || 'Global',
+        city: userMeta.city || '',
+        how_heard_about: userMeta.howHeardAbout || '',
+        favorite_thing: userMeta.favoriteThing || '',
+        role: 'user' as const,
+        avatar_text: (userMeta.name?.[0] || 'F').toUpperCase(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      const { error: insertError } = await supabase.from('profiles').insert(profileData);
+      if (!insertError) {
+        setProfile(profileData as Profile);
+      } else {
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        if (existingProfile) {
+          await setProfileFromData(existingProfile);
         }
       }
     }
-  }, []);
+  }, [setProfileFromData]);
 
   useEffect(() => {
     const initialize = async () => {

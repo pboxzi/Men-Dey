@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+﻿import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { CommunityHighlight } from '../types';
@@ -253,13 +253,7 @@ export default function CommunitySection() {
   }, [activeCategory, activeSort, searchQuery]);
 
   return (
-    <section id="community-page" className="bg-[#050505] py-20 px-4 md:px-6 relative min-h-[900px] overflow-hidden">
-      {/* Ambient glow layers */}
-      <div className="absolute left-1/2 top-0 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-gold-500/5 blur-[150px] pointer-events-none" />
-      <div className="absolute left-1/3 top-1/3 h-[400px] w-[400px] rounded-full bg-amber-500/5 blur-[120px] pointer-events-none" />
-      <div className="absolute right-10 bottom-1/4 h-72 w-72 rounded-full bg-gold-500/5 blur-[100px] pointer-events-none" />
-      <div className="absolute left-20 top-1/2 h-1 w-1/3 opacity-[0.03] pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent, #d4af37, transparent)' }} />
-
+    <section id="community-page" className="bg-white py-20 px-4 md:px-6 relative min-h-[900px] overflow-hidden border-t border-neutral-200">
       {/* Toast */}
       <AnimatePresence>
         {toast && (
@@ -269,7 +263,7 @@ export default function CommunitySection() {
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs font-mono border ${
               toast.type === 'success'
-                ? 'bg-gold-500/10 border-gold-500/30 text-gold-400'
+                ? 'bg-[#C89B3C]/10 border-[#C89B3C]/30 text-gold-400'
                 : 'bg-red-500/10 border-red-500/30 text-red-400'
             }`}
           >
@@ -287,15 +281,15 @@ export default function CommunitySection() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-center space-y-6"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-400 text-[10px] font-mono tracking-[0.2em] uppercase">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C89B3C]/20 bg-[#C89B3C]/5 text-gold-400 text-[10px] font-mono tracking-[0.2em] uppercase">
             <Sparkles className="h-3.5 w-3.5" />
             Welcome Home
           </div>
           <div>
-            <h2 className="font-serif text-4xl md:text-6xl font-extrabold text-white uppercase tracking-tight leading-tight">
-              The <span className="text-gold-500">Kindred</span>
+            <h2 className="font-serif text-4xl md:text-6xl font-extrabold text-[#111] uppercase tracking-tight leading-tight">
+              The <span className="text-[#C89B3C]">Kindred</span>
             </h2>
-            <p className="text-sm md:text-base text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed mt-3">
+            <p className="text-sm md:text-base text-[#444] max-w-2xl mx-auto font-sans leading-relaxed mt-3">
               A sanctuary for every soul who finds light in Gillian's work. Here, your voice matters —{' '}
               <br className="hidden sm:block" />
               your art, your letters, your cherished encounters. You are among friends.
@@ -306,9 +300,9 @@ export default function CommunitySection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 1 }}
-            className="max-w-xl mx-auto px-6 py-4 rounded-2xl border border-gold-500/10 bg-gradient-to-r from-gold-500/[0.03] via-transparent to-gold-500/[0.03]"
+            className="max-w-xl mx-auto px-6 py-4 rounded-2xl border border-[#C89B3C]/10 bg-gradient-to-r from-gold-500/[0.03] via-transparent to-gold-500/[0.03]"
           >
-            <p className="text-[11px] font-mono text-neutral-500 leading-relaxed italic">
+            <p className="text-[11px] font-mono text-[#444] leading-relaxed italic">
               &ldquo;This is a space woven from appreciation — every story shared, every heart given,{' '}
               every kind word whispered between strangers who became family.&rdquo;
             </p>
@@ -323,7 +317,7 @@ export default function CommunitySection() {
           className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto"
         >
           {[
-            { icon: Heart, value: communityStats.posts, label: 'Stories Shared', color: 'text-gold-500' },
+            { icon: Heart, value: communityStats.posts, label: 'Stories Shared', color: 'text-[#C89B3C]' },
             { icon: MessageCircle, value: communityStats.comments, label: 'Kind Words', color: 'text-emerald-400' },
             { icon: Star, value: communityStats.likes, label: 'Hearts Given', color: 'text-red-400' },
             { icon: Users, value: communityStats.contributors, label: 'Souls Connected', color: 'text-amber-400' },
@@ -331,12 +325,12 @@ export default function CommunitySection() {
             <motion.div
               key={stat.label}
               whileHover={{ scale: 1.02, y: -2 }}
-              className="relative group bg-gradient-to-b from-neutral-950/80 to-neutral-950/40 border border-neutral-900 rounded-xl p-4 text-center space-y-1.5 hover:border-gold-500/20 transition-all duration-500 overflow-hidden"
+              className="relative group bg-gradient-to-b from-neutral-50 to-white border border-[rgba(0,0,0,0.06)] rounded-xl p-4 text-center space-y-1.5 hover:border-[#C89B3C]/20 transition-all duration-500 overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-b from-gold-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <stat.icon className={`h-5 w-5 ${stat.color} mx-auto relative`} />
               <span className={`block text-xl font-bold ${stat.color} relative`}>{stat.value}</span>
-              <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest relative">{stat.label}</span>
+              <span className="text-[11px] font-mono text-[#444] uppercase tracking-widest relative">{stat.label}</span>
             </motion.div>
           ))}
         </motion.div>
@@ -350,18 +344,18 @@ export default function CommunitySection() {
             transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-4 lg:sticky lg:top-24 space-y-5"
           >
-            <div className="relative bg-gradient-to-b from-neutral-950/90 to-neutral-950/60 border border-gold-500/10 rounded-2xl p-6 shadow-xl space-y-5 text-left">
+            <div className="relative bg-gradient-to-b from-neutral-50 to-white border border-[#C89B3C]/10 rounded-2xl p-6 shadow-xl space-y-5 text-left">
               <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-gold-500/30 to-transparent" />
 
-              <div className="flex items-center gap-2 pb-4 border-b border-gold-500/10">
-                <div className="h-8 w-8 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
+              <div className="flex items-center gap-2 pb-4 border-b border-[#C89B3C]/10">
+                <div className="h-8 w-8 rounded-lg bg-[#C89B3C]/10 border border-[#C89B3C]/20 flex items-center justify-center">
                   <Sparkles className="h-4 w-4 text-gold-400" />
                 </div>
                 <div>
                   <h3 className="font-serif text-sm tracking-widest text-gold-300 uppercase font-bold">
                     Share Your Light
                   </h3>
-                  <p className="text-[11px] font-mono text-neutral-600">Your voice matters here</p>
+                  <p className="text-[11px] font-mono text-[#444]">Your voice matters here</p>
                 </div>
               </div>
 
@@ -371,9 +365,9 @@ export default function CommunitySection() {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="bg-gradient-to-r from-gold-500/10 to-amber-500/10 border border-gold-500/30 p-4 rounded-xl flex items-center gap-3 text-xs text-gold-400 font-serif"
+                  className="bg-gradient-to-r from-gold-500/10 to-amber-500/10 border border-[#C89B3C]/30 p-4 rounded-xl flex items-center gap-3 text-xs text-gold-400 font-serif"
                 >
-                  <div className="h-8 w-8 rounded-full bg-gold-500/20 flex items-center justify-center shrink-0">
+                  <div className="h-8 w-8 rounded-full bg-[#C89B3C]/20 flex items-center justify-center shrink-0">
                     <CheckCircle className="h-4 w-4 text-gold-400" />
                   </div>
                   <span>&ldquo;Thank you, dear heart. Your story now lives among the Kindred, held in gentle hands.&rdquo;</span>
@@ -382,8 +376,8 @@ export default function CommunitySection() {
 
               <form onSubmit={handleCreatePostSubmit} className="space-y-4 text-xs">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold flex items-center gap-1.5">
-                    <span className="h-1 w-1 rounded-full bg-gold-500/60" />
+                  <label className="text-[10px] font-mono tracking-wider text-[#444] uppercase font-semibold flex items-center gap-1.5">
+                    <span className="h-1 w-1 rounded-full bg-[#C89B3C]/60" />
                     Your Name
                   </label>
                   <input
@@ -392,27 +386,27 @@ export default function CommunitySection() {
                     placeholder="e.g. A fellow traveller"
                     value={uploaderName}
                     onChange={(e) => setUploaderName(e.target.value)}
-                    className="w-full bg-neutral-900/80 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-white outline-none focus:border-gold-500/40 focus:bg-neutral-900 placeholder-neutral-600 transition-all duration-300"
+                    className="w-full bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-lg px-3.5 py-2.5 text-[#111] outline-none focus:border-[#C89B3C]/40 focus:bg-white placeholder-neutral-600 transition-all duration-300"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold flex items-center gap-1.5">
+                  <label className="text-[10px] font-mono tracking-wider text-[#444] uppercase font-semibold flex items-center gap-1.5">
                     <span className="h-1 w-1 rounded-full bg-neutral-600/60" />
-                    Social Handle <span className="text-neutral-600 font-normal normal-case">(optional)</span>
+                    Social Handle <span className="text-[#444] font-normal normal-case">(optional)</span>
                   </label>
                   <input
                     type="text"
                     placeholder="e.g. @truth_seeker_93"
                     value={uploaderHandle}
                     onChange={(e) => setUploaderHandle(e.target.value)}
-                    className="w-full bg-neutral-900/80 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-white outline-none focus:border-gold-500/40 focus:bg-neutral-900 placeholder-neutral-600 transition-all duration-300"
+                    className="w-full bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-lg px-3.5 py-2.5 text-[#111] outline-none focus:border-[#C89B3C]/40 focus:bg-white placeholder-neutral-600 transition-all duration-300"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold flex items-center gap-1.5">
-                    <span className="h-1 w-1 rounded-full bg-gold-500/60" />
+                  <label className="text-[10px] font-mono tracking-wider text-[#444] uppercase font-semibold flex items-center gap-1.5">
+                    <span className="h-1 w-1 rounded-full bg-[#C89B3C]/60" />
                     What kind of story?
                   </label>
                   <div className="flex gap-2">
@@ -428,8 +422,8 @@ export default function CommunitySection() {
                         onClick={() => setPostCategory(cat.id)}
                         className={`flex-1 flex flex-col items-center gap-1 px-2 py-2.5 rounded-lg text-[11px] font-mono tracking-wider uppercase border transition-all duration-200 ${
                           postCategory === cat.id
-                            ? 'bg-gold-500 border-gold-400 text-neutral-950 font-bold scale-[1.02] shadow-lg shadow-gold-500/20'
-                            : 'bg-neutral-900/80 border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700'
+                            ? 'bg-[#C89B3C] border-gold-400 text-neutral-950 font-bold scale-[1.02] shadow-lg shadow-gold-500/20'
+                            : 'bg-white/80 border-[rgba(0,0,0,0.06)] text-[#444] hover:text-[#111] hover:border-neutral-700'
                         }`}
                       >
                         <cat.icon className="h-3.5 w-3.5" />
@@ -440,8 +434,8 @@ export default function CommunitySection() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold flex items-center gap-1.5">
-                    <span className="h-1 w-1 rounded-full bg-gold-500/60" />
+                  <label className="text-[10px] font-mono tracking-wider text-[#444] uppercase font-semibold flex items-center gap-1.5">
+                    <span className="h-1 w-1 rounded-full bg-[#C89B3C]/60" />
                     Your story
                   </label>
                   <textarea
@@ -451,19 +445,19 @@ export default function CommunitySection() {
                     placeholder="What's in your heart? A cherished memory, a piece of art, words of gratitude..."
                     value={postContent}
                     onChange={(e) => setPostContent(e.target.value)}
-                    className="w-full bg-neutral-900/80 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-white outline-none focus:border-gold-500/40 focus:bg-neutral-900 resize-none leading-relaxed placeholder-neutral-600 transition-all duration-300"
+                    className="w-full bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-lg px-3.5 py-2.5 text-[#111] outline-none focus:border-[#C89B3C]/40 focus:bg-white resize-none leading-relaxed placeholder-neutral-600 transition-all duration-300"
                   />
                   <div className="flex justify-end">
-                    <span className={`text-[11px] font-mono transition-colors duration-300 ${postContent.length > 450 ? 'text-red-400' : 'text-neutral-600'}`}>
+                    <span className={`text-[11px] font-mono transition-colors duration-300 ${postContent.length > 450 ? 'text-red-400' : 'text-[#444]'}`}>
                       {postContent.length}/500
                     </span>
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold flex items-center gap-1.5">
+                  <label className="text-[10px] font-mono tracking-wider text-[#444] uppercase font-semibold flex items-center gap-1.5">
                     <span className="h-1 w-1 rounded-full bg-neutral-600/60" />
-                    Add a picture <span className="text-neutral-600 font-normal normal-case">(optional)</span>
+                    Add a picture <span className="text-[#444] font-normal normal-case">(optional)</span>
                   </label>
                   <div
                     onDragOver={handleDragOver}
@@ -472,10 +466,10 @@ export default function CommunitySection() {
                     onClick={triggerFileSelect}
                     className={`border border-dashed rounded-xl p-4 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center space-y-2 ${
                       isDragOver
-                        ? 'border-gold-500 bg-gold-500/5 scale-[1.01]'
+                        ? 'border-[#C89B3C] bg-[#C89B3C]/5 scale-[1.01]'
                         : postImage
                         ? 'border-emerald-500/40 bg-emerald-500/5'
-                        : 'border-neutral-800 hover:border-neutral-700 bg-neutral-900/50 hover:bg-neutral-900/70'
+                        : 'border-[rgba(0,0,0,0.06)] hover:border-neutral-700 bg-[#F8F6F2] hover:bg-white/70'
                     }`}
                   >
                     <input
@@ -491,18 +485,18 @@ export default function CommunitySection() {
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); setPostImage(null); }}
-                          className="absolute right-2 top-2 p-1.5 rounded-full bg-neutral-950/80 text-red-500 hover:text-red-400 hover:bg-neutral-950 transition-colors"
+                          className="absolute right-2 top-2 p-1.5 rounded-full bg-white/80 text-red-500 hover:text-red-400 hover:bg-white transition-colors"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     ) : (
                       <>
-                        <div className="h-10 w-10 rounded-full bg-neutral-900/80 border border-neutral-800 flex items-center justify-center">
-                          <Upload className="h-4 w-4 text-neutral-500" />
+                        <div className="h-10 w-10 rounded-full bg-white/80 border border-[rgba(0,0,0,0.06)] flex items-center justify-center">
+                          <Upload className="h-4 w-4 text-[#444]" />
                         </div>
-                        <p className="font-mono text-[11px] text-neutral-400">Drop an image here or click to browse</p>
-                        <p className="text-[10px] text-neutral-600">PNG, JPG &middot; up to 5MB</p>
+                        <p className="font-mono text-[11px] text-[#444]">Drop an image here or click to browse</p>
+                        <p className="text-[10px] text-[#444]">PNG, JPG &middot; up to 5MB</p>
                       </>
                     )}
                   </div>
@@ -534,16 +528,16 @@ export default function CommunitySection() {
               <div className="relative">
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500 pointer-events-none" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#444] pointer-events-none" />
                     <input
                       type="text"
                       placeholder="Search stories, names, or words..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-neutral-950 border border-neutral-900 rounded-lg pl-9 pr-8 py-2 text-xs text-white outline-none focus:border-gold-500/40 placeholder-neutral-600 transition-all duration-300"
+                      className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg pl-9 pr-8 py-2 text-xs text-[#111] outline-none focus:border-[#C89B3C]/40 placeholder-neutral-600 transition-all duration-300"
                     />
                     {searchQuery && (
-                      <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors">
+                      <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#444] hover:text-[#111] transition-colors">
                         <X className="h-3 w-3" />
                       </button>
                     )}
@@ -552,7 +546,7 @@ export default function CommunitySection() {
               </div>
 
               {/* Category + Sort row */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-neutral-900 pb-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[rgba(0,0,0,0.06)] pb-4">
                 <div className="flex flex-wrap gap-2">
                   {categories.map((cat) => {
                     const IconComp = cat.icon;
@@ -563,14 +557,14 @@ export default function CommunitySection() {
                         onClick={() => setActiveCategory(cat.id)}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono tracking-wider uppercase border transition-all duration-200 ${
                           activeCategory === cat.id
-                            ? 'bg-gold-500 border-gold-400 text-neutral-950 font-bold shadow-sm'
-                            : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-700'
+                            ? 'bg-[#C89B3C] border-gold-400 text-neutral-950 font-bold shadow-sm'
+                            : 'bg-white border-[rgba(0,0,0,0.06)] text-[#444] hover:text-[#111] hover:border-neutral-700'
                         }`}
                       >
                         <IconComp className="h-3 w-3" />
                         {cat.label}
                         <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-medium ${
-                          activeCategory === cat.id ? 'bg-neutral-950/20 text-neutral-950' : 'bg-neutral-900 text-neutral-500'
+                          activeCategory === cat.id ? 'bg-[#F8F6F2] text-neutral-950' : 'bg-white text-[#444]'
                         }`}>
                           {count}
                         </span>
@@ -580,7 +574,7 @@ export default function CommunitySection() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="flex gap-0.5 bg-neutral-950 border border-neutral-900 rounded-lg p-0.5">
+                  <div className="flex gap-0.5 bg-white border border-[rgba(0,0,0,0.06)] rounded-lg p-0.5">
                     {[
                       { id: 'latest' as const, label: 'Latest', icon: Clock },
                       { id: 'liked' as const, label: 'Most Loved', icon: TrendingUp },
@@ -591,8 +585,8 @@ export default function CommunitySection() {
                         onClick={() => setActiveSort(sort.id)}
                         className={`flex items-center gap-1 px-2.5 py-1 rounded text-[10px] font-mono uppercase tracking-wider transition-all ${
                           activeSort === sort.id
-                            ? 'bg-neutral-900 text-gold-500'
-                            : 'text-neutral-500 hover:text-white'
+                            ? 'bg-white text-[#C89B3C]'
+                            : 'text-[#444] hover:text-[#111]'
                         }`}
                       >
                         <sort.icon className="h-2.5 w-2.5" />
@@ -600,7 +594,7 @@ export default function CommunitySection() {
                       </button>
                     ))}
                   </div>
-                  <span className="text-[11px] font-mono text-neutral-600 min-w-[5rem] text-right">
+                  <span className="text-[11px] font-mono text-[#444] min-w-[5rem] text-right">
                     {filteredHighlights.length} {filteredHighlights.length === 1 ? 'story' : 'stories'}
                   </span>
                 </div>
@@ -616,26 +610,26 @@ export default function CommunitySection() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * Math.min(i, 5), duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="relative group rounded-2xl border border-neutral-900 bg-gradient-to-b from-neutral-950/70 via-neutral-950/40 to-neutral-950/20 p-5 space-y-4 transition-all duration-500 hover:border-gold-500/20 hover:shadow-[0_0_40px_-10px_rgba(212,175,55,0.08)] text-left overflow-hidden"
+                    className="relative group rounded-2xl border border-[rgba(0,0,0,0.06)] bg-gradient-to-b from-neutral-950/70 via-neutral-100/40 to-neutral-950/20 p-5 space-y-4 transition-all duration-500 hover:border-[#C89B3C]/20 hover:shadow-[0_0_40px_-10px_rgba(212,175,55,0.08)] text-left overflow-hidden"
                   >
                     <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-gold-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                     {/* Creator Header + Delete */}
                     <div className="flex items-center justify-between relative">
                       <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-gold-500/20 via-amber-500/10 to-neutral-900 border border-gold-500/20 flex items-center justify-center text-xs font-mono font-medium text-gold-400 shrink-0">
+                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-gold-500/20 via-amber-500/10 to-neutral-900 border border-[#C89B3C]/20 flex items-center justify-center text-xs font-mono font-medium text-gold-400 shrink-0">
                           {hl.avatarText}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-xs font-semibold text-white tracking-wide flex items-center gap-1.5">
+                          <span className="text-xs font-semibold text-[#111] tracking-wide flex items-center gap-1.5">
                             {hl.username}
                             {hl.likes >= 5 && (
-                              <span title="Kindred Heart" className="text-gold-500">
+                              <span title="Kindred Heart" className="text-[#C89B3C]">
                                 <Star className="h-3 w-3 fill-gold-500" />
                               </span>
                             )}
                           </span>
-                          <span className="text-[10px] font-mono text-neutral-500">{hl.handle}</span>
+                          <span className="text-[10px] font-mono text-[#444]">{hl.handle}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -646,7 +640,7 @@ export default function CommunitySection() {
                         }`}>
                           {hl.category || 'FAN ART'}
                         </span>
-                        <span className="text-[11px] font-mono text-neutral-600 flex items-center gap-1">
+                        <span className="text-[11px] font-mono text-[#444] flex items-center gap-1">
                           <Clock className="h-2.5 w-2.5" />
                           {getRelativeTime(hl.created_at)}
                         </span>
@@ -654,11 +648,11 @@ export default function CommunitySection() {
                     </div>
 
                     {/* Content */}
-                    <p className="text-xs text-neutral-300 leading-relaxed font-sans relative">{hl.content}</p>
+                    <p className="text-xs text-[#444] leading-relaxed font-sans relative">{hl.content}</p>
 
                     {/* Image */}
                     {hl.image && (
-                      <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-neutral-900 border border-neutral-900/60 group/img">
+                      <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-white border border-[rgba(0,0,0,0.06)]/60 group/img">
                         <img
                           src={hl.image}
                           alt="Community Highlight Visual"
@@ -671,12 +665,12 @@ export default function CommunitySection() {
                     )}
 
                     {/* Footer Actions */}
-                    <div className="flex items-center gap-6 text-[10px] font-mono text-neutral-500 border-t border-neutral-900/50 pt-3.5 relative">
+                    <div className="flex items-center gap-6 text-[10px] font-mono text-[#444] border-t border-[rgba(0,0,0,0.06)]/50 pt-3.5 relative">
                       <motion.button
                         whileTap={{ scale: 1.2 }}
                         onClick={() => handleLikeHighlight(hl.id)}
                         className={`flex items-center gap-1.5 transition-colors duration-200 ${
-                          hl.liked ? 'text-red-500 font-semibold' : 'hover:text-white'
+                          hl.liked ? 'text-red-500 font-semibold' : 'hover:text-[#111]'
                         }`}
                       >
                         <Heart className={`h-3.5 w-3.5 ${hl.liked ? 'fill-red-500 stroke-red-500' : ''}`} />
@@ -685,8 +679,8 @@ export default function CommunitySection() {
 
                       <button
                         onClick={() => setActiveCommentDrawer(activeCommentDrawer === hl.id ? null : hl.id)}
-                        className={`flex items-center gap-1.5 transition-colors duration-200 hover:text-white ${
-                          activeCommentDrawer === hl.id ? 'text-gold-500' : ''
+                        className={`flex items-center gap-1.5 transition-colors duration-200 hover:text-[#111] ${
+                          activeCommentDrawer === hl.id ? 'text-[#C89B3C]' : ''
                         }`}
                       >
                         <MessageSquare className="h-3.5 w-3.5" />
@@ -699,11 +693,11 @@ export default function CommunitySection() {
                           <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-red-500/10 border border-red-500/30">
                             <span className="text-[10px] font-mono text-red-400 uppercase">Remove?</span>
                             <button onClick={() => handleDeletePost(hl.id)} className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[10px] font-mono uppercase">Yes</button>
-                            <button onClick={() => setDeleteConfirmId(null)} className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[10px] font-mono uppercase">No</button>
+                            <button onClick={() => setDeleteConfirmId(null)} className="px-2 py-0.5 rounded border border-neutral-700 text-[#444] hover:text-[#111] text-[10px] font-mono uppercase">No</button>
                           </div>
                         ) : (
                           displayName && hl.username === displayName && (
-                            <button onClick={() => setDeleteConfirmId(hl.id)} className="text-neutral-600 hover:text-red-400 transition-colors" title="Remove your story">
+                            <button onClick={() => setDeleteConfirmId(hl.id)} className="text-[#444] hover:text-red-400 transition-colors" title="Remove your story">
                               <Trash2 className="h-3 w-3" />
                             </button>
                           )
@@ -720,9 +714,9 @@ export default function CommunitySection() {
                           animate={{ opacity: 1, height: 'auto' }}
                           exit={{ opacity: 0, height: 0 }}
                           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                          className="overflow-hidden space-y-4 pt-4 border-t border-neutral-900/50 relative"
+                          className="overflow-hidden space-y-4 pt-4 border-t border-[rgba(0,0,0,0.06)]/50 relative"
                         >
-                          <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                          <div className="flex justify-between items-center text-[10px] font-mono uppercase tracking-wider text-[#444]">
                             <span className="flex items-center gap-1.5">
                               <MessageCircle className="h-3 w-3" />
                               Kind Words
@@ -733,10 +727,10 @@ export default function CommunitySection() {
                           <div className="space-y-3.5 max-h-[350px] overflow-y-auto pr-1 scrollbar-thin">
                             {hl.comments && hl.comments.length > 0 ? (
                               hl.comments.map((comment) => (
-                                <div key={comment.id} className="p-3.5 rounded-xl border border-neutral-900/60 bg-neutral-900/15 space-y-3 text-xs">
-                                  <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500">
-                                    <span className="text-gold-500/90 font-bold flex items-center gap-1.5">
-                                      <span className="h-5 w-5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[11px] font-medium text-gold-500 shrink-0">
+                                <div key={comment.id} className="p-3.5 rounded-xl border border-[rgba(0,0,0,0.06)]/60 bg-white/15 space-y-3 text-xs">
+                                  <div className="flex justify-between items-center text-[10px] font-mono text-[#444]">
+                                    <span className="text-[#C89B3C]/90 font-bold flex items-center gap-1.5">
+                                      <span className="h-5 w-5 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center text-[11px] font-medium text-[#C89B3C] shrink-0">
                                         {comment.avatarText}
                                       </span>
                                       {comment.username}
@@ -744,22 +738,22 @@ export default function CommunitySection() {
                                     <span>{comment.timestamp}</span>
                                   </div>
 
-                                  <p className="text-neutral-200 leading-relaxed font-sans">{comment.content}</p>
+                                  <p className="text-[#444] leading-relaxed font-sans">{comment.content}</p>
 
                                   {comment.replies && comment.replies.length > 0 && (
-                                    <div className="pl-4 ml-2 border-l border-gold-500/15 space-y-3 pt-1">
+                                    <div className="pl-4 ml-2 border-l border-[#C89B3C]/15 space-y-3 pt-1">
                                       {comment.replies.map((reply) => (
-                                        <div key={reply.id} className="bg-neutral-950/40 p-2.5 rounded-lg border border-neutral-900/40 space-y-1.5">
-                                          <div className="flex justify-between items-center text-[11px] font-mono text-neutral-500">
-                                            <span className="text-neutral-300 font-semibold flex items-center gap-1">
-                                              <span className="h-4.5 w-4.5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-medium text-neutral-400 shrink-0">
+                                        <div key={reply.id} className="bg-[#F8F6F2] p-2.5 rounded-lg border border-[rgba(0,0,0,0.06)]/40 space-y-1.5">
+                                          <div className="flex justify-between items-center text-[11px] font-mono text-[#444]">
+                                            <span className="text-[#444] font-semibold flex items-center gap-1">
+                                              <span className="h-4.5 w-4.5 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center text-[10px] font-medium text-[#444] shrink-0">
                                                 {reply.avatarText}
                                               </span>
                                               {reply.username}
                                             </span>
                                             <span>{reply.timestamp}</span>
                                           </div>
-                                          <p className="text-neutral-300 text-[11px] leading-relaxed font-sans">{reply.content}</p>
+                                          <p className="text-[#444] text-[11px] leading-relaxed font-sans">{reply.content}</p>
                                         </div>
                                       ))}
                                     </div>
@@ -769,7 +763,7 @@ export default function CommunitySection() {
                                     {activeReplyCommentId === comment.id ? (
                                       <form
                                         onSubmit={(e) => handleAddReply(e, hl.id, comment.id)}
-                                        className="flex gap-2 bg-neutral-950/30 p-2 rounded-lg border border-neutral-900/50 mt-1"
+                                        className="flex gap-2 bg-[#F8F6F2] p-2 rounded-lg border border-[rgba(0,0,0,0.06)]/50 mt-1"
                                       >
                                         <input
                                           type="text"
@@ -777,17 +771,17 @@ export default function CommunitySection() {
                                           value={newReplyTexts[comment.id] || ''}
                                           onChange={(e) => setNewReplyTexts((prev) => ({ ...prev, [comment.id]: e.target.value }))}
                                           placeholder={`Reply to ${comment.username}...`}
-                                          className="flex-1 bg-neutral-900 text-xs border border-neutral-800 rounded px-2.5 py-1.5 text-white outline-none focus:border-gold-500/30 transition-all"
+                                          className="flex-1 bg-white text-xs border border-[rgba(0,0,0,0.06)] rounded px-2.5 py-1.5 text-[#111] outline-none focus:border-[#C89B3C]/30 transition-all"
                                         />
                                         <div className="flex gap-1.5">
-                                          <button type="submit" disabled={!(newReplyTexts[comment.id] || '').trim()} className="px-3 bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-neutral-950 font-bold rounded text-[10px] uppercase tracking-wide transition-colors">Reply</button>
-                                          <button type="button" onClick={() => setActiveReplyCommentId(null)} className="px-2 bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white rounded text-[10px] transition-colors">Cancel</button>
+                                          <button type="submit" disabled={!(newReplyTexts[comment.id] || '').trim()} className="px-3 bg-[#C89B3C] hover:bg-[#A97828] disabled:opacity-50 text-neutral-950 font-bold rounded text-[10px] uppercase tracking-wide transition-colors">Reply</button>
+                                          <button type="button" onClick={() => setActiveReplyCommentId(null)} className="px-2 bg-white border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-[#111] rounded text-[10px] transition-colors">Cancel</button>
                                         </div>
                                       </form>
                                     ) : (
                                       <button
                                         onClick={() => { setActiveReplyCommentId(comment.id); setNewReplyTexts((prev) => ({ ...prev, [comment.id]: '' })); }}
-                                        className="text-[10px] font-mono text-neutral-500 hover:text-gold-500 flex items-center gap-1 transition-colors"
+                                        className="text-[10px] font-mono text-[#444] hover:text-[#C89B3C] flex items-center gap-1 transition-colors"
                                       >
                                         <MessageSquare className="h-3 w-3" />
                                         <span>Reply with kindness</span>
@@ -798,13 +792,13 @@ export default function CommunitySection() {
                               ))
                             ) : (
                               <div className="text-center py-6 px-4">
-                                <p className="text-[10px] text-neutral-600 italic">No words yet. Your kindness would be a gift here.</p>
+                                <p className="text-[10px] text-[#444] italic">No words yet. Your kindness would be a gift here.</p>
                               </div>
                             )}
                           </div>
 
-                          <div className="border-t border-neutral-900/60 pt-3.5 space-y-2">
-                            <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500 flex items-center gap-1.5">
+                          <div className="border-t border-[rgba(0,0,0,0.06)]/60 pt-3.5 space-y-2">
+                            <span className="text-[11px] font-mono uppercase tracking-wider text-[#444] flex items-center gap-1.5">
                               <Heart className="h-2.5 w-2.5" />
                               Leave a kind word
                             </span>
@@ -814,9 +808,9 @@ export default function CommunitySection() {
                                 value={newCommentTexts[hl.id] || ''}
                                 onChange={(e) => setNewCommentTexts((prev) => ({ ...prev, [hl.id]: e.target.value }))}
                                 placeholder="Write something encouraging..."
-                                className="flex-1 bg-neutral-900 text-xs border border-neutral-800 rounded px-3.5 py-2 text-white outline-none focus:border-gold-500/40 transition-all"
+                                className="flex-1 bg-white text-xs border border-[rgba(0,0,0,0.06)] rounded px-3.5 py-2 text-[#111] outline-none focus:border-[#C89B3C]/40 transition-all"
                               />
-                              <motion.button type="submit" whileTap={{ scale: 0.95 }} disabled={!(newCommentTexts[hl.id] || '').trim()} className="px-4.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded text-[10px] tracking-wide transition-all disabled:opacity-40 uppercase">Share</motion.button>
+                              <motion.button type="submit" whileTap={{ scale: 0.95 }} disabled={!(newCommentTexts[hl.id] || '').trim()} className="px-4.5 bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold rounded text-[10px] tracking-wide transition-all disabled:opacity-40 uppercase">Share</motion.button>
                             </form>
                           </div>
                         </motion.div>
@@ -828,23 +822,23 @@ export default function CommunitySection() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`text-center py-28 border border-dashed border-neutral-900 rounded-2xl bg-neutral-950/10 space-y-5 ${
-                    searchQuery ? 'border-gold-500/20' : ''
+                  className={`text-center py-28 border border-dashed border-[rgba(0,0,0,0.06)] rounded-2xl bg-white/10 space-y-5 ${
+                    searchQuery ? 'border-[#C89B3C]/20' : ''
                   }`}
                 >
-                  <div className="h-20 w-20 rounded-full bg-gradient-to-br from-gold-500/10 via-amber-500/5 to-neutral-900 border border-gold-500/20 flex items-center justify-center mx-auto">
-                    {searchQuery ? <Search className="h-8 w-8 text-gold-500/60" /> : <Heart className="h-8 w-8 text-gold-500/60" />}
+                  <div className="h-20 w-20 rounded-full bg-gradient-to-br from-gold-500/10 via-amber-500/5 to-neutral-900 border border-[#C89B3C]/20 flex items-center justify-center mx-auto">
+                    {searchQuery ? <Search className="h-8 w-8 text-[#C89B3C]/60" /> : <Heart className="h-8 w-8 text-[#C89B3C]/60" />}
                   </div>
                   <div className="space-y-2 max-w-sm mx-auto">
                     {searchQuery ? (
                       <>
-                        <p className="text-base text-neutral-400 font-sans">No stories match your search.</p>
-                        <p className="text-[11px] text-neutral-600 font-mono">Try a different word or browse all stories.</p>
+                        <p className="text-base text-[#444] font-sans">No stories match your search.</p>
+                        <p className="text-[11px] text-[#444] font-mono">Try a different word or browse all stories.</p>
                       </>
                     ) : (
                       <>
-                        <p className="text-base text-neutral-400 font-sans">This space is waiting for your story.</p>
-                        <p className="text-[11px] text-neutral-600 font-mono leading-relaxed">
+                        <p className="text-base text-[#444] font-sans">This space is waiting for your story.</p>
+                        <p className="text-[11px] text-[#444] font-mono leading-relaxed">
                           Every journey begins with a single step — share your art, your letters,{' '}
                           a cherished memory. The Kindred is listening.
                         </p>
@@ -859,7 +853,7 @@ export default function CommunitySection() {
                 <div className="text-center pt-4">
                   <button
                     onClick={() => setVisibleCount((prev) => prev + POSTS_PER_PAGE)}
-                    className="px-6 py-2.5 rounded-xl border border-neutral-800 bg-neutral-950/50 text-[11px] font-mono text-neutral-400 hover:text-white hover:border-gold-500/30 hover:bg-neutral-900/50 transition-all uppercase tracking-widest"
+                    className="px-6 py-2.5 rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] text-[11px] font-mono text-[#444] hover:text-[#111] hover:border-[#C89B3C]/30 hover:bg-neutral-100 transition-all uppercase tracking-widest"
                   >
                     Show More ({filteredHighlights.length - visibleCount} remaining)
                   </button>

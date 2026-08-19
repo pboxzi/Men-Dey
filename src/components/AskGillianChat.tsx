@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../utils/supabase';
 import { notifyAdmins } from '../utils/notifications';
 import { logger } from '../utils/logger';
@@ -230,7 +230,7 @@ export default function AskGillianChat({ userId, showToast }: Props) {
   const statusConfig = {
     available: { color: 'bg-emerald-500', label: 'Online', textColor: 'text-emerald-400', borderColor: 'border-emerald-500/30' },
     busy: { color: 'bg-amber-500', label: 'Busy', textColor: 'text-amber-400', borderColor: 'border-amber-500/30' },
-    away: { color: 'bg-neutral-500', label: 'Away', textColor: 'text-neutral-400', borderColor: 'border-neutral-500/30' },
+    away: { color: 'bg-[#F8F6F2]0', label: 'Away', textColor: 'text-[#444]', borderColor: 'border-neutral-500/30' },
   };
 
   const currentStatus = statusConfig[gillianStatus.status];
@@ -238,40 +238,40 @@ export default function AskGillianChat({ userId, showToast }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 text-gold-500 animate-spin" />
+        <Loader2 className="h-6 w-6 text-[#C89B3C] animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6 text-left">
-      <div className="space-y-1 border-b border-neutral-900 pb-4">
+      <div className="space-y-1 border-b border-[rgba(0,0,0,0.06)] pb-4">
         <div className="flex items-center gap-2">
-          <MessageCircle className="h-4 w-4 text-gold-500" />
-          <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">Ask Gillian</h2>
+          <MessageCircle className="h-4 w-4 text-[#C89B3C]" />
+          <h2 className="font-serif text-xl font-bold tracking-wider text-[#111] uppercase">Ask Gillian</h2>
         </div>
-        <p className="text-xs text-neutral-500 font-mono">
+        <p className="text-xs text-[#444] font-mono">
           Have a direct conversation with Gillian. She loves hearing from her community.
         </p>
       </div>
 
-      <div className="rounded-xl border border-neutral-900 bg-neutral-950 overflow-hidden">
+      <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white overflow-hidden">
         {/* Status Bar */}
-        <div className={`flex items-center gap-3 px-4 py-3 border-b border-neutral-900 ${gillianStatus.status === 'available' ? 'bg-emerald-500/5' : gillianStatus.status === 'busy' ? 'bg-amber-500/5' : 'bg-neutral-900/30'}`}>
+        <div className={`flex items-center gap-3 px-4 py-3 border-b border-[rgba(0,0,0,0.06)] ${gillianStatus.status === 'available' ? 'bg-emerald-500/5' : gillianStatus.status === 'busy' ? 'bg-amber-500/5' : 'bg-white/30'}`}>
           <div className="relative">
-            <div className="h-10 w-10 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center">
-              <span className="text-sm font-serif font-bold text-gold-500">GA</span>
+            <div className="h-10 w-10 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center">
+              <span className="text-sm font-serif font-bold text-[#C89B3C]">GA</span>
             </div>
             <div className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full ${currentStatus.color} border-2 border-neutral-950`} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-white">Gillian Anderson</p>
+            <p className="text-xs font-bold text-[#111]">Gillian Anderson</p>
             <p className={`text-[10px] font-mono ${currentStatus.textColor}`}>
               {currentStatus.label}
               {gillianStatus.message && ` — ${gillianStatus.message}`}
             </p>
           </div>
-          <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full border ${currentStatus.borderColor} bg-neutral-950`}>
+          <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full border ${currentStatus.borderColor} bg-white`}>
             {gillianStatus.status === 'available' ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
             <span className={`text-[11px] font-mono uppercase ${currentStatus.textColor}`}>{currentStatus.label}</span>
           </div>
@@ -281,12 +281,12 @@ export default function AskGillianChat({ userId, showToast }: Props) {
         <div ref={scrollContainerRef} onScroll={handleScroll} className="h-[400px] overflow-y-auto px-4 py-4 space-y-4">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-3">
-              <div className="h-16 w-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center">
-                <MessageCircle className="h-7 w-7 text-gold-500/50" />
+              <div className="h-16 w-16 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center">
+                <MessageCircle className="h-7 w-7 text-[#C89B3C]/50" />
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-neutral-400">Start a conversation with Gillian</p>
-                <p className="text-[10px] text-neutral-600 font-mono">Ask about her work, life, or just say hello</p>
+                <p className="text-sm text-[#444]">Start a conversation with Gillian</p>
+                <p className="text-[10px] text-[#444] font-mono">Ask about her work, life, or just say hello</p>
               </div>
             </div>
           )}
@@ -294,17 +294,17 @@ export default function AskGillianChat({ userId, showToast }: Props) {
           {messages.map((msg) => (
             <div key={msg.id} className={`flex gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
               <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[11px] ${
-                msg.sender === 'user' ? 'bg-neutral-900 border-neutral-800 text-white' : 'bg-neutral-950 border-gold-800/35 text-gold-500'
+                msg.sender === 'user' ? 'bg-white border-[rgba(0,0,0,0.06)] text-white' : 'bg-white border-gold-800/35 text-[#C89B3C]'
               }`}>
                 {msg.sender === 'user' ? 'YOU' : 'GA'}
               </div>
               <div className={`max-w-[75%] space-y-1 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
                 <div className={`rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
-                  msg.sender === 'user' ? 'bg-gold-500 text-neutral-950 font-bold' : 'bg-neutral-900 text-neutral-200'
+                  msg.sender === 'user' ? 'bg-[#C89B3C] text-neutral-950 font-bold' : 'bg-white text-[#444]'
                 }`}>
                   {msg.text}
                 </div>
-                <p className="text-[11px] text-neutral-600 font-mono">
+                <p className="text-[11px] text-[#444] font-mono">
                   {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   {msg.sender === 'user' && msg.read && <CheckCircle className="inline h-3 w-3 ml-1 text-emerald-500" />}
                 </p>
@@ -314,12 +314,12 @@ export default function AskGillianChat({ userId, showToast }: Props) {
 
           {gillianTyping && (
             <div className="flex gap-3">
-              <div className="h-8 w-8 rounded-full border bg-neutral-950 border-gold-800/35 text-gold-500 flex items-center justify-center shrink-0 font-mono font-medium text-[11px]">GA</div>
-              <div className="bg-neutral-900 rounded-2xl px-4 py-3 flex items-center gap-1.5">
+              <div className="h-8 w-8 rounded-full border bg-white border-gold-800/35 text-[#C89B3C] flex items-center justify-center shrink-0 font-mono font-medium text-[11px]">GA</div>
+              <div className="bg-white rounded-2xl px-4 py-3 flex items-center gap-1.5">
                 <div className="flex gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60 animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60 animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="h-1.5 w-1.5 rounded-full bg-gold-500/60 animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#C89B3C]/60 animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#C89B3C]/60 animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#C89B3C]/60 animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
             </div>
@@ -329,25 +329,25 @@ export default function AskGillianChat({ userId, showToast }: Props) {
         </div>
 
         {/* Input */}
-        <div className="border-t border-neutral-900 px-4 py-3">
+        <div className="border-t border-[rgba(0,0,0,0.06)] px-4 py-3">
           {(!membership || membership.status !== 'active') ? (
-            <div className="flex items-center gap-3 px-4 py-4 rounded-lg border border-neutral-800 bg-neutral-900/30">
-              <Lock className="h-5 w-5 text-gold-500 shrink-0" />
+            <div className="flex items-center gap-3 px-4 py-4 rounded-lg border border-[rgba(0,0,0,0.06)] bg-white/30">
+              <Lock className="h-5 w-5 text-[#C89B3C] shrink-0" />
               <div className="flex-1">
-                <p className="text-xs font-bold text-white">Membership Required</p>
-                <p className="text-[10px] text-neutral-500 mt-0.5">You need an active membership to chat with Gillian. Upgrade your membership to unlock this feature.</p>
+                <p className="text-xs font-bold text-[#111]">Membership Required</p>
+                <p className="text-[10px] text-[#444] mt-0.5">You need an active membership to chat with Gillian. Upgrade your membership to unlock this feature.</p>
               </div>
             </div>
           ) : gillianStatus.status !== 'available' ? (
             <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${currentStatus.borderColor} ${
-              gillianStatus.status === 'busy' ? 'bg-amber-500/5' : 'bg-neutral-900/30'
+              gillianStatus.status === 'busy' ? 'bg-amber-500/5' : 'bg-white/30'
             }`}>
               <Clock className={`h-4 w-4 ${currentStatus.textColor} shrink-0`} />
               <div className="flex-1">
                 <p className={`text-xs font-medium ${currentStatus.textColor}`}>
                   {gillianStatus.status === 'busy' ? 'Gillian is currently busy' : 'Gillian is currently away'}
                 </p>
-                <p className="text-[10px] text-neutral-500 mt-0.5">You can still send a message — she will respond when available.</p>
+                <p className="text-[10px] text-[#444] mt-0.5">You can still send a message — she will respond when available.</p>
               </div>
             </div>
           ) : null}
@@ -361,12 +361,12 @@ export default function AskGillianChat({ userId, showToast }: Props) {
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder={gillianStatus.status === 'available' ? "Type your message to Gillian..." : "Leave a message for Gillian..."}
               disabled={sending}
-              className="flex-1 rounded border border-neutral-900 bg-neutral-950 px-4 py-2.5 text-xs text-white placeholder-neutral-600 outline-none focus:border-gold-500/40 disabled:opacity-50 transition-colors"
+              className="flex-1 rounded border border-[rgba(0,0,0,0.06)] bg-white px-4 py-2.5 text-xs text-[#111] placeholder-neutral-600 outline-none focus:border-[#C89B3C]/40 disabled:opacity-50 transition-colors"
             />
             <button
               type="submit"
               disabled={!newMessage.trim() || sending}
-              className="h-10 w-10 flex items-center justify-center rounded bg-gold-500 text-neutral-950 hover:bg-gold-400 active:scale-95 disabled:opacity-50 transition-all"
+              className="h-10 w-10 flex items-center justify-center rounded bg-[#C89B3C] text-neutral-950 hover:bg-[#A97828] active:scale-95 disabled:opacity-50 transition-all"
             >
               {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </button>
@@ -375,19 +375,19 @@ export default function AskGillianChat({ userId, showToast }: Props) {
         </div>
       </div>
 
-      <div className="rounded-xl border border-neutral-900 bg-neutral-950/50 p-4 space-y-3">
-        <h3 className="text-[10px] font-mono font-bold text-gold-500 uppercase tracking-widest">Conversation Tips</h3>
+      <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-4 space-y-3">
+        <h3 className="text-[10px] font-mono font-bold text-[#C89B3C] uppercase tracking-widest">Conversation Tips</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             { icon: '🎭', label: 'Ask about her craft', desc: 'Acting, directing, creative process' },
             { icon: '📚', label: 'Literary discussions', desc: 'Books, writing, the Want anthology' },
             { icon: '💪', label: 'Advocacy & causes', desc: 'NF, gender equality, charity work' },
           ].map((tip) => (
-            <div key={tip.label} className="flex items-start gap-2 p-2 rounded-lg bg-neutral-900/30 border border-neutral-900/50">
+            <div key={tip.label} className="flex items-start gap-2 p-2 rounded-lg bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/50">
               <span className="text-base">{tip.icon}</span>
               <div>
-                <p className="text-[10px] font-bold text-white">{tip.label}</p>
-                <p className="text-[11px] text-neutral-500">{tip.desc}</p>
+                <p className="text-[10px] font-bold text-[#111]">{tip.label}</p>
+                <p className="text-[11px] text-[#444]">{tip.desc}</p>
               </div>
             </div>
           ))}

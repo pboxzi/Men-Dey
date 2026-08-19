@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
 import { createNotification } from '../utils/notifications';
 import { logger } from '../utils/logger';
@@ -157,8 +157,8 @@ export default function AdminUsers({ showToast }: Props) {
   });
 
   const getRoleBadge = (role: string) => {
-    if (role === 'admin') return { color: 'border-gold-500/30 bg-gold-500/10 text-gold-500', icon: Crown, label: 'Admin' };
-    return { color: 'border-neutral-700 bg-neutral-900 text-neutral-400', icon: Shield, label: 'User' };
+    if (role === 'admin') return { color: 'border-[#C89B3C]/30 bg-[#C89B3C]/10 text-[#C89B3C]', icon: Crown, label: 'Admin' };
+    return { color: 'border-neutral-700 bg-white text-[#444]', icon: Shield, label: 'User' };
   };
 
   const getInitials = (name: string) => {
@@ -168,7 +168,7 @@ export default function AdminUsers({ showToast }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 text-gold-500 animate-spin" />
+        <Loader2 className="h-6 w-6 text-[#C89B3C] animate-spin" />
       </div>
     );
   }
@@ -176,13 +176,13 @@ export default function AdminUsers({ showToast }: Props) {
   return (
     <div className="space-y-6 text-left">
       {/* Header */}
-      <div className="border-b border-neutral-900 pb-4">
+      <div className="border-b border-[rgba(0,0,0,0.06)] pb-4">
         <div className="flex items-center gap-2 text-[10px] font-mono text-gold-400 tracking-widest uppercase mb-1">
           <Users className="h-3 w-3" />
           User Management
         </div>
         <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">Community Members</h2>
-        <p className="text-xs text-neutral-500 font-mono">View and manage all registered platform users.</p>
+        <p className="text-xs text-[#444] font-mono">View and manage all registered platform users.</p>
       </div>
 
       {/* Stats Bar */}
@@ -197,10 +197,10 @@ export default function AdminUsers({ showToast }: Props) {
             return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
           }).length, icon: Calendar },
         ].map(stat => (
-          <div key={stat.label} className="rounded-xl border border-neutral-900 bg-neutral-950 p-3 space-y-1">
+          <div key={stat.label} className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-3 space-y-1">
             <div className="flex items-center gap-1.5">
-              <stat.icon className="h-3 w-3 text-gold-500" />
-              <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
+              <stat.icon className="h-3 w-3 text-[#C89B3C]" />
+              <span className="text-[11px] font-mono text-[#444] uppercase tracking-widest">{stat.label}</span>
             </div>
             <p className="text-xl font-bold text-white font-mono">{stat.value}</p>
           </div>
@@ -210,13 +210,13 @@ export default function AdminUsers({ showToast }: Props) {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#444]" />
           <input
             type="text"
             placeholder="Search by name, email, or country..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg pl-8 pr-3 py-2 text-xs text-white outline-none focus:border-gold-500/40"
+            className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg pl-8 pr-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/40"
           />
         </div>
         <div className="flex gap-1">
@@ -226,8 +226,8 @@ export default function AdminUsers({ showToast }: Props) {
               onClick={() => setRoleFilter(role)}
               className={`px-3 py-2 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all ${
                 roleFilter === role
-                  ? 'bg-gold-500 text-neutral-950 font-bold'
-                  : 'text-neutral-500 hover:text-white hover:bg-neutral-900'
+                  ? 'bg-[#C89B3C] text-neutral-950 font-bold'
+                  : 'text-[#444] hover:text-white hover:bg-white'
               }`}
             >
               {role === 'user' ? 'Users' : role}
@@ -238,17 +238,17 @@ export default function AdminUsers({ showToast }: Props) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Users List */}
-        <div className={`lg:col-span-2 rounded-xl border border-neutral-900 bg-neutral-950 overflow-hidden ${selectedUser ? 'hidden lg:block' : ''}`}>
-          <div className="p-3 border-b border-neutral-900">
-            <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+        <div className={`lg:col-span-2 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white overflow-hidden ${selectedUser ? 'hidden lg:block' : ''}`}>
+          <div className="p-3 border-b border-[rgba(0,0,0,0.06)]">
+            <p className="text-[10px] font-mono text-[#444] uppercase tracking-widest">
               Users ({filteredUsers.length})
             </p>
           </div>
           <div className="divide-y divide-neutral-900/50 max-h-[600px] overflow-y-auto">
             {filteredUsers.length === 0 ? (
               <div className="p-12 text-center">
-                <Users className="h-8 w-8 text-neutral-700 mx-auto mb-3" />
-                <p className="text-xs text-neutral-500">No users found</p>
+                <Users className="h-8 w-8 text-[#444] mx-auto mb-3" />
+                <p className="text-xs text-[#444]">No users found</p>
               </div>
             ) : (
               filteredUsers.map(user => {
@@ -257,12 +257,12 @@ export default function AdminUsers({ showToast }: Props) {
                   <button
                     key={user.id}
                     onClick={() => handleSelectUser(user)}
-                    className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-neutral-900/50 transition-all ${
-                      selectedUser?.id === user.id ? 'bg-neutral-900/80 border-l-2 border-l-gold-500' : ''
+                    className={`w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-neutral-100 transition-all ${
+                      selectedUser?.id === user.id ? 'bg-white/80 border-l-2 border-l-gold-500' : ''
                     }`}
                   >
-                    <div className="h-10 w-10 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center shrink-0">
-                      <span className="text-[10px] font-mono font-bold text-gold-500">{getInitials(user.name)}</span>
+                    <div className="h-10 w-10 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center shrink-0">
+                      <span className="text-[10px] font-mono font-bold text-[#C89B3C]">{getInitials(user.name)}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -272,9 +272,9 @@ export default function AdminUsers({ showToast }: Props) {
                           {roleBadge.label}
                         </span>
                       </div>
-                      <p className="text-[10px] text-neutral-500 truncate mt-0.5">{user.email}</p>
+                      <p className="text-[10px] text-[#444] truncate mt-0.5">{user.email}</p>
                     </div>
-                    <ChevronRight className="h-4 w-4 text-neutral-600 shrink-0" />
+                    <ChevronRight className="h-4 w-4 text-[#444] shrink-0" />
                   </button>
                 );
               })
@@ -283,12 +283,12 @@ export default function AdminUsers({ showToast }: Props) {
         </div>
 
         {/* User Detail Panel */}
-        <div className={`lg:col-span-1 rounded-xl border border-neutral-900 bg-neutral-950 overflow-hidden ${!selectedUser ? 'hidden lg:block' : ''}`}>
+        <div className={`lg:col-span-1 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white overflow-hidden ${!selectedUser ? 'hidden lg:block' : ''}`}>
           {!selectedUser ? (
             <div className="flex items-center justify-center h-[400px]">
               <div className="text-center space-y-3">
-                <Users className="h-10 w-10 text-neutral-700 mx-auto" />
-                <p className="text-xs text-neutral-500">Select a user to view details</p>
+                <Users className="h-10 w-10 text-[#444] mx-auto" />
+                <p className="text-xs text-[#444]">Select a user to view details</p>
               </div>
             </div>
           ) : (
@@ -296,19 +296,19 @@ export default function AdminUsers({ showToast }: Props) {
               {/* Close button (mobile) */}
               <div className="flex justify-between items-start lg:hidden">
                 <div />
-                <button onClick={() => setSelectedUser(null)} className="text-neutral-500 hover:text-white">
+                <button onClick={() => setSelectedUser(null)} className="text-[#444] hover:text-white">
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
               {/* User Header */}
-              <div className="text-center space-y-3 pb-4 border-b border-neutral-900">
-                <div className="h-16 w-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto">
-                  <span className="text-lg font-mono font-bold text-gold-500">{getInitials(selectedUser.name)}</span>
+              <div className="text-center space-y-3 pb-4 border-b border-[rgba(0,0,0,0.06)]">
+                <div className="h-16 w-16 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center mx-auto">
+                  <span className="text-lg font-mono font-bold text-[#C89B3C]">{getInitials(selectedUser.name)}</span>
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">{selectedUser.name || 'Unnamed'}</h3>
-                  <p className="text-[10px] text-neutral-500 font-mono">{selectedUser.email}</p>
+                  <p className="text-[10px] text-[#444] font-mono">{selectedUser.email}</p>
                 </div>
                 <div className="flex items-center justify-center gap-2">
                   <span className={`inline-flex items-center gap-1 px-2 py-1 rounded border text-[11px] font-mono uppercase ${getRoleBadge(selectedUser.role).color}`}>
@@ -320,30 +320,30 @@ export default function AdminUsers({ showToast }: Props) {
               {/* User Info */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs">
-                  <MapPin className="h-3.5 w-3.5 text-neutral-500" />
-                  <span className="text-neutral-400">
+                  <MapPin className="h-3.5 w-3.5 text-[#444]" />
+                  <span className="text-[#444]">
                     {selectedUser.city ? `${selectedUser.city}, ` : ''}{selectedUser.country || 'Not specified'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-xs">
-                  <Calendar className="h-3.5 w-3.5 text-neutral-500" />
-                  <span className="text-neutral-400">Joined {new Date(selectedUser.created_at).toLocaleDateString()}</span>
+                  <Calendar className="h-3.5 w-3.5 text-[#444]" />
+                  <span className="text-[#444]">Joined {new Date(selectedUser.created_at).toLocaleDateString()}</span>
                 </div>
               </div>
 
               {/* Registration Details */}
               {(selectedUser.how_heard_about || selectedUser.favorite_thing) && (
-                <div className="space-y-2 pb-4 border-b border-neutral-900">
-                  <h4 className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">About This Member</h4>
+                <div className="space-y-2 pb-4 border-b border-[rgba(0,0,0,0.06)]">
+                  <h4 className="text-[10px] font-mono font-bold text-[#444] uppercase tracking-widest">About This Member</h4>
                   {selectedUser.how_heard_about && (
-                    <div className="rounded-lg bg-neutral-900/50 p-3 space-y-1">
-                      <p className="text-[10px] font-mono text-neutral-500 uppercase">Discovered Gillian Via</p>
+                    <div className="rounded-lg bg-[#F8F6F2] p-3 space-y-1">
+                      <p className="text-[10px] font-mono text-[#444] uppercase">Discovered Gillian Via</p>
                       <p className="text-xs text-white">{selectedUser.how_heard_about}</p>
                     </div>
                   )}
                   {selectedUser.favorite_thing && (
-                    <div className="rounded-lg bg-neutral-900/50 p-3 space-y-1">
-                      <p className="text-[10px] font-mono text-neutral-500 uppercase">What They Love About Gillian</p>
+                    <div className="rounded-lg bg-[#F8F6F2] p-3 space-y-1">
+                      <p className="text-[10px] font-mono text-[#444] uppercase">What They Love About Gillian</p>
                       <p className="text-xs text-white leading-relaxed">{selectedUser.favorite_thing}</p>
                     </div>
                   )}
@@ -351,11 +351,11 @@ export default function AdminUsers({ showToast }: Props) {
               )}
 
               {/* Stats */}
-              <div className="space-y-2 pb-4 border-b border-neutral-900">
-                <h4 className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Activity</h4>
+              <div className="space-y-2 pb-4 border-b border-[rgba(0,0,0,0.06)]">
+                <h4 className="text-[10px] font-mono font-bold text-[#444] uppercase tracking-widest">Activity</h4>
                 {statsLoading ? (
                   <div className="flex justify-center py-4">
-                    <Loader2 className="h-4 w-4 text-gold-500 animate-spin" />
+                    <Loader2 className="h-4 w-4 text-[#C89B3C] animate-spin" />
                   </div>
                 ) : userStats ? (
                   <div className="grid grid-cols-2 gap-2">
@@ -367,10 +367,10 @@ export default function AdminUsers({ showToast }: Props) {
                       { label: 'Points', value: userStats.points, icon: TrendingUp },
                       { label: 'Journey Logs', value: userStats.journeyLogs, icon: MessageCircle },
                     ].map(stat => (
-                      <div key={stat.label} className="rounded-lg bg-neutral-900/50 p-2 space-y-0.5">
+                      <div key={stat.label} className="rounded-lg bg-[#F8F6F2] p-2 space-y-0.5">
                         <div className="flex items-center gap-1">
-                          <stat.icon className="h-2.5 w-2.5 text-gold-500" />
-                          <span className="text-[10px] font-mono text-neutral-500 uppercase">{stat.label}</span>
+                          <stat.icon className="h-2.5 w-2.5 text-[#C89B3C]" />
+                          <span className="text-[10px] font-mono text-[#444] uppercase">{stat.label}</span>
                         </div>
                         <p className="text-sm font-bold text-white font-mono">{stat.value}</p>
                       </div>
@@ -381,13 +381,13 @@ export default function AdminUsers({ showToast }: Props) {
 
               {/* Actions */}
               <div className="space-y-2">
-                <h4 className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Actions</h4>
+                <h4 className="text-[10px] font-mono font-bold text-[#444] uppercase tracking-widest">Actions</h4>
                 <button
                   onClick={() => handleToggleRole(selectedUser.id, selectedUser.role)}
                   className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border text-[10px] font-mono uppercase tracking-widest transition-all ${
                     selectedUser.role === 'admin'
                       ? 'border-amber-500/30 text-amber-400 hover:bg-amber-500/10'
-                      : 'border-gold-500/30 text-gold-500 hover:bg-gold-500/10'
+                      : 'border-[#C89B3C]/30 text-[#C89B3C] hover:bg-[#C89B3C]/10'
                   }`}
                 >
                   {selectedUser.role === 'admin' ? (
@@ -402,8 +402,8 @@ export default function AdminUsers({ showToast }: Props) {
                 >
                   <Trash2 className="h-3.5 w-3.5" /> Delete User
                 </button>
-                <div className="rounded-lg bg-neutral-900/30 border border-neutral-900 p-3">
-                  <p className="text-[11px] text-neutral-500 leading-relaxed">
+                <div className="rounded-lg bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] p-3">
+                  <p className="text-[11px] text-[#444] leading-relaxed">
                     {selectedUser.role === 'admin'
                       ? 'This user has full administrative access to all portal features, content management, and user oversight.'
                       : 'This user has standard member access. They can browse content, request experiences, and earn rewards.'}

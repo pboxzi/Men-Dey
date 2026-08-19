@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../utils/supabase';
 import { notifyAdminResponse } from '../utils/notifications';
 import {
@@ -255,7 +255,7 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 text-gold-500 animate-spin" />
+        <Loader2 className="h-6 w-6 text-[#C89B3C] animate-spin" />
       </div>
     );
   }
@@ -263,62 +263,62 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
   return (
     <div className="space-y-6 text-left">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-900 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[rgba(0,0,0,0.06)] pb-4">
         <div>
           <div className="flex items-center gap-2 text-[10px] font-mono text-gold-400 tracking-widest uppercase mb-1">
             <MessageSquare className="h-3 w-3" />
             Fan Messages
           </div>
           <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">Direct Messages</h2>
-          <p className="text-xs text-neutral-500 font-mono">Respond to fan inquiries and support requests.</p>
+          <p className="text-xs text-[#444] font-mono">Respond to fan inquiries and support requests.</p>
         </div>
         <button onClick={() => { fetchConversations(); }}
-          className="group/btn flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-800 bg-neutral-900/30 text-neutral-400 hover:bg-neutral-800 hover:text-white text-[10px] font-mono uppercase tracking-widest active:scale-[0.97] transition-all duration-200"
+          className="group/btn flex items-center gap-2 px-4 py-2 rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] text-[#444] hover:bg-[#F8F6F2] hover:text-white text-[10px] font-mono uppercase tracking-widest active:scale-[0.97] transition-all duration-200"
         ><RefreshCw className="h-3.5 w-3.5 group-hover/btn:rotate-180 transition-transform duration-500" /> Refresh</button>
       </div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#444]" />
           <input
             type="text"
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg pl-8 pr-3 py-2 text-xs text-white outline-none focus:border-gold-500/40"
+            className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg pl-8 pr-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/40"
           />
         </div>
         <div className="flex gap-1">
           {(['all', 'unread', 'active'] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
               className={`px-3 py-2 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all ${
-                filter === f ? 'bg-gold-500 text-neutral-950 font-bold' : 'text-neutral-500 hover:text-white hover:bg-neutral-900'
+                filter === f ? 'bg-[#C89B3C] text-neutral-950 font-bold' : 'text-[#444] hover:text-white hover:bg-white'
               }`}
             >{f}</button>
           ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 rounded-xl border border-neutral-900 bg-neutral-950 overflow-hidden min-h-[500px]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white overflow-hidden min-h-[500px]">
         {/* Conversations List */}
-        <div className="lg:col-span-1 border-b lg:border-b-0 lg:border-r border-neutral-900 flex flex-col">
-          <div className="p-3 border-b border-neutral-900 flex justify-between items-center">
-            <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+        <div className="lg:col-span-1 border-b lg:border-b-0 lg:border-r border-[rgba(0,0,0,0.06)] flex flex-col">
+          <div className="p-3 border-b border-[rgba(0,0,0,0.06)] flex justify-between items-center">
+            <p className="text-[10px] font-mono text-[#444] uppercase tracking-widest">
               Conversations ({filteredConversations.length})
             </p>
             <button
               onClick={() => { setShowNewChat(true); fetchUsers(); }}
-              className="flex items-center gap-1 px-2 py-1 rounded text-[11px] font-mono text-gold-500 hover:bg-neutral-900 transition-all"
+              className="flex items-center gap-1 px-2 py-1 rounded text-[11px] font-mono text-[#C89B3C] hover:bg-white transition-all"
             >+ New</button>
           </div>
 
           {showNewChat && (
-            <div className="p-3 border-b border-neutral-900 space-y-2">
+            <div className="p-3 border-b border-[rgba(0,0,0,0.06)] space-y-2">
               <select
                 value={selectedUserId}
                 onChange={e => setSelectedUserId(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40"
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40"
               >
                 <option value="">Select a fan...</option>
                 {users.filter(u => u.id !== adminUserId).map(u => (
@@ -330,48 +330,48 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
                 value={newSubject}
                 onChange={e => setNewSubject(e.target.value)}
                 placeholder="Subject"
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40"
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40"
               />
               <textarea
                 value={newFirstMsg}
                 onChange={e => setNewFirstMsg(e.target.value)}
                 placeholder="Your message..."
                 rows={2}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40 resize-none"
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40 resize-none"
               />
               <div className="flex gap-2">
                 <button onClick={handleCreateConvAsAdmin}
-                  className="flex-1 py-1.5 rounded bg-gold-500 text-neutral-950 text-[11px] font-mono font-bold uppercase">Send</button>
+                  className="flex-1 py-1.5 rounded bg-[#C89B3C] text-neutral-950 text-[11px] font-mono font-bold uppercase">Send</button>
                 <button onClick={() => { setShowNewChat(false); setSelectedUserId(''); setNewSubject(''); setNewFirstMsg(''); }}
-                  className="px-3 py-1.5 rounded border border-neutral-800 text-neutral-500 text-[11px] font-mono uppercase">Cancel</button>
+                  className="px-3 py-1.5 rounded border border-[rgba(0,0,0,0.06)] text-[#444] text-[11px] font-mono uppercase">Cancel</button>
               </div>
             </div>
           )}
           <div className="flex-1 overflow-y-auto">
             {filteredConversations.length === 0 ? (
               <div className="p-6 text-center">
-                <Users className="h-6 w-6 text-neutral-700 mx-auto mb-2" />
-                <p className="text-[10px] text-neutral-500">No conversations found</p>
+                <Users className="h-6 w-6 text-[#444] mx-auto mb-2" />
+                <p className="text-[10px] text-[#444]">No conversations found</p>
               </div>
             ) : (
               filteredConversations.map(conv => (
                 <button
                   key={conv.id}
                   onClick={() => handleSelectConv(conv)}
-                  className={`w-full text-left px-3 py-3 border-b border-neutral-900/50 transition-all hover:bg-neutral-900/50 ${
-                    selectedConv?.id === conv.id ? 'bg-neutral-900/80 border-l-2 border-l-gold-500' : ''
+                  className={`w-full text-left px-3 py-3 border-b border-[rgba(0,0,0,0.06)]/50 transition-all hover:bg-neutral-100 ${
+                    selectedConv?.id === conv.id ? 'bg-white/80 border-l-2 border-l-gold-500' : ''
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <p className="text-[11px] font-bold text-white truncate">{conv.subject}</p>
                     {(conv.unread_count || 0) > 0 && (
-                      <span className="h-4 min-w-4 rounded-full bg-gold-500 text-neutral-950 text-[10px] font-mono font-bold flex items-center justify-center px-1">
+                      <span className="h-4 min-w-4 rounded-full bg-[#C89B3C] text-neutral-950 text-[10px] font-mono font-bold flex items-center justify-center px-1">
                         {conv.unread_count}
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-neutral-500 mt-0.5">{conv.profiles?.name || 'Unknown'}</p>
-                  <p className="text-[11px] text-neutral-600 truncate mt-0.5">{conv.last_message || 'No messages yet'}</p>
+                  <p className="text-[11px] text-[#444] mt-0.5">{conv.profiles?.name || 'Unknown'}</p>
+                  <p className="text-[11px] text-[#444] truncate mt-0.5">{conv.last_message || 'No messages yet'}</p>
                 </button>
               ))
             )}
@@ -383,27 +383,27 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
           {!selectedConv ? (
             <div className="flex-1 flex items-center justify-center p-8">
               <div className="text-center space-y-3">
-                <MessageSquare className="h-10 w-10 text-neutral-700 mx-auto" />
-                <p className="text-sm text-neutral-500">Select a conversation to respond</p>
-                <p className="text-[10px] text-neutral-600 font-mono">Choose from the list on the left</p>
+                <MessageSquare className="h-10 w-10 text-[#444] mx-auto" />
+                <p className="text-sm text-[#444]">Select a conversation to respond</p>
+                <p className="text-[10px] text-[#444] font-mono">Choose from the list on the left</p>
               </div>
             </div>
           ) : (
             <>
               {/* Chat Header */}
-              <div className="px-4 py-3 border-b border-neutral-900 flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center">
-                  <span className="text-[11px] font-mono font-bold text-gold-500">
+              <div className="px-4 py-3 border-b border-[rgba(0,0,0,0.06)] flex items-center gap-3">
+                <div className="h-8 w-8 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center">
+                  <span className="text-[11px] font-mono font-bold text-[#C89B3C]">
                     {(selectedConv.profiles?.name || 'U').slice(0, 2).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-bold text-white">{selectedConv.subject}</p>
-                  <p className="text-[11px] text-neutral-500 font-mono">{selectedConv.profiles?.name || 'Unknown'} · {selectedConv.profiles?.email || ''}</p>
+                  <p className="text-[11px] text-[#444] font-mono">{selectedConv.profiles?.name || 'Unknown'} · {selectedConv.profiles?.email || ''}</p>
                 </div>
                 <div className={`px-2 py-1 rounded-full text-[10px] font-mono uppercase ${
                   selectedConv.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                  'bg-neutral-900 text-neutral-500 border border-neutral-800'
+                  'bg-white text-[#444] border border-[rgba(0,0,0,0.06)]'
                 }`}>
                   {selectedConv.status}
                 </div>
@@ -413,23 +413,23 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
               <div ref={scrollContainerRef} onScroll={handleScroll} className="flex-1 overflow-y-auto px-4 py-4 space-y-4 min-h-[300px]">
                 {messages.length === 0 ? (
                   <div className="flex items-center justify-center h-full">
-                    <p className="text-[10px] text-neutral-600 font-mono">No messages yet. Send the first response!</p>
+                    <p className="text-[10px] text-[#444] font-mono">No messages yet. Send the first response!</p>
                   </div>
                 ) : (
                   messages.map(msg => (
                     <div key={msg.id} className={`flex gap-3 ${msg.sender === 'admin' ? 'flex-row-reverse' : 'flex-row'}`}>
                       <div className={`h-8 w-8 rounded-full border flex items-center justify-center shrink-0 font-mono font-medium text-[11px] ${
-                        msg.sender === 'admin' ? 'bg-neutral-950 border-gold-800/35 text-gold-500' : 'bg-neutral-900 border-neutral-800 text-white'
+                        msg.sender === 'admin' ? 'bg-white border-gold-800/35 text-[#C89B3C]' : 'bg-white border-[rgba(0,0,0,0.06)] text-white'
                       }`}>
                         {msg.sender === 'admin' ? 'GA' : (selectedConv.profiles?.name || 'U').slice(0, 2).toUpperCase()}
                       </div>
                       <div className={`max-w-[75%] space-y-1 ${msg.sender === 'admin' ? 'text-right' : 'text-left'}`}>
                         <div className={`rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
-                          msg.sender === 'admin' ? 'bg-gold-500 text-neutral-950 font-bold' : 'bg-neutral-900 text-neutral-200'
+                          msg.sender === 'admin' ? 'bg-[#C89B3C] text-neutral-950 font-bold' : 'bg-white text-[#444]'
                         }`}>
                           {msg.text}
                         </div>
-                        <p className="text-[11px] text-neutral-600 font-mono">
+                        <p className="text-[11px] text-[#444] font-mono">
                           {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           {msg.sender === 'admin' && msg.read && (
                             <CheckCircle className="inline h-3 w-3 ml-1 text-emerald-500" />
@@ -444,7 +444,7 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
 
               {/* Input */}
               {selectedConv.status === 'active' && (
-                <div className="px-4 py-3 border-t border-neutral-900">
+                <div className="px-4 py-3 border-t border-[rgba(0,0,0,0.06)]">
                   <form onSubmit={handleSend} className="flex gap-2">
                     <input
                       ref={inputRef}
@@ -453,12 +453,12 @@ export default function AdminMessages({ showToast, adminUserId }: Props) {
                       onChange={e => setNewMessage(e.target.value)}
                       placeholder="Type your response..."
                       disabled={sending}
-                      className="flex-1 rounded border border-neutral-900 bg-neutral-950 px-4 py-2.5 text-xs text-white placeholder-neutral-600 outline-none focus:border-gold-500/40 disabled:opacity-50 transition-colors"
+                      className="flex-1 rounded border border-[rgba(0,0,0,0.06)] bg-white px-4 py-2.5 text-xs text-white placeholder-neutral-600 outline-none focus:border-[#C89B3C]/40 disabled:opacity-50 transition-colors"
                     />
                     <button
                       type="submit"
                       disabled={!newMessage.trim() || sending}
-                      className="h-10 w-10 flex items-center justify-center rounded bg-gold-500 text-neutral-950 hover:bg-gold-400 active:scale-95 disabled:opacity-50 transition-all"
+                      className="h-10 w-10 flex items-center justify-center rounded bg-[#C89B3C] text-neutral-950 hover:bg-[#A97828] active:scale-95 disabled:opacity-50 transition-all"
                     >
                       {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                     </button>

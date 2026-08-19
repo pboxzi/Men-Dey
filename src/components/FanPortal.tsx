@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -65,6 +65,63 @@ import type { Experience, PortalReward, MembershipData, UserBadge, JourneyLogEnt
 import FanEvents from './FanEvents';
 import AskGillianChat from './AskGillianChat';
 import FanAdminChat from './FanAdminChat';
+
+const ONBOARDING_STEPS = [
+  {
+    title: 'Your Home Base',
+    description: 'This is your Dashboard — a snapshot of everything happening in your sanctuary. Check your status, upcoming events, and quick shortcuts.',
+    icon: LayoutGrid,
+    highlight: 'Dashboard',
+  },
+  {
+    title: 'Connect & Discover',
+    description: 'Expand any section in the sidebar to explore. Connect with fellow fans, book exclusive experiences, and track your membership journey.',
+    icon: Users,
+    highlight: 'Sections',
+  },
+  {
+    title: 'You\'re All Set',
+    description: 'Your sanctuary awaits. Start by exploring the Dashboard, or dive into Experiences and Events. Welcome to the inner circle.',
+    icon: Sparkles,
+    highlight: 'Welcome',
+  },
+];
+
+function OnboardingSteps({ onComplete }: { onComplete: () => void }) {
+  const [step, setStep] = useState(0);
+  const current = ONBOARDING_STEPS[step];
+  const Icon = current.icon;
+  const isLast = step === ONBOARDING_STEPS.length - 1;
+
+  return (
+    <div className="relative z-10 text-center">
+      <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-[#C89B3C]/20 flex items-center justify-center mb-6">
+        <Icon className="h-7 w-7 text-[#C89B3C]" />
+      </div>
+      <div className="flex justify-center gap-1.5 mb-4">
+        {ONBOARDING_STEPS.map((_, i) => (
+          <div key={i} className={`h-1 rounded-full transition-all ${i === step ? 'w-6 bg-[#C89B3C]' : i < step ? 'w-3 bg-[#C89B3C]/40' : 'w-3 bg-[#F8F6F2]'}`} />
+        ))}
+      </div>
+      <h3 className="font-serif text-xl font-bold text-[#111] mb-2">{current.title}</h3>
+      <p className="text-sm text-[#444] leading-relaxed mb-8 max-w-xs mx-auto">{current.description}</p>
+      <div className="flex gap-3">
+        <button
+          onClick={onComplete}
+          className="flex-1 py-3 rounded-xl border border-[rgba(0,0,0,0.06)] text-[#444] text-xs font-bold tracking-widest uppercase hover:bg-white transition-colors"
+        >
+          Skip
+        </button>
+        <button
+          onClick={() => isLast ? onComplete() : setStep(step + 1)}
+          className="flex-1 py-3 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 text-neutral-950 text-xs font-bold tracking-widest uppercase hover:from-gold-400 hover:to-amber-400 transition-all shadow-lg shadow-gold-500/10"
+        >
+          {isLast ? 'Get Started' : 'Next'}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 interface FanPortalProps {
   onBackToHome: () => void;
@@ -134,7 +191,7 @@ const getLoyaltyRank = (points: number) => {
   } else if (points <= 6500) {
     return {
       name: 'Gold Ambassador',
-      badgeColor: 'border-gold-500/30 bg-gold-500/10 text-gold-500',
+      badgeColor: 'border-[#C89B3C]/30 bg-[#C89B3C]/10 text-[#C89B3C]',
       icon: '👑',
       min: 3500,
       max: 6500,
@@ -182,6 +239,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [showEmailVerification, setShowEmailVerification] = useState(false);
 
   // Sync auth mode with URL params
@@ -246,6 +304,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   const [activeTab, setActiveTab] = useState<'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Ask Gillian' | 'Events' | 'Experiences' | 'Membership' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'>('Dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
   // Selected single request detail expansion
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
 
@@ -425,7 +484,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   // Override rank display with membership tier if active
   const displayRank = (membership?.status === 'active') ? {
     name: membership.tier_name,
-    badgeColor: 'border-gold-500/30 bg-gold-500/10 text-gold-500',
+    badgeColor: 'border-[#C89B3C]/30 bg-[#C89B3C]/10 text-[#C89B3C]',
     icon: '👑',
     min: rank.min,
     max: rank.max,
@@ -563,7 +622,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   };
 
   // Helper to append dynamic journey milestones
-  const addJourneyMilestone = async (title: string, description: string, color: string = 'bg-gold-500') => {
+  const addJourneyMilestone = async (title: string, description: string, color: string = 'bg-[#C89B3C]') => {
     try {
       await supabase.from('journey_log').insert({ title, description, color });
     } catch {}
@@ -615,13 +674,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       }[type];
     }
     return {
-      text: 'text-gold-500',
-      bg: 'bg-gold-500',
-      border: 'border-gold-500',
-      hoverBg: 'hover:bg-gold-400',
-      glow: 'shadow-gold-500/10 border-gold-500/30',
+      text: 'text-[#C89B3C]',
+      bg: 'bg-[#C89B3C]',
+      border: 'border-[#C89B3C]',
+      hoverBg: 'hover:bg-[#A97828]',
+      glow: 'shadow-gold-500/10 border-[#C89B3C]/30',
       accent: 'gold',
-      bg10: 'bg-gold-500/10'
+      bg10: 'bg-[#C89B3C]/10'
     }[type];
   };
 
@@ -994,7 +1053,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       title: `Kindness Act: ${newKindnessTitle}`,
       date: new Date().toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' }),
       description: newKindnessDesc.trim() || 'Logged an act of daily compassion.',
-      color: 'bg-gold-500'
+      color: 'bg-[#C89B3C]'
     };
     setJourneyLog(prev => [newLog, ...prev]);
     setNewKindnessTitle('');
@@ -1033,7 +1092,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       title: `Redeemed: ${item.title}`,
       date: new Date().toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' }),
       description: `Exchanged ${item.cost} points to unlock exclusive digital collectible access.`,
-      color: 'bg-gold-500'
+      color: 'bg-[#C89B3C]'
     };
     setJourneyLog(prev => [journeyMilestone, ...prev]);
 
@@ -1113,7 +1172,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 flex flex-col justify-between overflow-x-clip">
+    <div className="min-h-screen bg-white text-[#1E1E1E] font-sans selection:bg-[#C89B3C] selection:text-neutral-950 flex flex-col justify-between overflow-x-clip">
       
       {/* 1. AUTHENTICATION GATE SCREEN */}
       {!isLoggedIn || !profile ? (
@@ -1126,20 +1185,20 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 key="email-verification-panel"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-md rounded-xl border border-gold-500/20 bg-neutral-950 p-8 shadow-2xl text-center space-y-6"
+                className="w-full max-w-md rounded-xl border border-[#C89B3C]/20 bg-white p-8 shadow-2xl text-center space-y-6"
               >
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gold-500/10 text-gold-500 border border-gold-500/30">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#C89B3C]/10 text-[#C89B3C] border border-[#C89B3C]/30">
                   <Mail className="h-7 w-7" />
                 </div>
                 <div className="space-y-2">
-                  <span className="text-[11px] font-mono text-gold-500 uppercase tracking-widest block font-bold">
+                  <span className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest block font-bold">
                     CHECK YOUR INBOX
                   </span>
                   <h4 className="font-serif text-xl font-bold tracking-wider text-white">
                     Verify Your Email
                   </h4>
-                  <p className="text-xs text-neutral-400 max-w-xs mx-auto leading-relaxed">
-                    We've sent a verification link to <span className="text-gold-500 font-medium">{authEmail}</span>. Please check your inbox (and spam folder) and click the link.
+                  <p className="text-xs text-[#444] max-w-xs mx-auto leading-relaxed">
+                    We've sent a verification link to <span className="text-[#C89B3C] font-medium">{authEmail}</span>. Please check your inbox (and spam folder) and click the link.
                   </p>
                 </div>
 
@@ -1148,9 +1207,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <motion.div
                     animate={{ scale: [1, 1.3, 1] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
-                    className="h-2 w-2 rounded-full bg-gold-500"
+                    className="h-2 w-2 rounded-full bg-[#C89B3C]"
                   />
-                  <span className="text-[10px] font-mono text-neutral-500">Watching for confirmation...</span>
+                  <span className="text-[10px] font-mono text-[#444]">Watching for confirmation...</span>
                 </div>
 
                 <div className="space-y-3">
@@ -1162,7 +1221,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   </button>
                   <button
                     onClick={() => setShowEmailVerification(false)}
-                    className="text-[10px] text-neutral-500 hover:text-gold-500 transition-colors font-mono tracking-wider"
+                    className="text-[10px] text-[#444] hover:text-[#C89B3C] transition-colors font-mono tracking-wider"
                   >
                     ← Back to Registration
                   </button>
@@ -1173,20 +1232,20 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 key="welcome-panel"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-lg rounded-2xl border border-gold-500/20 bg-[#0a0a0a] p-8 sm:p-10 shadow-2xl text-center space-y-6 relative overflow-hidden"
+                className="w-full max-w-lg rounded-2xl border border-[#C89B3C]/20 bg-white p-8 sm:p-10 shadow-2xl text-center space-y-6 relative overflow-hidden"
               >
                 {/* Ambient glow */}
-                <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full bg-gold-500/5 blur-[80px] pointer-events-none" />
+                <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full bg-[#C89B3C]/5 blur-[80px] pointer-events-none" />
 
                 <div className="relative z-10 space-y-6">
                   {/* Brand mark */}
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-gold-500/20 to-gold-600/10 text-gold-500 border border-gold-500/30 shadow-lg shadow-gold-500/10">
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-gold-500/20 to-gold-600/10 text-[#C89B3C] border border-[#C89B3C]/30 shadow-lg shadow-gold-500/10">
                     <Star className="h-7 w-7" />
                   </div>
 
                   {/* Title */}
                   <div className="space-y-2">
-                    <span className="text-[11px] font-mono text-gold-500 uppercase tracking-[0.2em] block font-bold">
+                    <span className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-[0.2em] block font-bold">
                       WELCOME TO YOUR SANCTUARY
                     </span>
                     <h4 className="font-serif text-2xl font-bold tracking-wider text-white">
@@ -1198,49 +1257,49 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <div className="h-[1px] w-16 mx-auto bg-gradient-to-r from-transparent via-gold-500/40 to-transparent" />
 
                   {/* Welcome body */}
-                  <p className="text-sm text-neutral-300 leading-relaxed max-w-sm mx-auto">
+                  <p className="text-sm text-[#444] leading-relaxed max-w-sm mx-auto">
                     You've joined a community built for those who appreciate artistry, advocacy, and authentic connection. Here's what's waiting for you.
                   </p>
 
                   {/* Benefits grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
-                    <div className="p-3 rounded-xl border border-neutral-800/60 bg-neutral-900/40 space-y-1.5">
+                    <div className="p-3 rounded-xl border border-[rgba(0,0,0,0.06)]/60 bg-[#F8F6F2] space-y-1.5">
                       <div className="flex items-center gap-2">
-                        <Star className="h-3.5 w-3.5 text-gold-500" />
-                        <span className="text-[11px] font-bold text-white tracking-wide">Exclusive Experiences</span>
+                        <Star className="h-3.5 w-3.5 text-[#C89B3C]" />
+                        <span className="text-[11px] font-bold text-[#111] tracking-wide">Exclusive Experiences</span>
                       </div>
-                      <p className="text-[10px] text-neutral-500 leading-relaxed">Book private sessions, one-on-one meetings, and special encounters with Gillian. Limited availability.</p>
+                      <p className="text-[10px] text-[#444] leading-relaxed">Book private sessions, one-on-one meetings, and special encounters with Gillian. Limited availability.</p>
                     </div>
-                    <div className="p-3 rounded-xl border border-neutral-800/60 bg-neutral-900/40 space-y-1.5">
+                    <div className="p-3 rounded-xl border border-[rgba(0,0,0,0.06)]/60 bg-[#F8F6F2] space-y-1.5">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-3.5 w-3.5 text-blue-400" />
-                        <span className="text-[11px] font-bold text-white tracking-wide">Members-Only Events</span>
+                        <span className="text-[11px] font-bold text-[#111] tracking-wide">Members-Only Events</span>
                       </div>
-                      <p className="text-[10px] text-neutral-500 leading-relaxed">Live Q&A sessions, intimate watch parties, and exclusive celebrations with fellow fans.</p>
+                      <p className="text-[10px] text-[#444] leading-relaxed">Live Q&A sessions, intimate watch parties, and exclusive celebrations with fellow fans.</p>
                     </div>
-                    <div className="p-3 rounded-xl border border-neutral-800/60 bg-neutral-900/40 space-y-1.5">
+                    <div className="p-3 rounded-xl border border-[rgba(0,0,0,0.06)]/60 bg-[#F8F6F2] space-y-1.5">
                       <div className="flex items-center gap-2">
                         <Users className="h-3.5 w-3.5 text-emerald-400" />
-                        <span className="text-[11px] font-bold text-white tracking-wide">Community Hub</span>
+                        <span className="text-[11px] font-bold text-[#111] tracking-wide">Community Hub</span>
                       </div>
-                      <p className="text-[10px] text-neutral-500 leading-relaxed">Connect with fans worldwide. Share stories, post photos, and find your people.</p>
+                      <p className="text-[10px] text-[#444] leading-relaxed">Connect with fans worldwide. Share stories, post photos, and find your people.</p>
                     </div>
-                    <div className="p-3 rounded-xl border border-neutral-800/60 bg-neutral-900/40 space-y-1.5">
+                    <div className="p-3 rounded-xl border border-[rgba(0,0,0,0.06)]/60 bg-[#F8F6F2] space-y-1.5">
                       <div className="flex items-center gap-2">
                         <Crown className="h-3.5 w-3.5 text-amber-400" />
-                        <span className="text-[11px] font-bold text-white tracking-wide">Membership Perks</span>
+                        <span className="text-[11px] font-bold text-[#111] tracking-wide">Membership Perks</span>
                       </div>
-                      <p className="text-[10px] text-neutral-500 leading-relaxed">Priority booking, custom membership card, early access to events and announcements.</p>
+                      <p className="text-[10px] text-[#444] leading-relaxed">Priority booking, custom membership card, early access to events and announcements.</p>
                     </div>
                   </div>
 
                   {/* Quick start */}
-                  <div className="bg-gold-500/[0.04] border border-gold-500/10 rounded-xl p-4 space-y-2">
-                    <p className="text-[10px] font-mono text-gold-500 uppercase tracking-widest font-bold">Quick Start</p>
-                    <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[10px] text-neutral-400">
-                      <span><span className="text-white font-medium">1.</span> Explore Experiences</span>
-                      <span><span className="text-white font-medium">2.</span> Check upcoming Events</span>
-                      <span><span className="text-white font-medium">3.</span> Upgrade for full access</span>
+                  <div className="bg-[#C89B3C]/[0.04] border border-[#C89B3C]/10 rounded-xl p-4 space-y-2">
+                    <p className="text-[10px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">Quick Start</p>
+                    <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-[10px] text-[#444]">
+                      <span><span className="text-[#333] font-medium">1.</span> Explore Experiences</span>
+                      <span><span className="text-[#333] font-medium">2.</span> Check upcoming Events</span>
+                      <span><span className="text-[#333] font-medium">3.</span> Upgrade for full access</span>
                     </div>
                   </div>
 
@@ -1251,13 +1310,17 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         await refreshProfile();
                       }
                       setShowWelcome(false);
+                      const hasOnboarded = localStorage.getItem('kr_onboarded');
+                      if (!hasOnboarded) {
+                        setShowOnboarding(true);
+                      }
                       setActiveTab('Dashboard');
                     }}
                     className="w-full py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-amber-500 text-neutral-950 font-bold text-sm tracking-wider hover:from-gold-400 hover:to-amber-400 transition-all shadow-lg shadow-gold-500/10 active:scale-[0.98]"
                   >
                     ENTER MY PORTAL
                   </button>
-                  <p className="text-[10px] text-neutral-600 font-mono uppercase tracking-widest">
+                  <p className="text-[10px] text-[#444] font-mono uppercase tracking-widest">
                     Find your portal anytime in the profile menu above
                   </p>
                 </div>
@@ -1268,29 +1331,29 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 initial={{ opacity: 0, scale: 0.97 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.97 }}
-                className="w-full max-w-sm rounded-2xl border border-neutral-800/60 bg-[#0a0a0c] p-8 shadow-2xl relative overflow-hidden text-left"
+                className="w-full max-w-sm rounded-2xl border border-[rgba(0,0,0,0.06)]/60 bg-white p-8 shadow-2xl relative overflow-hidden text-left"
               >
                 <div className="absolute top-0 right-0 h-32 w-32 bg-[radial-gradient(circle_at_top_right,rgba(223,186,137,0.06),transparent)] pointer-events-none" />
 
                 {/* Header */}
                 <div className="text-center mb-8">
-                  <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center mb-4">
-                    <Star className="h-6 w-6 text-gold-500" />
+                  <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-[#C89B3C]/20 flex items-center justify-center mb-4">
+                    <Star className="h-6 w-6 text-[#C89B3C]" />
                   </div>
-                  <h2 className="font-serif text-lg font-bold text-white tracking-wide">
+                  <h2 className="font-serif text-lg font-bold text-[#111] tracking-wide">
                     {authMode === 'register' ? 'Join the Sanctuary' : 'Welcome Back'}
                   </h2>
-                  <p className="text-[10px] text-neutral-500 mt-1.5 font-mono tracking-wider">
+                  <p className="text-[10px] text-[#444] mt-1.5 font-mono tracking-wider">
                     {authMode === 'register' ? 'Create your account to get started' : 'Sign in to your portal'}
                   </p>
                 </div>
 
                 {/* Tab Switcher */}
-                <div className="flex bg-neutral-900/50 rounded-lg p-1 mb-6">
+                <div className="flex bg-[#F8F6F2] rounded-lg p-1 mb-6">
                   <button
                     onClick={() => setAuthMode('register')}
                     className={`flex-1 py-2 text-[10px] font-bold tracking-widest rounded-md transition-all ${
-                      authMode === 'register' ? 'bg-gold-500 text-neutral-950' : 'text-neutral-500 hover:text-white'
+                      authMode === 'register' ? 'bg-[#C89B3C] text-neutral-950' : 'text-[#444] hover:text-[#111]'
                     }`}
                   >
                     SIGN UP
@@ -1298,7 +1361,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <button
                     onClick={() => setAuthMode('login')}
                     className={`flex-1 py-2 text-[10px] font-bold tracking-widest rounded-md transition-all ${
-                      authMode === 'login' ? 'bg-gold-500 text-neutral-950' : 'text-neutral-500 hover:text-white'
+                      authMode === 'login' ? 'bg-[#C89B3C] text-neutral-950' : 'text-[#444] hover:text-[#111]'
                     }`}
                   >
                     SIGN IN
@@ -1316,63 +1379,63 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 <form onSubmit={handleAuthSubmit} className="space-y-3.5">
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Full Name</label>
+                      <label className="text-[11px] font-mono text-[#444] uppercase tracking-widest mb-1.5 block">Full Name</label>
                       <input
                         type="text"
                         required
                         value={authName}
                         onChange={(e) => setAuthName(e.target.value)}
                         placeholder="Your full name"
-                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
+                        className="w-full rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-4 py-2.5 text-sm text-[#111] placeholder:text-[#444] outline-none focus:border-[#C89B3C]/50 transition-colors"
                       />
                     </div>
                   )}
 
                   <div>
-                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Email</label>
+                    <label className="text-[11px] font-mono text-[#444] uppercase tracking-widest mb-1.5 block">Email</label>
                     <input
                       type="email"
                       required
                       value={authEmail}
                       onChange={(e) => setAuthEmail(e.target.value)}
                       placeholder="you@example.com"
-                      className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
+                      className="w-full rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-4 py-2.5 text-sm text-[#111] placeholder:text-[#444] outline-none focus:border-[#C89B3C]/50 transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Password</label>
+                    <label className="text-[11px] font-mono text-[#444] uppercase tracking-widest mb-1.5 block">Password</label>
                     <input
                       type="password"
                       required
                       value={authPassword}
                       onChange={(e) => setAuthPassword(e.target.value)}
                       placeholder="Enter your password"
-                      className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
+                      className="w-full rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-4 py-2.5 text-sm text-[#111] placeholder:text-[#444] outline-none focus:border-[#C89B3C]/50 transition-colors"
                     />
                   </div>
 
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Confirm Password</label>
+                      <label className="text-[11px] font-mono text-[#444] uppercase tracking-widest mb-1.5 block">Confirm Password</label>
                       <input
                         type="password"
                         required
                         value={authConfirmPassword}
                         onChange={(e) => setAuthConfirmPassword(e.target.value)}
                         placeholder="Re-enter your password"
-                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
+                        className="w-full rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-4 py-2.5 text-sm text-[#111] placeholder:text-[#444] outline-none focus:border-[#C89B3C]/50 transition-colors"
                       />
                     </div>
                   )}
 
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">Country</label>
+                      <label className="text-[11px] font-mono text-[#444] uppercase tracking-widest mb-1.5 block">Country</label>
                       <select
                         value={authCountry}
                         onChange={(e) => setAuthCountry(e.target.value)}
-                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-neutral-300 outline-none focus:border-gold-500/50 transition-colors"
+                        className="w-full rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-4 py-2.5 text-sm text-[#444] outline-none focus:border-[#C89B3C]/50 transition-colors"
                       >
                         <option value="USA">United States</option>
                         <option value="Canada">Canada</option>
@@ -1401,26 +1464,26 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">City / State</label>
+                      <label className="text-[11px] font-mono text-[#444] uppercase tracking-widest mb-1.5 block">City / State</label>
                       <input
                         type="text"
                         required
                         value={authCity}
                         onChange={(e) => setAuthCity(e.target.value)}
                         placeholder="e.g. Los Angeles, CA"
-                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
+                        className="w-full rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-4 py-2.5 text-sm text-[#111] placeholder:text-[#444] outline-none focus:border-[#C89B3C]/50 transition-colors"
                       />
                     </div>
                   )}
 
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">How did you discover Gillian?</label>
+                      <label className="text-[11px] font-mono text-[#444] uppercase tracking-widest mb-1.5 block">How did you discover Gillian?</label>
                       <select
                         required
                         value={authHowHeard}
                         onChange={(e) => setAuthHowHeard(e.target.value)}
-                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-neutral-300 outline-none focus:border-gold-500/50 transition-colors"
+                        className="w-full rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-4 py-2.5 text-sm text-[#444] outline-none focus:border-[#C89B3C]/50 transition-colors"
                       >
                         <option value="">Select one...</option>
                         <option value="The X-Files">The X-Files</option>
@@ -1440,14 +1503,14 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                   {authMode === 'register' && (
                     <div>
-                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest mb-1.5 block">What do you love most about Gillian?</label>
+                      <label className="text-[11px] font-mono text-[#444] uppercase tracking-widest mb-1.5 block">What do you love most about Gillian?</label>
                       <input
                         type="text"
                         required
                         value={authFavoriteThing}
                         onChange={(e) => setAuthFavoriteThing(e.target.value)}
                         placeholder="e.g. Her advocacy, her acting range, her humor..."
-                        className="w-full rounded-lg border border-neutral-800 bg-neutral-900/50 px-4 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-gold-500/50 transition-colors"
+                        className="w-full rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-4 py-2.5 text-sm text-[#111] placeholder:text-[#444] outline-none focus:border-[#C89B3C]/50 transition-colors"
                       />
                     </div>
                   )}
@@ -1455,17 +1518,40 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <button
                     type="submit"
                     disabled={authLoading}
-                    className="w-full bg-gold-500 hover:bg-gold-400 disabled:bg-neutral-800 disabled:text-neutral-500 text-neutral-950 font-bold py-3 rounded-lg text-xs tracking-widest transition-all active:scale-[0.98] mt-2"
+                    className="w-full bg-[#C89B3C] hover:bg-[#A97828] disabled:bg-[#F8F6F2] disabled:text-[#444] text-neutral-950 font-bold py-3 rounded-lg text-xs tracking-widest transition-all active:scale-[0.98] mt-2"
                   >
                     {authLoading ? 'PLEASE WAIT...' : authMode === 'register' ? 'CREATE ACCOUNT' : 'SIGN IN'}
                   </button>
                 </form>
 
+                {/* What's Inside preview — register only */}
+                {authMode === 'register' && (
+                  <div className="mt-6 pt-5 border-t border-[rgba(0,0,0,0.06)]/40">
+                    <p className="text-[10px] font-mono text-[#C89B3C]/70 uppercase tracking-[0.2em] font-bold text-center mb-3">What's Inside</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { icon: Star, label: 'Exclusive Experiences' },
+                        { icon: Users, label: 'Private Community' },
+                        { icon: Award, label: 'Membership Tiers' },
+                        { icon: Gift, label: 'Loyalty Rewards' },
+                      ].map((item) => {
+                        const ItemIcon = item.icon;
+                        return (
+                          <div key={item.label} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/30">
+                            <ItemIcon className="h-3.5 w-3.5 text-[#C89B3C]/60 shrink-0" />
+                            <span className="text-[10px] text-[#444] font-medium">{item.label}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Footer */}
                 <div className="text-center mt-6">
                   <button
                     onClick={onBackToHome}
-                    className="text-[10px] text-neutral-600 hover:text-gold-500 transition-colors font-mono tracking-wider"
+                    className="text-[10px] text-[#444] hover:text-[#C89B3C] transition-colors font-mono tracking-wider"
                   >
                     ← Back to Home
                   </button>
@@ -1477,30 +1563,30 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       ) : (
         
         /* 2. PORTAL WORKSPACE */
-          <div className="flex flex-col min-h-screen bg-[#050505]">
+          <div className="flex flex-col min-h-screen bg-white">
           
           {/* STICKY HEADER */}
-          <header className="sticky top-0 z-40 w-full border-b border-neutral-900/80 bg-[#050505]/95 backdrop-blur-md px-3 sm:px-4 md:px-8 flex items-center justify-between h-14 md:h-16 shrink-0">
+          <header className="sticky top-0 z-40 w-full border-b border-[rgba(0,0,0,0.06)]/80 bg-white/95 backdrop-blur-md px-3 sm:px-4 md:px-8 flex items-center justify-between h-14 md:h-16 shrink-0">
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="flex flex-col">
-                  <span className="text-xs sm:text-sm font-bold tracking-wider text-white leading-tight">
+                  <span className="text-xs sm:text-sm font-bold tracking-wider text-[#111] leading-tight">
                     Gillian Anderson
                   </span>
-                  <span className="font-mono text-[10px] tracking-[0.2em] text-gold-500/60 font-semibold uppercase leading-none">
-                    Fan Portal
+                  <span className="font-mono text-[10px] tracking-[0.2em] text-[#C89B3C]/60 font-semibold uppercase leading-none">
+                    Your Sanctuary
                   </span>
                 </div>
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gold-500/5 border border-gold-500/15 text-[10px] font-mono text-gold-400/80 font-medium">
-                <span className="text-gold-500/60">✦</span>
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#C89B3C]/5 border border-[#C89B3C]/15 text-[10px] font-mono text-gold-400/80 font-medium">
+                <span className="text-[#C89B3C]/60">✦</span>
                 <span>{loyaltyPoints.toLocaleString()} pts</span>
               </div>
 
               <NotificationBell />
 
-              <div className="h-7 w-7 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-500/5 border border-gold-500/25 flex items-center justify-center text-[11px] font-bold text-gold-500 font-serif">
+              <div className="h-7 w-7 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-500/5 border border-[#C89B3C]/25 flex items-center justify-center text-[11px] font-bold text-[#C89B3C] font-serif">
                 {authName.slice(0, 1).toUpperCase()}
               </div>
             </div>
@@ -1511,7 +1597,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {/* FIXED SIDEBAR — desktop only */}
             <aside
               className={`
-                bg-[#0a0a0c] border-r border-neutral-900/60 flex flex-col justify-between transition-all duration-300 z-30
+                bg-white border-r border-[rgba(0,0,0,0.06)]/60 flex flex-col justify-between transition-all duration-300 z-30
                 hidden md:flex
                 fixed inset-y-0 left-0 w-64 md:translate-x-0 pt-16
               `}
@@ -1519,86 +1605,132 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5 scrollbar-thin">
                 <button
                   onClick={() => navigate('/')}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 text-xs transition-all text-left rounded-lg text-neutral-500 hover:text-neutral-200 hover:bg-neutral-900/40 mb-2"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 text-xs transition-all text-left rounded-lg text-[#444] hover:text-[#444] hover:bg-neutral-100 mb-2"
                 >
-                  <Home className="h-4 w-4 shrink-0 text-neutral-600" />
+                  <Home className="h-4 w-4 shrink-0 text-[#444]" />
                   <span>Back to Site</span>
                 </button>
-                <span className="text-[10px] font-mono font-semibold tracking-[0.2em] text-neutral-600 uppercase pl-3 pb-2 block">
+                <span className="text-[10px] font-mono font-semibold tracking-[0.2em] text-[#444] uppercase pl-3 pb-2 block">
                   Navigation
                 </span>
                 {[
-                  { name: 'Dashboard', icon: LayoutGrid },
-                  { name: 'Profile', icon: User },
-                  { name: 'Community', icon: Users },
-                  { name: 'Messages', icon: MessageSquare },
-                  { name: 'Ask Gillian', icon: MessageCircle },
-                  { name: 'Experiences', icon: Star },
-                  { name: 'Events', icon: Calendar },
-                  { name: 'Membership', icon: Award },
-                  { name: 'My Journey', icon: Compass },
-                  { name: 'Rewards', icon: Gift },
-                  { name: 'Notifications', icon: Bell },
-                  { name: 'Settings', icon: Settings }
+                  { name: 'Dashboard', icon: LayoutGrid, label: 'Home' },
                 ].map((item) => {
                   const Icon = item.icon;
-                  const isUnread = item.name === 'Notifications' && notifications.some(n => !n.is_read);
                   const isSelected = activeTab === item.name;
-
                   return (
                     <button
                       key={item.name}
                       onClick={() => {
-                        setActiveTab(item.name as 'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Ask Gillian' | 'Events' | 'Experiences' | 'Membership' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings');
+                        setActiveTab(item.name as 'Dashboard');
                         setSelectedRequestId(null);
                         setIsMobileMenuOpen(false);
                       }}
                       className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-all text-left rounded-lg relative ${
                         isSelected
-                          ? 'bg-gold-500/10 text-gold-400 font-medium'
-                          : 'text-neutral-500 hover:text-neutral-200 hover:bg-neutral-900/40'
+                          ? 'bg-[#C89B3C]/10 text-gold-400 font-medium'
+                          : 'text-[#444] hover:text-[#444] hover:bg-neutral-100'
                       }`}
                     >
                       {isSelected && (
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r-full bg-gold-500/70" />
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r-full bg-[#C89B3C]/70" />
                       )}
                       <div className="flex items-center gap-3">
-                        <Icon className={`h-4 w-4 shrink-0 ${isSelected ? 'text-gold-500/80' : 'text-neutral-600'}`} />
-                        <span>{item.name}</span>
+                        <Icon className={`h-4 w-4 shrink-0 ${isSelected ? 'text-[#C89B3C]/80' : 'text-[#444]'}`} />
+                        <span>{item.label}</span>
                       </div>
-                      {isUnread ? (
-                        <span className="h-1.5 w-1.5 rounded-full bg-gold-500/80" />
-                      ) : null}
                     </button>
+                  );
+                })}
+                <span className="text-[10px] font-mono font-semibold tracking-[0.2em] text-[#444] uppercase pl-3 pt-3 pb-2 block">
+                  Sections
+                </span>
+                {[
+                  { group: 'My Account', icon: User, tabs: ['Profile', 'My Journey', 'Settings'] as string[] },
+                  { group: 'Connect', icon: Users, tabs: ['Community', 'Messages', 'Ask Gillian'] as string[] },
+                  { group: 'Explore', icon: Star, tabs: ['Experiences', 'Events'] as string[] },
+                  { group: 'Status', icon: Award, tabs: ['Membership', 'Rewards'] as string[] },
+                ].map((section) => {
+                  const Icon = section.icon;
+                  const isExpanded = expandedGroup === section.group;
+                  const isActive = section.tabs.includes(activeTab);
+                  const hasUnread = section.group === 'Connect' && notifications.some(n => !n.is_read);
+                  return (
+                    <div key={section.group}>
+                      <button
+                        onClick={() => setExpandedGroup(isExpanded ? null : section.group)}
+                        className={`w-full flex items-center justify-between px-3 py-2 text-xs transition-all text-left rounded-lg relative ${
+                          isActive && !isExpanded
+                            ? 'bg-[#C89B3C]/10 text-gold-400 font-medium'
+                            : 'text-[#444] hover:text-[#444] hover:bg-neutral-100'
+                        }`}
+                      >
+                        {isActive && !isExpanded && (
+                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-r-full bg-[#C89B3C]/70" />
+                        )}
+                        <div className="flex items-center gap-3">
+                          <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-[#C89B3C]/80' : 'text-[#444]'}`} />
+                          <span>{section.group}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {hasUnread && <span className="h-1.5 w-1.5 rounded-full bg-[#C89B3C]/80" />}
+                          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''} text-[#444]`} />
+                        </div>
+                      </button>
+                      {isExpanded && (
+                        <div className="ml-4 pl-3 border-l border-[rgba(0,0,0,0.06)]/60 space-y-0.5 py-1">
+                          {section.tabs.map((tab) => {
+                            const isTabActive = activeTab === tab;
+                            return (
+                              <button
+                                key={tab}
+                                onClick={() => {
+                                  setActiveTab(tab as typeof activeTab);
+                                  setSelectedRequestId(null);
+                                  setIsMobileMenuOpen(false);
+                                }}
+                                className={`w-full flex items-center gap-2 px-3 py-1.5 text-[11px] transition-all text-left rounded-md ${
+                                  isTabActive
+                                    ? 'bg-[#C89B3C]/10 text-gold-400 font-medium'
+                                    : 'text-[#444] hover:text-[#444] hover:bg-neutral-100'
+                                }`}
+                              >
+                                {tab}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </nav>
 
               {/* Sidebar Member Card */}
-              <div className="px-3 py-4 border-t border-neutral-900/60">
-                <div className="rounded-xl bg-neutral-950/40 border border-neutral-900 p-3.5 space-y-3 shadow-lg shadow-black/40">
+              <div className="px-3 py-4 border-t border-[rgba(0,0,0,0.06)]/60">
+                <div className="rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] p-3.5 space-y-3 shadow-lg shadow-black/40">
                   <div className="flex items-center gap-2.5">
-                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-500/5 border border-gold-500/25 flex items-center justify-center text-[10px] font-bold text-gold-500 font-serif shrink-0">
+                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-500/5 border border-[#C89B3C]/25 flex items-center justify-center text-[10px] font-bold text-[#C89B3C] font-serif shrink-0">
                       {authName.slice(0, 1).toUpperCase()}
                     </div>
                     <div className="flex flex-col leading-tight min-w-0">
-                      <span className="text-xs font-medium text-neutral-100 truncate">{authName}</span>
-                      <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">{displayRank.name}</span>
+                      <span className="text-xs font-medium text-[#1E1E1E] truncate">{authName}</span>
+                      <span className="text-[10px] font-mono text-[#444] uppercase tracking-wider">{displayRank.name}</span>
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <div className="flex justify-between text-[10px] font-mono text-neutral-500">
+                    <div className="flex justify-between text-[10px] font-mono text-[#444]">
                       <span>Progress</span>
-                      <span className="text-gold-500/60">{Math.round(progressPercent)}%</span>
+                      <span className="text-[#C89B3C]/60">{Math.round(progressPercent)}%</span>
                     </div>
-                    <div className="h-1 bg-neutral-900/60 rounded-full overflow-hidden">
+                    <div className="h-1 bg-[#F8F6F2] rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-gold-500/40 to-gold-500/70 rounded-full transition-all duration-500"
                         style={{ width: `${progressPercent}%` }}
                       />
                     </div>
                   </div>
-                  <div className="flex items-center justify-between text-[10px] font-mono text-neutral-600 pt-1 border-t border-neutral-900/60">
+                  <div className="flex items-center justify-between text-[10px] font-mono text-[#444] pt-1 border-t border-[rgba(0,0,0,0.06)]/60">
                     <span>ID: {user?.id?.substring(0, 8).toUpperCase() || 'PENDING'}</span>
                     <span>{authCountry.toUpperCase()}</span>
                   </div>
@@ -1607,17 +1739,17 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             </aside>
 
             {/* MAIN CONTENT */}
-            <main className="flex-1 md:ml-64 min-h-[calc(100vh-4rem)] overflow-y-auto overflow-x-clip bg-[#050505] p-4 md:p-8 lg:p-10 space-y-6 md:space-y-8 pb-24 lg:pb-8">
+            <main className="flex-1 md:ml-64 min-h-[calc(100vh-4rem)] overflow-y-auto overflow-x-clip bg-white p-4 md:p-8 lg:p-10 space-y-6 md:space-y-8 pb-24 lg:pb-8">
             
             {/* VIEW RENDERING 1: DASHBOARD — Cinematic Rebuild */}
             {activeTab === 'Dashboard' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto relative">
 
                 {/* ── ATMOSPHERE: Layered light orbs ── */}
-                <div className="absolute -top-48 -right-48 w-[500px] h-[500px] bg-gold-500/[0.04] rounded-full blur-[150px] pointer-events-none" />
+                <div className="absolute -top-48 -right-48 w-[500px] h-[500px] bg-[#C89B3C]/[0.04] rounded-full blur-[150px] pointer-events-none" />
                 <div className="absolute -bottom-48 -left-48 w-[400px] h-[400px] bg-amber-500/[0.03] rounded-full blur-[130px] pointer-events-none" />
                 <div className="absolute top-1/3 left-1/3 w-[300px] h-[300px] bg-rose-500/[0.015] rounded-full blur-[120px] pointer-events-none" />
-                <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-gold-500/30 rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '4s' }} />
+                <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-[#C89B3C]/30 rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '4s' }} />
                 <div className="absolute bottom-1/4 left-1/4 w-1.5 h-1.5 bg-amber-400/20 rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '3s', animationDelay: '1s' }} />
                 <div className="absolute top-1/4 right-1/3 w-1 h-1 bg-rose-400/20 rounded-full animate-pulse pointer-events-none" style={{ animationDuration: '5s', animationDelay: '2s' }} />
 
@@ -1634,7 +1766,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           className="relative h-14 w-14 shrink-0"
                         >
                           <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-gold-500/30 to-amber-500/10 blur-sm" />
-                          <div className="relative h-full w-full rounded-2xl bg-gradient-to-br from-gold-500/20 to-amber-500/5 border border-gold-500/30 flex items-center justify-center text-2xl shadow-lg shadow-gold-500/5">
+                          <div className="relative h-full w-full rounded-2xl bg-gradient-to-br from-gold-500/20 to-amber-500/5 border border-[#C89B3C]/30 flex items-center justify-center text-2xl shadow-lg shadow-gold-500/5">
                             {displayRank.icon || '✦'}
                           </div>
                         </motion.div>
@@ -1644,7 +1776,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.2 }}
                           >
-                            <span className="inline-block px-2 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/20 font-mono text-[10px] text-gold-500/80 tracking-[0.15em] uppercase font-semibold">
+                            <span className="inline-block px-2 py-0.5 rounded-full bg-[#C89B3C]/10 border border-[#C89B3C]/20 font-mono text-[10px] text-[#C89B3C]/80 tracking-[0.15em] uppercase font-semibold">
                               {displayRank.name}
                             </span>
                           </motion.div>
@@ -1652,7 +1784,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.25 }}
-                            className="font-elegant text-3xl md:text-4xl font-bold text-white tracking-tight leading-[1.15]"
+                            className="font-elegant text-3xl md:text-4xl font-bold text-[#111] tracking-tight leading-[1.15]"
                           >
                             Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {authName.split(' ')[0]}
                           </motion.h1>
@@ -1666,7 +1798,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         transition={{ delay: 0.35 }}
                         className="pl-0 sm:pl-[4.25rem] space-y-3"
                       >
-                        <p className="text-sm text-neutral-400 font-elegant leading-relaxed max-w-xl">
+                        <p className="text-sm text-[#444] font-elegant leading-relaxed max-w-xl">
                           {new Date().getHours() < 12
                             ? 'The world wakes with possibility. Every great story begins with a single step — and yours is already being written.'
                             : new Date().getHours() < 18
@@ -1674,8 +1806,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             : 'As the stars take their watch, remember: the most meaningful connections are often forged in quiet moments. You are home here.'}
                         </p>
                         <div className="flex items-center gap-3">
-                          <span className="h-px w-6 bg-gold-500/30" />
-                          <span className="font-elegant text-[10px] italic text-gold-500/50 tracking-wide">— Gillian</span>
+                          <span className="h-px w-6 bg-[#C89B3C]/30" />
+                          <span className="font-elegant text-[10px] italic text-[#C89B3C]/50 tracking-wide">— Gillian</span>
                         </div>
                       </motion.div>
                     </div>
@@ -1685,10 +1817,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       initial={{ y: -15, opacity: 0, scale: 0.9 }}
                       animate={{ y: 0, opacity: 1, scale: 1 }}
                       transition={{ delay: 0.3, type: 'spring', stiffness: 150, damping: 14 }}
-                      className="hidden md:flex flex-col items-center justify-center h-18 w-18 rounded-2xl bg-gradient-to-b from-neutral-900/90 to-neutral-950/90 border border-neutral-800/80 font-mono shrink-0 shadow-2xl shadow-black/40"
+                      className="hidden md:flex flex-col items-center justify-center h-18 w-18 rounded-2xl bg-gradient-to-b from-neutral-50 to-white border border-[rgba(0,0,0,0.06)]/80 font-mono shrink-0 shadow-2xl shadow-black/40"
                     >
-                      <span className="text-2xl font-bold text-white leading-none tracking-tight">{new Date().getDate()}</span>
-                      <span className="text-[10px] font-semibold text-gold-500/70 tracking-widest mt-0.5 uppercase">{new Date().toLocaleString('en', { month: 'short' })}</span>
+                      <span className="text-2xl font-bold text-[#111] leading-none tracking-tight">{new Date().getDate()}</span>
+                      <span className="text-[10px] font-semibold text-[#C89B3C]/70 tracking-widest mt-0.5 uppercase">{new Date().toLocaleString('en', { month: 'short' })}</span>
                     </motion.div>
                   </div>
 
@@ -1707,82 +1839,82 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
-                    className="mb-8 rounded-2xl border border-gold-500/20 bg-[#0a0a0a] overflow-hidden"
+                    className="mb-8 rounded-2xl border border-[#C89B3C]/20 bg-white overflow-hidden"
                   >
                     {/* Header band */}
-                    <div className="px-5 py-4 border-b border-neutral-800/60 bg-gradient-to-r from-gold-500/[0.06] to-transparent">
+                    <div className="px-5 py-4 border-b border-[rgba(0,0,0,0.06)]/60 bg-gradient-to-r from-gold-500/[0.06] to-transparent">
                       <div className="flex items-center gap-2.5">
-                        <div className="h-8 w-8 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                          <Star className="h-4 w-4 text-gold-500" />
+                        <div className="h-8 w-8 rounded-lg bg-[#C89B3C]/10 border border-[#C89B3C]/20 flex items-center justify-center">
+                          <Star className="h-4 w-4 text-[#C89B3C]" />
                         </div>
                         <div>
-                          <h3 className="text-sm font-bold text-white">Welcome to your Portal</h3>
-                          <p className="text-[10px] text-neutral-500 font-mono tracking-wider">YOUR SANCTUARY AWAITS</p>
+                          <h3 className="text-sm font-bold text-[#111]">Welcome to your Portal</h3>
+                          <p className="text-[10px] text-[#444] font-mono tracking-wider">YOUR SANCTUARY AWAITS</p>
                         </div>
                       </div>
                     </div>
 
                     <div className="p-5 space-y-5">
                       {/* Intro */}
-                      <p className="text-xs text-neutral-300 leading-relaxed">
+                      <p className="text-xs text-[#444] leading-relaxed">
                         This is your personal hub. From here, you can book experiences, join events, connect with the community, and manage your membership. Everything is designed for you.
                       </p>
 
                       {/* Navigation guide */}
                       <div className="space-y-2">
-                        <p className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Navigate Your Portal</p>
+                        <p className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">Navigate Your Portal</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-neutral-900/40 border border-neutral-800/60 hover:border-neutral-700/60 transition-colors">
-                            <LayoutGrid className="h-3.5 w-3.5 text-gold-500 shrink-0 mt-0.5" />
+                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 hover:border-neutral-700/60 transition-colors">
+                            <LayoutGrid className="h-3.5 w-3.5 text-[#C89B3C] shrink-0 mt-0.5" />
                             <div>
-                              <span className="text-[11px] text-white font-semibold">Dashboard</span>
-                              <p className="text-[10px] text-neutral-500 leading-relaxed">Your home screen — stats, quick links, and activity at a glance.</p>
+                              <span className="text-[11px] text-[#333] font-semibold">Dashboard</span>
+                              <p className="text-[10px] text-[#444] leading-relaxed">Your home screen — stats, quick links, and activity at a glance.</p>
                             </div>
                           </div>
-                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-neutral-900/40 border border-neutral-800/60 hover:border-neutral-700/60 transition-colors">
+                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 hover:border-neutral-700/60 transition-colors">
                             <Star className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
                             <div>
-                              <span className="text-[11px] text-white font-semibold">Experiences</span>
-                              <p className="text-[10px] text-neutral-500 leading-relaxed">Book private sessions, meetings, and encounters with Gillian.</p>
+                              <span className="text-[11px] text-[#333] font-semibold">Experiences</span>
+                              <p className="text-[10px] text-[#444] leading-relaxed">Book private sessions, meetings, and encounters with Gillian.</p>
                             </div>
                           </div>
-                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-neutral-900/40 border border-neutral-800/60 hover:border-neutral-700/60 transition-colors">
+                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 hover:border-neutral-700/60 transition-colors">
                             <Calendar className="h-3.5 w-3.5 text-blue-400 shrink-0 mt-0.5" />
                             <div>
-                              <span className="text-[11px] text-white font-semibold">Events</span>
-                              <p className="text-[10px] text-neutral-500 leading-relaxed">Live Q&A sessions, watch parties, and exclusive celebrations.</p>
+                              <span className="text-[11px] text-[#333] font-semibold">Events</span>
+                              <p className="text-[10px] text-[#444] leading-relaxed">Live Q&A sessions, watch parties, and exclusive celebrations.</p>
                             </div>
                           </div>
-                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-neutral-900/40 border border-neutral-800/60 hover:border-neutral-700/60 transition-colors">
+                          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 hover:border-neutral-700/60 transition-colors">
                             <Users className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
                             <div>
-                              <span className="text-[11px] text-white font-semibold">Community</span>
-                              <p className="text-[10px] text-neutral-500 leading-relaxed">Connect with fans, share stories, and find your people.</p>
+                              <span className="text-[11px] text-[#333] font-semibold">Community</span>
+                              <p className="text-[10px] text-[#444] leading-relaxed">Connect with fans, share stories, and find your people.</p>
                             </div>
                           </div>
                         </div>
                       </div>
 
                       {/* Upgrade prompt */}
-                      <div className="p-4 rounded-xl border border-gold-500/15 bg-gold-500/[0.03] space-y-2.5">
+                      <div className="p-4 rounded-xl border border-[#C89B3C]/15 bg-[#C89B3C]/[0.03] space-y-2.5">
                         <div className="flex items-center gap-2">
-                          <Crown className="h-3.5 w-3.5 text-gold-500" />
-                          <span className="text-[11px] font-bold text-white">Unlock the Full Experience</span>
+                          <Crown className="h-3.5 w-3.5 text-[#C89B3C]" />
+                          <span className="text-[11px] font-bold text-[#111]">Unlock the Full Experience</span>
                         </div>
-                        <p className="text-[10px] text-neutral-400 leading-relaxed">
+                        <p className="text-[10px] text-[#444] leading-relaxed">
                           Upgrade your membership to get priority booking, early event access, a custom membership card, and direct communication channels. Choose the tier that fits you.
                         </p>
                         <button
                           onClick={() => setActiveTab('Membership')}
-                          className="text-[10px] font-bold text-gold-500 hover:text-gold-400 transition-colors tracking-wider uppercase"
+                          className="text-[10px] font-bold text-[#C89B3C] hover:text-gold-400 transition-colors tracking-wider uppercase"
                         >
                           VIEW MEMBERSHIP TIERS →
                         </button>
                       </div>
 
                       {/* Mobile hint */}
-                      <p className="text-[10px] text-neutral-600">
-                        Tap <span className="text-gold-500 font-medium">More</span> on the bottom bar to see Membership, Events, Messages, and Settings.
+                      <p className="text-[10px] text-[#444]">
+                        Tap <span className="text-[#C89B3C] font-medium">More</span> on the bottom bar to see Membership, Events, Messages, and Settings.
                       </p>
                     </div>
                   </motion.div>
@@ -1814,38 +1946,38 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ delay: 0.25, type: 'spring', stiffness: 120, damping: 14 }}
                           whileHover={{ y: -2, scale: 1.02 }}
-                          className="relative overflow-hidden rounded-2xl border border-gold-500/25 bg-gradient-to-br from-gold-500/[0.07] via-gold-500/[0.02] to-transparent backdrop-blur-sm p-4 text-left shadow-lg shadow-gold-500/5 transition-all duration-300 group"
+                          className="relative overflow-hidden rounded-2xl border border-[#C89B3C]/25 bg-gradient-to-br from-gold-500/[0.07] via-gold-500/[0.02] to-transparent backdrop-blur-sm p-4 text-left shadow-lg shadow-gold-500/5 transition-all duration-300 group"
                         >
                           <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-gold-500/[0.05] to-transparent rounded-bl-full pointer-events-none" />
                           <div className="flex items-center gap-2 mb-1.5">
                             <span className="text-base">👑</span>
                             <div className="flex-1 min-w-0">
-                              <p className="font-sans text-[11px] font-bold text-white leading-tight truncate">{c?.card_name || 'Member'}</p>
+                              <p className="font-sans text-[11px] font-bold text-[#111] leading-tight truncate">{c?.card_name || 'Member'}</p>
                               <div className="flex items-center gap-1">
-                                <span className="font-sans text-[10px] text-gold-500/90 font-semibold truncate">{c?.tier_name || stat.fallbackName}</span>
+                                <span className="font-sans text-[10px] text-[#C89B3C]/90 font-semibold truncate">{c?.tier_name || stat.fallbackName}</span>
                                 {isActive && <span className="h-1 w-1 rounded-full bg-green-500" />}
                               </div>
                             </div>
                           </div>
-                          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 border-t border-gold-500/10 pt-1.5">
+                          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 border-t border-[#C89B3C]/10 pt-1.5">
                             <div>
-                              <span className="font-sans text-[10px] text-neutral-500 font-medium uppercase tracking-wider block">Member #</span>
-                              <span className="font-sans text-[10px] text-neutral-200 font-semibold truncate block">{c?.membership_number || '—'}</span>
+                              <span className="font-sans text-[10px] text-[#444] font-medium uppercase tracking-wider block">Member #</span>
+                              <span className="font-sans text-[10px] text-[#444] font-semibold truncate block">{c?.membership_number || '—'}</span>
                             </div>
                             <div>
-                              <span className="font-sans text-[10px] text-neutral-500 font-medium uppercase tracking-wider block">Serial</span>
-                              <span className="font-sans text-[10px] text-neutral-200 font-semibold truncate block">{c?.card_serial || '—'}</span>
+                              <span className="font-sans text-[10px] text-[#444] font-medium uppercase tracking-wider block">Serial</span>
+                              <span className="font-sans text-[10px] text-[#444] font-semibold truncate block">{c?.card_serial || '—'}</span>
                             </div>
                             <div>
-                              <span className="font-sans text-[10px] text-neutral-500 font-medium uppercase tracking-wider block">Activated</span>
-                              <span className="font-sans text-[10px] text-neutral-200 font-semibold">{c?.activation_date ? new Date(c.activation_date).toLocaleDateString() : '—'}</span>
+                              <span className="font-sans text-[10px] text-[#444] font-medium uppercase tracking-wider block">Activated</span>
+                              <span className="font-sans text-[10px] text-[#444] font-semibold">{c?.activation_date ? new Date(c.activation_date).toLocaleDateString() : '—'}</span>
                             </div>
                             <div>
-                              <span className="font-sans text-[10px] text-neutral-500 font-medium uppercase tracking-wider block">Expires</span>
-                              <span className="font-sans text-[10px] text-neutral-200 font-semibold">{c?.expiration_date ? new Date(c.expiration_date).toLocaleDateString() : '—'}</span>
+                              <span className="font-sans text-[10px] text-[#444] font-medium uppercase tracking-wider block">Expires</span>
+                              <span className="font-sans text-[10px] text-[#444] font-semibold">{c?.expiration_date ? new Date(c.expiration_date).toLocaleDateString() : '—'}</span>
                             </div>
                           </div>
-                          {!c && <p className="font-mono text-[10px] text-neutral-600 mt-1">No card</p>}
+                          {!c && <p className="font-mono text-[10px] text-[#444] mt-1">No card</p>}
                         </motion.div>
                       );
                     }
@@ -1871,7 +2003,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         <p className={`font-elegant text-2xl font-bold tracking-tight ${textAccent[stat.accent]}`}>
                           {String(stat.value)}
                         </p>
-                        <p className="font-mono text-[10px] text-neutral-600 uppercase tracking-wider mt-1 font-medium">{stat.label}</p>
+                        <p className="font-mono text-[10px] text-[#444] uppercase tracking-wider mt-1 font-medium">{stat.label}</p>
                       </motion.div>
                     );
                   })}
@@ -1883,12 +2015,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   {/* LEFT COL: Journey + activity (3/5) */}
                   <div className="md:col-span-3 space-y-5">
                     <div className="flex items-center gap-3">
-                      <div className="h-6 w-6 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                        <Compass className="h-3 w-3 text-gold-500/70" />
+                      <div className="h-6 w-6 rounded-lg bg-[#C89B3C]/10 border border-[#C89B3C]/20 flex items-center justify-center">
+                        <Compass className="h-3 w-3 text-[#C89B3C]/70" />
                       </div>
-                      <span className="font-mono text-[11px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Your Journey</span>
-                      <span className="h-px flex-1 bg-gradient-to-r from-neutral-900/80 to-transparent" />
-                      <button onClick={() => setActiveTab('My Journey')} className="font-mono text-[10px] text-neutral-600 hover:text-gold-500/60 uppercase tracking-wider transition-colors">View all</button>
+                      <span className="font-mono text-[11px] text-[#C89B3C]/70 uppercase tracking-[0.15em] font-bold">Your Journey</span>
+                      <span className="h-px flex-1 bg-gradient-to-r from-neutral-200 to-transparent" />
+                      <button onClick={() => setActiveTab('My Journey')} className="font-mono text-[10px] text-[#444] hover:text-[#C89B3C]/60 uppercase tracking-wider transition-colors">View all</button>
                     </div>
 
                     {journeyLog.length > 0 ? (
@@ -1906,24 +2038,24 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               className="flex gap-4 group"
                             >
                               <div className="flex flex-col items-center pt-[6px] relative z-10">
-                                <div className={`h-3 w-3 rounded-full ${log.color || 'bg-gold-500/50'} ring-[3px] ring-[#050505] shadow-sm group-hover:shadow-md group-hover:shadow-gold-500/20 transition-shadow duration-300`} />
+                                <div className={`h-3 w-3 rounded-full ${log.color || 'bg-[#C89B3C]/50'} ring-[3px] ring-[#050505] shadow-sm group-hover:shadow-md group-hover:shadow-gold-500/20 transition-shadow duration-300`} />
                               </div>
                               <div className="flex-1 min-w-0 pb-[14px]">
-                                <p className="font-elegant text-sm font-bold text-neutral-200 group-hover:text-gold-500/60 transition-colors duration-300 tracking-wide">{log.title}</p>
+                                <p className="font-elegant text-sm font-bold text-[#444] group-hover:text-[#C89B3C]/60 transition-colors duration-300 tracking-wide">{log.title}</p>
                                 {log.description && (
-                                  <p className="text-[11px] text-neutral-500 font-sans mt-0.5 leading-relaxed line-clamp-2">{log.description}</p>
+                                  <p className="text-[11px] text-[#444] font-sans mt-0.5 leading-relaxed line-clamp-2">{log.description}</p>
                                 )}
-                                <p className="font-mono text-[10px] text-neutral-700 mt-1 tracking-wide">{log.date || (log.created_at ? new Date(log.created_at).toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' }) : '')}</p>
+                                <p className="font-mono text-[10px] text-[#444] mt-1 tracking-wide">{log.date || (log.created_at ? new Date(log.created_at).toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' }) : '')}</p>
                               </div>
                             </motion.div>
                           ))}
                         </div>
                       </div>
                     ) : (
-                      <div className="rounded-2xl border border-dashed border-neutral-900/60 bg-neutral-950/20 p-10 text-center">
-                        <Compass className="h-6 w-6 text-neutral-700 mx-auto mb-3" />
-                        <p className="font-elegant text-sm text-neutral-500">Your journey begins here</p>
-                        <p className="text-xs text-neutral-600 mt-1 font-sans max-w-xs mx-auto">Book an experience or register for an event to log your first milestone.</p>
+                      <div className="rounded-2xl border border-dashed border-[rgba(0,0,0,0.06)]/60 bg-[#F8F6F2] p-10 text-center">
+                        <Compass className="h-6 w-6 text-[#444] mx-auto mb-3" />
+                        <p className="font-elegant text-sm text-[#444]">Your journey begins here</p>
+                        <p className="text-xs text-[#444] mt-1 font-sans max-w-xs mx-auto">Book an experience or register for an event to log your first milestone.</p>
                       </div>
                     )}
 
@@ -1931,16 +2063,16 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     <motion.button
                       whileHover={{ x: 4 }}
                       onClick={() => setActiveTab('Experiences')}
-                      className="group w-full rounded-2xl border border-dashed border-neutral-900/50 bg-neutral-950/10 p-4 hover:border-gold-500/30 hover:bg-gold-500/[0.02] transition-all text-left"
+                      className="group w-full rounded-2xl border border-dashed border-[rgba(0,0,0,0.06)]/50 bg-white/10 p-4 hover:border-[#C89B3C]/30 hover:bg-[#C89B3C]/[0.02] transition-all text-left"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="h-7 w-7 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                            <Sparkles className="h-3.5 w-3.5 text-gold-500/60" />
+                          <div className="h-7 w-7 rounded-lg bg-[#C89B3C]/10 border border-[#C89B3C]/20 flex items-center justify-center">
+                            <Sparkles className="h-3.5 w-3.5 text-[#C89B3C]/60" />
                           </div>
-                          <span className="font-elegant text-xs font-bold text-neutral-400 group-hover:text-gold-500/60 transition-colors tracking-wide uppercase">Discover experiences crafted for you</span>
+                          <span className="font-elegant text-xs font-bold text-[#444] group-hover:text-[#C89B3C]/60 transition-colors tracking-wide uppercase">Discover experiences crafted for you</span>
                         </div>
-                        <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-gold-500/60 transition-colors" />
+                        <ChevronRight className="h-3.5 w-3.5 text-[#444] group-hover:text-[#C89B3C]/60 transition-colors" />
                       </div>
                     </motion.button>
                   </div>
@@ -1961,13 +2093,13 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       initial={{ y: 20, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.38 }}
-                      className="rounded-2xl border border-neutral-900/70 bg-neutral-950/20 overflow-hidden shadow-xl shadow-black/20 hover:border-gold-500/20 transition-colors duration-500"
+                      className="rounded-2xl border border-[rgba(0,0,0,0.06)]/70 bg-[#F8F6F2] overflow-hidden shadow-xl shadow-black/20 hover:border-[#C89B3C]/20 transition-colors duration-500"
                     >
-                      <div className="flex items-center gap-2.5 px-5 pt-4 pb-3 border-b border-neutral-900/30">
-                        <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                          <Users className="h-3 w-3 text-gold-500/70" />
+                      <div className="flex items-center gap-2.5 px-5 pt-4 pb-3 border-b border-[rgba(0,0,0,0.06)]/30">
+                        <div className="h-5 w-5 rounded-lg bg-[#C89B3C]/10 border border-[#C89B3C]/20 flex items-center justify-center">
+                          <Users className="h-3 w-3 text-[#C89B3C]/70" />
                         </div>
-                        <span className="font-mono text-[11px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Community</span>
+                        <span className="font-mono text-[11px] text-[#C89B3C]/70 uppercase tracking-[0.15em] font-bold">Community</span>
                       </div>
                       <div className="p-4 space-y-2">
                         {(clubDiscussions[activeCountryClub] || []).length > 0 ? (
@@ -1975,26 +2107,26 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             <button
                               key={post.id}
                               onClick={() => setActiveTab('Community')}
-                              className="w-full text-left group rounded-xl p-3 hover:bg-gold-500/[0.03] transition-colors"
+                              className="w-full text-left group rounded-xl p-3 hover:bg-[#C89B3C]/[0.03] transition-colors"
                             >
-                              <p className="font-elegant text-xs font-semibold text-neutral-200 group-hover:text-gold-500/60 transition-colors leading-snug">
+                              <p className="font-elegant text-xs font-semibold text-[#444] group-hover:text-[#C89B3C]/60 transition-colors leading-snug">
                                 {post.text.length > 80 ? post.text.substring(0, 80) + '…' : post.text}
                               </p>
                               <div className="flex items-center gap-2 mt-1.5">
-                                <span className="font-mono text-[10px] text-neutral-500">{post.author}</span>
+                                <span className="font-mono text-[10px] text-[#444]">{post.author}</span>
                                 <span className="h-1 w-1 rounded-full bg-neutral-700" />
-                                <span className="font-mono text-[10px] text-neutral-500">{post.replies?.length || 0} replies</span>
+                                <span className="font-mono text-[10px] text-[#444]">{post.replies?.length || 0} replies</span>
                               </div>
                             </button>
                           ))
                         ) : (
-                          <button onClick={() => setActiveTab('Community')} className="w-full text-center py-4 group rounded-xl hover:bg-gold-500/[0.02] transition-colors">
-                            <Users className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
-                            <p className="font-elegant text-xs text-neutral-500 group-hover:text-gold-500/60 transition-colors">Be the first to start a conversation</p>
+                          <button onClick={() => setActiveTab('Community')} className="w-full text-center py-4 group rounded-xl hover:bg-[#C89B3C]/[0.02] transition-colors">
+                            <Users className="h-5 w-5 text-[#444] mx-auto mb-2" />
+                            <p className="font-elegant text-xs text-[#444] group-hover:text-[#C89B3C]/60 transition-colors">Be the first to start a conversation</p>
                           </button>
                         )}
                         <button onClick={() => setActiveTab('Community')}
-                          className="w-full text-center pt-3 border-t border-neutral-900/30 font-mono text-[10px] text-neutral-600 hover:text-gold-500/60 uppercase tracking-wider transition-colors"
+                          className="w-full text-center pt-3 border-t border-[rgba(0,0,0,0.06)]/30 font-mono text-[10px] text-[#444] hover:text-[#C89B3C]/60 uppercase tracking-wider transition-colors"
                         >
                           Browse all discussions
                         </button>
@@ -2008,10 +2140,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       transition={{ delay: 0.46 }}
                     >
                       <div className="flex items-center gap-2.5 mb-3">
-                        <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                          <LayoutGrid className="h-3 w-3 text-gold-500/70" />
+                        <div className="h-5 w-5 rounded-lg bg-[#C89B3C]/10 border border-[#C89B3C]/20 flex items-center justify-center">
+                          <LayoutGrid className="h-3 w-3 text-[#C89B3C]/70" />
                         </div>
-                        <span className="font-mono text-[11px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Quick Access</span>
+                        <span className="font-mono text-[11px] text-[#C89B3C]/70 uppercase tracking-[0.15em] font-bold">Quick Access</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         {[
@@ -2027,12 +2159,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               whileHover={{ y: -1, scale: 1.02 }}
                               whileTap={{ scale: 0.98 }}
                               onClick={() => setActiveTab(item.tab)}
-                              className="flex items-center gap-3 px-3.5 py-3 rounded-xl border border-neutral-900/60 bg-neutral-950/20 hover:border-gold-500/30 hover:bg-gold-500/[0.03] transition-all text-left group shadow-lg shadow-black/10"
+                              className="flex items-center gap-3 px-3.5 py-3 rounded-xl border border-[rgba(0,0,0,0.06)]/60 bg-[#F8F6F2] hover:border-[#C89B3C]/30 hover:bg-[#C89B3C]/[0.03] transition-all text-left group shadow-lg shadow-black/10"
                             >
-                              <div className="h-7 w-7 rounded-lg bg-neutral-900/80 border border-neutral-800/60 flex items-center justify-center group-hover:bg-gold-500/10 group-hover:border-gold-500/30 transition-all">
-                                <Icon className="h-3.5 w-3.5 text-neutral-500 group-hover:text-gold-500/70 transition-colors" />
+                              <div className="h-7 w-7 rounded-lg bg-white/80 border border-[rgba(0,0,0,0.06)]/60 flex items-center justify-center group-hover:bg-[#C89B3C]/10 group-hover:border-[#C89B3C]/30 transition-all">
+                                <Icon className="h-3.5 w-3.5 text-[#444] group-hover:text-[#C89B3C]/70 transition-colors" />
                               </div>
-                              <span className="font-elegant text-[11px] font-bold text-neutral-300 group-hover:text-gold-500/60 transition-colors tracking-wide">{item.label}</span>
+                              <span className="font-elegant text-[11px] font-bold text-[#444] group-hover:text-[#C89B3C]/60 transition-colors tracking-wide">{item.label}</span>
                             </motion.button>
                           );
                         })}
@@ -2047,10 +2179,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   {[
                     {
                       icon: Users, label: 'Community', sub: 'Connect with fellow members in your country club.',
-                      color: 'from-gold-500/15 via-gold-500/5 to-transparent border-gold-500/25',
-                      iconBg: 'bg-gold-500/15 border-gold-500/25',
-                      iconColor: 'text-gold-500/80',
-                      glow: 'bg-gold-500/[0.06]',
+                      color: 'from-gold-500/15 via-gold-500/5 to-transparent border-[#C89B3C]/25',
+                      iconBg: 'bg-[#C89B3C]/15 border-[#C89B3C]/25',
+                      iconColor: 'text-[#C89B3C]/80',
+                      glow: 'bg-[#C89B3C]/[0.06]',
                       action: () => setActiveTab('Community'),
                     },
                     {
@@ -2088,8 +2220,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             <Icon className={`h-4.5 w-4.5 ${card.iconColor}`} />
                           </div>
                           <div>
-                            <p className="font-elegant text-sm font-bold text-neutral-100 group-hover:text-white transition-colors tracking-wide">{card.label}</p>
-                            <p className="font-mono text-[10px] text-neutral-500 mt-0.5">{card.sub}</p>
+                            <p className="font-elegant text-sm font-bold text-[#1E1E1E] group-hover:text-[#C89B3C] transition-colors tracking-wide">{card.label}</p>
+                            <p className="font-mono text-[10px] text-[#444] mt-0.5">{card.sub}</p>
                           </div>
                         </div>
                         {/* Shine sweep on hover */}
@@ -2123,16 +2255,16 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {activeTab === 'Experiences' && (
               <div className="space-y-6">
                 {/* Sub-tabs */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-900 pb-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[rgba(0,0,0,0.06)] pb-4">
                   <div className="space-y-1">
-                    <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
+                    <h2 className="font-serif text-xl font-bold tracking-wider text-[#111] uppercase">
                       Experiences
                     </h2>
-                    <p className="text-xs text-neutral-500 font-mono">
+                    <p className="text-xs text-[#444] font-mono">
                       Browse the catalogue or manage your bookings.
                     </p>
                   </div>
-                  <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-lg p-0.5">
+                  <div className="flex gap-1 bg-white border border-[rgba(0,0,0,0.06)] rounded-lg p-0.5">
                     {[
                       { id: 'browse' as const, label: 'Browse', icon: Compass },
                       { id: 'bookings' as const, label: 'My Bookings', icon: Ticket },
@@ -2142,8 +2274,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         onClick={() => setExpSubTab(tab.id)}
                         className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded text-[10px] font-mono tracking-widest uppercase transition-all ${
                           expSubTab === tab.id
-                            ? 'bg-gold-500 text-neutral-950 font-bold'
-                            : 'text-neutral-500 hover:text-white'
+                            ? 'bg-[#C89B3C] text-neutral-950 font-bold'
+                            : 'text-[#444] hover:text-[#111]'
                         }`}
                       >
                         <tab.icon className="h-3 w-3" />
@@ -2158,19 +2290,19 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     {/* Search + Category Filter */}
                     <div className="flex flex-col sm:flex-row gap-3">
                       <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#444]" />
                         <input
                           type="text"
                           value={fanExpSearch}
                           onChange={e => setFanExpSearch(e.target.value)}
                           placeholder="Search experiences..."
-                          className="w-full bg-neutral-950 border border-neutral-900 rounded-lg pl-9 pr-3 py-2 text-xs text-white outline-none focus:border-gold-500/40 transition-colors"
+                          className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg pl-9 pr-3 py-2 text-xs text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors"
                         />
                       </div>
                       <select
                         value={fanExpCategory}
                         onChange={e => setFanExpCategory(e.target.value)}
-                        className="bg-neutral-950 border border-neutral-900 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40"
+                        className="bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-xs text-[#111] outline-none focus:border-[#C89B3C]/40"
                       >
                         <option value="ALL">All Categories</option>
                         {['Meet & Greet', 'Creative', 'Philanthropy', 'Adventure', 'Literary', 'Behind-the-Scenes'].map(c => (
@@ -2182,8 +2314,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     {/* Grid */}
                     {fanExpLoading ? (
                       <div className="text-center py-16">
-                        <div className="h-8 w-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto" />
-                        <p className="text-xs text-neutral-500 mt-4 font-mono">Loading experiences...</p>
+                        <div className="h-8 w-8 border-2 border-[#C89B3C] border-t-transparent rounded-full animate-spin mx-auto" />
+                        <p className="text-xs text-[#444] mt-4 font-mono">Loading experiences...</p>
                       </div>
                     ) : (
                       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -2198,38 +2330,38 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           const spotsLeft = (exp.spots || 10) - (exp.spotsTaken || 0);
                           const isFull = spotsLeft <= 0;
                           return (
-                            <div key={exp.id} className="group bg-neutral-950/40 border border-neutral-900 rounded-xl overflow-hidden hover:border-gold-500/20 hover:shadow-[0_0_20px_-5px_rgba(212,175,55,0.08)] transition-all duration-300 flex flex-col">
-                              <div className="relative h-32 bg-neutral-900/60 overflow-hidden">
+                            <div key={exp.id} className="group bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-xl overflow-hidden hover:border-[#C89B3C]/20 hover:shadow-[0_0_20px_-5px_rgba(212,175,55,0.08)] transition-all duration-300 flex flex-col">
+                              <div className="relative h-32 bg-[#F8F6F2] overflow-hidden">
                                 {exp.image ? (
                                   <img src={exp.image} alt={exp.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                 ) : (
-                                  <div className="w-full h-full flex items-center justify-center"><Star className="h-8 w-8 text-neutral-700" /></div>
+                                  <div className="w-full h-full flex items-center justify-center"><Star className="h-8 w-8 text-[#444]" /></div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
                                 <div className="absolute bottom-2 left-2">
-                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border bg-neutral-900/80 border-neutral-800 text-neutral-400">
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border bg-white/80 border-[rgba(0,0,0,0.06)] text-[#444]">
                                     {exp.category}
                                   </span>
                                 </div>
                               </div>
                               <div className="p-3 space-y-2 flex-1">
-                                <h3 className="text-xs font-bold text-white leading-snug line-clamp-1">{exp.title}</h3>
-                                <p className="text-[10px] text-neutral-400 line-clamp-2">{exp.description}</p>
-                                <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500 pt-1.5 border-t border-neutral-900/60">
+                                <h3 className="text-xs font-bold text-[#111] leading-snug line-clamp-1">{exp.title}</h3>
+                                <p className="text-[10px] text-[#444] line-clamp-2">{exp.description}</p>
+                                <div className="flex items-center gap-2 text-[10px] font-mono text-[#444] pt-1.5 border-t border-[rgba(0,0,0,0.06)]/60">
                                   <span className="flex items-center gap-1"><MapPin className="h-2.5 w-2.5" />{exp.location}</span>
                                   <span className="flex items-center gap-1"><Clock className="h-2.5 w-2.5" />{exp.duration}</span>
                                 </div>
                               </div>
                               <div className="px-3 pb-3 flex items-center justify-between gap-2">
-                                <span className="text-[10px] font-mono font-bold text-white">{exp.price || 'Complimentary'}</span>
+                                <span className="text-[10px] font-mono font-bold text-[#111]">{exp.price || 'Complimentary'}</span>
                                 <div className="flex gap-1.5">
                                   <button
                                     onClick={() => !isFull && navigate(`/experiences/book/${exp.id}`)}
                                     disabled={isFull}
                                     className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-mono tracking-wider uppercase transition-all ${
                                       isFull
-                                        ? 'bg-neutral-900 text-neutral-600 cursor-not-allowed'
-                                        : 'bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold'
+                                        ? 'bg-white text-[#444] cursor-not-allowed'
+                                        : 'bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold'
                                     }`}
                                   >
                                     {isFull ? 'Full' : 'Book Now'}
@@ -2243,8 +2375,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       </div>
                     )}
                     {!fanExpLoading && fanExperiences.length === 0 && (
-                      <div className="text-center py-16 border border-dashed border-neutral-900 rounded-xl">
-                        <p className="text-sm text-neutral-500">No experiences available yet.</p>
+                      <div className="text-center py-16 border border-dashed border-[rgba(0,0,0,0.06)] rounded-xl">
+                        <p className="text-sm text-[#444]">No experiences available yet.</p>
                       </div>
                     )}
                   </div>
@@ -2257,23 +2389,23 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {/* VIEW RENDERING 7: COMMUNITY (Feed, Country Clubs, and Fan Works) */}
             {activeTab === 'Community' && (
               <div className="space-y-6 text-left relative">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-900 pb-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[rgba(0,0,0,0.06)] pb-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 text-[10px] font-mono text-gold-400 tracking-widest uppercase">
                       <Sparkles className="h-3 w-3" />
                       Welcome back, kindred spirit
                     </div>
-                    <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
+                    <h2 className="font-serif text-xl font-bold tracking-wider text-[#111] uppercase">
                       Your Sanctuary
                     </h2>
-                    <p className="text-xs text-neutral-500 font-mono">
+                    <p className="text-xs text-[#444] font-mono">
                       A cozy corner for the community — share, connect, and celebrate together.
                     </p>
                   </div>
                   {communitySubTab === 'Fan Works' && (
                     <button
                       onClick={() => setShowUploadModal(true)}
-                      className="flex items-center gap-1.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-1.5 px-4 rounded text-xs uppercase tracking-wider transition-all active:scale-95"
+                      className="flex items-center gap-1.5 bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold py-1.5 px-4 rounded text-xs uppercase tracking-wider transition-all active:scale-95"
                     >
                       <Upload className="h-4 w-4" /> Share Your Creation
                     </button>
@@ -2281,7 +2413,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 </div>
 
                 {/* Sub-tab navigation */}
-                <div className="flex gap-1 bg-neutral-950/60 border border-neutral-900 rounded-lg p-0.5 w-fit">
+                <div className="flex gap-1 bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-lg p-0.5 w-fit">
                   {[
                     { id: 'Feed' as const, label: 'The Feed', icon: MessageSquare },
                     { id: 'Discussions' as const, label: 'Country Clubs', icon: Globe },
@@ -2292,8 +2424,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       onClick={() => setCommunitySubTab(sub.id)}
                       className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded text-[10px] font-mono tracking-widest uppercase transition-all ${
                         communitySubTab === sub.id
-                          ? 'bg-gold-500 text-neutral-950 font-bold'
-                          : 'text-neutral-500 hover:text-white'
+                          ? 'bg-[#C89B3C] text-neutral-950 font-bold'
+                          : 'text-[#444] hover:text-[#111]'
                       }`}
                     >
                       <sub.icon className="h-3 w-3" />
@@ -2307,16 +2439,16 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <div className="space-y-5">
                     {/* Search bar */}
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500 pointer-events-none" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#444] pointer-events-none" />
                       <input
                         type="text"
                         placeholder="Search stories, names, or words..."
                         value={postSearchQuery}
                         onChange={(e) => setPostSearchQuery(e.target.value)}
-                        className="w-full bg-neutral-950 border border-neutral-900 rounded-lg pl-9 pr-8 py-2 text-xs text-white outline-none focus:border-gold-500/40 placeholder-neutral-600 transition-all duration-300"
+                        className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg pl-9 pr-8 py-2 text-xs text-[#111] outline-none focus:border-[#C89B3C]/40 placeholder-neutral-600 transition-all duration-300"
                       />
                       {postSearchQuery && (
-                        <button onClick={() => setPostSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors">
+                        <button onClick={() => setPostSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#444] hover:text-neutral-900 transition-colors">
                           <X className="h-3 w-3" />
                         </button>
                       )}
@@ -2330,8 +2462,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           onClick={() => setPostCategoryFilter(cat)}
                           className={`px-3 py-1.5 rounded text-[10px] font-mono font-medium border transition-all ${
                             postCategoryFilter === cat
-                              ? 'bg-gold-500/10 border-gold-500 text-gold-500'
-                              : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white'
+                              ? 'bg-[#C89B3C]/10 border-[#C89B3C] text-[#C89B3C]'
+                              : 'bg-white border-[rgba(0,0,0,0.06)] text-[#444] hover:text-[#111]'
                           }`}
                         >
                           {cat === 'All' ? 'All Stories' : cat === 'FAN ART' ? 'Art & Creativity' : cat === 'LETTERS' ? 'Letters of Light' : 'Encounters & Moments'}
@@ -2345,18 +2477,18 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         .filter((p) => postCategoryFilter === 'All' || (p.category || 'FAN ART') === postCategoryFilter)
                         .filter((p) => !postSearchQuery || p.username?.toLowerCase().includes(postSearchQuery.toLowerCase()) || p.content?.toLowerCase().includes(postSearchQuery.toLowerCase()) || p.handle?.toLowerCase().includes(postSearchQuery.toLowerCase()))
                         .map((post) => (
-                        <div key={post.id} className="relative group rounded-xl border border-neutral-900 bg-gradient-to-b from-neutral-950/60 to-neutral-950/20 p-4.5 space-y-3.5 text-left hover:border-gold-500/20 hover:shadow-[0_0_40px_-10px_rgba(212,175,55,0.08)] transition-all duration-500 overflow-hidden">
+                        <div key={post.id} className="relative group rounded-xl border border-[rgba(0,0,0,0.06)] bg-gradient-to-b from-neutral-50 to-white p-4.5 space-y-3.5 text-left hover:border-[#C89B3C]/20 hover:shadow-[0_0_40px_-10px_rgba(212,175,55,0.08)] transition-all duration-500 overflow-hidden">
                           <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-gold-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                           {/* Post Header */}
                           <div className="flex items-center justify-between relative">
                             <div className="flex items-center gap-2.5">
-                              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-gold-500/20 via-amber-500/10 to-neutral-900 border border-gold-500/20 flex items-center justify-center text-[10px] font-mono font-medium text-gold-400 shrink-0">
+                              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-gold-500/20 via-amber-500/10 to-neutral-900 border border-[#C89B3C]/20 flex items-center justify-center text-[10px] font-mono font-medium text-gold-400 shrink-0">
                                 {post.avatarText || post.username?.charAt(0).toUpperCase() || '?'}
                               </div>
                               <div>
                                 <span className="text-xs font-semibold text-white">{post.username}</span>
-                                <span className="text-[11px] font-mono text-neutral-500 ml-2">{post.handle}</span>
+                                <span className="text-[11px] font-mono text-[#444] ml-2">{post.handle}</span>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -2367,7 +2499,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                               }`}>
                                 {post.category || 'Story'}
                               </span>
-                              <span className="text-[11px] font-mono text-neutral-600 flex items-center gap-1">
+                              <span className="text-[11px] font-mono text-[#444] flex items-center gap-1">
                                 <Clock className="h-2.5 w-2.5" />
                                 {(post as unknown as Record<string, unknown>).created_at ? getRelativeTime((post as unknown as Record<string, unknown>).created_at as string) : ''}
                               </span>
@@ -2375,22 +2507,22 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           </div>
 
                           {/* Post Content */}
-                          <p className="text-xs text-neutral-300 leading-relaxed relative">{post.content}</p>
+                          <p className="text-xs text-[#444] leading-relaxed relative">{post.content}</p>
 
                           {/* Post Image */}
                           {post.image && (
-                            <div className="relative rounded-xl overflow-hidden border border-neutral-900/60 group/img">
+                            <div className="relative rounded-xl overflow-hidden border border-[rgba(0,0,0,0.06)]/60 group/img">
                               <img src={post.image} alt="Community post image" loading="lazy" className="w-full h-40 object-cover brightness-[0.85] saturate-[0.9] group-hover/img:brightness-100 group-hover/img:saturate-100 group-hover/img:scale-[1.02] transition-all duration-700" />
                               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/20 to-transparent opacity-0 group-hover/img:opacity-100 transition-opacity duration-500" />
                             </div>
                           )}
 
                           {/* Like & Comments Row */}
-                          <div className="flex items-center gap-5 text-[10px] font-mono text-neutral-500 border-t border-neutral-900/50 pt-3 relative">
+                          <div className="flex items-center gap-5 text-[10px] font-mono text-[#444] border-t border-[rgba(0,0,0,0.06)]/50 pt-3 relative">
                             <button
                               onClick={() => handlePostLike(post.id)}
                               className={`flex items-center gap-1.5 transition-colors ${
-                                post.liked ? 'text-red-500 font-semibold' : 'hover:text-white'
+                                post.liked ? 'text-red-500 font-semibold' : 'hover:text-[#111]'
                               }`}
                             >
                               <Heart className={`h-3.5 w-3.5 ${post.liked ? 'fill-red-500 stroke-red-500' : ''}`} />
@@ -2398,8 +2530,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             </button>
                             <button
                               onClick={() => setShowPostComments((prev) => ({ ...prev, [post.id]: !prev[post.id] }))}
-                              className={`flex items-center gap-1.5 transition-colors hover:text-white ${
-                                showPostComments[post.id] ? 'text-gold-500' : ''
+                              className={`flex items-center gap-1.5 transition-colors hover:text-[#C89B3C] ${
+                                showPostComments[post.id] ? 'text-[#C89B3C]' : ''
                               }`}
                             >
                               <MessageSquare className="h-3.5 w-3.5" />
@@ -2412,11 +2544,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                 <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-red-500/10 border border-red-500/30">
                                   <span className="text-[10px] font-mono text-red-400 uppercase">Remove?</span>
                                   <button onClick={() => handlePostDelete(post.id)} className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[10px] font-mono uppercase">Yes</button>
-                                  <button onClick={() => setDeleteConfirmId(null)} className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[10px] font-mono uppercase">No</button>
+                                  <button onClick={() => setDeleteConfirmId(null)} className="px-2 py-0.5 rounded border border-neutral-200 text-[#444] hover:text-neutral-900 text-[10px] font-mono uppercase">No</button>
                                 </div>
                               ) : (
                                 (user?.user_metadata?.name || authName) && post.username === (user?.user_metadata?.name || authName) && (
-                                  <button onClick={() => setDeleteConfirmId(post.id)} className="text-neutral-600 hover:text-red-400 transition-colors" title="Remove your story">
+                                  <button onClick={() => setDeleteConfirmId(post.id)} className="text-[#444] hover:text-red-400 transition-colors" title="Remove your story">
                                     <Trash2 className="h-3 w-3" />
                                   </button>
                                 )
@@ -2426,35 +2558,35 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                           {/* Comments Section */}
                           {showPostComments[post.id] && (
-                            <div className="space-y-3.5 pt-3 border-t border-neutral-900/50 relative">
+                            <div className="space-y-3.5 pt-3 border-t border-[rgba(0,0,0,0.06)]/50 relative">
                               {post.comments && post.comments.length > 0 ? (
                                 post.comments.map((comment) => (
-                                  <div key={comment.id} className="p-3 rounded-lg border border-neutral-900/60 bg-neutral-900/15 space-y-2 text-xs">
-                                    <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500">
-                                      <span className="text-gold-500/90 font-bold flex items-center gap-1.5">
-                                        <span className="h-5 w-5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[11px] font-medium text-gold-500 shrink-0">
+                                  <div key={comment.id} className="p-3 rounded-lg border border-[rgba(0,0,0,0.06)]/60 bg-white/15 space-y-2 text-xs">
+                                    <div className="flex justify-between items-center text-[10px] font-mono text-[#444]">
+                                      <span className="text-[#C89B3C]/90 font-bold flex items-center gap-1.5">
+                                        <span className="h-5 w-5 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center text-[11px] font-medium text-[#C89B3C] shrink-0">
                                           {comment.avatarText || comment.username?.charAt(0).toUpperCase() || '?'}
                                         </span>
                                         {comment.username}
                                       </span>
                                       <span>{comment.timestamp}</span>
                                     </div>
-                                    <p className="text-neutral-200 leading-relaxed">{comment.content}</p>
+                                    <p className="text-[#444] leading-relaxed">{comment.content}</p>
 
                                     {comment.replies && comment.replies.length > 0 && (
-                                      <div className="pl-4 ml-2 border-l border-gold-500/15 space-y-2 pt-1">
+                                      <div className="pl-4 ml-2 border-l border-[#C89B3C]/15 space-y-2 pt-1">
                                         {comment.replies.map((reply) => (
-                                          <div key={reply.id} className="bg-neutral-950/40 p-2 rounded-lg border border-neutral-900/40 space-y-1">
-                                            <div className="flex justify-between items-center text-[11px] font-mono text-neutral-500">
-                                              <span className="text-neutral-300 font-semibold flex items-center gap-1">
-                                                <span className="h-4.5 w-4.5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-medium text-neutral-400 shrink-0">
+                                          <div key={reply.id} className="bg-[#F8F6F2] p-2 rounded-lg border border-[rgba(0,0,0,0.06)]/40 space-y-1">
+                                            <div className="flex justify-between items-center text-[11px] font-mono text-[#444]">
+                                              <span className="text-[#444] font-semibold flex items-center gap-1">
+                                                <span className="h-4.5 w-4.5 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center text-[10px] font-medium text-[#444] shrink-0">
                                                   {reply.avatarText || reply.username?.charAt(0).toUpperCase() || '?'}
                                                 </span>
                                                 {reply.username}
                                               </span>
                                               <span>{reply.timestamp}</span>
                                             </div>
-                                            <p className="text-neutral-300 text-[11px] leading-relaxed">{reply.content}</p>
+                                            <p className="text-[#444] text-[11px] leading-relaxed">{reply.content}</p>
                                           </div>
                                         ))}
                                       </div>
@@ -2466,37 +2598,37 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                                         value={postReplyInputs[comment.id] || ''}
                                         onChange={(e) => setPostReplyInputs((prev) => ({ ...prev, [comment.id]: e.target.value }))}
                                         placeholder={`Reply to ${comment.username}...`}
-                                        className="flex-1 bg-neutral-900 text-[11px] border border-neutral-800 rounded px-2.5 py-1.5 text-white outline-none focus:border-gold-500/30"
+                                        className="flex-1 bg-white text-[11px] border border-[rgba(0,0,0,0.06)] rounded px-2.5 py-1.5 text-[#111] outline-none focus:border-[#C89B3C]/30"
                                       />
-                                      <button type="submit" disabled={!(postReplyInputs[comment.id] || '').trim()} className="px-3 bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-neutral-950 font-bold rounded text-[10px] uppercase transition-colors">Reply</button>
+                                      <button type="submit" disabled={!(postReplyInputs[comment.id] || '').trim()} className="px-3 bg-[#C89B3C] hover:bg-[#A97828] disabled:opacity-50 text-neutral-950 font-bold rounded text-[10px] uppercase transition-colors">Reply</button>
                                     </form>
                                   </div>
                                 ))
                               ) : (
-                                <p className="text-[10px] text-neutral-600 italic py-2">No kind words yet. Yours would be a gift.</p>
+                                <p className="text-[10px] text-[#444] italic py-2">No kind words yet. Yours would be a gift.</p>
                               )}
 
-                              <form onSubmit={(e) => handlePostComment(post.id, e)} className="flex gap-2 pt-2 border-t border-neutral-900/30">
+                              <form onSubmit={(e) => handlePostComment(post.id, e)} className="flex gap-2 pt-2 border-t border-[rgba(0,0,0,0.06)]/30">
                                 <input
                                   type="text"
                                   value={postCommentInputs[post.id] || ''}
                                   onChange={(e) => setPostCommentInputs((prev) => ({ ...prev, [post.id]: e.target.value }))}
                                   placeholder="Share a kind thought..."
-                                  className="flex-1 bg-neutral-900 text-xs border border-neutral-800 rounded px-3 py-2 text-white outline-none focus:border-gold-500/40"
+                                  className="flex-1 bg-white text-xs border border-[rgba(0,0,0,0.06)] rounded px-3 py-2 text-[#111] outline-none focus:border-[#C89B3C]/40"
                                 />
-                                <button type="submit" disabled={!(postCommentInputs[post.id] || '').trim()} className="px-4 bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-neutral-950 font-bold rounded text-[10px] uppercase transition-colors">Share</button>
+                                <button type="submit" disabled={!(postCommentInputs[post.id] || '').trim()} className="px-4 bg-[#C89B3C] hover:bg-[#A97828] disabled:opacity-50 text-neutral-950 font-bold rounded text-[10px] uppercase transition-colors">Share</button>
                               </form>
                             </div>
                           )}
                         </div>
                       ))}
                       {(!backendPosts || backendPosts.length === 0) && (
-                        <div className="text-center py-20 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10 space-y-3">
-                          <div className="h-14 w-14 rounded-full bg-gradient-to-br from-gold-500/10 to-neutral-900 border border-gold-500/20 flex items-center justify-center mx-auto">
-                            <Heart className="h-6 w-6 text-gold-500/60" />
+                        <div className="text-center py-20 border border-dashed border-[rgba(0,0,0,0.06)] rounded-xl bg-white/10 space-y-3">
+                          <div className="h-14 w-14 rounded-full bg-gradient-to-br from-gold-500/10 to-neutral-900 border border-[#C89B3C]/20 flex items-center justify-center mx-auto">
+                            <Heart className="h-6 w-6 text-[#C89B3C]/60" />
                           </div>
-                          <p className="text-sm text-neutral-400">The feed is quiet... for now.</p>
-                          <p className="text-[10px] text-neutral-600 font-mono">Be the first to share a story, a piece of art, or a memory.</p>
+                          <p className="text-sm text-[#444]">The feed is quiet... for now.</p>
+                          <p className="text-[10px] text-[#444] font-mono">Be the first to share a story, a piece of art, or a memory.</p>
                         </div>
                       )}
                     </div>
@@ -2508,7 +2640,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   <div className="space-y-4">
                     {/* Country clubs selector */}
                     <div className="space-y-2">
-                      <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest block">
+                      <span className="text-[10px] font-mono text-[#444] uppercase tracking-widest block">
                         Choose your Country Club
                       </span>
                       <div className="flex gap-1.5 overflow-x-auto whitespace-nowrap py-1 scrollbar-none">
@@ -2518,8 +2650,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             onClick={() => setActiveCountryClub(club)}
                             className={`px-3.5 py-1.5 rounded text-xs font-mono font-medium border transition-all ${
                               activeCountryClub === club
-                                ? 'bg-gold-500/10 border-gold-500 text-gold-500'
-                                : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white'
+                                ? 'bg-[#C89B3C]/10 border-[#C89B3C] text-[#C89B3C]'
+                                : 'bg-white border-[rgba(0,0,0,0.06)] text-[#444] hover:text-[#111]'
                             }`}
                           >
                             {club === 'Global' ? <Globe className="h-3.5 w-3.5 inline mr-1" /> : null}
@@ -2529,52 +2661,52 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-neutral-900 bg-gradient-to-b from-neutral-950/80 to-neutral-950/40 p-4.5 space-y-4 min-h-[400px] flex flex-col justify-between">
+                    <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-gradient-to-b from-neutral-50 to-white p-4.5 space-y-4 min-h-[400px] flex flex-col justify-between">
                       <div className="space-y-4">
-                        <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                          <MessageCircle className="h-3.5 w-3.5 text-gold-500" />
+                        <h3 className="text-xs font-mono font-bold text-[#111] uppercase tracking-wider flex items-center gap-2">
+                          <MessageCircle className="h-3.5 w-3.5 text-[#C89B3C]" />
                           {activeCountryClub} Club Conversations
                         </h3>
                         <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
                           {(clubDiscussions[activeCountryClub] || []).length === 0 ? (
-                            <div className="p-8 text-center text-neutral-500 font-mono text-xs">
+                            <div className="p-8 text-center text-[#444] font-mono text-xs">
                               <p>No conversations yet in this club.</p>
-                              <p className="text-neutral-600 mt-1">Start one — your voice is welcome here.</p>
+                              <p className="text-[#444] mt-1">Start one — your voice is welcome here.</p>
                             </div>
                           ) : (
                             (clubDiscussions[activeCountryClub] || []).map((disc) => (
-                              <div key={disc.id || `disc-${Math.random()}`} className="p-3.5 rounded-xl border border-neutral-900/60 bg-neutral-900/10 text-xs text-left space-y-3">
-                                <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500">
-                                  <span className="text-gold-500 font-bold flex items-center gap-1.5">
-                                    <User className="h-3.5 w-3.5 text-neutral-600" /> {disc.author}
+                              <div key={disc.id || `disc-${Math.random()}`} className="p-3.5 rounded-xl border border-[rgba(0,0,0,0.06)]/60 bg-white/10 text-xs text-left space-y-3">
+                                <div className="flex justify-between items-center text-[10px] font-mono text-[#444]">
+                                  <span className="text-[#C89B3C] font-bold flex items-center gap-1.5">
+                                    <User className="h-3.5 w-3.5 text-[#444]" /> {disc.author}
                                   </span>
                                   <span>{disc.time}</span>
                                 </div>
-                                <p className="text-neutral-200 leading-relaxed font-sans text-xs">{disc.text}</p>
+                                <p className="text-[#444] leading-relaxed font-sans text-xs">{disc.text}</p>
                                 {disc.replies && disc.replies.length > 0 && (
-                                  <div className="pl-4 border-l-2 border-gold-500/20 space-y-2.5 pt-1">
+                                  <div className="pl-4 border-l-2 border-[#C89B3C]/20 space-y-2.5 pt-1">
                                     {disc.replies.map((reply) => (
-                                      <div key={reply.id} className="bg-neutral-950/40 p-2.5 rounded-lg border border-neutral-900/40 space-y-1">
-                                        <div className="flex justify-between items-center text-[11px] font-mono text-neutral-500">
-                                          <span className="text-neutral-400 font-semibold flex items-center gap-1">
-                                            <User className="h-3 w-3 text-neutral-600" /> {reply.author}
+                                      <div key={reply.id} className="bg-[#F8F6F2] p-2.5 rounded-lg border border-[rgba(0,0,0,0.06)]/40 space-y-1">
+                                        <div className="flex justify-between items-center text-[11px] font-mono text-[#444]">
+                                          <span className="text-[#444] font-semibold flex items-center gap-1">
+                                            <User className="h-3 w-3 text-[#444]" /> {reply.author}
                                           </span>
                                           <span>{reply.time}</span>
                                         </div>
-                                        <p className="text-neutral-300 text-[11px] leading-relaxed">{reply.text}</p>
+                                        <p className="text-[#444] text-[11px] leading-relaxed">{reply.text}</p>
                                       </div>
                                     ))}
                                   </div>
                                 )}
-                                <form onSubmit={(e) => handleAddReply(disc.id, e)} className="flex gap-2 pt-2 border-t border-neutral-900/30">
+                                <form onSubmit={(e) => handleAddReply(disc.id, e)} className="flex gap-2 pt-2 border-t border-[rgba(0,0,0,0.06)]/30">
                                   <input
                                     type="text"
                                     value={replyInputs[disc.id] || ''}
                                     onChange={(e) => setReplyInputs(prev => ({ ...prev, [disc.id]: e.target.value }))}
                                     placeholder="Join the conversation..."
-                                    className="flex-1 rounded bg-[#0c0c0e] border border-neutral-900/80 px-3 py-1.5 text-[11px] text-white placeholder-neutral-600 outline-none focus:border-gold-500/30"
+                                    className="flex-1 rounded bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/80 px-3 py-1.5 text-[11px] text-[#111] placeholder-neutral-600 outline-none focus:border-[#C89B3C]/30"
                                   />
-                                  <button type="submit" disabled={!(replyInputs[disc.id] || '').trim()} className="px-3 bg-neutral-900 border border-neutral-800 text-[10px] font-mono font-medium text-gold-500 hover:text-white rounded disabled:opacity-50 transition-colors uppercase">
+                                  <button type="submit" disabled={!(replyInputs[disc.id] || '').trim()} className="px-3 bg-white border border-[rgba(0,0,0,0.06)] text-[10px] font-mono font-medium text-[#C89B3C] hover:text-[#A97828] rounded disabled:opacity-50 transition-colors uppercase">
                                     Reply
                                   </button>
                                 </form>
@@ -2583,15 +2715,15 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           )}
                         </div>
                       </div>
-                      <form onSubmit={handleAddDiscussion} className="flex gap-2 border-t border-neutral-900 pt-3 mt-4">
+                      <form onSubmit={handleAddDiscussion} className="flex gap-2 border-t border-[rgba(0,0,0,0.06)] pt-3 mt-4">
                         <input
                           type="text"
                           value={newDiscussionText}
                           onChange={(e) => setNewDiscussionText(e.target.value)}
                           placeholder={`Start a conversation in the ${activeCountryClub} Club...`}
-                          className="flex-1 rounded border border-neutral-900 bg-neutral-950 px-3.5 py-2 text-xs text-white placeholder-neutral-600 outline-none focus:border-gold-500/40"
+                          className="flex-1 rounded border border-[rgba(0,0,0,0.06)] bg-white px-3.5 py-2 text-xs text-[#111] placeholder-neutral-600 outline-none focus:border-[#C89B3C]/40"
                         />
-                        <button type="submit" disabled={!newDiscussionText.trim()} className="px-4 bg-gold-500 text-neutral-950 hover:bg-gold-400 disabled:opacity-50 font-bold rounded text-xs transition-all uppercase font-mono">
+                        <button type="submit" disabled={!newDiscussionText.trim()} className="px-4 bg-[#C89B3C] text-neutral-950 hover:bg-[#A97828] disabled:opacity-50 font-bold rounded text-xs transition-all uppercase font-mono">
                           Post
                         </button>
                       </form>
@@ -2602,39 +2734,39 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 {/* Fan Works Sub-Tab */}
                 {communitySubTab === 'Fan Works' && (
                   <div className="space-y-4">
-                    <div className="rounded-xl border border-neutral-900 bg-gradient-to-b from-neutral-950/80 to-neutral-950/40 p-4.5 space-y-4 min-h-[300px]">
-                      <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                        <Palette className="h-3.5 w-3.5 text-gold-500" />
+                    <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-gradient-to-b from-neutral-50 to-white p-4.5 space-y-4 min-h-[300px]">
+                      <h3 className="text-xs font-mono font-bold text-[#111] uppercase tracking-wider flex items-center gap-2">
+                        <Palette className="h-3.5 w-3.5 text-[#C89B3C]" />
                         From the Hearts of Fellow Fans
                       </h3>
                       <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
                         {creations.length === 0 ? (
-                          <div className="p-8 text-center text-neutral-500 font-mono text-xs">
+                          <div className="p-8 text-center text-[#444] font-mono text-xs">
                             <p>No creations shared yet.</p>
-                            <p className="text-neutral-600 mt-1">Be the first to share your art, poetry, or tribute.</p>
+                            <p className="text-[#444] mt-1">Be the first to share your art, poetry, or tribute.</p>
                           </div>
                         ) : (
                           creations.map((item) => (
-                            <div key={item.id} className="p-3 border border-neutral-900/50 rounded bg-neutral-900/10 space-y-2 text-xs hover:border-gold-500/20 transition-all">
+                            <div key={item.id} className="p-3 border border-[rgba(0,0,0,0.06)]/50 rounded bg-white/10 space-y-2 text-xs hover:border-[#C89B3C]/20 transition-all">
                               <div className="flex justify-between items-start">
                                 <div>
-                                  <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[10px] font-mono uppercase font-bold border border-gold-800/20 mb-1">
+                                  <span className="inline-block px-1.5 py-0.5 rounded bg-white text-[#C89B3C] text-[10px] font-mono uppercase font-bold border border-gold-800/20 mb-1">
                                     {item.category}
                                   </span>
-                                  <h4 className="font-bold text-white">{item.title}</h4>
+                                  <h4 className="font-bold text-[#111]">{item.title}</h4>
                                 </div>
                                 <button
                                   onClick={() => handleLikeCreation(item.id)}
                                   className={`flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-mono transition-colors ${
-                                    item.hasLiked ? 'bg-gold-500/15 border border-gold-500/30 text-gold-500' : 'bg-neutral-950 border border-neutral-900 text-neutral-400 hover:text-white'
+                                    item.hasLiked ? 'bg-[#C89B3C]/15 border border-[#C89B3C]/30 text-[#C89B3C]' : 'bg-white border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-[#111]'
                                   }`}
                                 >
                                   <ThumbsUp className="h-3 w-3" />
                                   <span>{item.likes}</span>
                                 </button>
                               </div>
-                              <p className="text-neutral-400 text-[11px] leading-relaxed">{item.description}</p>
-                              <p className="text-[11px] font-mono text-neutral-500">Created by: <span className="text-neutral-400">{item.author}</span></p>
+                              <p className="text-[#444] text-[11px] leading-relaxed">{item.description}</p>
+                              <p className="text-[11px] font-mono text-[#444]">Created by: <span className="text-[#444]">{item.author}</span></p>
                             </div>
                           ))
                         )}
@@ -2674,29 +2806,29 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {/* VIEW RENDERING 9: MY JOURNEY (Vertical Timeline) */}
             {activeTab === 'My Journey' && (
               <div className="space-y-6 text-left">
-                <div className="space-y-1 border-b border-neutral-900 pb-4">
-                  <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
+                <div className="space-y-1 border-b border-[rgba(0,0,0,0.06)] pb-4">
+                  <h2 className="font-serif text-xl font-bold tracking-wider text-[#111] uppercase">
                     Your Sanctuary Journey Log
                   </h2>
-                  <p className="text-xs text-neutral-500 font-mono">
+                  <p className="text-xs text-[#444] font-mono">
                     Tracking historic timeline interactions on the official bridge & logging your kindness acts.
                   </p>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-12">
                   {/* Left: Dynamic Timeline */}
-                  <div className="md:col-span-7 rounded-xl border border-neutral-900 bg-neutral-950 p-6 space-y-4">
-                    <h3 className="text-xs font-mono font-bold text-gold-500 uppercase tracking-widest pb-1 border-b border-neutral-900/40">
+                  <div className="md:col-span-7 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-6 space-y-4">
+                    <h3 className="text-xs font-mono font-bold text-[#C89B3C] uppercase tracking-widest pb-1 border-b border-[rgba(0,0,0,0.06)]/40">
                       Chronology of Compassion & Progress
                     </h3>
-                    <div className="relative pl-6 border-l border-neutral-900 space-y-6">
+                    <div className="relative pl-6 border-l border-[rgba(0,0,0,0.06)] space-y-6">
                       {journeyLog.map((log) => (
                         <div key={log.id} className="relative">
                           <span className={`absolute -left-[31px] top-0.5 h-4.5 w-4.5 rounded-full ${log.color || 'bg-green-500'} border-4 border-[#070709]`} />
-                          <h4 className="text-xs font-bold text-white">{log.title}</h4>
-                          <p className="text-[10px] text-neutral-500 font-mono mt-0.5">{log.date || (log.created_at ? new Date(log.created_at).toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' }) : '')}</p>
+                          <h4 className="text-xs font-bold text-[#111]">{log.title}</h4>
+                          <p className="text-[10px] text-[#444] font-mono mt-0.5">{log.date || (log.created_at ? new Date(log.created_at).toLocaleDateString([], { month: 'short', day: '2-digit', year: 'numeric' }) : '')}</p>
                           {log.description && (
-                            <p className="text-xs text-neutral-400 mt-1 leading-normal">{log.description}</p>
+                            <p className="text-xs text-[#444] mt-1 leading-normal">{log.description}</p>
                           )}
                         </div>
                       ))}
@@ -2704,16 +2836,16 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   </div>
 
                   {/* Right: Log an Act of Kindness Card */}
-                  <div className="md:col-span-5 rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-4 h-fit">
+                  <div className="md:col-span-5 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-5 space-y-4 h-fit">
                     <div className="space-y-1">
-                      <h3 className="text-xs font-mono font-bold text-white uppercase tracking-widest">
+                      <h3 className="text-xs font-mono font-bold text-[#111] uppercase tracking-widest">
                         Log Daily Compassion
                       </h3>
-                      <p className="text-[11px] text-neutral-500 font-mono">
+                      <p className="text-[11px] text-[#444] font-mono">
                         "Be excellent to each other."
                       </p>
                     </div>
-                    <p className="text-xs text-neutral-400 leading-normal">
+                    <p className="text-xs text-[#444] leading-normal">
                       Share a quiet act of kindness you performed today. It will be logged to your Sanctuary Journey Log.
                     </p>
 
@@ -2721,29 +2853,29 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       handleAddKindnessAct(e);
                     }} className="space-y-3 pt-2">
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono text-neutral-400 uppercase">Kindness Title</label>
+                        <label className="text-[10px] font-mono text-[#444] uppercase">Kindness Title</label>
                         <input
                           type="text"
                           placeholder="e.g. Helped elderly neighbor with groceries"
                           value={newKindnessTitle}
                           onChange={(e) => setNewKindnessTitle(e.target.value)}
-                          className="w-full bg-neutral-900 text-xs border border-neutral-800 rounded px-2.5 py-1.5 text-white outline-none focus:border-gold-500/50"
+                          className="w-full bg-white text-xs border border-[rgba(0,0,0,0.06)] rounded px-2.5 py-1.5 text-[#111] outline-none focus:border-[#C89B3C]/50"
                           required
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[10px] font-mono text-neutral-400 uppercase">Context or Reflection</label>
+                        <label className="text-[10px] font-mono text-[#444] uppercase">Context or Reflection</label>
                         <textarea
                           rows={3}
                           placeholder="What did you feel? How did they respond?"
                           value={newKindnessDesc}
                           onChange={(e) => setNewKindnessDesc(e.target.value)}
-                          className="w-full bg-neutral-900 text-xs border border-neutral-800 rounded px-2.5 py-1.5 text-white outline-none focus:border-gold-500/50 resize-none"
+                          className="w-full bg-white text-xs border border-[rgba(0,0,0,0.06)] rounded px-2.5 py-1.5 text-[#111] outline-none focus:border-[#C89B3C]/50 resize-none"
                         />
                       </div>
                       <button
                         type="submit"
-                        className="w-full bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 rounded text-xs transition-all uppercase tracking-wider text-center"
+                        className="w-full bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold py-2 rounded text-xs transition-all uppercase tracking-wider text-center"
                       >
                         Authorize & Log Act
                       </button>
@@ -2756,23 +2888,23 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {/* VIEW RENDERING 10: REWARDS (Loyalty progress and badges) */}
             {activeTab === 'Rewards' && (
               <div className="space-y-6 text-left">
-                <div className="space-y-1 border-b border-neutral-900 pb-4">
-                  <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
+                <div className="space-y-1 border-b border-[rgba(0,0,0,0.06)] pb-4">
+                  <h2 className="font-serif text-xl font-bold tracking-wider text-[#111] uppercase">
                     Sanctuary Rewards & Points
                   </h2>
-                  <p className="text-xs text-neutral-500 font-mono">
+                  <p className="text-xs text-[#444] font-mono">
                     Earn points by sharing direct stories of kindness, and redeem them for digital rewards.
                   </p>
                 </div>
 
                 {/* Point Balance Header */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                   <div className="space-y-1.5 text-center sm:text-left">
-                    <span className="text-[10px] font-mono tracking-widest text-neutral-500 uppercase">Available Point Wallet</span>
-                    <h3 className="text-3xl font-bold text-white font-mono">{loyaltyPoints.toLocaleString()} <span className="text-gold-500">PTS</span></h3>
-                    <p className="text-xs text-neutral-400">Log kindness acts inside "My Journey" to earn 250 PTS per log!</p>
+                    <span className="text-[10px] font-mono tracking-widest text-[#444] uppercase">Available Point Wallet</span>
+                    <h3 className="text-3xl font-bold text-[#111] font-mono">{loyaltyPoints.toLocaleString()} <span className="text-[#C89B3C]">PTS</span></h3>
+                    <p className="text-xs text-[#444]">Log kindness acts inside "My Journey" to earn 250 PTS per log!</p>
                   </div>
-                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-500 flex items-center justify-center text-xl shrink-0">
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-[#C89B3C]/10 border border-[#C89B3C]/20 text-[#C89B3C] flex items-center justify-center text-xl shrink-0">
                     👑
                   </div>
                 </div>
@@ -2780,29 +2912,29 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 <div className="grid gap-6 md:grid-cols-12">
                   {/* Left Column: Earned Badges */}
                   <div className="md:col-span-7 space-y-4">
-                    <h3 className="text-xs font-mono font-bold text-neutral-400 uppercase tracking-widest pb-1 border-b border-neutral-900/40">
+                    <h3 className="text-xs font-mono font-bold text-[#444] uppercase tracking-widest pb-1 border-b border-[rgba(0,0,0,0.06)]/40">
                       Your Unlocked Sanctuary Badges
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {badges.map((badge) => (
-                        <div key={badge.id} className="rounded-xl border border-neutral-900 bg-neutral-950 p-4 text-center space-y-3 flex flex-col justify-between items-center">
+                        <div key={badge.id} className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-4 text-center space-y-3 flex flex-col justify-between items-center">
                           <div className="text-3xl">{badge.icon}</div>
                           <div className="space-y-1 leading-tight">
-                            <h4 className="text-xs font-bold text-white">{badge.title}</h4>
-                            <p className="text-[10px] text-neutral-500 leading-normal">{badge.desc}</p>
+                            <h4 className="text-xs font-bold text-[#111]">{badge.title}</h4>
+                            <p className="text-[10px] text-[#444] leading-normal">{badge.desc}</p>
                           </div>
-                          <p className="text-[11px] text-gold-500 font-mono uppercase tracking-widest font-semibold pt-1 border-t border-neutral-900 w-full">Unlocked: {badge.date}</p>
+                          <p className="text-[11px] text-[#C89B3C] font-mono uppercase tracking-widest font-semibold pt-1 border-t border-[rgba(0,0,0,0.06)] w-full">Unlocked: {badge.date}</p>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   {/* Right Column: Point Store */}
-                  <div className="md:col-span-5 rounded-xl border border-neutral-900 bg-neutral-950 p-4.5 space-y-4">
-                    <h3 className="text-xs font-mono font-bold text-gold-500 uppercase tracking-widest pb-1 border-b border-neutral-900/40">
+                  <div className="md:col-span-5 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-4.5 space-y-4">
+                    <h3 className="text-xs font-mono font-bold text-[#C89B3C] uppercase tracking-widest pb-1 border-b border-[rgba(0,0,0,0.06)]/40">
                       Loyalty Point Store
                     </h3>
-                    <p className="text-[11px] text-neutral-400 leading-normal">
+                    <p className="text-[11px] text-[#444] leading-normal">
                       Exchanges are immediate. Unlocked rewards will instantly grant permanent badges and show up on your timeline.
                     </p>
 
@@ -2810,22 +2942,22 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       {portalRewards.map((item) => {
                         const isUnlocked = badges.some(b => b.title === item.title);
                         return (
-                          <div key={item.id} className="p-3 border border-neutral-900/60 rounded bg-neutral-900/20 text-xs text-left space-y-2 relative overflow-hidden">
+                          <div key={item.id} className="p-3 border border-[rgba(0,0,0,0.06)]/60 rounded bg-[#F8F6F2] text-xs text-left space-y-2 relative overflow-hidden">
                             <div className="flex justify-between items-start">
                               <div className="flex items-center gap-1.5">
                                 <span className="text-base">{item.icon}</span>
-                                <h4 className="font-bold text-white">{item.title}</h4>
+                                <h4 className="font-bold text-[#111]">{item.title}</h4>
                               </div>
-                              <span className="text-gold-500 font-mono font-bold shrink-0">{item.cost} PTS</span>
+                              <span className="text-[#C89B3C] font-mono font-bold shrink-0">{item.cost} PTS</span>
                             </div>
-                            <p className="text-[10px] text-neutral-400 leading-normal">{item.description}</p>
+                            <p className="text-[10px] text-[#444] leading-normal">{item.description}</p>
                             <button
                               onClick={() => handleRedeemReward(item)}
                               disabled={isUnlocked}
                               className={`w-full font-mono font-bold py-1.5 rounded text-[10px] transition-colors uppercase tracking-wider ${
                                 isUnlocked 
-                                  ? 'bg-neutral-900 border border-neutral-950 text-neutral-600 cursor-not-allowed'
-                                  : 'bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 text-gold-500 hover:text-white'
+                                  ? 'bg-white border border-neutral-950 text-[#444] cursor-not-allowed'
+                                  : 'bg-white hover:bg-neutral-850 border border-[rgba(0,0,0,0.06)] text-[#C89B3C] hover:text-[#111]'
                               }`}
                             >
                               {isUnlocked ? '✓ Reward Claimed' : 'Redeem collectible'}
@@ -2842,12 +2974,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {/* VIEW RENDERING 11: NOTIFICATIONS */}
             {activeTab === 'Notifications' && (
               <div className="space-y-6 text-left">
-                <div className="space-y-1 border-b border-neutral-900 pb-4 flex justify-between items-end">
+                <div className="space-y-1 border-b border-[rgba(0,0,0,0.06)] pb-4 flex justify-between items-end">
                   <div className="space-y-1">
-                    <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
+                    <h2 className="font-serif text-xl font-bold tracking-wider text-[#111] uppercase">
                       Sanctuary Inbox Messages
                     </h2>
-                    <p className="text-xs text-neutral-500 font-mono">
+                    <p className="text-xs text-[#444] font-mono">
                       Management review alerts, direct status updates, and ticket notifications.
                     </p>
                   </div>
@@ -2856,7 +2988,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       await supabase.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('user_id', user?.id).eq('is_read', false);
                       setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
                     }}
-                    className="text-[10px] font-mono text-gold-500 hover:text-white"
+                    className="text-[10px] font-mono text-[#C89B3C] hover:text-[#111]"
                   >
                     Mark All Read
                   </button>
@@ -2864,7 +2996,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
 
                 <div className="space-y-3">
                   {notifications.length === 0 ? (
-                    <div className="rounded-xl border border-neutral-900 p-12 text-center text-neutral-500 text-xs font-mono">
+                    <div className="rounded-xl border border-[rgba(0,0,0,0.06)] p-12 text-center text-[#444] text-xs font-mono">
                       Your sanctuary inbox is completely clear. No active alerts.
                     </div>
                   ) : (
@@ -2873,22 +3005,22 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         key={notif.id}
                         className={`p-4 rounded-xl border text-xs text-left flex justify-between items-center gap-4 transition-all ${
                           !notif.is_read
-                            ? 'border-gold-500/30 bg-gold-500/[0.01]'
-                            : 'border-neutral-900 bg-neutral-950/40'
+                            ? 'border-[#C89B3C]/30 bg-[#C89B3C]/[0.01]'
+                            : 'border-[rgba(0,0,0,0.06)] bg-white/40'
                         }`}
                       >
                         <div className="space-y-1 flex-1">
                           <p className="text-white font-bold text-[11px]">{notif.title}</p>
-                          <p className="text-neutral-400 leading-normal">{notif.message}</p>
+                          <p className="text-[#444] leading-normal">{notif.message}</p>
                           <div className="flex items-center gap-3">
-                            <p className="text-[11px] font-mono text-neutral-500">{new Date(notif.created_at).toLocaleString()}</p>
+                            <p className="text-[11px] font-mono text-[#444]">{new Date(notif.created_at).toLocaleString()}</p>
                             {!notif.is_read && (
                               <button
                                 onClick={async () => {
                                   await supabase.from('notifications').update({ is_read: true, read_at: new Date().toISOString() }).eq('id', notif.id);
                                   setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: true } : n));
                                 }}
-                                className="text-[11px] font-mono text-gold-500/70 hover:text-gold-500 cursor-pointer"
+                                className="text-[11px] font-mono text-[#C89B3C]/70 hover:text-[#C89B3C] cursor-pointer"
                               >
                                 Mark Read
                               </button>
@@ -2897,11 +3029,11 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         </div>
                         <div className="flex items-center gap-2">
                           {!notif.is_read && (
-                            <span className="h-2 w-2 rounded-full bg-gold-500 shrink-0" />
+                            <span className="h-2 w-2 rounded-full bg-[#C89B3C] shrink-0" />
                           )}
                           <button
                             onClick={() => handleDeleteNotification(notif.id)}
-                            className="p-1 rounded text-neutral-500 hover:text-red-400 hover:bg-neutral-900/60 transition-colors"
+                            className="p-1 rounded text-[#444] hover:text-red-400 hover:bg-neutral-100 transition-colors"
                             title="Clear Alert"
                           >
                             ✕
@@ -2917,26 +3049,26 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             {/* VIEW RENDERING 12: SETTINGS */}
             {activeTab === 'Settings' && (
               <div className="space-y-6 text-left">
-                <div className="space-y-1 border-b border-neutral-900 pb-4">
-                  <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
+                <div className="space-y-1 border-b border-[rgba(0,0,0,0.06)] pb-4">
+                  <h2 className="font-serif text-xl font-bold tracking-wider text-[#111] uppercase">
                     Settings
                   </h2>
-                  <p className="text-xs text-neutral-500 font-mono">
+                  <p className="text-xs text-[#444] font-mono">
                     Manage your notifications, security, and preferences.
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-4 max-w-xl">
+                <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-5 space-y-4 max-w-xl">
                   <div className="space-y-3">
-                    <h4 className="text-xs font-mono font-bold text-neutral-500 uppercase tracking-widest pb-1 border-b border-neutral-900">
+                    <h4 className="text-xs font-mono font-bold text-[#444] uppercase tracking-widest pb-1 border-b border-[rgba(0,0,0,0.06)]">
                       Notifications & Privacy
                     </h4>
                     
                     {/* Push Notifications */}
-                    <div className="flex justify-between items-center text-xs py-2 border-b border-neutral-900/40">
+                    <div className="flex justify-between items-center text-xs py-2 border-b border-[rgba(0,0,0,0.06)]/40">
                       <div>
-                        <p className="text-white font-semibold">Push Notifications</p>
-                        <p className="text-[10px] text-neutral-400">Get notified about messages and updates.</p>
+                        <p className="text-[#333] font-semibold">Push Notifications</p>
+                        <p className="text-[10px] text-[#444]">Get notified about messages and updates.</p>
                       </div>
                       <button
                         onClick={() => {
@@ -2947,7 +3079,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         className={`px-3 py-1 rounded text-[10px] font-mono font-bold transition-all uppercase ${
                           settingsWebhooks 
                             ? 'bg-green-500/10 border border-green-500/30 text-green-400' 
-                            : 'bg-neutral-900 border border-neutral-800 text-neutral-500'
+                            : 'bg-white border border-[rgba(0,0,0,0.06)] text-[#444]'
                         }`}
                       >
                         {settingsWebhooks ? 'ON' : 'OFF'}
@@ -2955,10 +3087,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     </div>
 
                     {/* Session History */}
-                    <div className="flex justify-between items-center text-xs py-2 border-b border-neutral-900/40">
+                    <div className="flex justify-between items-center text-xs py-2 border-b border-[rgba(0,0,0,0.06)]/40">
                       <div>
-                        <p className="text-white font-semibold">Session History</p>
-                        <p className="text-[10px] text-neutral-400">Remember your login for faster access.</p>
+                        <p className="text-[#333] font-semibold">Session History</p>
+                        <p className="text-[10px] text-[#444]">Remember your login for faster access.</p>
                       </div>
                       <button
                         onClick={() => {
@@ -2968,8 +3100,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         }}
                         className={`px-3 py-1 rounded text-[10px] font-mono font-bold transition-all uppercase ${
                           settingsLogs 
-                            ? 'bg-gold-500/10 border border-gold-500/30 text-gold-400' 
-                            : 'bg-neutral-900 border border-neutral-800 text-neutral-500'
+                            ? 'bg-[#C89B3C]/10 border border-[#C89B3C]/30 text-gold-400' 
+                            : 'bg-white border border-[rgba(0,0,0,0.06)] text-[#444]'
                         }`}
                       >
                         {settingsLogs ? 'ON' : 'OFF'}
@@ -2977,10 +3109,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     </div>
 
                     {/* Two-Factor Authentication */}
-                    <div className="flex justify-between items-center text-xs py-2 border-b border-neutral-900/40">
+                    <div className="flex justify-between items-center text-xs py-2 border-b border-[rgba(0,0,0,0.06)]/40">
                       <div>
-                        <p className="text-white font-semibold">Extra Login Security</p>
-                        <p className="text-[10px] text-neutral-400">Add a verification code when you sign in.</p>
+                        <p className="text-[#333] font-semibold">Extra Login Security</p>
+                        <p className="text-[10px] text-[#444]">Add a verification code when you sign in.</p>
                       </div>
                       <button
                         onClick={() => {
@@ -2991,7 +3123,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         className={`px-3 py-1 rounded text-[10px] font-mono font-bold transition-all uppercase ${
                           settingsTwoFactor 
                             ? 'bg-green-500/10 border border-green-500/30 text-green-400' 
-                            : 'bg-neutral-900 border border-neutral-800 text-neutral-500'
+                            : 'bg-white border border-[rgba(0,0,0,0.06)] text-[#444]'
                         }`}
                       >
                         {settingsTwoFactor ? 'ON' : 'OFF'}
@@ -3001,8 +3133,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     {/* Email Alerts */}
                     <div className="flex justify-between items-center text-xs py-2">
                       <div>
-                        <p className="text-white font-semibold">Email Alerts</p>
-                        <p className="text-[10px] text-neutral-400">Get email notifications for updates and messages.</p>
+                        <p className="text-[#333] font-semibold">Email Alerts</p>
+                        <p className="text-[10px] text-[#444]">Get email notifications for updates and messages.</p>
                       </div>
                       <button
                         onClick={() => {
@@ -3013,7 +3145,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                         className={`px-3 py-1 rounded text-[10px] font-mono font-bold transition-all uppercase ${
                           settingsEmailAlerts 
                             ? 'bg-green-500/10 border border-green-500/30 text-green-400' 
-                            : 'bg-neutral-900 border border-neutral-800 text-neutral-500'
+                            : 'bg-white border border-[rgba(0,0,0,0.06)] text-[#444]'
                         }`}
                       >
                         {settingsEmailAlerts ? 'SUBSCRIBED' : 'MUTED'}
@@ -3021,7 +3153,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-neutral-900 flex justify-between items-center">
+                  <div className="pt-3 border-t border-[rgba(0,0,0,0.06)] flex justify-between items-center">
                     <button
                       onClick={signOut}
                       className="px-5 py-2 bg-red-600/10 border border-red-500/20 hover:bg-red-600/20 text-red-500 font-bold rounded text-xs uppercase tracking-wider transition-colors"
@@ -3032,16 +3164,16 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 </div>
 
                 {/* Portal Accent Customizer Card */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-4 max-w-xl">
+                <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-5 space-y-4 max-w-xl">
                   <div className="space-y-1">
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-gold-500 flex items-center gap-1.5">
-                      <Sparkles className="h-3 w-3 text-gold-500 animate-pulse" />
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#C89B3C] flex items-center gap-1.5">
+                      <Sparkles className="h-3 w-3 text-[#C89B3C] animate-pulse" />
                       Appearance
                     </span>
-                    <h4 className="text-xs font-mono font-bold text-neutral-300 uppercase tracking-widest pb-1 border-b border-neutral-900">
+                    <h4 className="text-xs font-mono font-bold text-[#444] uppercase tracking-widest pb-1 border-b border-[rgba(0,0,0,0.06)]">
                       Theme Color
                     </h4>
-                    <p className="text-[11px] text-neutral-500 font-mono">
+                    <p className="text-[11px] text-[#444] font-mono">
                       Choose your accent color. Changes apply immediately.
                     </p>
                   </div>
@@ -3070,15 +3202,15 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           }}
                           className={`p-3.5 rounded-xl border text-left transition-colors relative overflow-hidden group cursor-pointer ${
                             isSelected 
-                              ? 'bg-neutral-900 border-gold-500/60 shadow-md shadow-gold-500/5' 
-                              : 'bg-neutral-950 border-neutral-900 hover:border-neutral-800 hover:bg-neutral-900/30'
+                              ? 'bg-white border-[#C89B3C]/60 shadow-md shadow-gold-500/5' 
+                              : 'bg-white border-[rgba(0,0,0,0.06)] hover:border-[rgba(0,0,0,0.06)] hover:bg-neutral-100'
                           }`}
                         >
                           {/* Active border/background slide using framer-motion layoutId */}
                           {isSelected && (
                             <motion.div
                               layoutId="activePaletteOutline"
-                              className="absolute inset-0 border border-gold-500 rounded-xl pointer-events-none z-20"
+                              className="absolute inset-0 border border-[#C89B3C] rounded-xl pointer-events-none z-20"
                               transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                             />
                           )}
@@ -3096,10 +3228,10 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                             </span>
                             
                             <div className="space-y-0.5">
-                              <p className={`text-xs font-bold font-mono tracking-wide ${isSelected ? 'text-white' : 'text-neutral-300'}`}>
+                              <p className={`text-xs font-bold font-mono tracking-wide ${isSelected ? 'text-[#111]' : 'text-[#444]'}`}>
                                 {pal.name}
                               </p>
-                              <p className="text-[11px] text-neutral-500 uppercase tracking-wider">
+                              <p className="text-[11px] text-[#444] uppercase tracking-wider">
                                 {pal.desc}
                               </p>
                             </div>
@@ -3129,32 +3261,20 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       {/* MOBILE BOTTOM NAV BAR */}
       {isLoggedIn && profile && (
         <>
-          <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-neutral-900 bg-[#050505]/98 backdrop-blur-md flex items-stretch justify-around shadow-2xl shadow-black/80 overflow-hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+          <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-[rgba(0,0,0,0.06)] bg-white backdrop-blur-md flex items-stretch justify-around shadow-2xl shadow-black/80 overflow-hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
             {[
               { tab: 'Dashboard' as const, icon: LayoutGrid, label: 'Home' },
               { tab: 'Community' as const, icon: Users, label: 'Connect' },
-              { icon: Home, isHome: true },
-              { tab: 'Experiences' as const, icon: Star, label: 'Book' },
-            ].map((item, i) => {
-              if ('isHome' in item) {
-                return (
-                  <button
-                    key="home"
-                    onClick={() => navigate('/')}
-                    className="flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all text-neutral-500"
-                  >
-                    <Home className="h-5 w-5" strokeWidth={1.5} />
-                    <span className="text-[10px] font-bold tracking-widest uppercase">Site</span>
-                  </button>
-                );
-              }
+              { tab: 'Experiences' as const, icon: Star, label: 'Explore' },
+              { tab: 'Membership' as const, icon: Award, label: 'Status' },
+            ].map((item) => {
               const Icon = item.icon;
               const isSelected = activeTab === item.tab;
               return (
                 <button
                   key={item.tab}
                   onClick={() => { setActiveTab(item.tab); setSelectedRequestId(null); }}
-                  className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${isSelected ? 'text-gold-500' : 'text-neutral-500'}`}
+                  className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${isSelected ? 'text-[#C89B3C]' : 'text-[#444]'}`}
                 >
                   <Icon className="h-5 w-5" strokeWidth={isSelected ? 2.5 : 1.5} />
                   <span className="text-[10px] font-bold tracking-widest uppercase">{item.label}</span>
@@ -3163,7 +3283,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             })}
             <button
               onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-              className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${isMoreMenuOpen ? 'text-gold-500' : 'text-neutral-500'}`}
+              className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${isMoreMenuOpen ? 'text-[#C89B3C]' : 'text-[#444]'}`}
             >
               <Menu className="h-5 w-5" strokeWidth={isMoreMenuOpen ? 2.5 : 1.5} />
               <span className="text-[10px] font-bold tracking-widest uppercase">More</span>
@@ -3178,15 +3298,15 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm md:hidden" onClick={() => setIsMoreMenuOpen(false)} />
                 <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
                   transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                  className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#0a0a0a] border-t border-neutral-800 rounded-t-2xl max-h-[80vh] overflow-y-auto"
+                  className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-white border-t border-[rgba(0,0,0,0.06)] rounded-t-2xl max-h-[80vh] overflow-y-auto"
                   style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
                   <div className="flex justify-center pt-3 pb-2">
                     <div className="w-10 h-1 rounded-full bg-neutral-700" />
                   </div>
                   <div className="px-5 pb-3 flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-white tracking-wide">More</h3>
-                    <button onClick={() => setIsMoreMenuOpen(false)} className="p-1.5 rounded-full hover:bg-neutral-800 transition-colors">
-                      <X className="h-4 w-4 text-neutral-400" />
+                    <h3 className="text-sm font-bold text-[#111] tracking-wide">More</h3>
+                    <button onClick={() => setIsMoreMenuOpen(false)} className="p-1.5 rounded-full hover:bg-[#F8F6F2] transition-colors">
+                      <X className="h-4 w-4 text-[#444]" />
                     </button>
                   </div>
                   <div className="px-5 pb-6 grid grid-cols-3 gap-3">
@@ -3194,7 +3314,6 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       { icon: User, label: 'Profile', nav: 'Profile' },
                       { icon: MessageCircle, label: 'Ask Gillian', nav: 'Ask Gillian' },
                       { icon: Calendar, label: 'Events', nav: 'Events' },
-                      { icon: Award, label: 'Membership', nav: 'Membership' },
                       { icon: Compass, label: 'My Journey', nav: 'My Journey' },
                       { icon: Gift, label: 'Rewards', nav: 'Rewards' },
                       { icon: MessageSquare, label: 'Messages', nav: 'Messages' },
@@ -3209,8 +3328,8 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                           onClick={() => { setActiveTab(item.nav as 'Dashboard' | 'Profile' | 'Community' | 'Messages' | 'Ask Gillian' | 'Events' | 'Experiences' | 'Membership' | 'My Journey' | 'Rewards' | 'Notifications' | 'Settings'); setSelectedRequestId(null); setIsMoreMenuOpen(false); }}
                           className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border transition-all ${
                             isSelected
-                              ? 'bg-gold-500/10 border-gold-500/30 text-gold-500'
-                              : 'bg-neutral-950/50 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
+                              ? 'bg-[#C89B3C]/10 border-[#C89B3C]/30 text-[#C89B3C]'
+                              : 'bg-[#F8F6F2] border-[rgba(0,0,0,0.06)] text-[#444] hover:text-neutral-900 hover:border-neutral-300'
                           }`}
                         >
                           <Icon className="h-5 w-5" />
@@ -3227,12 +3346,12 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
       )}
 
       {/* FOOTER BAR */}
-      <footer className="border-t border-white/[0.03] bg-[#070709] py-5 px-4 md:px-8 hidden md:block">
+      <footer className="border-t border-white/[0.03] bg-[#F8F6F2] py-5 px-4 md:px-8 hidden md:block">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 text-[11px] font-mono text-white/20">
           <span>&copy; 2026 Gillian Anderson Co-op. All rights reserved.</span>
           <div className="flex gap-5">
-            <button onClick={() => setIsTermsOpen(true)} className="hover:text-gold-500/60 transition-colors bg-transparent border-none cursor-pointer">Terms</button>
-            <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-gold-500/60 transition-colors bg-transparent border-none cursor-pointer">Privacy</button>
+            <button onClick={() => setIsTermsOpen(true)} className="hover:text-[#C89B3C]/60 transition-colors bg-transparent border-none cursor-pointer">Terms</button>
+            <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-[#C89B3C]/60 transition-colors bg-transparent border-none cursor-pointer">Privacy</button>
           </div>
         </div>
       </footer>
@@ -3255,21 +3374,21 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-xl overflow-hidden rounded-xl border border-neutral-900 bg-neutral-950 p-6.5 shadow-2xl z-10 text-left space-y-4 max-h-[90vh] overflow-y-auto"
+              className="relative w-full max-w-xl overflow-hidden rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-6.5 shadow-2xl z-10 text-left space-y-4 max-h-[90vh] overflow-y-auto"
             >
-              <h3 className="font-serif text-base tracking-wider text-gold-500 uppercase">
+              <h3 className="font-serif text-base tracking-wider text-[#C89B3C] uppercase">
                 Membership Upgrade
               </h3>
-              <p className="text-[10px] text-neutral-500 font-mono leading-relaxed">
+              <p className="text-[10px] text-[#444] font-mono leading-relaxed">
                 Upgrade to a higher tier to unlock more benefits and experiences.
                 {membership?.status === 'active' && (
-                  <> Current tier: <span className="text-gold-500">{membership.tier_name}</span></>
+                  <> Current tier: <span className="text-[#C89B3C]">{membership.tier_name}</span></>
                 )}
               </p>
 
               <form onSubmit={handlePortalMembershipRequest} className="space-y-4 text-xs">
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-mono text-neutral-400 uppercase">DESIRED TIER</label>
+                  <label className="text-[11px] font-mono text-[#444] uppercase">DESIRED TIER</label>
                   <div className="grid gap-2">
                     {(backendContent?.membershipTiers || []).filter((t: { id: string; name: string; price: string }) => {
                       if (!membership) return true;
@@ -3277,31 +3396,31 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       return order.indexOf(t.id) > order.indexOf(membership.tier_id);
                     }).map((t: { id: string; name: string; price: string }) => (
                       <button key={t.id} type="button" onClick={() => setMTierId(t.id)}
-                        className={`flex items-center justify-between p-3 rounded-lg border transition-all text-left ${mTierId === t.id ? 'border-gold-500/50 bg-gold-500/5' : 'border-neutral-900 hover:border-neutral-800 bg-neutral-950'}`}
+                        className={`flex items-center justify-between p-3 rounded-lg border transition-all text-left ${mTierId === t.id ? 'border-[#C89B3C]/50 bg-[#C89B3C]/5' : 'border-[rgba(0,0,0,0.06)] hover:border-[rgba(0,0,0,0.06)] bg-white'}`}
                       >
                         <div>
-                          <p className="text-xs font-bold text-white">{t.name}</p>
-                          <p className="text-[11px] font-mono text-neutral-500">{t.price}</p>
+                          <p className="text-xs font-bold text-[#111]">{t.name}</p>
+                          <p className="text-[11px] font-mono text-[#444]">{t.price}</p>
                         </div>
-                        {mTierId === t.id && <Check className="h-4 w-4 text-gold-500" />}
+                        {mTierId === t.id && <Check className="h-4 w-4 text-[#C89B3C]" />}
                       </button>
                     ))}
                     {(backendContent?.membershipTiers || []).length === 0 && (
-                      <p className="text-[10px] font-mono text-neutral-600 italic">No upgrade tiers available.</p>
+                      <p className="text-[10px] font-mono text-[#444] italic">No upgrade tiers available.</p>
                     )}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-mono text-neutral-400 uppercase">CONTACT METHOD</label>
+                    <label className="text-[11px] font-mono text-[#444] uppercase">CONTACT METHOD</label>
                     <div className="flex gap-2">
                       {(['whatsapp', 'email'] as const).map(m => (
                         <button key={m} type="button" onClick={() => setMContact(m)}
                           className={`flex-1 flex items-center justify-center gap-1.5 p-2.5 rounded-lg border transition-all text-[10px] font-mono ${
                             mContact === m
-                              ? (m === 'whatsapp' ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-400' : 'border-gold-500/50 bg-gold-500/5 text-gold-500')
-                              : 'border-neutral-900 text-neutral-500 hover:text-white'
+                              ? (m === 'whatsapp' ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-400' : 'border-[#C89B3C]/50 bg-[#C89B3C]/5 text-[#C89B3C]')
+                              : 'border-[rgba(0,0,0,0.06)] text-[#444] hover:text-[#111]'
                           }`}
                         >
                           {m === 'whatsapp' ? <MessageCircle className="h-3.5 w-3.5" /> : <Mail className="h-3.5 w-3.5" />}
@@ -3311,25 +3430,25 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                     </div>
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-mono text-neutral-400 uppercase">CONTACT INFO</label>
+                    <label className="text-[11px] font-mono text-[#444] uppercase">CONTACT INFO</label>
                     <input type="text" required value={mContactVal} onChange={(e) => setMContactVal(e.target.value)}
                       placeholder={mContact === 'whatsapp' ? '+1 (555) 000-0000' : 'you@example.com'}
-                      className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50" />
+                      className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-3 py-2 text-[#111] outline-none focus:border-[#C89B3C]/50" />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-mono text-neutral-400 uppercase">WHY DO YOU WISH TO UPGRADE?</label>
+                  <label className="text-[11px] font-mono text-[#444] uppercase">WHY DO YOU WISH TO UPGRADE?</label>
                   <textarea required rows={3} value={mReason} onChange={(e) => setMReason(e.target.value)}
                     placeholder="Tell us why you'd like to upgrade and what benefits you're most excited about."
-                    className="w-full rounded border border-neutral-900 bg-neutral-900/50 px-3 py-2 text-white outline-none focus:border-gold-500/50 resize-none leading-relaxed" />
+                    className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-3 py-2 text-[#111] outline-none focus:border-[#C89B3C]/50 resize-none leading-relaxed" />
                 </div>
 
                 <div className="flex gap-3">
                   <button type="button" onClick={() => setShowPortalMembershipModal(false)}
-                    className="flex-1 py-2.5 rounded border border-neutral-900 text-neutral-400 text-[10px] font-mono font-bold uppercase tracking-widest hover:text-white transition-all">Cancel</button>
+                    className="flex-1 py-2.5 rounded border border-[rgba(0,0,0,0.06)] text-[#444] text-[10px] font-mono font-bold uppercase tracking-widest hover:text-neutral-900 hover:border-neutral-300 transition-all">Cancel</button>
                   <button type="submit" disabled={!mTierId || !mReason.trim() || !mContactVal.trim() || mUpgrading}
-                    className="flex-1 py-2.5 rounded bg-gold-500 text-neutral-950 text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-gold-400 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 py-2.5 rounded bg-[#C89B3C] text-neutral-950 text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-[#A97828] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {mUpgrading ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Submitting...</> : 'Submit Upgrade Request'}
                   </button>
@@ -3356,31 +3475,31 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-md overflow-hidden rounded-xl border border-neutral-900 bg-neutral-950 p-6 shadow-2xl z-10 text-left space-y-4"
+              className="relative w-full max-w-md overflow-hidden rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-6 shadow-2xl z-10 text-left space-y-4"
             >
-              <h3 className="font-serif text-base tracking-wider text-gold-500 uppercase">
+              <h3 className="font-serif text-base tracking-wider text-[#C89B3C] uppercase">
                 Share Creative Fan Work
               </h3>
 
               <form onSubmit={handleUploadCreation} className="space-y-4 text-xs">
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-mono text-neutral-500 uppercase">TITLE</label>
+                  <label className="text-[11px] font-mono text-[#444] uppercase">TITLE</label>
                   <input
                     type="text"
                     required
                     value={uploadTitle}
                     onChange={(e) => setUploadTitle(e.target.value)}
                     placeholder="Scully Drawing / My Mentorship Journey"
-                    className="w-full rounded border border-neutral-900 bg-[#0c0c0e] px-3.5 py-2 text-white outline-none focus:border-gold-500/50"
+                    className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-3.5 py-2 text-[#111] outline-none focus:border-[#C89B3C]/50"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-mono text-neutral-500 uppercase">CATEGORY</label>
+                  <label className="text-[11px] font-mono text-[#444] uppercase">CATEGORY</label>
                   <select
                     value={uploadCategory}
                     onChange={(e) => setUploadCategory(e.target.value as 'Fan Art' | 'Fan Story' | 'Fan Video' | 'Photography')}
-                    className="w-full rounded border border-neutral-900 bg-[#0c0c0e] px-3.5 py-2 text-white outline-none focus:border-gold-500/50"
+                    className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-3.5 py-2 text-[#111] outline-none focus:border-[#C89B3C]/50"
                   >
                     <option value="Fan Art">Fan Art</option>
                     <option value="Fan Story">Fan Story / Testimony</option>
@@ -3390,20 +3509,20 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-mono text-neutral-500 uppercase">DESCRIPTION</label>
+                  <label className="text-[11px] font-mono text-[#444] uppercase">DESCRIPTION</label>
                   <textarea
                     required
                     rows={4}
                     value={uploadDesc}
                     onChange={(e) => setUploadDesc(e.target.value)}
                     placeholder="Describe your creation or share your complete story..."
-                    className="w-full rounded border border-neutral-900 bg-[#0c0c0e] px-3.5 py-2 text-white outline-none focus:border-gold-500/50 resize-none leading-relaxed"
+                    className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-3.5 py-2 text-[#111] outline-none focus:border-[#C89B3C]/50 resize-none leading-relaxed"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 rounded text-xs tracking-wider transition-colors uppercase"
+                  className="w-full bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold py-2 rounded text-xs tracking-wider transition-colors uppercase"
                 >
                   Publish to Community Board
                 </button>
@@ -3433,9 +3552,9 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-md overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950 p-6 shadow-2xl z-10 text-left space-y-4"
+              className="relative w-full max-w-md overflow-hidden rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-6 shadow-2xl z-10 text-left space-y-4"
             >
-              <h3 className="font-serif text-base tracking-wider text-gold-500 uppercase">
+              <h3 className="font-serif text-base tracking-wider text-[#C89B3C] uppercase">
                 Official Support Desk
               </h3>
 
@@ -3447,35 +3566,35 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                   }}
                   className="space-y-4 text-xs"
                 >
-                  <p className="text-xs text-neutral-400 leading-relaxed">
+                  <p className="text-xs text-[#444] leading-relaxed">
                     Experiencing coordination issues? Submit a message directly to Sarah and our security compliance team.
                   </p>
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-mono text-neutral-500 uppercase">MESSAGE</label>
+                    <label className="text-[11px] font-mono text-[#444] uppercase">MESSAGE</label>
                     <textarea
                       required
                       rows={3}
                       value={helpText}
                       onChange={(e) => setHelpText(e.target.value)}
                       placeholder="Explain your inquiry in detail..."
-                      className="w-full rounded border border-neutral-900 bg-neutral-900/50 p-3 text-xs text-white outline-none focus:border-gold-500/50 resize-none"
+                      className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-3 text-xs text-[#111] outline-none focus:border-[#C89B3C]/50 resize-none"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="w-full bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 rounded text-xs tracking-wider transition-colors"
+                    className="w-full bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold py-2 rounded text-xs tracking-wider transition-colors"
                   >
                     Send Ticket
                   </button>
                 </form>
               ) : (
                 <div className="space-y-4 text-center py-4">
-                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-gold-500/10 text-gold-500 border border-gold-500/30">
+                  <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-[#C89B3C]/10 text-[#C89B3C] border border-[#C89B3C]/30">
                     <CheckCircle2 className="h-5 w-5" />
                   </div>
                   <div className="space-y-1 text-xs">
-                    <h4 className="text-xs font-semibold text-white uppercase tracking-wider">Ticket Submitted</h4>
-                    <p className="text-neutral-400 leading-relaxed">Sarah and the security compliance desk will respond on WhatsApp shortly.</p>
+                    <h4 className="text-xs font-semibold text-[#111] uppercase tracking-wider">Ticket Submitted</h4>
+                    <p className="text-[#444] leading-relaxed">Sarah and the security compliance desk will respond on WhatsApp shortly.</p>
                   </div>
                   <button
                     type="button"
@@ -3484,7 +3603,7 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
                       setHelpSubmitted(false);
                       setHelpText('');
                     }}
-                    className="px-5 py-1.5 bg-neutral-900 hover:bg-neutral-800 border border-neutral-850 text-xs font-semibold text-white rounded transition-colors"
+                    className="px-5 py-1.5 bg-white hover:bg-[#F8F6F2] border border-neutral-850 text-xs font-semibold text-white rounded transition-colors"
                   >
                     Close Support Desk
                   </button>
@@ -3506,17 +3625,42 @@ export default function FanPortal({ onBackToHome }: FanPortalProps) {
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             className={`fixed top-4 right-4 z-50 flex items-center gap-2.5 rounded-lg border px-4 py-3 shadow-2xl max-w-[calc(100vw-2rem)] ${
               toast.type === 'error'
-                ? 'border-red-500/50 bg-[#0a0a0c] shadow-red-500/10'
-                : 'border-gold-500 bg-[#0a0a0c] shadow-gold-500/10'
+                ? 'border-red-500/50 bg-white shadow-red-500/10'
+                : 'border-[#C89B3C] bg-white shadow-gold-500/10'
             }`}
           >
-            <div className={`h-2 w-2 rounded-full ${toast.type === 'error' ? 'bg-red-500' : 'bg-gold-500'} animate-pulse`} />
+            <div className={`h-2 w-2 rounded-full ${toast.type === 'error' ? 'bg-red-500' : 'bg-[#C89B3C]'} animate-pulse`} />
             <div className="flex-1 text-xs text-left">
-              <p className={`font-mono uppercase tracking-widest font-bold text-[11px] ${toast.type === 'error' ? 'text-red-400' : 'text-gold-500'}`}>
+              <p className={`font-mono uppercase tracking-widest font-bold text-[11px] ${toast.type === 'error' ? 'text-red-400' : 'text-[#C89B3C]'}`}>
                 {toast.type === 'error' ? 'NOTICE' : 'SYSTEM MSG'}
               </p>
-              <p className="text-white mt-0.5 leading-tight">{toast.message}</p>
+              <p className="text-[#111] mt-0.5 leading-tight">{toast.message}</p>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showOnboarding && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="w-full max-w-md bg-white border border-[rgba(0,0,0,0.06)] rounded-2xl p-8 shadow-2xl relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 h-40 w-40 bg-[radial-gradient(circle_at_top_right,rgba(223,186,137,0.08),transparent)] pointer-events-none" />
+              <OnboardingSteps onComplete={() => {
+                localStorage.setItem('kr_onboarded', 'true');
+                setShowOnboarding(false);
+              }} />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

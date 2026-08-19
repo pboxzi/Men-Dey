@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/supabase';
@@ -11,24 +11,6 @@ const MONTH_LOOKUP: Record<string, number> = {
   JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11,
 };
 import { openWhatsApp, openEmail } from '../utils/contactSettings';
-
-function countdown(target: Date) {
-  const d = target.getTime() - Date.now();
-  if (d <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-  return {
-    days: Math.floor(d / 86400000),
-    hours: Math.floor((d % 86400000) / 3600000),
-    minutes: Math.floor((d % 3600000) / 60000),
-    seconds: Math.floor((d % 60000) / 1000),
-  };
-}
-
-function parseDate(month: string, day: string, time: string): Date {
-  const hh = parseInt(time?.split(':')[0]) || 12;
-  const mm = parseInt(time?.split(':')[1]?.split(' ')[0]) || 0;
-  const pm = time?.toLowerCase().includes('pm');
-  return new Date(2026, MONTH_LOOKUP[month?.toUpperCase()] ?? 6, parseInt(day) || 1, pm && hh < 12 ? hh + 12 : (!pm && hh === 12 ? 0 : hh), mm);
-}
 
 interface RegistrationForm {
   name: string; email: string; phone: string; country: string;
@@ -47,7 +29,6 @@ export default function EventsSection() {
   const [dbEvents, setDbEvents] = useState<AdminEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [step, setStep] = useState<'idle' | 'form' | 'review' | 'submitted'>('idle');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [form, setForm] = useState<RegistrationForm>({
@@ -69,7 +50,13 @@ export default function EventsSection() {
       .then(({ data }) => { if (data) setMembership(data); });
   }, [user?.id]);
 
-  const events = dbEvents;
+  const events = dbEvents.filter(evt => {
+    const monthNames = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+    const m = monthNames.indexOf((evt.month || '').toUpperCase());
+    const d = parseInt(evt.day) || 1;
+    const evtDate = new Date(2026, m, d);
+    return evtDate >= new Date(new Date().toDateString());
+  });
   const nextEvent = events[0] || null;
 
   const fetchEvents = useCallback(async () => {
@@ -85,14 +72,6 @@ export default function EventsSection() {
   }, []);
 
   useEffect(() => { void fetchEvents(); }, [fetchEvents]);
-
-  useEffect(() => {
-    if (!nextEvent) return;
-    const t = parseDate(nextEvent.month, nextEvent.day, nextEvent.event_time || nextEvent.time);
-    setTimeLeft(countdown(t));
-    const id = setInterval(() => setTimeLeft(countdown(t)), 1000);
-    return () => clearInterval(id);
-  }, [nextEvent]);
 
   const resetFlow = () => {
     setStep('idle');
@@ -193,19 +172,19 @@ export default function EventsSection() {
   };
 
   return (
-    <section className="bg-[#050505] py-20 px-4 md:px-6 relative min-h-[900px] overflow-hidden">
-      <div className="absolute right-0 top-1/4 h-[500px] w-[500px] rounded-full bg-gold-500/5 blur-[150px] pointer-events-none" />
+    <section className="bg-white py-20 px-4 md:px-6 relative min-h-[900px] overflow-hidden">
+      <div className="absolute right-0 top-1/4 h-[500px] w-[500px] rounded-full bg-[#C89B3C]/5 blur-[150px] pointer-events-none" />
       <div className="absolute left-0 bottom-1/4 h-[400px] w-[400px] rounded-full bg-amber-500/3 blur-[120px] pointer-events-none" />
 
       <div className="mx-auto max-w-7xl space-y-12 relative z-10">
         <div className="text-center space-y-5">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold-500/20 bg-gold-500/[0.03] text-gold-500 text-[10px] font-mono tracking-[0.2em] uppercase backdrop-blur-sm"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C89B3C]/20 bg-[#C89B3C]/[0.03] text-[#C89B3C] text-[10px] font-mono tracking-[0.2em] uppercase backdrop-blur-sm"
           ><Sparkles className="h-3 w-3" /> Live Gatherings</motion.div>
-          <h2 className="font-serif text-4xl md:text-6xl font-extrabold text-white uppercase tracking-tight leading-[1.1]">
-            Co-op<br className="md:hidden" /><span className="text-gold-500 bg-gold-500/5 px-3 py-1 inline-block">Conclaves</span>
+          <h2 className="font-serif text-4xl md:text-6xl font-extrabold text-[#111] uppercase tracking-tight leading-[1.1]">
+            Co-op<br className="md:hidden" /><span className="text-[#C89B3C] bg-[#C89B3C]/5 px-3 py-1 inline-block">Conclaves</span>
           </h2>
-          <p className="text-xs md:text-sm text-neutral-400 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xs md:text-sm text-[#444] max-w-2xl mx-auto leading-relaxed">
             Join exclusive gatherings — stage plays, intimate Q&As, panel screenings, and global fundraising galas.
           </p>
         </div>
@@ -217,25 +196,25 @@ export default function EventsSection() {
               className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-12 md:pt-20 bg-black/80 backdrop-blur-sm overflow-y-auto"
             >
               <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-                className="w-full max-w-2xl bg-neutral-950 border border-neutral-800 rounded-2xl overflow-hidden shadow-2xl text-left"
+                className="w-full max-w-2xl bg-white border border-[rgba(0,0,0,0.06)] rounded-2xl overflow-hidden shadow-2xl text-left"
               >
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between">
+                <div className="px-6 py-4 border-b border-[rgba(0,0,0,0.06)] flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {step !== 'submitted' && (
                       <button onClick={step === 'review' ? () => setStep('form') : resetFlow}
-                        className="p-1 rounded text-neutral-500 hover:text-white transition-colors"
+                        className="p-1 rounded text-[#444] hover:text-[#111] transition-colors"
                       ><ArrowLeft className="h-4 w-4" /></button>
                     )}
                     <div>
-                      <span className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">
+                      <span className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">
                         {step === 'form' ? 'Step 2 of 6 — Your Details' : step === 'review' ? 'Step 4 of 6 — Review' : 'Registration Complete'}
                       </span>
-                      <p className="text-[10px] text-neutral-500 mt-0.5 font-mono">{selectedEvent.title}</p>
+                      <p className="text-[10px] text-[#444] mt-0.5 font-mono">{selectedEvent.title}</p>
                     </div>
                   </div>
                   {step !== 'submitted' && (
-                    <button onClick={resetFlow} className="p-1 rounded text-neutral-500 hover:text-white transition-colors">
+                    <button onClick={resetFlow} className="p-1 rounded text-[#444] hover:text-[#111] transition-colors">
                       <X className="h-5 w-5" />
                     </button>
                   )}
@@ -243,15 +222,15 @@ export default function EventsSection() {
 
                 <div className="p-6 space-y-5">
                   {/* Event summary bar */}
-                  <div className="flex items-center gap-3 p-3 rounded-xl bg-neutral-900/30 border border-neutral-800/60">
-                    <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg border border-neutral-800 bg-neutral-950 font-mono shrink-0">
-                      <span className="text-sm font-bold text-white leading-none">{selectedEvent.day}</span>
-                      <span className="text-[10px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{selectedEvent.month}</span>
+                  <div className="flex items-center gap-3 p-3 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60">
+                    <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg border border-[rgba(0,0,0,0.06)] bg-white font-mono shrink-0">
+                      <span className="text-sm font-bold text-[#111] leading-none">{selectedEvent.day}</span>
+                      <span className="text-[10px] font-bold text-[#C89B3C]/60 tracking-widest mt-0.5 uppercase leading-none">{selectedEvent.month}</span>
                     </div>
                     <div className="text-[11px] space-y-0.5">
-                      <p className="font-bold text-white">{selectedEvent.title}</p>
-                      <p className="text-neutral-400 font-mono text-[10px]">{selectedEvent.month} {selectedEvent.day}, 2026 — {selectedEvent.event_time || selectedEvent.time}</p>
-                      <p className="text-neutral-500 font-mono text-[11px]">{selectedEvent.location}</p>
+                      <p className="font-bold text-[#111]">{selectedEvent.title}</p>
+                      <p className="text-[#444] font-mono text-[10px]">{selectedEvent.month} {selectedEvent.day}, 2026 — {selectedEvent.event_time || selectedEvent.time}</p>
+                      <p className="text-[#444] font-mono text-[11px]">{selectedEvent.location}</p>
                     </div>
                   </div>
 
@@ -260,42 +239,42 @@ export default function EventsSection() {
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Full Name *</label>
+                          <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Full Name *</label>
                           <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Your full name"
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                            className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Email Address *</label>
+                          <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Email Address *</label>
                           <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder="your@email.com"
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                            className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Phone Number</label>
+                          <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Phone Number</label>
                           <input type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} placeholder="+1 (555) 000-0000"
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                            className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Country</label>
+                          <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Country</label>
                           <input type="text" value={form.country} onChange={e => setForm(p => ({ ...p, country: e.target.value }))} placeholder="e.g. United States"
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                            className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                         </div>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Number of Attendees</label>
+                          <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Number of Attendees</label>
                           <input type="number" min={1} value={form.attendees} onChange={e => setForm(p => ({ ...p, attendees: Math.max(1, parseInt(e.target.value) || 1) }))}
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                            className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Special Requirements</label>
+                          <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Special Requirements</label>
                           <input type="text" value={form.specialRequests} onChange={e => setForm(p => ({ ...p, specialRequests: e.target.value }))} placeholder="Dietary, accessibility, etc."
-                            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                            className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                         </div>
                       </div>
 
                       {/* Step 3: Communication Method */}
-                      <div className="space-y-2 pt-2 border-t border-neutral-800/60">
-                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Preferred Communication Method *</label>
+                      <div className="space-y-2 pt-2 border-t border-[rgba(0,0,0,0.06)]/60">
+                        <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Preferred Communication Method *</label>
                         <div className="grid grid-cols-2 gap-3">
                           {[
                             { id: 'whatsapp' as const, label: 'WhatsApp', icon: MessageCircle, desc: 'Quick messaging via WhatsApp' },
@@ -304,16 +283,16 @@ export default function EventsSection() {
                             <button key={opt.id} onClick={() => setForm(p => ({ ...p, commMethod: opt.id }))}
                               className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${
                                 form.commMethod === opt.id
-                                  ? 'border-gold-500/40 bg-gold-500/[0.04] ring-1 ring-gold-500/20'
-                                  : 'border-neutral-800 bg-neutral-900/30 hover:border-neutral-700'
+                                  ? 'border-[#C89B3C]/40 bg-[#C89B3C]/[0.04] ring-1 ring-gold-500/20'
+                                  : 'border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] hover:border-neutral-700'
                               }`}
                             >
-                              <div className={`p-2 rounded-lg ${form.commMethod === opt.id ? 'bg-gold-500/10 text-gold-500' : 'bg-neutral-900 text-neutral-400'}`}>
+                              <div className={`p-2 rounded-lg ${form.commMethod === opt.id ? 'bg-[#C89B3C]/10 text-[#C89B3C]' : 'bg-white text-[#444]'}`}>
                                 <opt.icon className="h-4 w-4" />
                               </div>
                               <div>
-                                <p className={`text-xs font-bold ${form.commMethod === opt.id ? 'text-gold-500' : 'text-white'}`}>{opt.label}</p>
-                                <p className="text-[11px] text-neutral-500 mt-0.5">{opt.desc}</p>
+                                <p className={`text-xs font-bold ${form.commMethod === opt.id ? 'text-[#C89B3C]' : 'text-[#111]'}`}>{opt.label}</p>
+                                <p className="text-[11px] text-[#444] mt-0.5">{opt.desc}</p>
                               </div>
                             </button>
                           ))}
@@ -321,7 +300,7 @@ export default function EventsSection() {
                       </div>
 
                       <button onClick={handleSubmitForm} disabled={!form.name || !form.email}
-                        className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full py-3 rounded-xl bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                       ><FileText className="h-4 w-4" /> Review Registration</button>
                     </div>
                   )}
@@ -330,21 +309,21 @@ export default function EventsSection() {
                   {step === 'review' && (
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-3 p-4 rounded-xl bg-neutral-900/20 border border-neutral-800/60">
-                          <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Fan Information</h4>
+                        <div className="space-y-3 p-4 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60">
+                          <h4 className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">Fan Information</h4>
                           <div className="text-[11px] space-y-1">
-                            <p><span className="text-neutral-500">Name:</span> <span className="text-white">{form.name}</span></p>
-                            <p><span className="text-neutral-500">Email:</span> <span className="text-white">{form.email}</span></p>
-                            <p><span className="text-neutral-500">Phone:</span> <span className="text-white">{form.phone || '—'}</span></p>
-                            <p><span className="text-neutral-500">Country:</span> <span className="text-white">{form.country || '—'}</span></p>
+                            <p><span className="text-[#444]">Name:</span> <span className="text-[#111]">{form.name}</span></p>
+                            <p><span className="text-[#444]">Email:</span> <span className="text-[#111]">{form.email}</span></p>
+                            <p><span className="text-[#444]">Phone:</span> <span className="text-[#111]">{form.phone || '—'}</span></p>
+                            <p><span className="text-[#444]">Country:</span> <span className="text-[#111]">{form.country || '—'}</span></p>
                           </div>
                         </div>
-                        <div className="space-y-3 p-4 rounded-xl bg-neutral-900/20 border border-neutral-800/60">
-                          <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Registration Details</h4>
+                        <div className="space-y-3 p-4 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60">
+                          <h4 className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">Registration Details</h4>
                           <div className="text-[11px] space-y-1">
-                            <p><span className="text-neutral-500">Attendees:</span> <span className="text-white">{form.attendees}</span></p>
-                            <p><span className="text-neutral-500">Special Reqs:</span> <span className="text-white">{form.specialRequests || 'None'}</span></p>
-                            <p><span className="text-neutral-500">Method:</span> <span className="text-white capitalize flex items-center gap-1">{form.commMethod === 'whatsapp' ? <MessageCircle className="h-3 w-3 text-emerald-400" /> : <Mail className="h-3 w-3 text-blue-400" />}{form.commMethod}</span></p>
+                            <p><span className="text-[#444]">Attendees:</span> <span className="text-[#111]">{form.attendees}</span></p>
+                            <p><span className="text-[#444]">Special Reqs:</span> <span className="text-[#111]">{form.specialRequests || 'None'}</span></p>
+                            <p><span className="text-[#444]">Method:</span> <span className="text-[#111] capitalize flex items-center gap-1">{form.commMethod === 'whatsapp' ? <MessageCircle className="h-3 w-3 text-emerald-400" /> : <Mail className="h-3 w-3 text-blue-400" />}{form.commMethod}</span></p>
                           </div>
                         </div>
                       </div>
@@ -353,10 +332,10 @@ export default function EventsSection() {
                       )}
                       <div className="flex gap-3 pt-2">
                         <button onClick={() => setStep('form')}
-                          className="flex-1 py-3 rounded-xl border border-neutral-800 text-neutral-400 hover:text-white text-xs font-mono transition-colors"
+                          className="flex-1 py-3 rounded-xl border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-neutral-900 text-xs font-mono transition-colors"
                         >Back & Edit</button>
                         <button onClick={handleSubmitRegistration} disabled={saving}
-                          className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                          className="flex-1 py-3 rounded-xl bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                         >{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} {saving ? 'Submitting...' : 'Submit Registration'}</button>
                       </div>
                     </div>
@@ -369,23 +348,23 @@ export default function EventsSection() {
                         <CheckCircle className="h-8 w-8 text-emerald-400" />
                       </div>
                       <div className="space-y-1">
-                        <h3 className="font-serif text-lg font-bold text-white">Registration Submitted!</h3>
-                        <p className="text-xs text-neutral-400">Your registration reference is:</p>
-                        <p className="font-mono text-sm text-gold-500 font-bold bg-gold-500/5 border border-gold-500/20 rounded-lg inline-block px-4 py-2">{ticketRef}</p>
+                        <h3 className="font-serif text-lg font-bold text-[#111]">Registration Submitted!</h3>
+                        <p className="text-xs text-[#444]">Your registration reference is:</p>
+                        <p className="font-mono text-sm text-[#C89B3C] font-bold bg-[#C89B3C]/5 border border-[#C89B3C]/20 rounded-lg inline-block px-4 py-2">{ticketRef}</p>
                       </div>
-                      <div className="p-4 rounded-xl bg-neutral-900/20 border border-neutral-800/60 text-left space-y-2">
-                        <p className="text-[10px] text-neutral-400 leading-relaxed">
+                      <div className="p-4 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 text-left space-y-2">
+                        <p className="text-[10px] text-[#444] leading-relaxed">
                           To complete your registration, please send the pre-filled message via your chosen method below. 
                           The administrator will confirm your spot once they receive your message.
                         </p>
                       </div>
                       <button onClick={openCommApp}
-                        className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                        className="w-full py-3 rounded-xl bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
                       >{form.commMethod === 'whatsapp' ? <MessageCircle className="h-4 w-4" /> : <Mail className="h-4 w-4" />}
                         Open {form.commMethod === 'whatsapp' ? 'WhatsApp' : 'Email'} to Send Message
                       </button>
                       <button onClick={resetFlow}
-                        className="w-full py-2 text-[10px] font-mono text-neutral-500 hover:text-white transition-colors"
+                        className="w-full py-2 text-[10px] font-mono text-[#444] hover:text-[#111] transition-colors"
                       >Browse More Events</button>
                     </div>
                   )}
@@ -397,36 +376,36 @@ export default function EventsSection() {
 
         {loading ? (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-neutral-900 bg-neutral-950/30 p-6 md:p-8 animate-pulse">
+            <div className="rounded-2xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-6 md:p-8 animate-pulse">
               <div className="flex flex-col md:flex-row items-start justify-between gap-6">
                 <div className="space-y-4 flex-1">
-                  <div className="h-3 w-32 rounded bg-neutral-800" />
-                  <div className="h-8 w-72 rounded bg-neutral-800" />
-                  <div className="h-4 w-56 rounded bg-neutral-800" />
+                  <div className="h-3 w-32 rounded bg-[#F8F6F2]" />
+                  <div className="h-8 w-72 rounded bg-[#F8F6F2]" />
+                  <div className="h-4 w-56 rounded bg-[#F8F6F2]" />
                 </div>
                 <div className="flex gap-2.5 shrink-0">
-                  {[1,2,3,4].map(i => <div key={i} className="h-16 w-14 rounded-lg bg-neutral-800" />)}
+                  {[1,2,3,4].map(i => <div key={i} className="h-16 w-14 rounded-lg bg-[#F8F6F2]" />)}
                 </div>
               </div>
             </div>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {[1,2,3].map(i => (
-                <div key={i} className="rounded-xl border border-neutral-900 bg-neutral-950/30 overflow-hidden animate-pulse">
+                <div key={i} className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] overflow-hidden animate-pulse">
                   <div className="p-5 space-y-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-14 w-14 rounded-xl bg-neutral-800" />
+                      <div className="h-14 w-14 rounded-xl bg-[#F8F6F2]" />
                       <div className="space-y-2 flex-1">
-                        <div className="h-3 w-16 rounded bg-neutral-800" />
-                        <div className="h-4 w-32 rounded bg-neutral-800" />
+                        <div className="h-3 w-16 rounded bg-[#F8F6F2]" />
+                        <div className="h-4 w-32 rounded bg-[#F8F6F2]" />
                       </div>
                     </div>
-                    <div className="h-3 w-full rounded bg-neutral-800" />
+                    <div className="h-3 w-full rounded bg-[#F8F6F2]" />
                     <div className="space-y-2">
-                      <div className="h-3 w-40 rounded bg-neutral-800" />
-                      <div className="h-3 w-36 rounded bg-neutral-800" />
-                      <div className="h-3 w-44 rounded bg-neutral-800" />
+                      <div className="h-3 w-40 rounded bg-[#F8F6F2]" />
+                      <div className="h-3 w-36 rounded bg-[#F8F6F2]" />
+                      <div className="h-3 w-44 rounded bg-[#F8F6F2]" />
                     </div>
-                    <div className="h-10 w-full rounded-lg bg-neutral-800" />
+                    <div className="h-10 w-full rounded-lg bg-[#F8F6F2]" />
                   </div>
                 </div>
               ))}
@@ -447,92 +426,89 @@ export default function EventsSection() {
           </motion.div>
         ) : events.length === 0 ? (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="max-w-lg mx-auto text-center py-16 border border-dashed border-neutral-900 rounded-2xl bg-neutral-950/20 space-y-4"
+            className="max-w-lg mx-auto text-center py-16 border border-dashed border-[rgba(0,0,0,0.06)] rounded-2xl bg-[#F8F6F2] space-y-4"
           >
-            <Calendar className="h-10 w-10 text-neutral-700 mx-auto" />
+            <Calendar className="h-10 w-10 text-[#444] mx-auto" />
             <div>
-              <p className="text-sm text-neutral-400 font-bold">No gatherings scheduled yet</p>
-              <p className="text-[10px] text-neutral-600 mt-1">New events will appear here when announced. Check back soon.</p>
+              <p className="text-sm text-[#444] font-bold">No gatherings scheduled yet</p>
+              <p className="text-[10px] text-[#444] mt-1">New events will appear here when announced. Check back soon.</p>
             </div>
           </motion.div>
         ) : (
           <>
             {nextEvent && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                className="relative overflow-hidden rounded-2xl border border-neutral-900 bg-gradient-to-b from-neutral-950 to-[#0a0a0c] p-6 md:p-8"
+                className="relative overflow-hidden rounded-xl bg-white border border-neutral-200 p-6 shadow-sm"
               >
-                <div className="absolute top-0 right-0 w-72 h-72 bg-gold-500/[0.04] rounded-full blur-[100px]" />
-                <div className="relative flex flex-col md:flex-row items-start justify-between gap-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-500">
-                      <span className="px-2 py-0.5 rounded-full bg-gold-500/10 border border-gold-500/20 text-gold-500 uppercase tracking-wider font-semibold">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400" />
+                <div className="relative flex flex-col md:flex-row items-start justify-between gap-5">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-xs text-neutral-400">
+                      <span className="px-2 py-0.5 rounded bg-amber-50 text-amber-700 text-[10px] font-bold uppercase border border-amber-200">
                         {nextEvent.event_type || nextEvent.type || 'Event'}
                       </span>
-                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {nextEvent.month} {nextEvent.day}, 2026</span>
-                      <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {nextEvent.location}</span>
+                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3 text-amber-500" /> {nextEvent.month} {nextEvent.day}, 2026</span>
+                      <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-amber-500" /> {nextEvent.location}</span>
                     </div>
-                    <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white uppercase tracking-wide leading-tight">{nextEvent.title}</h3>
+                    <h3 className="font-serif text-xl md:text-2xl font-bold text-neutral-900 uppercase tracking-wide leading-tight">{nextEvent.title}</h3>
                     {nextEvent.description && (
-                      <p className="text-xs md:text-sm text-neutral-400 leading-relaxed max-w-xl">{nextEvent.description}</p>
+                      <p className="text-xs text-neutral-500 leading-relaxed max-w-xl">{nextEvent.description}</p>
                     )}
-                  </div>
-                  <div className="flex gap-2.5 font-mono shrink-0">
-                    {[
-                      { v: timeLeft.days, l: 'Days' }, { v: timeLeft.hours, l: 'Hrs' },
-                      { v: timeLeft.minutes, l: 'Min' }, { v: timeLeft.seconds, l: 'Sec' },
-                    ].map((u, i) => (
-                      <div key={u.l} className="flex flex-col items-center p-3 rounded-lg bg-neutral-900/60 border border-neutral-800 min-w-[56px]">
-                        <span className={`text-lg md:text-xl font-bold leading-none ${i === 3 ? 'text-gold-500' : 'text-white'}`}>{String(u.v).padStart(2, '0')}</span>
-                        <span className="text-[10px] text-neutral-500 mt-1 uppercase font-semibold">{u.l}</span>
-                      </div>
-                    ))}
                   </div>
                 </div>
               </motion.div>
             )}
 
             <div className="space-y-6">
-              <div className="flex items-center justify-between border-b border-neutral-900 pb-3">
-                <h3 className="text-[11px] font-mono tracking-widest text-neutral-400 uppercase font-bold">
-                  All Gatherings <span className="text-neutral-600 ml-1">({events.length})</span>
+              <div className="flex items-center gap-3 border-b border-[rgba(0,0,0,0.08)] pb-4">
+                <div className="h-1.5 w-1.5 rounded-full bg-[#C89B3C]" />
+                <h3 className="text-[11px] font-mono tracking-[0.15em] text-[#111] uppercase font-bold">
+                  All Gatherings
                 </h3>
+                <span className="text-[10px] font-mono text-[#666] bg-[#F8F6F2] px-2 py-0.5 rounded-full border border-[rgba(0,0,0,0.06)]">{events.length}</span>
               </div>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {events.map((evt, i) => (
-                  <motion.div key={evt.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 + i * 0.03 }}
-                    className="rounded-xl border border-neutral-900 bg-neutral-950/30 overflow-hidden flex flex-col"
+                  <motion.div key={evt.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 + i * 0.04 }}
+                    className="group rounded-xl bg-white overflow-hidden flex flex-col border border-neutral-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                   >
+                    {/* Color accent bar */}
+                    <div className="h-1 bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400" />
+
                     <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex flex-col items-center justify-center h-14 w-14 rounded-xl border border-neutral-800/60 bg-neutral-950/80 font-mono shrink-0 shadow-inner shadow-black/30">
-                            <span className="text-lg font-bold text-white leading-none">{evt.day}</span>
-                            <span className="text-[6px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{evt.month}</span>
+                      <div className="space-y-2.5">
+                        <div className="flex items-start gap-3">
+                          <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg bg-amber-50 border border-amber-200 font-mono shrink-0">
+                            <span className="text-base font-bold text-amber-800 leading-none">{evt.day}</span>
+                            <span className="text-[7px] font-bold text-amber-500 tracking-wider mt-0.5 uppercase leading-none">{evt.month}</span>
                           </div>
-                          <div className="space-y-1 min-w-0">
-                            <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[10px] font-mono uppercase font-bold border border-gold-800/20">
+                          <div className="space-y-1 min-w-0 flex-1">
+                            <span className="inline-block px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 text-[8px] font-bold uppercase tracking-wider border border-amber-200">
                               {evt.event_type || evt.type || 'Event'}
                             </span>
-                            <h4 className="text-sm font-bold text-white leading-tight truncate">{evt.title}</h4>
+                            <h4 className="text-sm font-semibold text-neutral-900 leading-snug line-clamp-2">{evt.title}</h4>
                           </div>
                         </div>
+
                         {evt.description && (
-                          <p className="text-[10px] text-neutral-500 leading-relaxed line-clamp-2">{evt.description}</p>
+                          <p className="text-xs text-neutral-500 leading-relaxed line-clamp-2">{evt.description}</p>
                         )}
-                        <div className="space-y-1 text-[10px] font-mono text-neutral-400">
-                          <p className="flex items-center gap-1.5"><Calendar className="h-3 w-3 text-neutral-500 shrink-0" /> {evt.month} {evt.day}, 2026</p>
-                          <p className="flex items-center gap-1.5"><Clock className="h-3 w-3 text-neutral-500 shrink-0" /> {evt.event_time || evt.time}</p>
-                          <p className="flex items-center gap-1.5"><MapPin className="h-3 w-3 text-neutral-500 shrink-0" /> {evt.location}</p>
+
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-neutral-400">
+                          <span className="flex items-center gap-1"><Calendar className="h-3 w-3 text-amber-500" /> {evt.month} {evt.day}</span>
+                          <span className="flex items-center gap-1"><Clock className="h-3 w-3 text-amber-500" /> {evt.event_time || evt.time}</span>
+                          <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-amber-500" /> {evt.location}</span>
                         </div>
                       </div>
+
                       <button onClick={() => startRegistration(evt)}
-                        className={`w-full mt-3 font-bold py-2.5 rounded-lg text-[11px] transition-all uppercase tracking-wider active:scale-[0.98] ${
+                        className={`w-full font-medium py-2 rounded-lg text-xs transition-all ${
                           membership?.status === 'active'
-                            ? 'bg-gold-500 hover:bg-gold-400 text-neutral-950'
-                            : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-400 border border-neutral-700'
+                            ? 'bg-amber-500 hover:bg-amber-600 text-white shadow-sm hover:shadow-md'
+                            : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-600'
                         }`}
                       >
-                        {membership?.status === 'active' ? 'Register Now' : '🔒 Membership Required'}
+                        {membership?.status === 'active' ? 'Register' : 'Members Only'}
                       </button>
                     </div>
                   </motion.div>

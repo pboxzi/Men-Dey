@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+﻿import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { User, Upload, Camera, Mail, Phone, MapPin, Globe, Film, BookOpen, Save, Loader2, Crown, CheckCircle2, Heart, Radio } from 'lucide-react';
 import { useAuth } from '../utils/AuthContext';
@@ -93,18 +93,18 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
 
   return (
     <div className="space-y-6 text-left">
-      <div className="space-y-1 border-b border-neutral-900 pb-4">
-        <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
+      <div className="space-y-1 border-b border-[rgba(0,0,0,0.06)] pb-4">
+        <h2 className="font-serif text-xl font-bold tracking-wider text-[#111] uppercase">
           Your Official Profile
         </h2>
-        <p className="text-xs text-neutral-500 font-mono">
+        <p className="text-xs text-[#444] font-mono">
           Maintain your active sanctuary biography, memberships, and achievements.
         </p>
       </div>
 
-      <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-6 md:p-8 max-w-2xl mx-auto space-y-6">
+      <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-6 md:p-8 max-w-2xl mx-auto space-y-6">
         {/* Avatar + Rank Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-neutral-900 pb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-[rgba(0,0,0,0.06)] pb-6">
           <div className="flex items-center gap-4">
             {/* Avatar */}
             <div
@@ -112,17 +112,17 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
               onDragLeave={() => setIsDragOver(false)}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className="relative h-20 w-20 rounded-full border-2 border-dashed border-neutral-800 hover:border-gold-500/50 transition-all cursor-pointer group flex items-center justify-center overflow-hidden shrink-0 bg-neutral-900"
+              className="relative h-20 w-20 rounded-full border-2 border-dashed border-[rgba(0,0,0,0.06)] hover:border-[#C89B3C]/50 transition-all cursor-pointer group flex items-center justify-center overflow-hidden shrink-0 bg-white"
             >
               <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
               {avatarUrl ? (
                 <img src={avatarUrl} alt="Avatar" loading="lazy" className="h-full w-full object-cover" />
               ) : (
-                <User className="h-8 w-8 text-neutral-600" />
+                <User className="h-8 w-8 text-[#444]" />
               )}
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 {uploadingAvatar ? (
-                  <Loader2 className="h-5 w-5 text-gold-500 animate-spin" />
+                  <Loader2 className="h-5 w-5 text-[#C89B3C] animate-spin" />
                 ) : (
                   <Camera className="h-5 w-5 text-white" />
                 )}
@@ -131,23 +131,23 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
 
             <div className="leading-tight text-left">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-base font-bold text-white">{authName}</h3>
+                <h3 className="text-base font-bold text-[#111]">{authName}</h3>
                 <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[11px] font-mono font-bold tracking-wider uppercase ${rank.badgeColor}`}>
                   <span>{rank.icon}</span>
                   <span>{rank.name}</span>
                 </span>
               </div>
-              <p className="text-[10px] text-neutral-500 font-mono mt-1">COUNTRY: {authCountry}</p>
+              <p className="text-[10px] text-[#444] font-mono mt-1">COUNTRY: {authCountry}</p>
             </div>
           </div>
 
           {/* Loyalty Progress */}
-          <div className="w-full md:w-64 space-y-2 bg-neutral-900/30 border border-neutral-900/50 p-3 rounded-xl text-left">
+          <div className="w-full md:w-64 space-y-2 bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/50 p-3 rounded-xl text-left">
             <div className="flex justify-between items-center text-[11px] font-mono">
-              <span className="text-neutral-500 uppercase tracking-widest font-semibold">CO-OP LOYALTY RANK</span>
-              <span className="text-gold-500 font-bold">{loyaltyPoints.toLocaleString()} PTS</span>
+              <span className="text-[#444] uppercase tracking-widest font-semibold">CO-OP LOYALTY RANK</span>
+              <span className="text-[#C89B3C] font-bold">{loyaltyPoints.toLocaleString()} PTS</span>
             </div>
-            <div className="relative w-full h-1.5 bg-neutral-900/80 rounded-full overflow-hidden border border-neutral-800/40">
+            <div className="relative w-full h-1.5 bg-white/80 rounded-full overflow-hidden border border-[rgba(0,0,0,0.06)]/40">
               <motion.div
                 className="absolute left-0 top-0 h-full bg-gradient-to-r from-amber-500 via-yellow-500 to-gold-400 rounded-full"
                 initial={{ width: 0 }}
@@ -155,66 +155,66 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
                 transition={{ duration: 0.8, ease: 'easeOut' }}
               />
             </div>
-            <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500 leading-tight">
+            <div className="flex justify-between items-center text-[10px] font-mono text-[#444] leading-tight">
               <span>{rank.min} PTS</span>
-              <span className="text-neutral-400 font-medium truncate max-w-[150px]">Next: {rank.next} ({rank.max} PTS)</span>
+              <span className="text-[#444] font-medium truncate max-w-[150px]">Next: {rank.next} ({rank.max} PTS)</span>
             </div>
           </div>
         </div>
 
         {/* Membership Card (if active) */}
         {membership?.status === 'active' && (
-          <div className="rounded-xl border border-gold-500/20 bg-gradient-to-br from-gold-500/[0.03] via-neutral-950 to-neutral-950 p-5 space-y-3">
+          <div className="rounded-xl border border-[#C89B3C]/20 bg-gradient-to-br from-gold-500/[0.03] via-neutral-50 to-white p-5 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Crown className="h-4 w-4 text-gold-500" />
-                <span className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Official Membership</span>
+                <Crown className="h-4 w-4 text-[#C89B3C]" />
+                <span className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">Official Membership</span>
               </div>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-green-500/20 bg-green-500/5 text-green-500 text-[10px] font-mono font-bold uppercase">Active</span>
             </div>
             <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-[11px]">
-              <div><span className="text-neutral-500 block text-[11px]">Tier</span><span className="text-white font-bold">{membership.tier_name}</span></div>
-              <div><span className="text-neutral-500 block text-[11px]">Member #</span><span className="text-white font-mono">{membership.membership_number || 'N/A'}</span></div>
-              <div><span className="text-neutral-500 block text-[11px]">Activated</span><span className="text-white">{membership.activation_date ? new Date(membership.activation_date).toLocaleDateString() : 'N/A'}</span></div>
-              <div><span className="text-neutral-500 block text-[11px]">Expires</span><span className="text-white">{membership.expiration_date ? new Date(membership.expiration_date).toLocaleDateString() : 'Never'}</span></div>
+              <div><span className="text-[#444] block text-[11px]">Tier</span><span className="text-white font-bold">{membership.tier_name}</span></div>
+              <div><span className="text-[#444] block text-[11px]">Member #</span><span className="text-[#333] font-mono">{membership.membership_number || 'N/A'}</span></div>
+              <div><span className="text-[#444] block text-[11px]">Activated</span><span className="text-[#111]">{membership.activation_date ? new Date(membership.activation_date).toLocaleDateString() : 'N/A'}</span></div>
+              <div><span className="text-[#444] block text-[11px]">Expires</span><span className="text-[#111]">{membership.expiration_date ? new Date(membership.expiration_date).toLocaleDateString() : 'Never'}</span></div>
             </div>
           </div>
         )}
 
         {/* Registration Details (read-only) */}
         {(profile?.city || profile?.how_heard_about || profile?.favorite_thing) && (
-          <div className="rounded-xl border border-neutral-900 bg-neutral-950 p-5 space-y-3">
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-5 space-y-3">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest">Registration Details</span>
-              <span className="text-[10px] font-mono text-neutral-600 bg-neutral-900 px-1.5 py-0.5 rounded">Admin only can edit</span>
+              <span className="text-[11px] font-mono text-[#444] uppercase tracking-widest">Registration Details</span>
+              <span className="text-[10px] font-mono text-[#444] bg-white px-1.5 py-0.5 rounded">Admin only can edit</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {profile?.city && (
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5">
-                    <MapPin className="h-3 w-3 text-gold-500" />
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase">City / State</span>
+                    <MapPin className="h-3 w-3 text-[#C89B3C]" />
+                    <span className="text-[10px] font-mono text-[#444] uppercase">City / State</span>
                   </div>
-                  <p className="text-xs text-white pl-4.5">{profile.city}</p>
+                  <p className="text-xs text-[#333] pl-4.5">{profile.city}</p>
                 </div>
               )}
               {profile?.how_heard_about && (
                 <div className="space-y-1">
                   <div className="flex items-center gap-1.5">
-                    <Radio className="h-3 w-3 text-gold-500" />
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase">Discovered Gillian Via</span>
+                    <Radio className="h-3 w-3 text-[#C89B3C]" />
+                    <span className="text-[10px] font-mono text-[#444] uppercase">Discovered Gillian Via</span>
                   </div>
-                  <p className="text-xs text-white pl-4.5">{profile.how_heard_about}</p>
+                  <p className="text-xs text-[#333] pl-4.5">{profile.how_heard_about}</p>
                 </div>
               )}
             </div>
             {profile?.favorite_thing && (
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5">
-                  <Heart className="h-3 w-3 text-gold-500" />
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase">What You Love About Gillian</span>
+                  <Heart className="h-3 w-3 text-[#C89B3C]" />
+                  <span className="text-[10px] font-mono text-[#444] uppercase">What You Love About Gillian</span>
                 </div>
-                <p className="text-xs text-white leading-relaxed pl-4.5">{profile.favorite_thing}</p>
+                <p className="text-xs text-[#333] leading-relaxed pl-4.5">{profile.favorite_thing}</p>
               </div>
             )}
           </div>
@@ -224,58 +224,58 @@ export default function ProfileSection({ authName, authEmail, authCountry, onAut
         <div className="space-y-5 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
-                <User className="h-3 w-3 text-gold-500" /> FULL NAME
+              <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider flex items-center gap-1.5">
+                <User className="h-3 w-3 text-[#C89B3C]" /> FULL NAME
               </label>
               <input type="text" value={authName} onChange={(e) => onAuthNameChange(e.target.value)}
-                className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2.5 text-white outline-none focus:border-gold-500/50 transition-colors" />
+                className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-3 py-2.5 text-[#111] outline-none focus:border-[#C89B3C]/50 transition-colors" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
-                <Mail className="h-3 w-3 text-gold-500" /> EMAIL ADDRESS
+              <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider flex items-center gap-1.5">
+                <Mail className="h-3 w-3 text-[#C89B3C]" /> EMAIL ADDRESS
               </label>
               <input type="email" value={authEmail} disabled
-                className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2.5 text-neutral-500 outline-none cursor-not-allowed" />
+                className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-3 py-2.5 text-[#444] outline-none cursor-not-allowed" />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
-                <Phone className="h-3 w-3 text-gold-500" /> PRIMARY CONTACT
+              <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider flex items-center gap-1.5">
+                <Phone className="h-3 w-3 text-[#C89B3C]" /> PRIMARY CONTACT
               </label>
               <input type="text" value={contact} onChange={(e) => setContact(e.target.value)} placeholder="Phone or messaging handle"
-                className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2.5 text-white outline-none focus:border-gold-500/50 transition-colors" />
+                className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-3 py-2.5 text-[#111] outline-none focus:border-[#C89B3C]/50 transition-colors" />
             </div>
             <div className="space-y-1.5">
-              <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
-                <MapPin className="h-3 w-3 text-gold-500" /> COUNTRY
+              <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider flex items-center gap-1.5">
+                <MapPin className="h-3 w-3 text-[#C89B3C]" /> COUNTRY
               </label>
               <select value={authCountry} onChange={(e) => onAuthCountryChange(e.target.value)}
-                className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2.5 text-white outline-none focus:border-gold-500/50 transition-colors appearance-none cursor-pointer">
+                className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-3 py-2.5 text-[#111] outline-none focus:border-[#C89B3C]/50 transition-colors appearance-none cursor-pointer">
                 {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
-              <Film className="h-3 w-3 text-gold-500" /> FAVORITE GILLIAN MOVIE / PROJECT
+            <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider flex items-center gap-1.5">
+              <Film className="h-3 w-3 text-[#C89B3C]" /> FAVORITE GILLIAN MOVIE / PROJECT
             </label>
             <input type="text" value={favoriteMovie} onChange={(e) => setFavoriteMovie(e.target.value)} placeholder="e.g. The X-Files, The Crown, Sex Education, etc."
-              className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2.5 text-white outline-none focus:border-gold-500/50 transition-colors" />
+              className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-3 py-2.5 text-[#111] outline-none focus:border-[#C89B3C]/50 transition-colors" />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
-              <BookOpen className="h-3 w-3 text-gold-500" /> BIOGRAPHY / STORY
+            <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider flex items-center gap-1.5">
+              <BookOpen className="h-3 w-3 text-[#C89B3C]" /> BIOGRAPHY / STORY
             </label>
             <textarea rows={4} value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Tell the Sanctuary community about yourself..."
-              className="w-full rounded border border-neutral-900 bg-neutral-900/40 px-3 py-2.5 text-white outline-none focus:border-gold-500/50 transition-colors resize-none leading-relaxed" />
+              className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-3 py-2.5 text-[#111] outline-none focus:border-[#C89B3C]/50 transition-colors resize-none leading-relaxed" />
           </div>
 
           <button onClick={handleSave} disabled={saving}
-            className="w-full sm:w-auto px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded text-xs uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-2.5 bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold rounded text-xs uppercase tracking-wider transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {saving ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Saving...</> : <><Save className="h-3.5 w-3.5" /> Save Profile Credentials</>}
           </button>

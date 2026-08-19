@@ -7,18 +7,21 @@
   --font-mono: "JetBrains Mono", monospace;
   --font-elegant: "Cormorant Garamond", Georgia, serif;
   
-  --color-gold-50: var(--gold-50, #faf6ef);
-  --color-gold-100: var(--gold-100, #f3e9d8);
-  --color-gold-200: var(--gold-200, #e7d2b2);
-  --color-gold-300: var(--gold-300, #d6b484);
-  --color-gold-400: var(--gold-400, #c5975d);
-  --color-gold-500: var(--gold-500, #dfba89);
-  --color-gold-600: var(--gold-600, #c5a880);
-  --color-gold-700: var(--gold-700, #9e815b);
-  --color-gold-800: var(--gold-800, #7c6446);
-  --color-gold-900: var(--gold-900, #554430);
+  --color-gold-50: var(--gold-50, #fdf8f0);
+  --color-gold-100: var(--gold-100, #f5e6cc);
+  --color-gold-200: var(--gold-200, #e8c99a);
+  --color-gold-300: var(--gold-300, #d4a85c);
+  --color-gold-400: var(--gold-400, #c4943e);
+  --color-gold-500: var(--gold-500, #C89B3C);
+  --color-gold-600: var(--gold-600, #A97828);
+  --color-gold-700: var(--gold-700, #806015);
+  --color-gold-800: var(--gold-800, #604818);
+  --color-gold-900: var(--gold-900, #403010);
 
   --animate-swing: swing 1.5s ease-in-out infinite;
+  --animate-fade-in: fadeIn 0.6s ease-out forwards;
+  --animate-fade-up: fadeUp 0.7s ease-out forwards;
+  --animate-lift: lift 0.4s ease-out forwards;
 
   @keyframes swing {
     0%, 100% { transform: rotate(0deg); }
@@ -32,13 +35,46 @@
     0% { transform: translateX(-100%); }
     100% { transform: translateX(200%); }
   }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes lift {
+    from { transform: translateY(0); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    to { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   LUXURY LIGHT THEME
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --bg-primary: #FCFAF7;
+  --bg-alt: #F8F6F2;
+  --text-primary: #1E1E1E;
+  --text-secondary: #666666;
+  --accent-gold: #C89B3C;
+  --accent-hover: #A97828;
+  --soft-beige: #EFE7DA;
+  --color-error: #D9534F;
+  --color-success: #2E8B57;
 }
 
 body {
-  background-color: #050505;
-  color: #f5f5f5;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-family: var(--font-sans);
   overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -46,145 +82,111 @@ body {
   overflow-x: clip;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* ── Utility: Luxury surfaces ── */
+.surface-primary { background-color: var(--bg-primary); }
+.surface-alt { background-color: var(--bg-alt); }
+.surface-card { background: #ffffff; border-radius: 16px; }
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-accent { color: var(--accent-gold); }
+.border-soft { border-color: rgba(0,0,0,0.06); }
+
+/* ── Dark theme overrides removed for light luxury theme ── */
+
+/* ── Dark backgrounds → luxury white ── */
+/* Intentionally left empty — sections use inline styling */
+
+/* ── Luxury card hover lift ── */
+.card-lift {
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
-::-webkit-scrollbar-track {
-  background: #0d0d0d;
-}
-::-webkit-scrollbar-thumb {
-  background: #262626;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--gold-500, #dfba89);
+.card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px -12px rgba(0,0,0,0.08);
 }
 
-/* Hide scrollbar utility */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+/* ── Image zoom on hover ── */
+.img-zoom {
+  overflow: hidden;
+  border-radius: 20px;
 }
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.img-zoom img {
+  transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
 }
-
-/* Touch devices: remove grayscale so images show in color */
-@media (hover: none) {
-  .grayscale {
-    filter: none !important;
-  }
+.img-zoom:hover img {
+  transform: scale(1.04);
 }
 
-/* Google Translate Widget Styling */
-#google_translate_element {
-  background: rgba(5, 5, 5, 0.9);
-  border: 1px solid rgba(223, 186, 137, 0.3);
-  border-radius: 8px;
-  padding: 4px 8px;
-  backdrop-filter: blur(10px);
+/* ── Luxury section spacing ── */
+.section-luxury {
+  padding-top: 100px;
+  padding-bottom: 100px;
 }
-
-#google_translate_element .goog-te-gadget {
-  font-family: 'Inter', system-ui, sans-serif !important;
-  font-size: 11px !important;
-}
-
-#google_translate_element .goog-te-gadget-simple {
-  border: none !important;
-  background: transparent !important;
-}
-
-#google_translate_element .goog-te-gadget-simple .goog-te-menu-value {
-  color: #dfba89 !important;
-  font-family: 'JetBrains Mono', monospace !important;
-  font-size: 10px !important;
-  letter-spacing: 0.05em !important;
-}
-
-#google_translate_element .goog-te-gadget-simple .goog-te-menu-value:hover {
-  color: #fff !important;
-}
-
-#google_translate_element .goog-te-gadget-simple .goog-te-menu-value span {
-  color: inherit !important;
-}
-
-/* Hide "Powered by Google" text */
-#google_translate_element .goog-te-gadget > span {
-  display: none !important;
-}
-
-/* Style the dropdown */
-#google_translate_element select.goog-te-combo {
-  background: #0a0a0a !important;
-  color: #dfba89 !important;
-  border: 1px solid rgba(223, 186, 137, 0.3) !important;
-  border-radius: 4px !important;
-  padding: 2px 4px !important;
-  font-family: 'JetBrains Mono', monospace !important;
-  font-size: 10px !important;
-  cursor: pointer !important;
-}
-
-#google_translate_element select.goog-te-combo:hover {
-  border-color: #dfba89 !important;
-}
-
-/* Scroll Reveal — CSS animation-timeline: view() */
-@media (prefers-reduced-motion: no-preference) {
-  .scroll-reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    animation: revealUp linear forwards;
-    animation-timeline: view();
-    animation-range: cover 0% cover 25%;
-  }
-
-  @keyframes revealUp {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .scroll-line {
-    width: 0;
-    animation: lineGrow linear forwards;
-    animation-timeline: view();
-    animation-range: cover 0% cover 25%;
-  }
-
-  @keyframes lineGrow {
-    to { width: 100%; }
-  }
-}
-
-/* Mobile: smaller widget */
 @media (max-width: 640px) {
-  #google_translate_element {
-    top: 8px;
-    right: 8px;
-    padding: 2px 6px;
-  }
-  #google_translate_element .goog-te-gadget {
-    font-size: 9px !important;
-  }
-  #google_translate_element select.goog-te-combo {
-    font-size: 9px !important;
+  .section-luxury {
+    padding-top: 64px;
+    padding-bottom: 64px;
   }
 }
 
-/* Crisp Chat Widget Fix */
-#crisp-chatbox {
-  max-height: 500px !important;
-  bottom: 80px !important;
+/* ── Editorial heading style ── */
+.heading-editorial {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text-primary);
 }
 
-#crisp-chatbox iframe {
-  max-height: 500px !important;
-  height: 500px !important;
+/* ── Subtle divider ── */
+.divider-luxury {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,155,60,0.2), transparent);
 }
 
+/* ── Scrollbar — refined ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-gold); }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Touch: smooth scrolling ── */
+@media (hover: none) {
+  .grayscale { filter: none !important; }
+}
+
+/* ── Google Translate Widget — luxury ── */
+#google_translate_element {
+  background: rgba(252,250,247,0.95);
+  border: 1px solid rgba(200,155,60,0.15);
+  border-radius: 12px;
+  padding: 4px 8px;
+  backdrop-filter: blur(12px);
+}
+#google_translate_element .goog-te-gadget { font-family: 'Inter', system-ui, sans-serif !important; font-size: 11px !important; }
+#google_translate_element .goog-te-gadget-simple { border: none !important; background: transparent !important; }
+#google_translate_element .goog-te-gadget-simple .goog-te-menu-value { color: var(--accent-gold) !important; font-family: 'JetBrains Mono', monospace !important; font-size: 10px !important; letter-spacing: 0.05em !important; }
+#google_translate_element .goog-te-gadget-simple .goog-te-menu-value:hover { color: var(--text-primary) !important; }
+#google_translate_element .goog-te-gadget-simple .goog-te-menu-value span { color: inherit !important; }
+#google_translate_element .goog-te-gadget > span { display: none !important; }
+#google_translate_element select.goog-te-combo { background: var(--bg-alt) !important; color: var(--accent-gold) !important; border: 1px solid rgba(200,155,60,0.15) !important; border-radius: 6px !important; padding: 2px 4px !important; font-family: 'JetBrains Mono', monospace !important; font-size: 10px !important; cursor: pointer !important; }
+#google_translate_element select.goog-te-combo:hover { border-color: var(--accent-gold) !important; }
+
+/* ── Scroll Reveal ── */
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-reveal { opacity: 0; transform: translateY(30px); animation: revealUp linear forwards; animation-timeline: view(); animation-range: entry 0% cover 40%; }
+  @keyframes revealUp { to { opacity: 1; transform: translateY(0); } }
+  .scroll-line { width: 0; animation: lineGrow linear forwards; animation-timeline: view(); animation-range: cover 0% cover 25%; }
+  @keyframes lineGrow { to { width: 100%; } }
+}
+
+@media (max-width: 640px) {
+  #google_translate_element { top: 8px; right: 8px; padding: 2px 6px; }
+  #google_translate_element .goog-te-gadget { font-size: 9px !important; }
+  #google_translate_element select.goog-te-combo { font-size: 9px !important; }
+}
+
+#crisp-chatbox { max-height: 500px !important; bottom: 80px !important; }
+#crisp-chatbox iframe { max-height: 500px !important; height: 500px !important; }

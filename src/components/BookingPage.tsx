@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Experience, ExperienceBooking } from '../types';
@@ -119,23 +119,23 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center space-y-4 max-w-sm mx-auto px-4">
-          <div className="h-16 w-16 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto">
-            <Lock className="h-7 w-7 text-gold-500" />
+          <div className="h-16 w-16 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center mx-auto">
+            <Lock className="h-7 w-7 text-[#C89B3C]" />
           </div>
-          <h2 className="font-serif text-xl font-bold text-white">Sign In Required</h2>
-          <p className="text-xs text-neutral-400 leading-relaxed">
+          <h2 className="font-serif text-xl font-bold text-[#111]">Sign In Required</h2>
+          <p className="text-xs text-[#444] leading-relaxed">
             You need to be signed in to book this experience. Your details will be auto-filled from your profile.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={() => navigate('/portal?mode=login')}
-              className="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
+              className="px-6 py-2.5 bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
             >
               Sign In
             </button>
             <button
               onClick={onBack}
-              className="px-6 py-2.5 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
+              className="px-6 py-2.5 border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-neutral-900 hover:border-neutral-400 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
             >
               Go Back
             </button>
@@ -286,7 +286,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
     label: string; field: keyof FormData; type?: string; required?: boolean; placeholder?: string;
   }) => (
     <div className="space-y-1.5">
-      <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">
+      <label className="text-[10px] font-mono tracking-wider text-[#444] uppercase font-semibold">
         {label} {required && '*'}
       </label>
       <input
@@ -295,8 +295,8 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
         placeholder={placeholder}
         value={form[field] as string}
         onChange={(e) => updateForm(field, e.target.value)}
-        className={`w-full bg-neutral-900 border rounded-lg px-3.5 py-2.5 text-white text-xs outline-none transition-colors ${
-          errors[field] ? 'border-red-500/50 focus:border-red-500' : 'border-neutral-800 focus:border-gold-500/40'
+        className={`w-full bg-white border rounded-lg px-3.5 py-2.5 text-neutral-900 text-xs outline-none transition-colors ${
+          errors[field] ? 'border-red-500/50 focus:border-red-500' : 'border-[rgba(0,0,0,0.06)] focus:border-[#C89B3C]/40'
         }`}
       />
       {errors[field] && (
@@ -311,8 +311,8 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="h-8 w-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs text-neutral-500 font-mono">Preparing your booking experience...</p>
+          <div className="h-8 w-8 border-2 border-[#C89B3C] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs text-[#444] font-mono">Preparing your booking experience...</p>
         </div>
       </div>
     );
@@ -322,8 +322,8 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
         <div className="text-center space-y-4">
-          <p className="text-sm text-neutral-500">Experience not found</p>
-          <button onClick={onBack} className="text-xs text-gold-500 hover:text-gold-400 font-mono">Go back</button>
+          <p className="text-sm text-[#444]">Experience not found</p>
+          <button onClick={onBack} className="text-xs text-[#C89B3C] hover:text-gold-400 font-mono">Go back</button>
         </div>
       </div>
     );
@@ -339,11 +339,11 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
           <div className="h-16 w-16 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto">
             <Heart className="h-8 w-8 text-amber-500" />
           </div>
-          <h2 className="font-serif text-2xl font-bold text-white">All Booked for Now</h2>
-          <p className="text-xs text-neutral-400 leading-relaxed">
+          <h2 className="font-serif text-2xl font-bold text-[#111]">All Booked for Now</h2>
+          <p className="text-xs text-[#444] leading-relaxed">
             This beautiful experience has no available spots at the moment. But don't lose heart — more moments with Gillian are always being crafted. Check back soon.
           </p>
-          <button onClick={onBack} className="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all">
+          <button onClick={onBack} className="px-6 py-2.5 bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all">
             Browse Other Experiences
           </button>
         </div>
@@ -354,7 +354,7 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
   return (
     <div className="space-y-8">
       {/* Back */}
-      <button onClick={onBack} className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase text-neutral-500 hover:text-gold-500 transition-colors group">
+      <button onClick={onBack} className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase text-[#444] hover:text-[#C89B3C] transition-colors group">
         <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
         Back to Experiences
       </button>
@@ -362,29 +362,29 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
       {success ? (
         /* ─── SUCCESS STATE — CELEBRATION ─── */
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-8">
-          <div className="relative rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/[0.03] via-neutral-950 to-neutral-950 p-8 md:p-12 text-center space-y-6 overflow-hidden">
+          <div className="relative rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/[0.03] via-neutral-50 to-white p-8 md:p-12 text-center space-y-6 overflow-hidden">
             <div className="absolute -top-20 -right-20 h-40 w-40 rounded-full bg-emerald-500/5 blur-[60px]" />
-            <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-gold-500/5 blur-[60px]" />
+            <div className="absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-[#C89B3C]/5 blur-[60px]" />
 
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring', stiffness: 200 }} className="h-20 w-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto">
               <CheckCircle className="h-10 w-10 text-emerald-500" />
             </motion.div>
 
             <div className="space-y-2 relative">
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-white">Your Journey Begins! ✨</h2>
-              <p className="text-sm text-neutral-300 max-w-lg mx-auto leading-relaxed">
-                You've taken the first step toward an unforgettable moment with Gillian. Your request for <span className="text-gold-500 font-semibold">{exp.title}</span> has been received with joy.
+              <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#111]">Your Journey Begins! ✨</h2>
+              <p className="text-sm text-[#444] max-w-lg mx-auto leading-relaxed">
+                You've taken the first step toward an unforgettable moment with Gillian. Your request for <span className="text-[#C89B3C] font-semibold">{exp.title}</span> has been received with joy.
               </p>
             </div>
 
             {bookingRef && (
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-500/5 border border-gold-500/10 text-[10px] font-mono text-gold-500">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C89B3C]/5 border border-[#C89B3C]/10 text-[10px] font-mono text-[#C89B3C]">
                 <Gift className="h-3 w-3" /> Reference: {bookingRef}
               </div>
             )}
 
-            <div className="bg-neutral-900/50 border border-neutral-900 rounded-xl p-5 text-left space-y-3 max-w-lg mx-auto">
-              <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">What happens next</p>
+            <div className="bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-xl p-5 text-left space-y-3 max-w-lg mx-auto">
+              <p className="text-[10px] font-mono text-[#444] uppercase tracking-wider">What happens next</p>
               <ul className="space-y-3">
                 {[
                   { icon: Send, text: 'Send the pre-filled message in your WhatsApp or email to confirm' },
@@ -392,8 +392,8 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                   { icon: MessageCircle, text: 'You\'ll be contacted via your chosen method' },
                   { icon: Star, text: 'Track everything in "My Bookings" from your portal' },
                 ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2.5 text-[11px] text-neutral-400">
-                    <item.icon className="h-3.5 w-3.5 text-gold-500 shrink-0 mt-0.5" />
+                  <li key={i} className="flex items-start gap-2.5 text-[11px] text-[#444]">
+                    <item.icon className="h-3.5 w-3.5 text-[#C89B3C] shrink-0 mt-0.5" />
                     {item.text}
                   </li>
                 ))}
@@ -401,12 +401,12 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <button onClick={onBack} className="px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all">
+              <button onClick={onBack} className="px-6 py-2.5 bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all">
                 Browse More Experiences
               </button>
               <button
                 onClick={() => navigate('/portal')}
-                className="px-6 py-2.5 border border-gold-500/30 hover:border-gold-500/60 text-gold-500 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
+                className="px-6 py-2.5 border border-[#C89B3C]/30 hover:border-[#C89B3C]/60 text-[#C89B3C] font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
               >
                 Track in My Bookings
               </button>
@@ -416,9 +416,9 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
       ) : (
         <>
           {/* ─── HERO — EXPERIENCE PREVIEW ─── */}
-          <div className="relative rounded-2xl overflow-hidden border border-neutral-900 h-48 md:h-56">
-            <div className="absolute inset-0 bg-neutral-900/80 flex items-center justify-center">
-              <Star className="h-12 w-12 text-neutral-700" />
+          <div className="relative rounded-2xl overflow-hidden border border-[rgba(0,0,0,0.06)] h-48 md:h-56">
+            <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+              <Star className="h-12 w-12 text-[#444]" />
             </div>
             {exp.image && (
               <img src={exp.image} alt={exp?.title || "Experience"} loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-40" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
@@ -426,13 +426,13 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
             <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/60 to-transparent" />
             <div className="absolute inset-0 p-5 md:p-7 flex flex-col justify-center">
               <div className="space-y-2 max-w-2xl">
-                <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
-                  <Sparkles className="h-3 w-3 text-gold-500" />
+                <div className="flex items-center gap-2 text-[10px] font-mono text-[#444] uppercase tracking-wider">
+                  <Sparkles className="h-3 w-3 text-[#C89B3C]" />
                   {exp.category}
                 </div>
-                <h1 className="font-serif text-xl md:text-3xl font-bold text-white">{exp.title}</h1>
-                <p className="text-[11px] text-neutral-400 leading-relaxed max-w-xl line-clamp-2">{exp.short_description || exp.description}</p>
-                <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500 pt-1">
+                <h1 className="font-serif text-xl md:text-3xl font-bold text-[#111]">{exp.title}</h1>
+                <p className="text-[11px] text-[#444] leading-relaxed max-w-xl line-clamp-2">{exp.short_description || exp.description}</p>
+                <div className="flex items-center gap-3 text-[11px] font-mono text-[#444] pt-1">
                   <span className="flex items-center gap-1"><MapPin className="h-2.5 w-2.5" />{exp.location}</span>
                   <span className="flex items-center gap-1"><Clock className="h-2.5 w-2.5" />{exp.duration}</span>
                   <span className="flex items-center gap-1"><Users className="h-2.5 w-2.5" />{spotsLeft} spots left</span>
@@ -443,15 +443,15 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
 
           {/* ─── JOYFUL INVITATION ─── */}
           <div className="text-center space-y-2 pb-2">
-            <p className="text-xs text-gold-500 font-mono italic tracking-wide">{joyfulMessage}</p>
-            <p className="text-[10px] text-neutral-500 font-mono">
-              You're booking: <span className="text-white font-bold">{exp.price}</span>
+            <p className="text-xs text-[#C89B3C] font-mono italic tracking-wide">{joyfulMessage}</p>
+            <p className="text-[10px] text-[#444] font-mono">
+              You're booking: <span className="text-[#111] font-bold">{exp.price}</span>
             </p>
           </div>
 
           <div className="max-w-3xl mx-auto space-y-6">
             {/* ─── STEP INDICATOR ─── */}
-            <div className="bg-neutral-950/40 border border-neutral-900 rounded-xl p-3">
+            <div className="bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-xl p-3">
               <div className="flex items-center gap-1">
                 {STEPS.map((s, i) => {
                   const Icon = s.icon;
@@ -460,14 +460,14 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                   return (
                     <React.Fragment key={s.id}>
                       <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-mono uppercase tracking-wider transition-all ${
-                        isActive ? 'bg-gold-500 text-neutral-950 font-bold' :
-                        isDone ? 'text-gold-500' : 'text-neutral-600'
+                        isActive ? 'bg-[#C89B3C] text-neutral-950 font-bold' :
+                        isDone ? 'text-[#C89B3C]' : 'text-[#444]'
                       }`}>
                         {isDone ? <CheckCircle className="h-3 w-3" /> : <Icon className="h-3 w-3" />}
                         <span className="hidden sm:inline">{s.label}</span>
                       </div>
                       {i < STEPS.length - 1 && (
-                        <div className={`h-[1px] flex-1 ${isDone ? 'bg-gold-500/30' : 'bg-neutral-900'}`} />
+                        <div className={`h-[1px] flex-1 ${isDone ? 'bg-[#C89B3C]/30' : 'bg-white'}`} />
                       )}
                     </React.Fragment>
                   );
@@ -476,37 +476,37 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
             </div>
 
             {/* ─── FORM BODY ─── */}
-            <div className="bg-neutral-950/40 border border-neutral-900 rounded-xl p-5 md:p-7">
+            <div className="bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-xl p-5 md:p-7">
               <AnimatePresence mode="wait">
                 {step === 1 && (
                   <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                    <div className="flex items-center gap-2 pb-1 border-b border-neutral-900/60">
-                      <Calendar className="h-4 w-4 text-gold-500" />
-                      <h4 className="text-[10px] font-mono text-neutral-300 tracking-wider uppercase font-semibold">When & Who</h4>
+                    <div className="flex items-center gap-2 pb-1 border-b border-[rgba(0,0,0,0.06)]/60">
+                      <Calendar className="h-4 w-4 text-[#C89B3C]" />
+                      <h4 className="text-[10px] font-mono text-[#444] tracking-wider uppercase font-semibold">When & Who</h4>
                     </div>
 
                     {/* Personal Info */}
-                    <div className="p-4 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-2">
-                      <div className="flex items-center gap-2 text-[11px] font-mono text-gold-500 uppercase tracking-wider">
+                    <div className="p-4 bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 rounded-xl space-y-2">
+                      <div className="flex items-center gap-2 text-[11px] font-mono text-[#C89B3C] uppercase tracking-wider">
                         <Heart className="h-3 w-3" /> Your Details
                       </div>
                       <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px]">
-                        <span className="text-neutral-500">Name</span><span className="text-white font-medium">{personalInfo.fullName || '—'}</span>
-                        <span className="text-neutral-500">Email</span><span className="text-white font-medium">{personalInfo.email || '—'}</span>
-                        <span className="text-neutral-500">Phone</span><span className="text-white font-medium">{personalInfo.phone || 'Not provided'}</span>
-                        <span className="text-neutral-500">Country</span><span className="text-white font-medium">{personalInfo.country}</span>
+                        <span className="text-[#444]">Name</span><span className="text-[#333] font-medium">{personalInfo.fullName || '—'}</span>
+                        <span className="text-[#444]">Email</span><span className="text-[#333] font-medium">{personalInfo.email || '—'}</span>
+                        <span className="text-[#444]">Phone</span><span className="text-[#333] font-medium">{personalInfo.phone || 'Not provided'}</span>
+                        <span className="text-[#444]">Country</span><span className="text-[#333] font-medium">{personalInfo.country}</span>
                       </div>
                     </div>
 
                     {/* Experience Summary */}
-                    <div className="p-4 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-2">
-                      <div className="flex items-center gap-2 text-[11px] font-mono text-gold-500 uppercase tracking-wider">
+                    <div className="p-4 bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 rounded-xl space-y-2">
+                      <div className="flex items-center gap-2 text-[11px] font-mono text-[#C89B3C] uppercase tracking-wider">
                         <Star className="h-3 w-3" /> Your Selection
                       </div>
                       <div className="space-y-1.5 text-[11px]">
-                        <div className="flex justify-between"><span className="text-neutral-500">Experience</span><span className="text-white font-bold">{exp.title}</span></div>
-                        <div className="flex justify-between"><span className="text-neutral-500">Category</span><span className="text-neutral-300">{exp.category}</span></div>
-                        <div className="flex justify-between"><span className="text-neutral-500">Investment</span><span className="text-gold-500 font-bold">{exp.price}</span></div>
+                        <div className="flex justify-between"><span className="text-[#444]">Experience</span><span className="text-[#111] font-bold">{exp.title}</span></div>
+                        <div className="flex justify-between"><span className="text-[#444]">Category</span><span className="text-[#444]">{exp.category}</span></div>
+                        <div className="flex justify-between"><span className="text-[#444]">Investment</span><span className="text-[#C89B3C] font-bold">{exp.price}</span></div>
                       </div>
                     </div>
 
@@ -516,29 +516,29 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">Number of Guests *</label>
+                      <label className="text-[10px] font-mono tracking-wider text-[#444] uppercase font-semibold">Number of Guests *</label>
                       <input type="number" min={1} max={exp.max_guests} value={form.participants}
                         onChange={(e) => updateForm('participants', parseInt(e.target.value) || 1)}
-                        className={`w-full bg-neutral-900 border rounded-lg px-3.5 py-2.5 text-white text-xs outline-none transition-colors ${errors.participants ? 'border-red-500/50' : 'border-neutral-800 focus:border-gold-500/40'}`}
+                        className={`w-full bg-white border rounded-lg px-3.5 py-2.5 text-neutral-900 text-xs outline-none transition-colors ${errors.participants ? 'border-red-500/50' : 'border-[rgba(0,0,0,0.06)] focus:border-[#C89B3C]/40'}`}
                       />
-                      <p className="text-[11px] text-neutral-600 font-mono">{spotsLeft} spots available (max {exp.max_guests})</p>
+                      <p className="text-[11px] text-[#444] font-mono">{spotsLeft} spots available (max {exp.max_guests})</p>
                       {errors.participants && <p className="text-[11px] text-red-400 flex items-center gap-1"><AlertCircle className="h-2.5 w-2.5" /> {errors.participants}</p>}
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-mono tracking-wider text-neutral-400 uppercase font-semibold">Special Wishes (optional)</label>
+                      <label className="text-[10px] font-mono tracking-wider text-[#444] uppercase font-semibold">Special Wishes (optional)</label>
                       <textarea rows={3} placeholder="Dietary needs, accessibility, a song request... anything that would make this moment perfect."
                         value={form.specialRequests} onChange={(e) => updateForm('specialRequests', e.target.value)}
-                        className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3.5 py-2.5 text-white text-xs outline-none focus:border-gold-500/40 resize-none leading-relaxed" />
+                        className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3.5 py-2.5 text-neutral-900 text-xs outline-none focus:border-[#C89B3C]/40 resize-none leading-relaxed" />
                     </div>
                   </motion.div>
                 )}
 
                 {step === 2 && (
                   <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                    <div className="flex items-center gap-2 pb-1 border-b border-neutral-900/60">
-                      <MessageCircle className="h-4 w-4 text-gold-500" />
-                      <h4 className="text-[10px] font-mono text-neutral-300 tracking-wider uppercase font-semibold">How should we reach you?</h4>
+                    <div className="flex items-center gap-2 pb-1 border-b border-[rgba(0,0,0,0.06)]/60">
+                      <MessageCircle className="h-4 w-4 text-[#C89B3C]" />
+                      <h4 className="text-[10px] font-mono text-[#444] tracking-wider uppercase font-semibold">How should we reach you?</h4>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -546,14 +546,14 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                         {
                           id: 'whatsapp' as const, label: 'WhatsApp', icon: MessageCircle,
                           color: 'text-emerald-400',
-                          border: form.communicationMethod === 'whatsapp' ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-neutral-800 hover:border-neutral-700',
+                          border: form.communicationMethod === 'whatsapp' ? 'border-emerald-500/40 bg-emerald-500/5' : 'border-[rgba(0,0,0,0.06)] hover:border-neutral-700',
                           desc: 'Fast & friendly — chat directly with the team.',
                           detail: 'Quick and warm, just like a conversation with an old friend.',
                         },
                         {
                           id: 'email' as const, label: 'Email', icon: Mail,
                           color: 'text-blue-400',
-                          border: form.communicationMethod === 'email' ? 'border-blue-500/40 bg-blue-500/5' : 'border-neutral-800 hover:border-neutral-700',
+                          border: form.communicationMethod === 'email' ? 'border-blue-500/40 bg-blue-500/5' : 'border-[rgba(0,0,0,0.06)] hover:border-neutral-700',
                           desc: 'Elegant and thorough — everything in writing.',
                           detail: 'Perfect for keeping a beautiful paper trail of your journey.',
                         },
@@ -562,8 +562,8 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                           className={`p-5 rounded-xl border text-left transition-all space-y-3 ${method.border}`}>
                           <method.icon className={`h-7 w-7 ${method.color}`} />
                           <div>
-                            <h5 className="text-sm font-bold text-white">{method.label}</h5>
-                            <p className="text-[10px] text-neutral-400 mt-1">{method.detail}</p>
+                            <h5 className="text-sm font-bold text-[#111]">{method.label}</h5>
+                            <p className="text-[10px] text-[#444] mt-1">{method.detail}</p>
                           </div>
                           {form.communicationMethod === method.id && (
                             <div className="flex items-center gap-1 text-[11px] font-mono text-emerald-400">
@@ -578,8 +578,8 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
                       <p className="text-[11px] text-red-400 flex items-center gap-1"><AlertCircle className="h-2.5 w-2.5" /> {errors.communicationMethod}</p>
                     )}
 
-                    <div className="p-4 bg-gold-500/[0.02] border border-gold-500/10 rounded-xl flex items-start gap-3 text-[10px] text-neutral-400 leading-relaxed">
-                      <Sun className="h-4 w-4 text-gold-500 shrink-0 mt-0.5" />
+                    <div className="p-4 bg-[#C89B3C]/[0.02] border border-[#C89B3C]/10 rounded-xl flex items-start gap-3 text-[10px] text-[#444] leading-relaxed">
+                      <Sun className="h-4 w-4 text-[#C89B3C] shrink-0 mt-0.5" />
                       <span>After you submit, your {form.communicationMethod === 'whatsapp' ? 'WhatsApp' : 'email'} will open with a lovely pre-written message. Just hit send — we'll take it from there. No chasing, no fuss.</span>
                     </div>
                   </motion.div>
@@ -587,59 +587,59 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
 
                 {step === 3 && (
                   <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-5">
-                    <div className="flex items-center gap-2 pb-1 border-b border-neutral-900/60">
-                      <CheckCircle className="h-4 w-4 text-gold-500" />
-                      <h4 className="text-[10px] font-mono text-neutral-300 tracking-wider uppercase font-semibold">One last look — then off you go!</h4>
+                    <div className="flex items-center gap-2 pb-1 border-b border-[rgba(0,0,0,0.06)]/60">
+                      <CheckCircle className="h-4 w-4 text-[#C89B3C]" />
+                      <h4 className="text-[10px] font-mono text-[#444] tracking-wider uppercase font-semibold">One last look — then off you go!</h4>
                     </div>
 
-                    <div className="p-4 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-3">
+                    <div className="p-4 bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 rounded-xl space-y-3">
                       <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center overflow-hidden shrink-0">
-                          {exp.image ? <img src={exp.image} alt={exp?.title || "Experience"} loading="lazy" className="h-full w-full object-cover" /> : <Star className="h-5 w-5 text-gold-500" />}
+                        <div className="h-12 w-12 rounded-lg bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center overflow-hidden shrink-0">
+                          {exp.image ? <img src={exp.image} alt={exp?.title || "Experience"} loading="lazy" className="h-full w-full object-cover" /> : <Star className="h-5 w-5 text-[#C89B3C]" />}
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-white">{exp.title}</p>
-                          <p className="text-[10px] text-neutral-500">{exp.category} — {exp.location}</p>
+                          <p className="text-sm font-bold text-[#111]">{exp.title}</p>
+                          <p className="text-[10px] text-[#444]">{exp.category} — {exp.location}</p>
                         </div>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="p-3 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-2">
-                        <h5 className="text-[10px] font-mono text-gold-500 uppercase tracking-wider font-bold">You</h5>
+                      <div className="p-3 bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 rounded-xl space-y-2">
+                        <h5 className="text-[10px] font-mono text-[#C89B3C] uppercase tracking-wider font-bold">You</h5>
                         <div className="space-y-1 text-[11px]">
-                          <p><span className="text-neutral-500">Name</span> <span className="text-white ml-2">{personalInfo.fullName}</span></p>
-                          <p><span className="text-neutral-500">Email</span> <span className="text-white ml-2">{personalInfo.email}</span></p>
-                          <p><span className="text-neutral-500">Phone</span> <span className="text-white ml-2">{personalInfo.phone || '—'}</span></p>
+                          <p><span className="text-[#444]">Name</span> <span className="text-[#111] ml-2">{personalInfo.fullName}</span></p>
+                          <p><span className="text-[#444]">Email</span> <span className="text-[#111] ml-2">{personalInfo.email}</span></p>
+                          <p><span className="text-[#444]">Phone</span> <span className="text-[#111] ml-2">{personalInfo.phone || '—'}</span></p>
                         </div>
                       </div>
-                      <div className="p-3 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-2">
-                        <h5 className="text-[10px] font-mono text-gold-500 uppercase tracking-wider font-bold">When</h5>
+                      <div className="p-3 bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 rounded-xl space-y-2">
+                        <h5 className="text-[10px] font-mono text-[#C89B3C] uppercase tracking-wider font-bold">When</h5>
                         <div className="space-y-1 text-[11px]">
-                          <p><span className="text-neutral-500">Date</span> <span className="text-white ml-2">{form.preferredDate}</span></p>
-                          <p><span className="text-neutral-500">Time</span> <span className="text-white ml-2">{form.preferredTime}</span></p>
-                          <p><span className="text-neutral-500">Guests</span> <span className="text-white ml-2">{form.participants}</span></p>
+                          <p><span className="text-[#444]">Date</span> <span className="text-[#111] ml-2">{form.preferredDate}</span></p>
+                          <p><span className="text-[#444]">Time</span> <span className="text-[#111] ml-2">{form.preferredTime}</span></p>
+                          <p><span className="text-[#444]">Guests</span> <span className="text-[#111] ml-2">{form.participants}</span></p>
                         </div>
                       </div>
                     </div>
 
                     {form.specialRequests && (
-                      <div className="p-3 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-1">
-                        <h5 className="text-[10px] font-mono text-gold-500 uppercase tracking-wider">Special Wishes</h5>
-                        <p className="text-[11px] text-neutral-300">{form.specialRequests}</p>
+                      <div className="p-3 bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 rounded-xl space-y-1">
+                        <h5 className="text-[10px] font-mono text-[#C89B3C] uppercase tracking-wider">Special Wishes</h5>
+                        <p className="text-[11px] text-[#444]">{form.specialRequests}</p>
                       </div>
                     )}
 
-                    <div className="p-3 bg-neutral-900/30 border border-neutral-900/60 rounded-xl space-y-1">
-                      <h5 className="text-[10px] font-mono text-gold-500 uppercase tracking-wider">Contact Via</h5>
+                    <div className="p-3 bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 rounded-xl space-y-1">
+                      <h5 className="text-[10px] font-mono text-[#C89B3C] uppercase tracking-wider">Contact Via</h5>
                       <div className="flex items-center gap-2 text-[11px]">
                         {form.communicationMethod === 'whatsapp' ? <MessageCircle className="h-4 w-4 text-emerald-400" /> : <Mail className="h-4 w-4 text-blue-400" />}
-                        <span className="text-white capitalize">{form.communicationMethod}</span>
+                        <span className="text-[#111] capitalize">{form.communicationMethod}</span>
                       </div>
                     </div>
 
-                    <div className="p-4 bg-gold-500/[0.02] border border-gold-500/10 rounded-xl flex items-start gap-3 text-[10px] text-neutral-400 leading-relaxed">
-                      <ShieldCheck className="h-4 w-4 text-gold-500 shrink-0 mt-0.5" />
+                    <div className="p-4 bg-[#C89B3C]/[0.02] border border-[#C89B3C]/10 rounded-xl flex items-start gap-3 text-[10px] text-[#444] leading-relaxed">
+                      <ShieldCheck className="h-4 w-4 text-[#C89B3C] shrink-0 mt-0.5" />
                       <span>You're almost there! When you tap "Send Request", your {form.communicationMethod === 'whatsapp' ? 'WhatsApp' : 'email'} will open with a beautiful pre-filled message. Just press send and your journey begins.</span>
                     </div>
                   </motion.div>
@@ -658,19 +658,19 @@ export default function BookingPage({ experienceId, experience: passedExp, onBac
             {/* ─── NAVIGATION ─── */}
             <div className="flex items-center justify-between">
               <button onClick={step === 1 ? onBack : handleBack}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[10px] font-mono tracking-wider uppercase text-neutral-400 hover:text-white transition-colors">
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[10px] font-mono tracking-wider uppercase text-[#444] hover:text-white transition-colors">
                 <ChevronLeft className="h-3.5 w-3.5" />
                 {step === 1 ? 'Cancel' : step === 3 ? 'Back & Edit' : 'Back'}
               </button>
 
               {step < 3 ? (
                 <button onClick={handleNext}
-                  className="flex items-center gap-1.5 px-5 py-2.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-[10px] tracking-widest uppercase transition-all">
+                  className="flex items-center gap-1.5 px-5 py-2.5 bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold rounded-lg text-[10px] tracking-widest uppercase transition-all">
                   Continue <ChevronRight className="h-3.5 w-3.5" />
                 </button>
               ) : (
                 <button onClick={handleSubmit} disabled={loading}
-                  className="flex items-center gap-1.5 px-6 py-2.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-[10px] tracking-widest uppercase transition-all disabled:opacity-40">
+                  className="flex items-center gap-1.5 px-6 py-2.5 bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold rounded-lg text-[10px] tracking-widest uppercase transition-all disabled:opacity-40">
                   {loading ? (
                     <div className="h-3.5 w-3.5 border-2 border-neutral-950 border-t-transparent rounded-full animate-spin" />
                   ) : (

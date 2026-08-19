@@ -68,25 +68,25 @@ function isExperienceFinal(status: string): boolean {
   return ['confirmed', 'completed', 'cancelled'].includes(status);
 }
 
-// ─── Base email shell — dark luxury theme ───
+// ─── Base email shell — light luxury theme ───
 function baseTemplate(accent: string, title: string, body: string, ctaText?: string, ctaUrl?: string): string {
   // Solid fallback color for Outlook which doesn't support linear-gradient
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#050505;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#050505;padding:40px 16px;">
+<body style="margin:0;padding:0;background:#f9f9f9;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#f9f9f9;padding:40px 16px;">
 <tr><td align="center">
 <table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="max-width:600px;width:100%;">
 
 <tr><td style="padding:0 0 1px;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;border-radius:16px 16px 0 0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px 16px 0 0;">
   <tr><td style="padding:28px 40px;">
     <table width="100%" cellpadding="0" cellspacing="0"><tr>
-      <td><div style="width:40px;height:40px;border-radius:10px;background:${accent};background:linear-gradient(135deg,${accent},#b8860b);text-align:center;line-height:40px;font-size:16px;font-weight:800;color:#050505;">GA</div></td>
+      <td><div style="width:40px;height:40px;border-radius:10px;background:${accent};background:linear-gradient(135deg,${accent},#b8860b);text-align:center;line-height:40px;font-size:16px;font-weight:800;color:#ffffff;">GA</div></td>
       <td style="padding-left:14px;">
-        <p style="margin:0;font-size:15px;font-weight:700;color:#fff;letter-spacing:0.5px;">Gillian Anderson</p>
-        <p style="margin:2px 0 0;font-size:10px;color:#666;letter-spacing:1.5px;text-transform:uppercase;">Fan Community</p>
+        <p style="margin:0;font-size:15px;font-weight:700;color:#1a1a1a;letter-spacing:0.5px;">Gillian Anderson</p>
+        <p style="margin:2px 0 0;font-size:10px;color:#888;letter-spacing:1.5px;text-transform:uppercase;">Fan Community</p>
       </td>
     </tr></table>
   </td></tr>
@@ -95,15 +95,15 @@ function baseTemplate(accent: string, title: string, body: string, ctaText?: str
 
 <tr><td style="height:2px;background:${accent};background:linear-gradient(90deg,${accent},transparent);"></td></tr>
 
-<tr><td style="background:#0a0a0a;padding:44px 40px;">
-  <h1 style="margin:0 0 24px;font-size:22px;font-weight:700;color:#fff;line-height:1.3;">${title}</h1>
-  <div style="font-size:14px;line-height:1.8;color:#a0a0a0;">${body}</div>
-  ${ctaText ? `<table cellpadding="0" cellspacing="0" style="margin:36px 0 0;"><tr><td style="background:${accent};background:linear-gradient(135deg,${accent},#b8860b);border-radius:8px;"><a href="${ctaUrl || SITE_URL}" style="display:inline-block;padding:14px 36px;font-size:12px;font-weight:700;color:#050505;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;">${ctaText}</a></td></tr></table>` : ''}
+<tr><td style="background:#ffffff;padding:44px 40px;">
+  <h1 style="margin:0 0 24px;font-size:22px;font-weight:700;color:#1a1a1a;line-height:1.3;">${title}</h1>
+  <div style="font-size:14px;line-height:1.8;color:#555555;">${body}</div>
+  ${ctaText ? `<table cellpadding="0" cellspacing="0" style="margin:36px 0 0;"><tr><td style="background:${accent};background:linear-gradient(135deg,${accent},#b8860b);border-radius:8px;"><a href="${ctaUrl || SITE_URL}" style="display:inline-block;padding:14px 36px;font-size:12px;font-weight:700;color:#ffffff;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;">${ctaText}</a></td></tr></table>` : ''}
 </td></tr>
 
-<tr><td style="background:#080808;padding:28px 40px;border-radius:0 0 16px 16px;border-top:1px solid #1a1a1a;">
-  <p style="margin:0 0 8px;font-size:10px;color:#444;letter-spacing:1px;text-transform:uppercase;">The Gillian Anderson Community</p>
-  <p style="margin:0;font-size:11px;color:#333;"><a href="${SITE_URL}" style="color:#d4a853;text-decoration:none;">Visit Portal</a> &nbsp;&bull;&nbsp; <a href="${SITE_URL}/portal?mode=login" style="color:#666;text-decoration:none;">Sign In</a></p>
+<tr><td style="background:#f5f5f5;padding:28px 40px;border-radius:0 0 16px 16px;border-top:1px solid #e5e5e5;">
+  <p style="margin:0 0 8px;font-size:10px;color:#888;letter-spacing:1px;text-transform:uppercase;">The Gillian Anderson Community</p>
+  <p style="margin:0;font-size:11px;color:#999;"><a href="${SITE_URL}" style="color:#9e815b;text-decoration:none;">Visit Portal</a> &nbsp;&bull;&nbsp; <a href="${SITE_URL}/portal?mode=login" style="color:#888;text-decoration:none;">Sign In</a></p>
 </td></tr>
 
 </table></td></tr></table>
@@ -112,15 +112,15 @@ function baseTemplate(accent: string, title: string, body: string, ctaText?: str
 
 // ─── Notification card builder (for inline previews) ───
 function infoCard(label: string, value: string, accent = '#d4a853'): string {
-  return `<table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 12px;"><tr><td style="padding:14px 20px;background:#111;border-radius:8px;border-left:3px solid ${accent};">
-    <p style="margin:0 0 4px;font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px;">${label}</p>
-    <p style="margin:0;font-size:15px;color:#fff;font-weight:600;">${esc(value)}</p>
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 12px;"><tr><td style="padding:14px 20px;background:#f5f5f5;border-radius:8px;border-left:3px solid ${accent};">
+    <p style="margin:0 0 4px;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;">${label}</p>
+    <p style="margin:0;font-size:15px;color:#1a1a1a;font-weight:600;">${esc(value)}</p>
   </td></tr></table>`;
 }
 
 function quoteBlock(text: string): string {
-  return `<div style="padding:18px 22px;background:#111;border-left:3px solid #d4a853;border-radius:8px;margin:0 0 24px;">
-    <p style="margin:0;font-size:14px;color:#ccc;line-height:1.7;">&ldquo;${esc(text)}&rdquo;</p>
+  return `<div style="padding:18px 22px;background:#f5f5f5;border-left:3px solid #d4a853;border-radius:8px;margin:0 0 24px;">
+    <p style="margin:0;font-size:14px;color:#555;line-height:1.7;">&ldquo;${esc(text)}&rdquo;</p>
   </div>`;
 }
 

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -89,7 +89,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
       
       {/* Step Indicators */}
       {step !== 'success' && (
-        <div className="flex items-center justify-between border-b border-neutral-900 pb-4 mb-6">
+        <div className="flex items-center justify-between border-b border-[rgba(0,0,0,0.06)] pb-4 mb-6">
           <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none py-1">
             {[
               { id: 'select', label: '1. SELECT' },
@@ -101,15 +101,15 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
                 key={s.id}
                 className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
                   step === s.id
-                    ? 'bg-gold-500/10 text-gold-500 border border-gold-500/25'
-                    : 'text-neutral-500'
+                    ? 'bg-[#C89B3C]/10 text-[#C89B3C] border border-[#C89B3C]/25'
+                    : 'text-[#444]'
                 }`}
               >
                 {s.label}
               </span>
             ))}
           </div>
-          <span className="text-[10px] font-mono text-neutral-600">
+          <span className="text-[10px] font-mono text-[#444]">
             PLATFORM PHILOSOPHY: REQUEST ONLY
           </span>
         </div>
@@ -125,10 +125,10 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
             className="space-y-4 text-left"
           >
             <div className="space-y-1">
-              <h4 className="text-xs font-mono tracking-widest text-neutral-500 uppercase">
+              <h4 className="text-xs font-mono tracking-widest text-[#444] uppercase">
                 STEP 1: SELECT YOUR REQUEST TYPE
               </h4>
-              <p className="text-xs leading-relaxed text-neutral-400">
+              <p className="text-xs leading-relaxed text-[#444]">
                 Everything begins with a request. Nothing is guaranteed. Select the request template that aligns with your sincerity goal.
               </p>
             </div>
@@ -141,14 +141,14 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
                   onClick={() => setSelectedType(type.id)}
                   className={`p-3 rounded-lg border text-left transition-all flex flex-col justify-between h-24 ${
                     selectedType === type.id
-                      ? 'border-gold-500 bg-gold-500/[0.03]'
-                      : 'border-neutral-900 bg-neutral-900/10 hover:border-neutral-800'
+                      ? 'border-[#C89B3C] bg-[#C89B3C]/[0.03]'
+                      : 'border-[rgba(0,0,0,0.06)] bg-white/10 hover:border-[rgba(0,0,0,0.06)]'
                   }`}
                 >
-                  <span className={`text-xs font-bold ${selectedType === type.id ? 'text-gold-500' : 'text-white'}`}>
+                  <span className={`text-xs font-bold ${selectedType === type.id ? 'text-[#C89B3C]' : 'text-white'}`}>
                     {type.id}
                   </span>
-                  <p className="text-[10px] text-neutral-400 leading-normal line-clamp-2 mt-1">
+                  <p className="text-[10px] text-[#444] leading-normal line-clamp-2 mt-1">
                     {type.desc}
                   </p>
                 </button>
@@ -158,7 +158,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
             <div className="flex justify-end pt-3">
               <button
                 onClick={handleNextStep}
-                className="flex items-center gap-1.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 px-5 rounded text-xs transition-all active:scale-95 uppercase tracking-wider"
+                className="flex items-center gap-1.5 bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold py-2 px-5 rounded text-xs transition-all active:scale-95 uppercase tracking-wider"
               >
                 Continue
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -176,66 +176,66 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
             className="space-y-4 text-left"
           >
             <div className="space-y-1">
-              <h4 className="text-xs font-mono tracking-widest text-neutral-500 uppercase">
+              <h4 className="text-xs font-mono tracking-widest text-[#444] uppercase">
                 STEP 2: COMPLETE THE LOGISTICS DETAILS ({selectedType.toUpperCase()})
               </h4>
-              <p className="text-xs leading-relaxed text-neutral-400">
+              <p className="text-xs leading-relaxed text-[#444]">
                 Provide essential logistical specifications so management can cross-reference scheduling options and direct security.
               </p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-mono text-neutral-400 uppercase">YOUR FULL NAME</label>
+                <label className="text-[10px] font-mono text-[#444] uppercase">YOUR FULL NAME</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
-                  className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-gold-500/50"
+                  className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-white px-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/50"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-mono text-neutral-400 uppercase">EMAIL ADDRESS</label>
+                <label className="text-[10px] font-mono text-[#444] uppercase">EMAIL ADDRESS</label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="john@example.com"
-                  className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-gold-500/50"
+                  className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-white px-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/50"
                 />
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-mono text-neutral-400 uppercase">TARGET DATE / INTERVAL</label>
+                <label className="text-[10px] font-mono text-[#444] uppercase">TARGET DATE / INTERVAL</label>
                 <input
                   type="text"
                   value={preferredDate}
                   onChange={(e) => setPreferredDate(e.target.value)}
                   placeholder="e.g. Second week of July 2024"
-                  className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-gold-500/50"
+                  className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-white px-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/50"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-mono text-neutral-400 uppercase">LOCATION (CITY, COUNTRY)</label>
+                <label className="text-[10px] font-mono text-[#444] uppercase">LOCATION (CITY, COUNTRY)</label>
                 <input
                   type="text"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="e.g. London, UK"
-                  className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-gold-500/50"
+                  className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-white px-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/50"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-mono text-neutral-400 uppercase">ATTENDEES COUNT</label>
+                <label className="text-[10px] font-mono text-[#444] uppercase">ATTENDEES COUNT</label>
                 <select
                   value={attendees}
                   onChange={(e) => setAttendees(e.target.value)}
-                  className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-gold-500/50"
+                  className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-white px-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/50"
                 >
                   <option value="1 Person">1 Person (Just Me)</option>
                   <option value="2 People">2 People</option>
@@ -246,7 +246,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[10px] font-mono text-neutral-400 uppercase">
+              <label className="text-[10px] font-mono text-[#444] uppercase">
                 WHY DOES THIS MATTER TO YOU? (SINCERITY STORY)
               </label>
               <textarea
@@ -255,7 +255,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Share your honest story. Your integrity is our core review metric. Detail any childhood cancer support or charity alignments if relevant."
-                className="w-full rounded border border-neutral-900 bg-neutral-950 px-3 py-2 text-xs text-white outline-none focus:border-gold-500/50 resize-none leading-relaxed"
+                className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-white px-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/50 resize-none leading-relaxed"
               />
             </div>
 
@@ -263,7 +263,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
               <button
                 type="button"
                 onClick={handleBackStep}
-                className="flex items-center gap-1.5 border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold px-4 py-2 rounded text-white transition-colors"
+                className="flex items-center gap-1.5 border border-[rgba(0,0,0,0.06)] bg-white hover:bg-[#F8F6F2] text-xs font-semibold px-4 py-2 rounded text-white transition-colors"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Back
@@ -272,7 +272,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
                 type="button"
                 disabled={!name || !email || !reason}
                 onClick={handleNextStep}
-                className="flex items-center gap-1.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 px-5 rounded text-xs transition-all active:scale-95 uppercase tracking-wider disabled:opacity-50"
+                className="flex items-center gap-1.5 bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold py-2 px-5 rounded text-xs transition-all active:scale-95 uppercase tracking-wider disabled:opacity-50"
               >
                 Continue
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -290,17 +290,17 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
             className="space-y-4 text-left"
           >
             <div className="space-y-1">
-              <h4 className="text-xs font-mono tracking-widest text-neutral-500 uppercase">
+              <h4 className="text-xs font-mono tracking-widest text-[#444] uppercase">
                 STEP 3: CHOOSE PREFERRED CONTACT METHOD
               </h4>
-              <p className="text-xs leading-relaxed text-neutral-400">
+              <p className="text-xs leading-relaxed text-[#444]">
                 Official dialogue must be direct and transparent. Choose how our liaison coordinates should reach out to you.
               </p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-[10px] font-mono text-neutral-500 uppercase block">CONTACT METHOD</label>
+                <label className="text-[10px] font-mono text-[#444] uppercase block">CONTACT METHOD</label>
                 <div className="grid grid-cols-2 gap-2">
                   {(['Website', 'Email', 'WhatsApp', 'Telegram'] as const).map((method) => (
                     <button
@@ -309,8 +309,8 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
                       onClick={() => setContactMethod(method)}
                       className={`p-3 rounded border font-mono font-medium text-xs text-center transition-all ${
                         contactMethod === method
-                          ? 'bg-gold-500/10 border-gold-500 text-gold-500'
-                          : 'bg-neutral-900/10 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
+                          ? 'bg-[#C89B3C]/10 border-[#C89B3C] text-[#C89B3C]'
+                          : 'bg-white/10 border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white hover:border-[rgba(0,0,0,0.06)]'
                       }`}
                     >
                       {method}
@@ -320,7 +320,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-mono text-neutral-500 uppercase block">
+                <label className="text-[10px] font-mono text-[#444] uppercase block">
                   {contactMethod.toUpperCase()} INPUT DETAIL
                 </label>
                 <div className="relative">
@@ -334,10 +334,10 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
                       contactMethod === 'Email' ? 'john@example.com' :
                       contactMethod === 'Telegram' ? '@telegram_username' : 'Website sanctuary name'
                     }
-                    className="w-full rounded border border-neutral-900 bg-neutral-950 px-3.5 py-3 text-xs text-white outline-none focus:border-gold-500/50"
+                    className="w-full rounded border border-[rgba(0,0,0,0.06)] bg-white px-3.5 py-3 text-xs text-white outline-none focus:border-[#C89B3C]/50"
                   />
                 </div>
-                <p className="text-[11px] text-neutral-500 leading-relaxed italic">
+                <p className="text-[11px] text-[#444] leading-relaxed italic">
                   * Note: Standard security validation will be carried out on this line. Avoid public handles if security is sensitive.
                 </p>
               </div>
@@ -347,7 +347,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
               <button
                 type="button"
                 onClick={handleBackStep}
-                className="flex items-center gap-1.5 border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold px-4 py-2 rounded text-white transition-colors"
+                className="flex items-center gap-1.5 border border-[rgba(0,0,0,0.06)] bg-white hover:bg-[#F8F6F2] text-xs font-semibold px-4 py-2 rounded text-white transition-colors"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Back
@@ -356,7 +356,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
                 type="button"
                 disabled={!contactDetail}
                 onClick={handleNextStep}
-                className="flex items-center gap-1.5 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold py-2 px-5 rounded text-xs transition-all active:scale-95 uppercase tracking-wider disabled:opacity-50"
+                className="flex items-center gap-1.5 bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold py-2 px-5 rounded text-xs transition-all active:scale-95 uppercase tracking-wider disabled:opacity-50"
               >
                 Review Summary
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -374,46 +374,46 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
             className="space-y-4 text-left"
           >
             <div className="space-y-1">
-              <h4 className="text-xs font-mono tracking-widest text-neutral-500 uppercase">
+              <h4 className="text-xs font-mono tracking-widest text-[#444] uppercase">
                 STEP 4: REVIEW PROPOSAL SUMMARY
               </h4>
-              <p className="text-xs leading-relaxed text-neutral-400">
+              <p className="text-xs leading-relaxed text-[#444]">
                 Confirm your parameters below. Every request is tracked and enters our official administrative queue.
               </p>
             </div>
 
-            <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4.5 space-y-4">
-              <div className="flex justify-between items-center border-b border-neutral-900 pb-2">
-                <span className="text-[10px] font-mono text-gold-500 font-bold uppercase tracking-wider">
+            <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-4.5 space-y-4">
+              <div className="flex justify-between items-center border-b border-[rgba(0,0,0,0.06)] pb-2">
+                <span className="text-[10px] font-mono text-[#C89B3C] font-bold uppercase tracking-wider">
                   Request: {selectedType}
                 </span>
-                <span className="text-[11px] font-mono text-neutral-500">PHILOSOPHY PROTOCOL</span>
+                <span className="text-[11px] font-mono text-[#444]">PHILOSOPHY PROTOCOL</span>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2 text-xs">
                 <div className="space-y-1">
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase block">Name & Email</span>
+                  <span className="text-[10px] font-mono text-[#444] uppercase block">Name & Email</span>
                   <p className="text-white font-semibold">{name} ({email})</p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase block">Preferred Interval</span>
+                  <span className="text-[10px] font-mono text-[#444] uppercase block">Preferred Interval</span>
                   <p className="text-white font-semibold">{preferredDate || 'Not specified'}</p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase block">Location</span>
+                  <span className="text-[10px] font-mono text-[#444] uppercase block">Location</span>
                   <p className="text-white font-semibold">{location || 'Not specified'}</p>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase block">Attendance Count</span>
+                  <span className="text-[10px] font-mono text-[#444] uppercase block">Attendance Count</span>
                   <p className="text-white font-semibold">{attendees}</p>
                 </div>
                 <div className="space-y-1 sm:col-span-2">
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase block">Direct Contact Bridge</span>
-                  <p className="text-gold-500 font-semibold font-mono">{contactMethod}: {contactDetail}</p>
+                  <span className="text-[10px] font-mono text-[#444] uppercase block">Direct Contact Bridge</span>
+                  <p className="text-[#C89B3C] font-semibold font-mono">{contactMethod}: {contactDetail}</p>
                 </div>
                 <div className="space-y-1 sm:col-span-2">
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase block">Sincerity Statement</span>
-                  <p className="text-neutral-300 italic leading-relaxed font-serif text-xs">"{reason}"</p>
+                  <span className="text-[10px] font-mono text-[#444] uppercase block">Sincerity Statement</span>
+                  <p className="text-[#444] italic leading-relaxed font-serif text-xs">"{reason}"</p>
                 </div>
               </div>
             </div>
@@ -422,7 +422,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
               <button
                 type="button"
                 onClick={handleBackStep}
-                className="flex items-center gap-1.5 border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-semibold px-4 py-2 rounded text-white transition-colors"
+                className="flex items-center gap-1.5 border border-[rgba(0,0,0,0.06)] bg-white hover:bg-[#F8F6F2] text-xs font-semibold px-4 py-2 rounded text-white transition-colors"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Back
@@ -445,7 +445,7 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
             animate={{ opacity: 1, scale: 1 }}
             className="text-center py-8 space-y-5 max-w-xl mx-auto"
           >
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gold-500/10 text-gold-500 border border-gold-500/30">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#C89B3C]/10 text-[#C89B3C] border border-[#C89B3C]/30">
               <Check className="h-7 w-7 animate-bounce" />
             </div>
 
@@ -454,25 +454,25 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
                 <span className="px-2.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-xs font-mono font-bold text-amber-500">
                   🟡 Submitted
                 </span>
-                <span className="text-neutral-600 font-mono text-xs">|</span>
-                <span className="font-mono text-xs text-neutral-300 font-semibold">{generatedRef}</span>
+                <span className="text-[#444] font-mono text-xs">|</span>
+                <span className="font-mono text-xs text-[#444] font-semibold">{generatedRef}</span>
               </div>
               
               <h4 className="font-serif text-xl font-bold tracking-wider text-white uppercase">
                 PROPOSAL ENTERED IN QUEUE
               </h4>
               
-              <p className="text-xs text-neutral-400 max-w-md mx-auto leading-relaxed">
-                Thank you, <span className="text-gold-500 font-bold">{name}</span>. Your {selectedType} proposal is registered. Tracking has officially begun.
+              <p className="text-xs text-[#444] max-w-md mx-auto leading-relaxed">
+                Thank you, <span className="text-[#C89B3C] font-bold">{name}</span>. Your {selectedType} proposal is registered. Tracking has officially begun.
               </p>
             </div>
 
-            <div className="rounded-lg border border-neutral-900 bg-neutral-950 p-4.5 text-left space-y-3.5">
-              <h5 className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-widest border-b border-neutral-900 pb-1.5">
+            <div className="rounded-lg border border-[rgba(0,0,0,0.06)] bg-white p-4.5 text-left space-y-3.5">
+              <h5 className="text-[10px] font-mono font-bold text-[#444] uppercase tracking-widest border-b border-[rgba(0,0,0,0.06)] pb-1.5">
                 UNIVERSAL PROPOSAL LIFECYCLE
               </h5>
               
-              <div className="space-y-2.5 pl-4 border-l border-neutral-900 relative text-[11px] font-mono text-neutral-400 leading-relaxed">
+              <div className="space-y-2.5 pl-4 border-l border-[rgba(0,0,0,0.06)] relative text-[11px] font-mono text-[#444] leading-relaxed">
                 <div>
                   <span className="text-white font-semibold">1. Submitted:</span> Entered queue with reference {generatedRef}.
                 </div>
@@ -488,16 +488,16 @@ export default function ExperienceModal({ isOpen, onClose }: ExperienceModalProp
               </div>
             </div>
 
-            <div className="rounded border border-neutral-900 bg-neutral-900/20 p-4">
-              <p className="text-xs italic text-gold-500 font-serif leading-relaxed">
+            <div className="rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-4">
+              <p className="text-xs italic text-[#C89B3C] font-serif leading-relaxed">
                 "Thank you for sharing your story and taking the time to send this request. Connecting with sincerity is what makes this journey special. Be compassionate."
               </p>
-              <p className="text-[11px] text-neutral-500 font-mono mt-2 uppercase tracking-widest">— GILLIAN ANDERSON</p>
+              <p className="text-[11px] text-[#444] font-mono mt-2 uppercase tracking-widest">— GILLIAN ANDERSON</p>
             </div>
 
             <button
               onClick={handleReset}
-              className="px-6 py-2 bg-neutral-900 hover:bg-neutral-800 text-xs border border-neutral-800 font-medium text-white rounded transition-colors"
+              className="px-6 py-2 bg-white hover:bg-[#F8F6F2] text-xs border border-[rgba(0,0,0,0.06)] font-medium text-white rounded transition-colors"
             >
               Back to Requests Gateway
             </button>

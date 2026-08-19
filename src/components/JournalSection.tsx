@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import DOMPurify from 'dompurify';
@@ -208,10 +208,9 @@ export default function JournalSection() {
   });
 
   return (
-    <section id="journal-page" className="relative bg-[#050505] py-20 px-4 md:px-6 min-h-[700px]">
-      <div className="absolute left-1/3 top-1/4 h-80 w-80 rounded-full bg-gold-500/5 blur-[100px] pointer-events-none" />
+    <section id="journal-page" className="relative bg-white py-20 px-4 md:px-6 min-h-[700px] border-t border-neutral-200">
       
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-6xl relative z-10">
         <AnimatePresence mode="wait">
           {!selectedEntry ? (
             <motion.div
@@ -224,20 +223,20 @@ export default function JournalSection() {
             >
               {/* Header */}
               <div className="text-center space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[10px] font-mono tracking-widest uppercase">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#C89B3C]/30 bg-[#C89B3C]/10 text-[#A97828] text-[10px] font-mono tracking-widest uppercase font-bold">
                   <BookOpen className="h-3.5 w-3.5" />
                   PERSPECTIVES & ESSAYS
                 </div>
-                <h2 className="font-serif text-3xl md:text-5xl font-extrabold text-white uppercase tracking-tight">
-                  The <span className="text-gold-500">Journal</span>
+                <h2 className="font-serif text-3xl md:text-5xl font-extrabold text-[#111] uppercase tracking-tight">
+                  The <span className="text-[#C89B3C]">Journal</span>
                 </h2>
-                <p className="text-xs md:text-sm text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed">
+                <p className="text-xs md:text-sm text-[#333] max-w-2xl mx-auto font-sans leading-relaxed">
                   Quiet reflections from Gillian Anderson on life, art, the freedom of the stage, and the collaborative soul of television.
                 </p>
               </div>
 
               {/* Filters & Search */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-neutral-900 pb-6">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[rgba(0,0,0,0.06)] pb-6">
                 <div className="flex flex-wrap gap-2">
                   {categories.map((cat) => (
                     <button
@@ -245,8 +244,8 @@ export default function JournalSection() {
                       onClick={() => setActiveCategory(cat)}
                       className={`px-4 py-1.5 rounded-lg text-[11px] font-mono tracking-wider uppercase border transition-all ${
                         activeCategory === cat
-                          ? 'bg-gold-500 border-gold-400 text-neutral-950 font-bold'
-                          : 'bg-neutral-950 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
+                          ? 'bg-[#C89B3C] border-gold-400 text-neutral-950 font-bold'
+                          : 'bg-white border-[rgba(0,0,0,0.06)] text-[#222] hover:text-neutral-900 hover:border-[rgba(0,0,0,0.06)]'
                       }`}
                     >
                       {cat}
@@ -260,7 +259,7 @@ export default function JournalSection() {
                     placeholder="Search journal entries..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-neutral-950 text-xs border border-neutral-900 rounded-lg px-3.5 py-2 text-white outline-none focus:border-gold-500/50"
+                    className="w-full bg-white text-xs border border-[rgba(0,0,0,0.06)] rounded-lg px-3.5 py-2 text-[#111] outline-none focus:border-[#C89B3C]/50"
                   />
                 </div>
               </div>
@@ -269,14 +268,14 @@ export default function JournalSection() {
               {isLoading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {[1, 2, 3].map((n) => (
-                    <div key={n} className="rounded-xl border border-neutral-900 bg-neutral-950/40 overflow-hidden animate-pulse">
-                      <div className="aspect-[16/10] bg-neutral-900" />
+                    <div key={n} className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] overflow-hidden animate-pulse">
+                      <div className="aspect-[16/10] bg-white" />
                       <div className="p-6 space-y-3">
-                        <div className="h-2 w-24 bg-neutral-800 rounded" />
-                        <div className="h-4 w-3/4 bg-neutral-800 rounded" />
+                        <div className="h-2 w-24 bg-[#F8F6F2] rounded" />
+                        <div className="h-4 w-3/4 bg-[#F8F6F2] rounded" />
                         <div className="space-y-1.5">
-                          <div className="h-2 w-full bg-neutral-800 rounded" />
-                          <div className="h-2 w-2/3 bg-neutral-800 rounded" />
+                          <div className="h-2 w-full bg-[#F8F6F2] rounded" />
+                          <div className="h-2 w-2/3 bg-[#F8F6F2] rounded" />
                         </div>
                       </div>
                     </div>
@@ -288,38 +287,38 @@ export default function JournalSection() {
                     <div
                       key={entry.id}
                       onClick={() => handleSelectEntry(entry)}
-                      className="group flex flex-col justify-between rounded-xl border border-neutral-900 bg-neutral-950/40 overflow-hidden hover:border-neutral-800 hover:bg-neutral-950/80 transition-all cursor-pointer h-full"
+                      className="group flex flex-col justify-between rounded-xl border border-neutral-200 bg-white overflow-hidden hover:border-neutral-300 hover:shadow-lg transition-all cursor-pointer h-full shadow-[0_1px_4px_rgba(0,0,0,0.06)]"
                     >
                       <div>
                         {/* Thumbnail */}
-                        <div className="aspect-[16/10] overflow-hidden bg-neutral-900 relative">
+                        <div className="aspect-[16/10] overflow-hidden bg-white relative">
                            <img
                             src={entry.image}
                             alt={entry.title}
                             referrerPolicy="no-referrer"
                             loading="lazy"
-                            className="h-full w-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                            className="h-full w-full object-cover brightness-95 group-hover:scale-105 transition-all duration-500"
                           />
                         </div>
 
                         {/* Text */}
                         <div className="p-6 space-y-3 text-left">
-                          <div className="flex items-center gap-2.5 text-[11px] font-mono text-gold-500/80 uppercase">
+                          <div className="flex items-center gap-2.5 text-[11px] font-mono text-[#C89B3C] uppercase">
                             <span>{entry.date}</span>
                             <span>•</span>
                             <span>{entry.readTime}</span>
                           </div>
-                          <h3 className="font-serif text-lg font-bold text-white tracking-wide group-hover:text-gold-500 transition-colors">
+                          <h3 className="font-serif text-lg font-bold text-[#111] tracking-wide group-hover:text-[#A97828] transition-colors">
                             {entry.title}
                           </h3>
-                          <p className="text-xs text-neutral-400 leading-relaxed font-sans line-clamp-3">
+                          <p className="text-xs text-[#222] leading-relaxed font-sans line-clamp-3">
                             {entry.excerpt}
                           </p>
                         </div>
                       </div>
 
-                      <div className="p-6 pt-0 border-t border-neutral-900/60 mt-auto flex items-center justify-between text-[10px] font-mono text-neutral-500">
-                        <span className="flex items-center gap-1.5 hover:text-white transition-colors">
+                      <div className="p-6 pt-0 border-t border-[rgba(0,0,0,0.06)]/60 mt-auto flex items-center justify-between text-[10px] font-mono text-[#222]">
+                        <span className="flex items-center gap-1.5 hover:text-neutral-900 transition-colors">
                           READ ARTICLE <ChevronRight className="h-3 w-3" />
                         </span>
                         <div className="flex items-center gap-3">
@@ -331,8 +330,8 @@ export default function JournalSection() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-20 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10">
-                  <p className="text-sm text-neutral-500 font-sans">No reflections match your search parameters.</p>
+                <div className="text-center py-20 border border-dashed border-[rgba(0,0,0,0.06)] rounded-xl bg-white/10">
+                  <p className="text-sm text-[#222] font-sans">No reflections match your search parameters.</p>
                 </div>
               )}
             </motion.div>
@@ -348,7 +347,7 @@ export default function JournalSection() {
               {/* Back button */}
               <button
                 onClick={handleBackToList}
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-neutral-950 border border-neutral-900 text-neutral-400 hover:text-white transition-colors font-mono text-[10px] uppercase font-bold tracking-widest"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-white border border-[rgba(0,0,0,0.06)] text-[#222] hover:text-neutral-900 transition-colors font-mono text-[10px] uppercase font-bold tracking-widest"
               >
                 <ArrowLeft className="h-4 w-4" />
                 BACK TO ESSAYS
@@ -356,59 +355,59 @@ export default function JournalSection() {
 
               {/* Title Header */}
               <div className="space-y-4">
-                <div className="flex items-center gap-3 text-[10px] font-mono text-gold-500 uppercase tracking-widest">
-                  <span className="bg-gold-500/10 border border-gold-500/20 px-2 py-0.5 rounded">
+                <div className="flex items-center gap-3 text-[10px] font-mono text-[#C89B3C] uppercase tracking-widest">
+                  <span className="bg-[#C89B3C]/10 border border-[#C89B3C]/20 px-2 py-0.5 rounded">
                     {selectedEntry.category}
                   </span>
                   <span>{selectedEntry.date}</span>
                   <span>•</span>
                   <span>{selectedEntry.readTime}</span>
                 </div>
-                <h1 className="font-serif text-3xl md:text-4xl font-extrabold text-white leading-tight">
+                <h1 className="font-serif text-3xl md:text-4xl font-extrabold text-[#111] leading-tight">
                   {selectedEntry.title}
                 </h1>
               </div>
 
               {/* Immersive Image */}
-              <div className="aspect-[21/9] rounded-xl overflow-hidden border border-neutral-900 bg-neutral-900">
+              <div className="aspect-[21/9] rounded-xl overflow-hidden border border-[rgba(0,0,0,0.06)] bg-white">
                 <img
                   src={selectedEntry.image}
                   alt={selectedEntry.title}
                   referrerPolicy="no-referrer"
                   loading="lazy"
-                  className="w-full h-full object-cover grayscale brightness-90 contrast-105"
+                  className="w-full h-full object-cover brightness-95 contrast-105"
                 />
               </div>
 
               {/* Body Content */}
               <div
-                className="prose prose-invert max-w-none text-neutral-300 font-sans text-sm leading-relaxed space-y-6 pt-4 border-b border-neutral-900 pb-8 [&_p]:leading-relaxed [&_p]:mb-4 [&_blockquote]:border-l-2 [&_blockquote]:border-gold-500 [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_blockquote]:font-serif [&_blockquote]:text-lg [&_blockquote]:text-neutral-200 [&_blockquote]:bg-gold-500/5 [&_blockquote]:rounded-r [&_blockquote]:my-6"
+                className="prose prose-invert max-w-none text-[#222] font-sans text-sm leading-relaxed space-y-6 pt-4 border-b border-[rgba(0,0,0,0.06)] pb-8 [&_p]:leading-relaxed [&_p]:mb-4 [&_blockquote]:border-l-2 [&_blockquote]:border-[#C89B3C] [&_blockquote]:pl-4 [&_blockquote]:py-2 [&_blockquote]:italic [&_blockquote]:font-serif [&_blockquote]:text-lg [&_blockquote]:text-[#222] [&_blockquote]:bg-[#C89B3C]/5 [&_blockquote]:rounded-r [&_blockquote]:my-6"
                 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedEntry.content) }}
               />
 
               {/* Quick Actions Panel */}
-              <div className="flex items-center justify-between py-4 border-b border-neutral-900">
+              <div className="flex items-center justify-between py-4 border-b border-[rgba(0,0,0,0.06)]">
                 <div className="flex items-center gap-4">
                   <button
                     onClick={() => handleClap(selectedEntry.id)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-950 border border-neutral-900 hover:border-gold-500/40 text-neutral-300 hover:text-gold-500 transition-colors font-mono text-[10px] uppercase font-bold"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-[rgba(0,0,0,0.06)] hover:border-[#C89B3C]/40 text-[#222] hover:text-[#C89B3C] transition-colors font-mono text-[10px] uppercase font-bold"
                   >
                     <ThumbsUp className="h-4 w-4" />
                     CLAP ({claps[selectedEntry.id] || 0})
                   </button>
-                  <span className="text-[10px] font-mono text-neutral-500 uppercase">
+                  <span className="text-[10px] font-mono text-[#222] uppercase">
                     {(comments[selectedEntry.id] || []).length} COMMITTED DISCUSSIONS
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] font-mono text-neutral-600 uppercase mr-1">Share</span>
-                  <button onClick={() => handleShare('twitter')} className="p-2 rounded bg-neutral-950 text-neutral-500 hover:text-blue-400 border border-neutral-900 hover:border-blue-800/40 transition-colors" title="Share on X">
+                  <span className="text-[11px] font-mono text-[#222] uppercase mr-1">Share</span>
+                  <button onClick={() => handleShare('twitter')} className="p-2 rounded bg-white text-[#222] hover:text-blue-400 border border-[rgba(0,0,0,0.06)] hover:border-blue-800/40 transition-colors" title="Share on X">
                     <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                   </button>
-                  <button onClick={() => handleShare('whatsapp')} className="p-2 rounded bg-neutral-950 text-neutral-500 hover:text-emerald-400 border border-neutral-900 hover:border-emerald-800/40 transition-colors" title="Share on WhatsApp">
+                  <button onClick={() => handleShare('whatsapp')} className="p-2 rounded bg-white text-[#222] hover:text-emerald-400 border border-[rgba(0,0,0,0.06)] hover:border-emerald-800/40 transition-colors" title="Share on WhatsApp">
                     <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                   </button>
-                  <button onClick={() => handleShare('facebook')} className="p-2 rounded bg-neutral-950 text-neutral-500 hover:text-blue-500 border border-neutral-900 hover:border-blue-700/40 transition-colors" title="Share on Facebook">
+                  <button onClick={() => handleShare('facebook')} className="p-2 rounded bg-white text-[#222] hover:text-blue-500 border border-[rgba(0,0,0,0.06)] hover:border-blue-700/40 transition-colors" title="Share on Facebook">
                     <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                   </button>
                 </div>
@@ -416,15 +415,15 @@ export default function JournalSection() {
 
               {/* Comments Section */}
               <div className="space-y-6 pt-4">
-                <h3 className="font-serif text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-gold-500" />
+                <h3 className="font-serif text-lg font-bold text-[#111] uppercase tracking-wider flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4 text-[#C89B3C]" />
                   RESPONSIVE REFLECTIONS
                 </h3>
 
                 {/* Comment Input */}
                 <form
                   onSubmit={(e) => handleAddComment(e, selectedEntry.id)}
-                  className="bg-neutral-950 border border-neutral-900 p-4 rounded-xl space-y-3"
+                  className="bg-white border border-[rgba(0,0,0,0.06)] p-4 rounded-xl space-y-3"
                 >
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <input
@@ -432,7 +431,7 @@ export default function JournalSection() {
                       placeholder="Your name / alias (optional)"
                       value={commentName}
                       onChange={(e) => setCommentName(e.target.value)}
-                      className="bg-neutral-900 border border-neutral-800 text-xs text-white px-3.5 py-2 rounded outline-none focus:border-gold-500/30 w-full"
+                      className="bg-white border border-neutral-200 text-xs text-neutral-900 px-3.5 py-2 rounded-lg outline-none focus:border-amber-400 w-full placeholder:text-neutral-400"
                     />
                   </div>
                   <textarea
@@ -441,12 +440,12 @@ export default function JournalSection() {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     rows={3}
-                    className="w-full bg-neutral-900 border border-neutral-800 text-xs text-white px-3.5 py-2 rounded outline-none focus:border-gold-500/30 resize-none"
+                    className="w-full bg-white border border-neutral-200 text-xs text-neutral-900 px-3.5 py-2 rounded-lg outline-none focus:border-amber-400 resize-none placeholder:text-neutral-400"
                   />
                   <div className="flex justify-end">
                     <button
                       type="submit"
-                      className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold px-4 py-2 rounded text-[10px] tracking-widest uppercase transition-all flex items-center gap-1.5"
+                      className="bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold px-4 py-2 rounded text-[10px] tracking-widest uppercase transition-all flex items-center gap-1.5"
                     >
                       <Send className="h-3 w-3" />
                       POST REFLECTION
@@ -457,30 +456,30 @@ export default function JournalSection() {
                 {/* Comments List */}
                 <div className="space-y-4">
                   {(comments[selectedEntry.id] || []).length === 0 ? (
-                    <div className="p-6 text-center text-neutral-500 font-mono text-xs bg-neutral-950/20 border border-neutral-900 rounded-xl">
+                    <div className="p-6 text-center text-[#222] font-mono text-xs bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-xl">
                       No reflections yet. Be the first to share your thoughts!
                     </div>
                   ) : (
                     (comments[selectedEntry.id] || []).map((cmt) => (
-                      <div key={cmt.id} className="bg-neutral-950/50 border border-neutral-900/60 p-4 rounded-xl space-y-3 text-left">
+                      <div key={cmt.id} className="bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 p-4 rounded-xl space-y-3 text-left">
                         <div className="flex items-center justify-between text-[10px] font-mono">
-                          <span className="font-bold text-gold-500">{cmt.author}</span>
-                          <span className="text-neutral-500">{cmt.time}</span>
+                          <span className="font-bold text-[#C89B3C]">{cmt.author}</span>
+                          <span className="text-[#222]">{cmt.time}</span>
                         </div>
-                        <p className="text-xs text-neutral-200 leading-relaxed font-sans">
+                        <p className="text-xs text-[#222] leading-relaxed font-sans">
                           {cmt.text}
                         </p>
 
                         {/* Nested Replies */}
                         {cmt.replies && cmt.replies.length > 0 && (
-                          <div className="pl-4 border-l border-gold-500/20 space-y-3 pt-1">
+                          <div className="pl-4 border-l border-[#C89B3C]/20 space-y-3 pt-1">
                             {cmt.replies.map((reply) => (
-                              <div key={reply.id} className="bg-neutral-900/10 p-2.5 rounded-lg border border-neutral-900/30 space-y-1">
-                                <div className="flex justify-between items-center text-[11px] font-mono text-neutral-500">
-                                  <span className="text-neutral-300 font-semibold">{reply.author}</span>
+                              <div key={reply.id} className="bg-white/10 p-2.5 rounded-lg border border-[rgba(0,0,0,0.06)]/30 space-y-1">
+                                <div className="flex justify-between items-center text-[11px] font-mono text-[#222]">
+                                  <span className="text-[#222] font-semibold">{reply.author}</span>
                                   <span>{reply.time}</span>
                                 </div>
-                                <p className="text-neutral-300 text-[11px] leading-relaxed font-sans">{reply.text}</p>
+                                <p className="text-[#222] text-[11px] leading-relaxed font-sans">{reply.text}</p>
                               </div>
                             ))}
                           </div>
@@ -491,7 +490,7 @@ export default function JournalSection() {
                           {activeReplyId === cmt.id ? (
                             <form
                               onSubmit={(e) => handleAddReply(e, selectedEntry.id, cmt.id)}
-                              className="flex gap-2 bg-neutral-950 p-2 rounded-lg border border-neutral-900/80 mt-1"
+                              className="flex gap-2 bg-white p-2 rounded-lg border border-[rgba(0,0,0,0.06)]/80 mt-1"
                             >
                               <input
                                 type="text"
@@ -501,20 +500,20 @@ export default function JournalSection() {
                                   setNewReplyText((prev) => ({ ...prev, [cmt.id]: e.target.value }))
                                 }
                                 placeholder={`Reply to ${cmt.author}...`}
-                                className="flex-1 bg-neutral-900 text-xs border border-neutral-800 rounded px-2.5 py-1.5 text-white outline-none focus:border-gold-500/30"
+                                className="flex-1 bg-white text-xs border border-[rgba(0,0,0,0.06)] rounded px-2.5 py-1.5 text-[#111] outline-none focus:border-[#C89B3C]/30"
                               />
                               <div className="flex gap-1.5">
                                 <button
                                   type="submit"
                                   disabled={!(newReplyText[cmt.id] || '').trim()}
-                                  className="px-3 bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-neutral-950 font-bold rounded text-[11px] uppercase tracking-wide transition-colors"
+                                  className="px-3 bg-[#C89B3C] hover:bg-[#A97828] disabled:opacity-50 text-neutral-950 font-bold rounded text-[11px] uppercase tracking-wide transition-colors"
                                 >
                                   Reply
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => setActiveReplyId(null)}
-                                  className="px-2 bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white rounded text-[11px] transition-colors"
+                                  className="px-2 bg-white border border-[rgba(0,0,0,0.06)] text-[#222] hover:text-neutral-900 rounded text-[11px] transition-colors"
                                 >
                                   Cancel
                                 </button>
@@ -526,7 +525,7 @@ export default function JournalSection() {
                                 setActiveReplyId(cmt.id);
                                 setNewReplyText((prev) => ({ ...prev, [cmt.id]: '' }));
                               }}
-                              className="text-[10px] font-mono text-neutral-500 hover:text-gold-500 flex items-center gap-1 transition-colors"
+                              className="text-[10px] font-mono text-[#222] hover:text-[#C89B3C] flex items-center gap-1 transition-colors"
                             >
                               <MessageSquare className="h-3 w-3" />
                               <span>Reply to thread</span>

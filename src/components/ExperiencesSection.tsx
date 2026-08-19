@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Experience } from '../types';
@@ -129,7 +129,7 @@ export default function ExperiencesSection() {
   // Show booking page (navigated via hash)
   if (bookingId) {
     return (
-      <section id="experiences-page" className="bg-[#050505] py-12 px-4 md:px-6 relative min-h-[900px]">
+      <section id="experiences-page" className="bg-white py-12 px-4 md:px-6 relative min-h-[900px]">
         <div className="mx-auto max-w-3xl">
           <BookingPage
             experienceId={bookingId}
@@ -144,7 +144,7 @@ export default function ExperiencesSection() {
   // Show detail page
   if (detailViewId) {
     return (
-      <section id="experiences-page" className="bg-[#050505] py-12 px-4 md:px-6 relative min-h-[900px]">
+      <section id="experiences-page" className="bg-white py-12 px-4 md:px-6 relative min-h-[900px]">
         <div className="mx-auto max-w-5xl">
           <ExperienceDetailPage
             experienceId={detailViewId}
@@ -157,23 +157,23 @@ export default function ExperiencesSection() {
   }
 
   return (
-    <section id="experiences-page" className="bg-[#050505] py-20 px-4 md:px-6 relative min-h-[900px]">
-      <div className="absolute right-10 top-1/3 h-96 w-96 rounded-full bg-gold-500/5 blur-[120px] pointer-events-none" />
+    <section id="experiences-page" className="bg-white py-20 px-4 md:px-6 relative min-h-[900px]">
+      <div className="absolute right-10 top-1/3 h-96 w-96 rounded-full bg-[#C89B3C]/5 blur-[120px] pointer-events-none" />
       <div className="absolute left-10 bottom-1/3 h-64 w-64 rounded-full bg-purple-500/5 blur-[100px] pointer-events-none" />
 
       <div className="mx-auto max-w-7xl space-y-12">
         {/* Hero Header — Cinematic */}
         <div className="relative text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gold-500/20 bg-gold-500/[0.03] text-gold-500 text-[10px] font-mono tracking-[0.2em] uppercase backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#C89B3C]/20 bg-[#C89B3C]/[0.03] text-[#C89B3C] text-[10px] font-mono tracking-[0.2em] uppercase backdrop-blur-sm">
             <Sparkles className="h-3 w-3" />
             Once-in-a-Lifetime Reveries
           </div>
           <div className="space-y-3">
-            <h2 className="font-serif text-4xl md:text-6xl font-extrabold text-white uppercase tracking-tight leading-[1.1]">
+            <h2 className="font-serif text-4xl md:text-6xl font-extrabold text-[#111] uppercase tracking-tight leading-[1.1]">
               Exalted<br className="md:hidden" />
-              <span className="text-gold-500 bg-gold-500/5 px-3 py-1 inline-block">Experiences</span>
+              <span className="text-[#C89B3C] bg-[#C89B3C]/5 px-3 py-1 inline-block">Experiences</span>
             </h2>
-            <p className="text-xs md:text-sm text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed">
+            <p className="text-xs md:text-sm text-[#444] max-w-2xl mx-auto font-sans leading-relaxed">
               Choose from {stats.total} handcrafted journeys across six extraordinary realms — each designed to bring you closer to the world of Gillian Anderson.
             </p>
           </div>
@@ -182,16 +182,16 @@ export default function ExperiencesSection() {
         {/* Stats Bar — Glass */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 max-w-4xl mx-auto">
           {[
-            { icon: Ticket, value: stats.total, label: 'Experiences', color: 'text-gold-500' },
+            { icon: Ticket, value: stats.total, label: 'Experiences', color: 'text-[#C89B3C]' },
             { icon: Star, value: stats.popular, label: 'Featured', color: 'text-amber-400' },
             { icon: Users, value: stats.available, label: 'Spots Open', color: 'text-emerald-400' },
             { icon: Globe, value: experiences.filter(e => e.is_virtual).length, label: 'Virtual', color: 'text-cyan-400' },
             { icon: MapPin, value: experiences.filter(e => !e.is_virtual).length, label: 'In-Person', color: 'text-purple-400' },
           ].map((stat) => (
-            <div key={stat.label} className="bg-neutral-950/60 backdrop-blur-sm border border-neutral-900 rounded-xl p-4 text-center space-y-1.5 hover:border-neutral-800 transition-all duration-300 group">
+            <div key={stat.label} className="bg-[#F8F6F2] backdrop-blur-sm border border-[rgba(0,0,0,0.06)] rounded-xl p-4 text-center space-y-1.5 hover:border-[rgba(0,0,0,0.06)] transition-all duration-300 group">
               <stat.icon className={`h-4 w-4 ${stat.color} mx-auto group-hover:scale-110 transition-transform duration-300`} />
               <span className={`block text-xl font-bold ${stat.color}`}>{stat.value}</span>
-              <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
+              <span className="text-[11px] font-mono text-[#444] uppercase tracking-widest">{stat.label}</span>
             </div>
           ))}
         </div>
@@ -200,16 +200,16 @@ export default function ExperiencesSection() {
             {/* Search + Filters */}
               {/* Search Bar */}
               <div className="relative max-w-2xl mx-auto">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#444]" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search experiences by name, description, or location..."
-                  className="w-full bg-neutral-950 border border-neutral-900 rounded-xl pl-10 pr-4 py-3 text-xs text-white outline-none focus:border-gold-500/40 transition-colors"
+                  className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-xl pl-10 pr-4 py-3 text-xs text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors"
                 />
                 {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white">
+                  <button onClick={() => setSearchQuery('')} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#444] hover:text-[#111]">
                     <X className="h-3.5 w-3.5" />
                   </button>
                 )}
@@ -220,13 +220,13 @@ export default function ExperiencesSection() {
                 <button
                   onClick={() => setShowFilters(!showFilters)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono tracking-wider uppercase border transition-all ${
-                    showFilters ? 'bg-gold-500 text-neutral-950 border-gold-500 font-bold' : 'bg-neutral-950 text-neutral-500 border-neutral-900 hover:text-white'
+                    showFilters ? 'bg-[#C89B3C] text-neutral-950 border-[#C89B3C] font-bold' : 'bg-white text-[#444] border-[rgba(0,0,0,0.06)] hover:text-[#111]'
                   }`}
                 >
                   <SlidersHorizontal className="h-3 w-3" />
                   Filters
                   {(filterFeatured || filterVirtual !== 'all' || filterAvailable) && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-gold-500" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#C89B3C]" />
                   )}
                 </button>
               </div>
@@ -240,26 +240,26 @@ export default function ExperiencesSection() {
                     exit={{ opacity: 0, height: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="bg-neutral-950/60 border border-neutral-900 rounded-xl p-4 flex flex-wrap items-center gap-3">
-                      <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">Filter by:</span>
+                    <div className="bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-xl p-4 flex flex-wrap items-center gap-3">
+                      <span className="text-[10px] font-mono text-[#444] uppercase tracking-widest">Filter by:</span>
 
                       <button
                         onClick={() => setFilterFeatured(!filterFeatured)}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono uppercase border transition-all ${
-                          filterFeatured ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-neutral-900/40 text-neutral-500 border-neutral-800 hover:text-neutral-300'
+                          filterFeatured ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-[#F8F6F2] text-[#444] border-[rgba(0,0,0,0.06)] hover:text-[#444]'
                         }`}
                       >
                         <Star className="h-3 w-3" />
                         Featured
                       </button>
 
-                      <div className="flex rounded-lg border border-neutral-800 overflow-hidden text-[11px] font-mono">
+                      <div className="flex rounded-lg border border-[rgba(0,0,0,0.06)] overflow-hidden text-[11px] font-mono">
                         {(['all', 'physical', 'virtual'] as const).map((v) => (
                           <button
                             key={v}
                             onClick={() => setFilterVirtual(v)}
                             className={`px-3 py-1.5 uppercase tracking-wider transition-all ${
-                              filterVirtual === v ? 'bg-gold-500 text-neutral-950 font-bold' : 'bg-neutral-900/40 text-neutral-500 hover:text-neutral-300'
+                              filterVirtual === v ? 'bg-[#C89B3C] text-neutral-950 font-bold' : 'bg-[#F8F6F2] text-[#444] hover:text-[#444]'
                             }`}
                           >
                             {v}
@@ -270,7 +270,7 @@ export default function ExperiencesSection() {
                       <button
                         onClick={() => setFilterAvailable(!filterAvailable)}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-mono uppercase border transition-all ${
-                          filterAvailable ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-neutral-900/40 text-neutral-500 border-neutral-800 hover:text-neutral-300'
+                          filterAvailable ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-[#F8F6F2] text-[#444] border-[rgba(0,0,0,0.06)] hover:text-[#444]'
                         }`}
                       >
                         <CheckCircle className="h-3 w-3" />
@@ -280,7 +280,7 @@ export default function ExperiencesSection() {
                       {(filterFeatured || filterVirtual !== 'all' || filterAvailable) && (
                         <button
                           onClick={() => { setFilterFeatured(false); setFilterVirtual('all'); setFilterAvailable(false); }}
-                          className="text-[11px] font-mono text-neutral-500 hover:text-white ml-auto"
+                          className="text-[11px] font-mono text-[#444] hover:text-[#111] ml-auto"
                         >
                           Clear Filters
                         </button>
@@ -303,14 +303,14 @@ export default function ExperiencesSection() {
                     onClick={() => setActiveCategory(cat)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-mono tracking-wider uppercase border transition-all duration-200 ${
                       isActive
-                        ? 'bg-gold-500 text-neutral-950 border-gold-500 font-bold shadow-[0_0_12px_-2px_rgba(212,175,55,0.3)]'
-                        : 'bg-neutral-950/40 text-neutral-500 border-neutral-900 hover:text-white hover:border-neutral-700 hover:bg-neutral-900/40'
+                        ? 'bg-[#C89B3C] text-neutral-950 border-[#C89B3C] font-bold shadow-[0_0_12px_-2px_rgba(212,175,55,0.3)]'
+                        : 'bg-[#F8F6F2] text-[#444] border-[rgba(0,0,0,0.06)] hover:text-[#111] hover:border-neutral-700 hover:bg-neutral-100'
                     }`}
                   >
                     {cat !== 'ALL' && <CatIcon className="h-3 w-3" />}
                     {cat === 'ALL' ? 'All' : cat}
                     <span className={`ml-0.5 px-1 py-0.5 rounded-full text-[10px] ${
-                      isActive ? 'bg-neutral-950/20 text-neutral-950' : 'bg-neutral-900 text-neutral-500'
+                      isActive ? 'bg-[#F8F6F2] text-neutral-950' : 'bg-white text-[#444]'
                     }`}>
                       {count}
                     </span>
@@ -322,8 +322,8 @@ export default function ExperiencesSection() {
             {/* Experience Cards Grid */}
             {loading ? (
               <div className="text-center py-20">
-                <div className="h-8 w-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto" />
-                <p className="text-xs text-neutral-500 mt-4 font-mono">Loading experiences...</p>
+                <div className="h-8 w-8 border-2 border-[#C89B3C] border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-xs text-[#444] mt-4 font-mono">Loading experiences...</p>
               </div>
             ) : filteredExperiences.length > 0 ? (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -336,21 +336,21 @@ export default function ExperiencesSection() {
                       layout
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="group bg-neutral-950/40 border border-neutral-900 rounded-xl overflow-hidden hover:border-gold-500/20 transition-all duration-300 hover:shadow-[0_0_20px_-5px_rgba(212,175,55,0.08)] flex flex-col"
+                      className="group bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-xl overflow-hidden hover:border-[#C89B3C]/20 transition-all duration-300 hover:shadow-[0_0_20px_-5px_rgba(212,175,55,0.08)] flex flex-col"
                     >
                       {/* Image Header */}
-                      <div className="relative h-36 bg-neutral-900/60 overflow-hidden">
+                      <div className="relative h-36 bg-[#F8F6F2] overflow-hidden">
                         {exp.image ? (
                           <img src={exp.image} alt={exp.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <Star className="h-8 w-8 text-neutral-700" />
+                            <Star className="h-8 w-8 text-[#444]" />
                           </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
                         <div className="absolute top-2 left-2 flex gap-1.5 flex-wrap">
                           {exp.featured && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-gold-500/10 border border-gold-500/20 text-gold-500">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider bg-[#C89B3C]/10 border border-[#C89B3C]/20 text-[#C89B3C]">
                               Featured
                             </span>
                           )}
@@ -362,13 +362,13 @@ export default function ExperiencesSection() {
                         </div>
                         <div className="absolute bottom-2 left-2 flex items-center gap-1.5">
                           {CATEGORY_ICONS[exp.category] && (
-                            <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || 'bg-neutral-900 text-neutral-400 border-neutral-800'}`}>
+                            <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || 'bg-white text-[#444] border-[rgba(0,0,0,0.06)]'}`}>
                               {React.createElement(CATEGORY_ICONS[exp.category], { className: 'h-2.5 w-2.5' })}
                               {exp.category}
                             </span>
                           )}
                           {!CATEGORY_ICONS[exp.category] && (
-                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || 'bg-neutral-900 text-neutral-400 border-neutral-800'}`}>
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono uppercase tracking-wider border ${CATEGORY_COLORS[exp.category] || 'bg-white text-[#444] border-[rgba(0,0,0,0.06)]'}`}>
                               {exp.category}
                             </span>
                           )}
@@ -377,13 +377,13 @@ export default function ExperiencesSection() {
 
                       {/* Card Body */}
                       <div className="p-4 space-y-2.5 flex-1">
-                        <h3 className="font-serif text-sm font-bold text-white tracking-wide leading-snug line-clamp-1">
+                        <h3 className="font-serif text-sm font-bold text-[#111] tracking-wide leading-snug line-clamp-1">
                           {exp.title}
                         </h3>
-                        <p className="text-[11px] text-neutral-400 leading-relaxed line-clamp-2">
+                        <p className="text-[11px] text-[#444] leading-relaxed line-clamp-2">
                           {exp.short_description || exp.description}
                         </p>
-                        <div className="flex flex-wrap items-center gap-2 text-[10px] font-mono text-neutral-500 pt-1.5 border-t border-neutral-900/60">
+                        <div className="flex flex-wrap items-center gap-2 text-[10px] font-mono text-[#444] pt-1.5 border-t border-[rgba(0,0,0,0.06)]/60">
                           <span className="flex items-center gap-1">
                             <MapPin className="h-2.5 w-2.5" />
                             {exp.location}
@@ -401,17 +401,17 @@ export default function ExperiencesSection() {
 
                       {/* Card Footer */}
                       <div className="px-4 pb-4 flex items-center justify-between gap-2">
-                        <span className="text-[10px] font-mono text-neutral-500">
+                        <span className="text-[10px] font-mono text-[#444]">
                           {exp.price === 'Complimentary' ? (
                             <span className="text-emerald-400 font-bold">Complimentary</span>
                           ) : (
-                            <span className="text-white font-bold">{exp.price}</span>
+                            <span className="text-[#333] font-bold">{exp.price}</span>
                           )}
                         </span>
                         <div className="flex gap-1.5">
                           <button
                             onClick={() => openDetail(exp)}
-                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-mono tracking-wider uppercase border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-600 transition-all"
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-mono tracking-wider uppercase border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-[#111] hover:border-neutral-600 transition-all"
                           >
                             <Eye className="h-3 w-3" />
                             View
@@ -421,8 +421,8 @@ export default function ExperiencesSection() {
                             disabled={isFull}
                             className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-mono tracking-wider uppercase transition-all ${
                               isFull
-                                ? 'bg-neutral-900 text-neutral-600 cursor-not-allowed'
-                                : 'bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold'
+                                ? 'bg-white text-[#444] cursor-not-allowed'
+                                : 'bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold'
                             }`}
                           >
                             {isFull ? 'Full' : 'Book'}
@@ -435,15 +435,15 @@ export default function ExperiencesSection() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-20 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10 space-y-3">
-                <div className="h-12 w-12 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center mx-auto">
-                  <Search className="h-5 w-5 text-neutral-600" />
+              <div className="text-center py-20 border border-dashed border-[rgba(0,0,0,0.06)] rounded-xl bg-white/10 space-y-3">
+                <div className="h-12 w-12 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center mx-auto">
+                  <Search className="h-5 w-5 text-[#444]" />
                 </div>
-                <p className="text-sm text-neutral-500">No experiences match your criteria.</p>
-                <p className="text-[10px] text-neutral-600 font-mono">Try adjusting your filters or search terms.</p>
+                <p className="text-sm text-[#444]">No experiences match your criteria.</p>
+                <p className="text-[10px] text-[#444] font-mono">Try adjusting your filters or search terms.</p>
                 <button
                   onClick={() => { setSearchQuery(''); setActiveCategory('ALL'); setFilterFeatured(false); setFilterVirtual('all'); setFilterAvailable(false); }}
-                  className="text-xs text-gold-500 hover:text-gold-400 font-mono"
+                  className="text-xs text-[#C89B3C] hover:text-gold-400 font-mono"
                 >
                   Clear all filters
                 </button>

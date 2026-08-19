@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   HelpCircle,
@@ -178,41 +178,37 @@ export default function FAQSection() {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'community':
-        return <Award className="h-3.5 w-3.5 text-gold-500/80" />;
+        return <Award className="h-3.5 w-3.5 text-[#C89B3C]/80" />;
       case 'membership':
-        return <Sparkles className="h-3.5 w-3.5 text-gold-500/80" />;
+        return <Sparkles className="h-3.5 w-3.5 text-[#C89B3C]/80" />;
       case 'events':
-        return <BookOpen className="h-3.5 w-3.5 text-gold-500/80" />;
+        return <BookOpen className="h-3.5 w-3.5 text-[#C89B3C]/80" />;
       case 'experiences':
-        return <MessageSquare className="h-3.5 w-3.5 text-gold-500/80" />;
+        return <MessageSquare className="h-3.5 w-3.5 text-[#C89B3C]/80" />;
       case 'portal':
-        return <HelpCircle className="h-3.5 w-3.5 text-gold-500/80" />;
+        return <HelpCircle className="h-3.5 w-3.5 text-[#C89B3C]/80" />;
       case 'advocacy':
-        return <Award className="h-3.5 w-3.5 text-gold-500/80" />;
+        return <Award className="h-3.5 w-3.5 text-[#C89B3C]/80" />;
       default:
-        return <HelpCircle className="h-3.5 w-3.5 text-gold-500/80" />;
+        return <HelpCircle className="h-3.5 w-3.5 text-[#C89B3C]/80" />;
     }
   };
 
   return (
-    <section id="FAQ" className="py-24 bg-[#050505] border-t border-neutral-900/60 relative overflow-hidden">
-      {/* Visual Architectural Background Elements */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c0c0c_1px,transparent_1px),linear-gradient(to_bottom,#0c0c0c_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] pointer-events-none" />
-      <div className="absolute top-1/4 right-10 h-72 w-72 rounded-full bg-gold-500/5 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 left-10 h-72 w-72 rounded-full bg-amber-500/3 blur-[120px] pointer-events-none" />
+    <section id="FAQ" className="py-24 bg-white border-t border-neutral-200 relative overflow-hidden">
 
       <div className="mx-auto max-w-4xl px-4 md:px-6 relative z-10 space-y-12">
         {/* Section Header */}
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[11px] font-mono tracking-widest uppercase font-bold">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#C89B3C]/20 bg-[#C89B3C]/5 text-[#C89B3C] text-[11px] font-mono tracking-widest uppercase font-bold">
             <HelpCircle className="h-3.5 w-3.5 animate-pulse" />
             COMMUNITY KNOWLEDGEBASE
           </div>
-          <h2 className="font-serif text-3xl md:text-5xl font-black text-white uppercase tracking-tight">
+          <h2 className="font-serif text-3xl md:text-5xl font-black text-[#111] uppercase tracking-tight">
             Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-500 to-amber-300">Questions</span>
           </h2>
           <div className="h-[1px] w-20 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto" />
-          <p className="text-xs text-neutral-400 max-w-xl mx-auto font-sans leading-relaxed">
+          <p className="text-xs text-[#444] max-w-xl mx-auto font-sans leading-relaxed">
             Everything you need to know about the Co-op Community, membership tiers, events, experiences, and more.
           </p>
         </div>
@@ -226,13 +222,13 @@ export default function FAQSection() {
               placeholder="Search common questions and answers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-neutral-950/80 text-xs border border-neutral-900 rounded-xl px-4 py-3 pl-10 text-white outline-none focus:border-gold-500/50 transition-colors placeholder:text-neutral-600 shadow-inner"
+              className="w-full bg-white/80 text-xs border border-[rgba(0,0,0,0.06)] rounded-xl px-4 py-3 pl-10 text-[#111] outline-none focus:border-[#C89B3C]/50 transition-colors placeholder:text-[#444] shadow-inner"
             />
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-600" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#444]" />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-mono text-neutral-500 hover:text-white uppercase"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[#444] hover:text-[#111] uppercase"
               >
                 Clear
               </button>
@@ -247,8 +243,8 @@ export default function FAQSection() {
                 onClick={() => setActiveCategory(cat.value as 'all' | 'community' | 'membership' | 'events' | 'experiences' | 'portal' | 'advocacy')}
                 className={`px-3 py-1.5 text-[11px] font-bold tracking-widest transition-all rounded-lg uppercase min-h-[32px] ${
                   activeCategory === cat.value
-                    ? 'text-gold-500 bg-gold-500/10 border border-gold-500/30'
-                    : 'text-neutral-400 hover:text-white bg-neutral-950/60 border border-transparent hover:border-neutral-800'
+                    ? 'text-[#C89B3C] bg-[#C89B3C]/10 border border-[#C89B3C]/30'
+                    : 'text-[#444] hover:text-neutral-900 bg-[#F8F6F2] border border-transparent hover:border-[rgba(0,0,0,0.06)]'
                 }`}
               >
                 {cat.label}
@@ -275,8 +271,8 @@ export default function FAQSection() {
                     transition={{ duration: 0.25 }}
                     className={`rounded-2xl border transition-all duration-300 ${
                       isExpanded
-                        ? 'border-gold-500/30 bg-neutral-950/90 shadow-[0_4px_24px_-10px_rgba(212,163,89,0.1)]'
-                        : 'border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60'
+                        ? 'border-[#C89B3C]/30 bg-white/90 shadow-[0_4px_24px_-10px_rgba(212,163,89,0.1)]'
+                        : 'border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] hover:border-[rgba(0,0,0,0.06)] hover:bg-neutral-100'
                     }`}
                   >
                     {/* Header/Trigger */}
@@ -285,17 +281,17 @@ export default function FAQSection() {
                       className="w-full text-left p-5 flex items-center justify-between gap-4 select-none min-h-[64px]"
                     >
                       <div className="flex items-center gap-3.5">
-                        <span className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-850 flex items-center justify-center shrink-0">
+                        <span className="p-1.5 rounded-lg bg-white border border-neutral-850 flex items-center justify-center shrink-0">
                           {getCategoryIcon(faq.category)}
                         </span>
-                        <span className="font-serif text-sm md:text-base font-bold text-white tracking-wide group-hover:text-gold-500 transition-colors">
+                        <span className="font-serif text-sm md:text-base font-bold text-[#111] tracking-wide group-hover:text-[#C89B3C] transition-colors">
                           {faq.question}
                         </span>
                       </div>
                       <motion.div
                         animate={{ rotate: isExpanded ? 180 : 0 }}
                         transition={{ duration: 0.2 }}
-                        className="text-neutral-500 shrink-0"
+                        className="text-[#444] shrink-0"
                       >
                         <ChevronDown className="h-4 w-4" />
                       </motion.div>
@@ -311,14 +307,14 @@ export default function FAQSection() {
                           transition={{ duration: 0.3, ease: 'easeInOut' }}
                           className="overflow-hidden"
                         >
-                          <div className="px-5 pb-5 pt-1 border-t border-neutral-900/60 space-y-4">
-                            <p className="text-xs text-neutral-300 leading-relaxed font-sans">
+                          <div className="px-5 pb-5 pt-1 border-t border-[rgba(0,0,0,0.06)]/60 space-y-4">
+                            <p className="text-xs text-[#444] leading-relaxed font-sans">
                               {faq.answer}
                             </p>
 
                             {/* Helpful interaction widget */}
-                            <div className="flex items-center justify-between pt-4 border-t border-neutral-900/30">
-                              <span className="text-[10px] font-mono text-neutral-500 tracking-wider">
+                            <div className="flex items-center justify-between pt-4 border-t border-[rgba(0,0,0,0.06)]/30">
+                              <span className="text-[10px] font-mono text-[#444] tracking-wider">
                                 Was this answer helpful to you?
                               </span>
                               <div className="flex items-center gap-2">
@@ -326,8 +322,8 @@ export default function FAQSection() {
                                   onClick={() => handleVote(faq.id, 'yes')}
                                   className={`p-1.5 rounded-lg border text-[10px] font-mono font-bold tracking-widest flex items-center gap-1.5 transition-all active:scale-95 min-h-[32px] ${
                                     userVote === 'yes'
-                                      ? 'bg-gold-500/15 border-gold-500/40 text-gold-500'
-                                      : 'bg-neutral-900 border-neutral-850 text-neutral-400 hover:text-white hover:border-neutral-700'
+                                      ? 'bg-[#C89B3C]/15 border-[#C89B3C]/40 text-[#C89B3C]'
+                                      : 'bg-white border-neutral-850 text-[#444] hover:text-neutral-900 hover:border-neutral-700'
                                   }`}
                                   aria-label="Vote helpful"
                                 >
@@ -339,7 +335,7 @@ export default function FAQSection() {
                                   className={`p-1.5 rounded-lg border text-[10px] font-mono font-bold tracking-widest flex items-center gap-1.5 transition-all active:scale-95 min-h-[32px] ${
                                     userVote === 'no'
                                       ? 'bg-red-500/15 border-red-500/40 text-red-400'
-                                      : 'bg-neutral-900 border-neutral-850 text-neutral-400 hover:text-white hover:border-neutral-700'
+                                      : 'bg-white border-neutral-850 text-[#444] hover:text-neutral-900 hover:border-neutral-700'
                                   }`}
                                   aria-label="Vote not helpful"
                                 >
@@ -359,9 +355,9 @@ export default function FAQSection() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center py-12 border border-dashed border-neutral-900 rounded-2xl"
+                className="text-center py-12 border border-dashed border-[rgba(0,0,0,0.06)] rounded-2xl"
               >
-                <p className="text-xs text-neutral-500 font-mono tracking-wider">
+                <p className="text-xs text-[#444] font-mono tracking-wider">
                   No matching questions found in this category.
                 </p>
                 <button
@@ -369,7 +365,7 @@ export default function FAQSection() {
                     setSearchQuery('');
                     setActiveCategory('all');
                   }}
-                  className="mt-3 text-[10px] font-bold text-gold-500 hover:underline tracking-widest uppercase"
+                  className="mt-3 text-[10px] font-bold text-[#C89B3C] hover:underline tracking-widest uppercase"
                 >
                   Reset all filters
                 </button>

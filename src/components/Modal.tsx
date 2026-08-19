@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -53,16 +53,16 @@ export default function Modal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', duration: 0.5, bounce: 0.1 }}
-            className={`relative w-full ${maxWidth} overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950/95 shadow-2xl shadow-black/50 z-10 flex flex-col max-h-[90vh]`}
+            className={`relative w-full ${maxWidth} overflow-hidden rounded-xl border border-[rgba(0,0,0,0.06)] bg-white/95 shadow-2xl shadow-black/50 z-10 flex flex-col max-h-[90vh]`}
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-neutral-900 px-6 py-4">
-              <h3 className="font-serif text-lg tracking-wider text-gold-500 uppercase">
+            <div className="flex items-center justify-between border-b border-[rgba(0,0,0,0.06)] px-6 py-4">
+              <h3 className="font-serif text-lg tracking-wider text-[#C89B3C] uppercase">
                 {title}
               </h3>
               <button
                 onClick={onClose}
-                className="rounded-full p-1.5 text-neutral-400 transition-colors hover:bg-neutral-900 hover:text-white"
+                className="rounded-full p-1.5 text-[#444] transition-colors hover:bg-neutral-100 hover:text-neutral-900"
                 aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
@@ -70,7 +70,7 @@ export default function Modal({
             </div>
 
             {/* Scrollable Content */}
-            <div className="overflow-y-auto px-6 py-6 text-neutral-300">
+            <div className="overflow-y-auto px-6 py-6 text-[#444]">
               {children}
             </div>
           </motion.div>

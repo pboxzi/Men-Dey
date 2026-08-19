@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { CheckCircle, XCircle, Loader2, Mail } from 'lucide-react';
@@ -51,7 +51,7 @@ export default function ConfirmEmail() {
   }, [searchParams, navigate, refreshProfile]);
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -59,8 +59,8 @@ export default function ConfirmEmail() {
       >
         {/* Logo */}
         <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center">
-            <Mail className="h-7 w-7 text-gold-500" />
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-[#C89B3C]/20 flex items-center justify-center">
+            <Mail className="h-7 w-7 text-[#C89B3C]" />
           </div>
         </div>
 
@@ -71,7 +71,7 @@ export default function ConfirmEmail() {
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             >
-              <Loader2 className="h-12 w-12 text-gold-500" />
+              <Loader2 className="h-12 w-12 text-[#C89B3C]" />
             </motion.div>
           )}
           {status === 'success' && (
@@ -96,12 +96,12 @@ export default function ConfirmEmail() {
 
         {/* Title */}
         <div className="space-y-2">
-          <h1 className="font-serif text-2xl font-bold text-white">
+          <h1 className="font-serif text-2xl font-bold text-[#111]">
             {status === 'loading' && 'Confirming Your Email...'}
             {status === 'success' && 'Email Confirmed'}
             {status === 'error' && 'Confirmation Failed'}
           </h1>
-          <p className="text-sm text-neutral-400 leading-relaxed">
+          <p className="text-sm text-[#444] leading-relaxed">
             {status === 'loading' && 'Verifying your account, please wait...'}
             {status === 'success' && message}
             {status === 'error' && message}
@@ -112,7 +112,7 @@ export default function ConfirmEmail() {
         {status === 'success' && (
           <button
             onClick={() => navigate(session ? '/portal' : '/portal?mode=login', { replace: true })}
-            className="px-6 py-3 bg-gold-500 text-neutral-950 text-xs font-bold tracking-wider uppercase rounded-lg hover:bg-gold-400 transition-colors"
+            className="px-6 py-3 bg-[#C89B3C] text-neutral-950 text-xs font-bold tracking-wider uppercase rounded-lg hover:bg-[#A97828] transition-colors"
           >
             {session ? 'Enter Your Portal' : 'Sign In Now'}
           </button>
@@ -121,7 +121,7 @@ export default function ConfirmEmail() {
         {status === 'error' && (
           <button
             onClick={() => navigate('/portal?mode=register', { replace: true })}
-            className="px-6 py-3 bg-gold-500 text-neutral-950 text-xs font-bold tracking-wider uppercase rounded-lg hover:bg-gold-400 transition-colors"
+            className="px-6 py-3 bg-[#C89B3C] text-neutral-950 text-xs font-bold tracking-wider uppercase rounded-lg hover:bg-[#A97828] transition-colors"
           >
             Try Again
           </button>

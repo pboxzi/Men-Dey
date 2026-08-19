@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
 import {
   Users, MessageSquare, Heart, FileText, Trash2, Search, RefreshCw,
@@ -225,7 +225,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
     if (cat === 'FAN ART') return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
     if (cat === 'LETTERS') return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
     if (cat === 'ENCOUNTERS') return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-    return 'bg-neutral-900 text-neutral-500 border-neutral-800';
+    return 'bg-white text-[#444] border-[rgba(0,0,0,0.06)]';
   };
 
   const getCategoryIcon = (cat: string) => {
@@ -242,7 +242,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
         className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-400 text-neutral-950 font-bold text-[10px] font-mono uppercase tracking-widest transition-all"
       >Yes</button>
       <button onClick={() => setConfirmDelete(null)}
-        className="px-2 py-0.5 rounded border border-neutral-700 text-neutral-400 hover:text-white text-[10px] font-mono uppercase transition-all"
+        className="px-2 py-0.5 rounded border border-neutral-700 text-[#444] hover:text-white text-[10px] font-mono uppercase transition-all"
       >No</button>
     </div>
   );
@@ -253,17 +253,17 @@ export default function AdminCommunityManagement({ showToast }: Props) {
   return (
     <div className="space-y-6 text-left">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-900 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[rgba(0,0,0,0.06)] pb-4">
         <div>
           <div className="flex items-center gap-2 text-[10px] font-mono text-gold-400 tracking-widest uppercase mb-1">
             <Sparkles className="h-3 w-3" />
             Community Care
           </div>
           <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">Community Management</h2>
-          <p className="text-xs text-neutral-500 font-mono">Moderate, pin, flag, and nurture all community content.</p>
+          <p className="text-xs text-[#444] font-mono">Moderate, pin, flag, and nurture all community content.</p>
         </div>
         <button onClick={fetchAll} disabled={loading}
-          className="group/btn flex items-center gap-2 px-4 py-2 rounded-xl border border-neutral-800 bg-neutral-900/30 text-neutral-400 hover:bg-neutral-800 hover:text-white text-[10px] font-mono uppercase tracking-widest active:scale-[0.97] transition-all duration-200 disabled:opacity-50"
+          className="group/btn flex items-center gap-2 px-4 py-2 rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] text-[#444] hover:bg-[#F8F6F2] hover:text-white text-[10px] font-mono uppercase tracking-widest active:scale-[0.97] transition-all duration-200 disabled:opacity-50"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : 'group-hover/btn:rotate-180'} transition-transform duration-500`} /> Refresh
         </button>
@@ -272,7 +272,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
       {/* Stats */}
       <div className="grid grid-cols-7 gap-3">
         {[
-          { label: 'Stories', value: stats.posts, icon: FileText, color: 'text-gold-500' },
+          { label: 'Stories', value: stats.posts, icon: FileText, color: 'text-[#C89B3C]' },
           { label: 'Kind Words', value: stats.comments, icon: MessageSquare, color: 'text-emerald-400' },
           { label: 'Club Talks', value: stats.discussions, icon: Users, color: 'text-amber-400' },
           { label: 'Replies', value: stats.replies, icon: Heart, color: 'text-red-400' },
@@ -280,16 +280,16 @@ export default function AdminCommunityManagement({ showToast }: Props) {
           { label: 'Pinned', value: pinnedCount, icon: Pin, color: 'text-sky-400' },
           { label: 'Flagged', value: flaggedCount, icon: Flag, color: 'text-rose-400' },
         ].map(s => (
-          <div key={s.label} className="rounded-lg border border-neutral-900 bg-neutral-950/40 p-3 text-center">
+          <div key={s.label} className="rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-3 text-center">
             <s.icon className={`h-4 w-4 ${s.color} mx-auto`} />
             <p className={`text-lg font-bold font-mono ${s.color}`}>{s.value}</p>
-            <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">{s.label}</p>
+            <p className="text-[10px] font-mono text-[#444] uppercase tracking-wider">{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* Sub-tabs */}
-      <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-lg p-0.5 w-fit">
+      <div className="flex gap-1 bg-white border border-[rgba(0,0,0,0.06)] rounded-lg p-0.5 w-fit">
         {[
           { id: 'posts' as const, label: 'Stories', icon: FileText },
           { id: 'discussions' as const, label: 'Club Talks', icon: Users },
@@ -297,7 +297,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
         ].map(tab => (
           <button key={tab.id} onClick={() => { setActiveSubTab(tab.id); setSearchQuery(''); setFilterCategory('ALL'); setFilterCountry('ALL'); setShowFlaggedOnly(false); }}
             className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded text-[10px] font-mono tracking-widest uppercase transition-all ${
-              activeSubTab === tab.id ? 'bg-gold-500 text-neutral-950 font-bold' : 'text-neutral-500 hover:text-white'
+              activeSubTab === tab.id ? 'bg-[#C89B3C] text-neutral-950 font-bold' : 'text-[#444] hover:text-white'
             }`}
           >
             <tab.icon className="h-3 w-3" /> {tab.label}
@@ -308,16 +308,16 @@ export default function AdminCommunityManagement({ showToast }: Props) {
       {/* Search + Filters */}
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
         <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#444]" />
           <input type="text" placeholder="Search..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-            className="w-full bg-neutral-900 border border-neutral-800 rounded-lg pl-9 pr-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
+            className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg pl-9 pr-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/40" />
         </div>
         {activeSubTab === 'posts' && (
-          <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-lg p-0.5">
+          <div className="flex gap-1 bg-white border border-[rgba(0,0,0,0.06)] rounded-lg p-0.5">
             {categories.map(cat => (
               <button key={cat} onClick={() => setFilterCategory(cat)}
                 className={`px-2.5 py-1 rounded text-[11px] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
-                  filterCategory === cat ? 'bg-gold-500 text-neutral-950 font-bold' : 'text-neutral-500 hover:text-white'
+                  filterCategory === cat ? 'bg-[#C89B3C] text-neutral-950 font-bold' : 'text-[#444] hover:text-white'
                 }`}
               >
                 {cat === 'ALL' ? <Filter className="h-2.5 w-2.5" /> : getCategoryIcon(cat)}
@@ -326,7 +326,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
             ))}
             <button onClick={() => setShowFlaggedOnly(!showFlaggedOnly)}
               className={`px-2.5 py-1 rounded text-[11px] font-mono tracking-wider uppercase transition-all flex items-center gap-1 ${
-                showFlaggedOnly ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'text-neutral-500 hover:text-white'
+                showFlaggedOnly ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'text-[#444] hover:text-white'
               }`}
             >
               <Flag className="h-2.5 w-2.5" /> Flagged {flaggedCount > 0 && `(${flaggedCount})`}
@@ -334,11 +334,11 @@ export default function AdminCommunityManagement({ showToast }: Props) {
           </div>
         )}
         {activeSubTab === 'discussions' && (
-          <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-lg p-0.5 overflow-x-auto max-w-md">
+          <div className="flex gap-1 bg-white border border-[rgba(0,0,0,0.06)] rounded-lg p-0.5 overflow-x-auto max-w-md">
             {['ALL', 'Global', 'USA', 'UK', 'Canada', 'Australia', 'Japan', 'Germany'].map(c => (
               <button key={c} onClick={() => setFilterCountry(c)}
                 className={`px-2 py-1 rounded text-[11px] font-mono tracking-wider uppercase whitespace-nowrap transition-all ${
-                  filterCountry === c ? 'bg-gold-500 text-neutral-950 font-bold' : 'text-neutral-500 hover:text-white'
+                  filterCountry === c ? 'bg-[#C89B3C] text-neutral-950 font-bold' : 'text-[#444] hover:text-white'
                 }`}
               >{c}</button>
             ))}
@@ -348,20 +348,20 @@ export default function AdminCommunityManagement({ showToast }: Props) {
 
       {/* Loading */}
       {loading ? (
-        <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 text-gold-500 animate-spin" /></div>
+        <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 text-[#C89B3C] animate-spin" /></div>
       ) : activeSubTab === 'posts' ? (
         /* ── POSTS TABLE ── */
         filteredPosts.length === 0 ? (
-          <div className="rounded-xl border border-neutral-900 p-12 text-center space-y-2">
-            <FileText className="h-8 w-8 text-neutral-700 mx-auto" />
-            <p className="text-sm text-neutral-500">{showFlaggedOnly ? 'No flagged stories found.' : 'No stories found.'}</p>
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] p-12 text-center space-y-2">
+            <FileText className="h-8 w-8 text-[#444] mx-auto" />
+            <p className="text-sm text-[#444]">{showFlaggedOnly ? 'No flagged stories found.' : 'No stories found.'}</p>
           </div>
         ) : (
-          <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden">
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[10px] uppercase">
+                  <tr className="border-b border-[rgba(0,0,0,0.06)] text-[#444] font-mono text-[10px] uppercase">
                     <th className="px-4 py-3 font-semibold w-8"></th>
                     <th className="px-3 py-3 font-semibold">Author</th>
                     <th className="px-3 py-3 font-semibold">Content</th>
@@ -375,19 +375,19 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                 </thead>
                 <tbody className="divide-y divide-neutral-900/40">
                   {filteredPosts.map(post => (
-                    <tr key={post.id} className={`hover:bg-neutral-950/20 transition-all ${post.pinned ? 'bg-sky-500/5' : ''} ${post.flagged ? 'bg-rose-500/5' : ''}`}>
+                    <tr key={post.id} className={`hover:bg-neutral-100 transition-all ${post.pinned ? 'bg-sky-500/5' : ''} ${post.flagged ? 'bg-rose-500/5' : ''}`}>
                       <td className="px-4 py-3">
-                        <div className="h-7 w-7 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[11px] font-mono font-medium text-gold-500">
+                        <div className="h-7 w-7 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center text-[11px] font-mono font-medium text-[#C89B3C]">
                           {post.avatar_text || post.username?.slice(0, 2).toUpperCase() || '?'}
                         </div>
                       </td>
                       <td className="px-3 py-3">
                         <p className="text-white font-semibold text-[11px] truncate max-w-[120px]">{post.username}</p>
-                        <p className="text-[10px] font-mono text-neutral-500 truncate max-w-[120px]">{post.handle}</p>
+                        <p className="text-[10px] font-mono text-[#444] truncate max-w-[120px]">{post.handle}</p>
                       </td>
                       <td className="px-3 py-3">
                         <button onClick={() => openDetail(post)}
-                          className="text-neutral-300 text-[11px] line-clamp-2 max-w-[220px] text-left hover:text-gold-400 transition-colors cursor-pointer"
+                          className="text-[#444] text-[11px] line-clamp-2 max-w-[220px] text-left hover:text-gold-400 transition-colors cursor-pointer"
                         >{post.content}</button>
                       </td>
                       <td className="px-3 py-3">
@@ -396,9 +396,9 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                           {post.category || 'FAN ART'}
                         </span>
                       </td>
-                      <td className="px-3 py-3 text-center font-mono text-neutral-400">{post.likes}</td>
-                      <td className="px-3 py-3 text-center font-mono text-neutral-400">{post.replies_count || 0}</td>
-                      <td className="px-3 py-3 font-mono text-neutral-500 text-[10px]">
+                      <td className="px-3 py-3 text-center font-mono text-[#444]">{post.likes}</td>
+                      <td className="px-3 py-3 text-center font-mono text-[#444]">{post.replies_count || 0}</td>
+                      <td className="px-3 py-3 font-mono text-[#444] text-[10px]">
                         {post.created_at ? new Date(post.created_at).toLocaleDateString() : '-'}
                       </td>
                       <td className="px-3 py-3">
@@ -418,19 +418,19 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                       <td className="px-3 py-3">
                         <div className="flex items-center justify-center gap-1">
                           <button onClick={() => openDetail(post)}
-                            className="p-1.5 rounded text-neutral-500 hover:text-sky-400 hover:bg-neutral-800 transition-all" title="View details"
+                            className="p-1.5 rounded text-[#444] hover:text-sky-400 hover:bg-[#F8F6F2] transition-all" title="View details"
                           ><Eye className="h-3.5 w-3.5" /></button>
                           <button onClick={() => togglePin(post.id, post.pinned)}
-                            className={`p-1.5 rounded transition-all ${post.pinned ? 'text-sky-400 bg-sky-500/10' : 'text-neutral-500 hover:text-sky-400 hover:bg-neutral-800'}`}
+                            className={`p-1.5 rounded transition-all ${post.pinned ? 'text-sky-400 bg-sky-500/10' : 'text-[#444] hover:text-sky-400 hover:bg-[#F8F6F2]'}`}
                             title={post.pinned ? 'Unpin' : 'Pin to top'}
                           ><Pin className="h-3.5 w-3.5" /></button>
                           <button onClick={() => { setDetailPost(post); setFlagReason(post.flag_reason || ''); }}
-                            className={`p-1.5 rounded transition-all ${post.flagged ? 'text-rose-400 bg-rose-500/10' : 'text-neutral-500 hover:text-rose-400 hover:bg-neutral-800'}`}
+                            className={`p-1.5 rounded transition-all ${post.flagged ? 'text-rose-400 bg-rose-500/10' : 'text-[#444] hover:text-rose-400 hover:bg-[#F8F6F2]'}`}
                             title={post.flagged ? 'Remove flag' : 'Flag as inappropriate'}
                           ><Flag className="h-3.5 w-3.5" /></button>
                           {confirmDelete === post.id ? renderDeleteConfirm(post.id, () => deletePost(post.id)) : (
                             <button onClick={() => setConfirmDelete(post.id)}
-                              className="p-1.5 rounded text-neutral-500 hover:text-red-400 hover:bg-neutral-800 transition-all" title="Remove story"
+                              className="p-1.5 rounded text-[#444] hover:text-red-400 hover:bg-[#F8F6F2] transition-all" title="Remove story"
                             ><Trash2 className="h-3.5 w-3.5" /></button>
                           )}
                         </div>
@@ -445,16 +445,16 @@ export default function AdminCommunityManagement({ showToast }: Props) {
       ) : activeSubTab === 'discussions' ? (
         /* ── DISCUSSIONS TABLE ── */
         filteredDiscussions.length === 0 ? (
-          <div className="rounded-xl border border-neutral-900 p-12 text-center space-y-2">
-            <Globe className="h-8 w-8 text-neutral-700 mx-auto" />
-            <p className="text-sm text-neutral-500">No club talks found.</p>
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] p-12 text-center space-y-2">
+            <Globe className="h-8 w-8 text-[#444] mx-auto" />
+            <p className="text-sm text-[#444]">No club talks found.</p>
           </div>
         ) : (
-          <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden">
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[10px] uppercase">
+                  <tr className="border-b border-[rgba(0,0,0,0.06)] text-[#444] font-mono text-[10px] uppercase">
                     <th className="px-4 py-3 font-semibold">Author</th>
                     <th className="px-3 py-3 font-semibold">Text</th>
                     <th className="px-3 py-3 font-semibold">Club</th>
@@ -464,24 +464,24 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                 </thead>
                 <tbody className="divide-y divide-neutral-900/40">
                   {filteredDiscussions.map(disc => (
-                    <tr key={disc.id} className="hover:bg-neutral-950/20 transition-all">
+                    <tr key={disc.id} className="hover:bg-neutral-100 transition-all">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="h-7 w-7 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[11px] font-mono font-medium text-amber-400">
+                          <div className="h-7 w-7 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center text-[11px] font-mono font-medium text-amber-400">
                             {disc.author?.slice(0, 2).toUpperCase() || '?'}
                           </div>
                           <span className="text-white font-semibold text-[11px]">{disc.author}</span>
                         </div>
                       </td>
                       <td className="px-3 py-3">
-                        <p className="text-neutral-300 text-[11px] line-clamp-2 max-w-[300px]">{disc.text}</p>
+                        <p className="text-[#444] text-[11px] line-clamp-2 max-w-[300px]">{disc.text}</p>
                       </td>
                       <td className="px-3 py-3">
                         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border border-blue-500/20 bg-blue-500/10 text-blue-400">
                           <Globe className="h-2.5 w-2.5" /> {disc.country}
                         </span>
                       </td>
-                      <td className="px-3 py-3 font-mono text-neutral-500 text-[10px]">
+                      <td className="px-3 py-3 font-mono text-[#444] text-[10px]">
                         {disc.created_at ? new Date(disc.created_at).toLocaleDateString() : '-'}
                       </td>
                       <td className="px-3 py-3 text-center">
@@ -502,16 +502,16 @@ export default function AdminCommunityManagement({ showToast }: Props) {
       ) : (
         /* ── FAN CREATIONS TABLE ── */
         filteredFanCreations.length === 0 ? (
-          <div className="rounded-xl border border-neutral-900 p-12 text-center space-y-2">
-            <Star className="h-8 w-8 text-neutral-700 mx-auto" />
-            <p className="text-sm text-neutral-500">No fan works found.</p>
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] p-12 text-center space-y-2">
+            <Star className="h-8 w-8 text-[#444] mx-auto" />
+            <p className="text-sm text-[#444]">No fan works found.</p>
           </div>
         ) : (
-          <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden">
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[10px] uppercase">
+                  <tr className="border-b border-[rgba(0,0,0,0.06)] text-[#444] font-mono text-[10px] uppercase">
                     <th className="px-4 py-3 font-semibold">Creator</th>
                     <th className="px-3 py-3 font-semibold">Title</th>
                     <th className="px-3 py-3 font-semibold">Description</th>
@@ -523,10 +523,10 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                 </thead>
                 <tbody className="divide-y divide-neutral-900/40">
                   {filteredFanCreations.map(fc => (
-                    <tr key={fc.id} className="hover:bg-neutral-950/20 transition-all">
+                    <tr key={fc.id} className="hover:bg-neutral-100 transition-all">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="h-7 w-7 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[11px] font-mono font-medium text-purple-400">
+                          <div className="h-7 w-7 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center text-[11px] font-mono font-medium text-purple-400">
                             {fc.author?.slice(0, 2).toUpperCase() || '?'}
                           </div>
                           <span className="text-white font-semibold text-[11px]">{fc.author}</span>
@@ -536,7 +536,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                         <p className="text-white font-semibold text-[11px] truncate max-w-[150px]">{fc.title}</p>
                       </td>
                       <td className="px-3 py-3">
-                        <p className="text-neutral-300 text-[11px] line-clamp-2 max-w-[200px]">{fc.description}</p>
+                        <p className="text-[#444] text-[11px] line-clamp-2 max-w-[200px]">{fc.description}</p>
                       </td>
                       <td className="px-3 py-3">
                         <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${
@@ -545,8 +545,8 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                           {fc.category || 'Fan Art'}
                         </span>
                       </td>
-                      <td className="px-3 py-3 text-center font-mono text-neutral-400">{fc.likes || 0}</td>
-                      <td className="px-3 py-3 font-mono text-neutral-500 text-[10px]">
+                      <td className="px-3 py-3 text-center font-mono text-[#444]">{fc.likes || 0}</td>
+                      <td className="px-3 py-3 font-mono text-[#444] text-[10px]">
                         {fc.created_at ? new Date(fc.created_at).toLocaleDateString() : '-'}
                       </td>
                       <td className="px-3 py-3 text-center">
@@ -576,23 +576,23 @@ export default function AdminCommunityManagement({ showToast }: Props) {
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl border border-neutral-800 bg-[#0a0a0c] p-6 shadow-2xl"
+              className="w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-2xl border border-[rgba(0,0,0,0.06)] bg-white p-6 shadow-2xl"
               onClick={e => e.stopPropagation()}
             >
               {/* Modal header */}
               <div className="flex items-start justify-between mb-5">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-sm font-mono font-medium text-gold-500">
+                  <div className="h-10 w-10 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center text-sm font-mono font-medium text-[#C89B3C]">
                     {detailPost.avatar_text || detailPost.username?.slice(0, 2).toUpperCase() || '?'}
                   </div>
                   <div>
                     <p className="text-sm font-bold text-white">{detailPost.username}</p>
-                    <p className="text-[10px] font-mono text-neutral-500">{detailPost.handle}</p>
+                    <p className="text-[10px] font-mono text-[#444]">{detailPost.handle}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => togglePin(detailPost.id, detailPost.pinned)}
-                    className={`p-2 rounded-lg transition-all ${detailPost.pinned ? 'bg-sky-500/15 text-sky-400 border border-sky-500/30' : 'bg-neutral-900 text-neutral-500 hover:text-sky-400 hover:bg-neutral-800 border border-neutral-800'}`}
+                    className={`p-2 rounded-lg transition-all ${detailPost.pinned ? 'bg-sky-500/15 text-sky-400 border border-sky-500/30' : 'bg-white text-[#444] hover:text-sky-400 hover:bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]'}`}
                     title={detailPost.pinned ? 'Unpin' : 'Pin'}
                   ><Pin className="h-4 w-4" /></button>
                   {detailPost.flagged ? (
@@ -602,13 +602,13 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                     ><Flag className="h-4 w-4" /></button>
                   ) : (
                     <div className="relative group">
-                      <button className="p-2 rounded-lg bg-neutral-900 text-neutral-500 hover:text-rose-400 hover:bg-neutral-800 border border-neutral-800 transition-all"
+                      <button className="p-2 rounded-lg bg-white text-[#444] hover:text-rose-400 hover:bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] transition-all"
                         title="Flag"
                       ><Flag className="h-4 w-4" /></button>
-                      <div className="absolute right-0 top-full mt-2 w-64 bg-[#0c0c0e] border border-neutral-800 rounded-xl p-3 shadow-2xl opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible group-hover:opacity-100 group-hover:visible transition-all z-10">
-                        <p className="text-[10px] font-mono text-neutral-500 mb-2 uppercase tracking-wider">Flag reason</p>
+                      <div className="absolute right-0 top-full mt-2 w-64 bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-xl p-3 shadow-2xl opacity-0 invisible group-focus-within:opacity-100 group-focus-within:visible group-hover:opacity-100 group-hover:visible transition-all z-10">
+                        <p className="text-[10px] font-mono text-[#444] mb-2 uppercase tracking-wider">Flag reason</p>
                         <textarea value={flagReason} onChange={e => setFlagReason(e.target.value)}
-                          className="w-full bg-neutral-900 border border-neutral-800 rounded-lg p-2 text-xs text-white outline-none focus:border-rose-500/40 mb-2 resize-none" rows={2}
+                          className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg p-2 text-xs text-white outline-none focus:border-rose-500/40 mb-2 resize-none" rows={2}
                           placeholder="Why is this inappropriate?" />
                         <button onClick={() => { if (flagReason.trim()) toggleFlag(detailPost.id, flagReason.trim()); }}
                           className="w-full px-3 py-1.5 rounded-lg bg-rose-500 hover:bg-rose-400 text-neutral-950 font-bold text-[10px] font-mono uppercase transition-all"
@@ -617,7 +617,7 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                     </div>
                   )}
                   <button onClick={() => setDetailPost(null)}
-                    className="p-2 rounded-lg bg-neutral-900 text-neutral-500 hover:text-white hover:bg-neutral-800 border border-neutral-800 transition-all"
+                    className="p-2 rounded-lg bg-white text-[#444] hover:text-white hover:bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] transition-all"
                   ><X className="h-4 w-4" /></button>
                 </div>
               </div>
@@ -628,58 +628,58 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                   {getCategoryIcon(detailPost.category || 'FAN ART')}
                   {detailPost.category || 'FAN ART'}
                 </span>
-                <p className="text-sm text-neutral-200 leading-relaxed">{detailPost.content}</p>
+                <p className="text-sm text-[#444] leading-relaxed">{detailPost.content}</p>
                 {detailPost.image && (
-                  <div className="mt-3 rounded-xl overflow-hidden border border-neutral-900/60">
+                  <div className="mt-3 rounded-xl overflow-hidden border border-[rgba(0,0,0,0.06)]/60">
                     <img src={detailPost.image} alt="Post image" loading="lazy" className="w-full h-48 object-cover" />
                   </div>
                 )}
               </div>
 
               {/* Stats row */}
-              <div className="flex items-center gap-4 text-[11px] font-mono text-neutral-500 border-t border-neutral-900/50 pt-3 mb-4">
+              <div className="flex items-center gap-4 text-[11px] font-mono text-[#444] border-t border-[rgba(0,0,0,0.06)]/50 pt-3 mb-4">
                 <span className="flex items-center gap-1.5"><Heart className="h-3.5 w-3.5 text-red-400" /> {detailPost.likes} {detailPost.likes === 1 ? 'Heart' : 'Hearts'}</span>
-                <span className="flex items-center gap-1.5"><MessageCircle className="h-3.5 w-3.5 text-gold-500" /> {detailPost.replies_count || 0} Responses</span>
+                <span className="flex items-center gap-1.5"><MessageCircle className="h-3.5 w-3.5 text-[#C89B3C]" /> {detailPost.replies_count || 0} Responses</span>
                 <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {detailPost.created_at ? new Date(detailPost.created_at).toLocaleDateString() : '-'}</span>
                 {detailPost.pinned && <span className="flex items-center gap-1.5 text-sky-400"><Pin className="h-3.5 w-3.5" /> Pinned</span>}
                 {detailPost.flagged && <span className="flex items-center gap-1.5 text-rose-400"><ShieldAlert className="h-3.5 w-3.5" /> Flagged{detailPost.flag_reason ? `: ${detailPost.flag_reason}` : ''}</span>}
               </div>
 
               {/* Comments section */}
-              <div className="border-t border-neutral-900/50 pt-4">
+              <div className="border-t border-[rgba(0,0,0,0.06)]/50 pt-4">
                 <h4 className="text-[10px] font-mono font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <MessageSquare className="h-3.5 w-3.5 text-gold-500" />
+                  <MessageSquare className="h-3.5 w-3.5 text-[#C89B3C]" />
                   Responses ({detailComments.length})
                 </h4>
 
                 <div className="space-y-3 max-h-60 overflow-y-auto pr-1 mb-4">
                   {detailComments.length === 0 ? (
-                    <p className="text-[11px] text-neutral-600 italic">No responses yet.</p>
+                    <p className="text-[11px] text-[#444] italic">No responses yet.</p>
                   ) : (
                     getPostComments(detailPost.id).map(comment => (
-                      <div key={comment.id} className="p-3 rounded-lg border border-neutral-900/60 bg-neutral-900/15 space-y-2">
-                        <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500">
-                          <span className={`font-bold flex items-center gap-1.5 ${comment.username === 'Management' ? 'text-gold-400' : 'text-gold-500/90'}`}>
-                            <span className="h-5 w-5 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-medium shrink-0">
+                      <div key={comment.id} className="p-3 rounded-lg border border-[rgba(0,0,0,0.06)]/60 bg-white/15 space-y-2">
+                        <div className="flex justify-between items-center text-[10px] font-mono text-[#444]">
+                          <span className={`font-bold flex items-center gap-1.5 ${comment.username === 'Management' ? 'text-gold-400' : 'text-[#C89B3C]/90'}`}>
+                            <span className="h-5 w-5 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center text-[10px] font-medium shrink-0">
                               {comment.avatar_text || comment.username?.charAt(0).toUpperCase() || '?'}
                             </span>
                             {comment.username}
                             {comment.username === 'Management' && (
-                              <span className="text-[10px] font-mono uppercase tracking-wider bg-gold-500/15 text-gold-400 border border-gold-500/30 px-1 py-0.5 rounded">Admin</span>
+                              <span className="text-[10px] font-mono uppercase tracking-wider bg-[#C89B3C]/15 text-gold-400 border border-[#C89B3C]/30 px-1 py-0.5 rounded">Admin</span>
                             )}
                           </span>
                           <span>{comment.created_at ? new Date(comment.created_at).toLocaleDateString() : ''}</span>
                         </div>
-                        <p className="text-xs text-neutral-200 leading-relaxed">{comment.content}</p>
+                        <p className="text-xs text-[#444] leading-relaxed">{comment.content}</p>
                         {comment.replies && comment.replies.length > 0 && (
-                          <div className="pl-4 ml-2 border-l border-gold-500/15 space-y-2 pt-1">
+                          <div className="pl-4 ml-2 border-l border-[#C89B3C]/15 space-y-2 pt-1">
                             {comment.replies.map(reply => (
-                              <div key={reply.id} className="bg-neutral-950/40 p-2 rounded-lg border border-neutral-900/40 space-y-1">
-                                <div className="flex justify-between items-center text-[11px] font-mono text-neutral-500">
-                                  <span className="text-neutral-300 font-semibold">{reply.username}</span>
+                              <div key={reply.id} className="bg-[#F8F6F2] p-2 rounded-lg border border-[rgba(0,0,0,0.06)]/40 space-y-1">
+                                <div className="flex justify-between items-center text-[11px] font-mono text-[#444]">
+                                  <span className="text-[#444] font-semibold">{reply.username}</span>
                                   <span>{reply.created_at ? new Date(reply.created_at).toLocaleDateString() : ''}</span>
                                 </div>
-                                <p className="text-neutral-300 text-[11px] leading-relaxed">{reply.content}</p>
+                                <p className="text-[#444] text-[11px] leading-relaxed">{reply.content}</p>
                               </div>
                             ))}
                           </div>
@@ -690,16 +690,16 @@ export default function AdminCommunityManagement({ showToast }: Props) {
                 </div>
 
                 {/* Admin comment input */}
-                <div className="flex gap-2 pt-3 border-t border-neutral-900/30">
+                <div className="flex gap-2 pt-3 border-t border-[rgba(0,0,0,0.06)]/30">
                   <input
                     type="text" value={adminCommentText}
                     onChange={e => setAdminCommentText(e.target.value)}
                     placeholder="Write an admin response..."
-                    className="flex-1 bg-neutral-900 text-xs border border-neutral-800 rounded-lg px-3 py-2.5 text-white outline-none focus:border-gold-500/40 placeholder-neutral-600"
+                    className="flex-1 bg-white text-xs border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-white outline-none focus:border-[#C89B3C]/40 placeholder-neutral-600"
                     onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); adminComment(detailPost.id); } }}
                   />
                   <button onClick={() => adminComment(detailPost.id)} disabled={!adminCommentText.trim()}
-                    className="px-4 bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-neutral-950 font-bold rounded-lg text-[10px] uppercase transition-all font-mono flex items-center gap-1.5"
+                    className="px-4 bg-[#C89B3C] hover:bg-[#A97828] disabled:opacity-50 text-neutral-950 font-bold rounded-lg text-[10px] uppercase transition-all font-mono flex items-center gap-1.5"
                   ><MessageCircle className="h-3.5 w-3.5" /> Reply</button>
                 </div>
               </div>

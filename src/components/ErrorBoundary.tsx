@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 interface Props {
   children: React.ReactNode;
@@ -34,13 +34,13 @@ export default class ErrorBoundary extends React.Component<Props, State> {
             <div className="mx-auto w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
               <span className="text-red-500 text-lg">!</span>
             </div>
-            <h3 className="text-sm font-bold text-white">Something went wrong</h3>
-            <p className="text-xs text-neutral-400">
+            <h3 className="text-sm font-bold text-[#111]">Something went wrong</h3>
+            <p className="text-xs text-[#444]">
               This section couldn't load. Please try refreshing the page.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 text-xs font-bold text-gold-500 border border-gold-500/30 rounded-lg hover:bg-gold-500/5 transition-colors"
+              className="px-4 py-2 text-xs font-bold text-[#C89B3C] border border-[#C89B3C]/30 rounded-lg hover:bg-[#C89B3C]/5 transition-colors"
             >
               Refresh Page
             </button>

@@ -1,24 +1,20 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Routes, Route } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Star,
   Crown,
   Calendar,
   HelpCircle,
-  Heart,
   Play,
   ArrowRight,
   User,
-  MessageSquare,
   ChevronLeft,
   ChevronRight,
-  Mail,
-  Send,
   Check,
   Instagram,
   Youtube,
@@ -28,9 +24,11 @@ import {
   Award,
   Compass,
   Pause,
+  BookOpen,
   Sparkles,
   Home,
-  BookOpen
+  Lock,
+  ShieldAlert,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PaletteType, applyTheme } from './utils/theme';
@@ -361,16 +359,16 @@ export default function App() {
   // Loading gate: show welcome skeleton while profile loads after sign-in
   if (authLoading && user) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center space-y-6 animate-pulse">
           <div className="mx-auto w-16 h-16 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
             <Star className="h-7 w-7 text-gold-500" />
           </div>
           <div className="space-y-2">
-            <h1 className="font-serif text-xl font-bold text-white tracking-widest">WELCOME BACK</h1>
-            <p className="text-xs font-mono text-neutral-500 tracking-wider">Preparing your portal...</p>
+            <h1 className="font-serif text-xl font-bold text-[#111] tracking-widest">WELCOME BACK</h1>
+            <p className="text-xs font-mono text-neutral-700 tracking-wider">Preparing your portal...</p>
           </div>
-          <div className="w-48 h-1 mx-auto bg-neutral-900 rounded-full overflow-hidden">
+          <div className="w-48 h-1 mx-auto bg-white rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-gold-500 to-amber-500 rounded-full" style={{ animation: 'shimmer 1.5s ease-in-out infinite', width: '60%' }} />
           </div>
         </div>
@@ -401,51 +399,45 @@ export default function App() {
   }
 
   return (
-      <div className="min-h-screen bg-[#050505] text-neutral-100 font-sans selection:bg-gold-500 selection:text-neutral-950 pb-24 lg:pb-0 w-full max-w-full">
-      {/* 1. Header (Navbar) */}
-      <header className="sticky top-0 z-40 w-full border-b border-neutral-900/60 bg-[#050505]/95 backdrop-blur-md">
-        <div className="flex items-center px-2 py-2.5 sm:px-4 md:px-6 gap-2 sm:gap-4 w-full min-w-0">
+      <div className="min-h-screen bg-[#FCFAF7] text-[#1E1E1E] font-sans selection:bg-[#C89B3C]/20 selection:text-[#1E1E1E] pb-24 lg:pb-0 w-full max-w-full">
+      {/* 1. Header (Floating Glass Navbar) */}
+      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-6xl rounded-2xl bg-white/80 backdrop-blur-xl border border-black/[0.04] shadow-[0_2px_24px_-4px_rgba(0,0,0,0.06)]">
+        <div className="flex items-center px-3 py-2.5 sm:px-5 gap-3 w-full min-w-0">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2 group shrink-0 min-w-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gradient-to-br from-gold-500/20 to-gold-600/10 border border-gold-500/20 flex items-center justify-center group-hover:border-gold-500/40 transition-colors shrink-0">
-              <span className="font-serif text-xs sm:text-sm font-bold text-gold-500">GA</span>
+          <a href="/" className="flex items-center gap-2.5 group shrink-0 min-w-0" onClick={(e) => { e.preventDefault(); handleNavClick('HOME'); }}>
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#C89B3C] to-[#A97828] flex items-center justify-center shrink-0 shadow-sm">
+              <span className="font-serif text-xs font-bold text-[#111]">GA</span>
             </div>
             <div className="flex flex-col min-w-0 shrink">
-              <span className="text-[11px] sm:text-[13px] font-bold tracking-[0.12em] text-white leading-tight truncate">
+              <span className="text-[11px] sm:text-[12px] font-bold tracking-[0.14em] text-[#1E1E1E] leading-tight truncate">
                 GILLIAN ANDERSON
               </span>
-              <span className="text-[10px] sm:text-[11px] font-mono tracking-[0.2em] text-gold-500/70 leading-tight">
+              <span className="text-[9px] sm:text-[10px] font-mono tracking-[0.25em] text-[#C89B3C] leading-tight">
                 OFFICIAL
               </span>
             </div>
           </a>
 
           {/* Desktop Navigation — centered */}
-          <nav className="hidden lg:flex items-center justify-center gap-0.5 flex-1 min-w-0">
+          <nav className="hidden lg:flex items-center justify-center gap-1 flex-1 min-w-0">
             {[
               'HOME',
               'ABOUT',
               'JOURNAL',
               'MEDIA',
-              'COMMUNITY',
-              'EXPERIENCES',
               'MEMBERSHIP',
-              'EVENTS',
               'FAQ',
             ].map((link) => (
               <button
                 key={link}
                 onClick={() => handleNavClick(link)}
-                className={`relative px-3 py-2 text-[10px] font-semibold tracking-[0.15em] transition-all rounded-md whitespace-nowrap ${
+                className={`relative px-3.5 py-2 text-[10px] font-semibold tracking-[0.14em] transition-all duration-300 rounded-full whitespace-nowrap ${
                   activeNav === link
-                    ? 'text-gold-500'
-                    : 'text-neutral-500 hover:text-white'
+                    ? 'text-[#C89B3C] bg-[#C89B3C]/[0.06]'
+                    : 'text-[#444] hover:text-[#1E1E1E]'
                 }`}
               >
                 {link}
-                {activeNav === link && (
-                  <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-4 h-[2px] bg-gold-500 rounded-full" />
-                )}
               </button>
             ))}
           </nav>
@@ -454,20 +446,20 @@ export default function App() {
           <div className="flex items-center gap-2 shrink-0 ml-auto">
             {/* Auth Buttons (logged out) or Profile Menu (logged in) */}
             {!user ? (
-              <div className="flex items-center gap-1 sm:gap-1.5">
+              <div className="flex items-center gap-2">
                 <button onClick={() => navigate('/portal?mode=login')}
-                  className="px-2 sm:px-3 py-1.5 text-[11px] font-bold tracking-widest text-neutral-300 hover:text-white border border-neutral-800 hover:border-gold-500/30 rounded-lg transition-all shrink-0">
+                  className="px-3 py-2 text-[10px] font-semibold tracking-[0.12em] text-[#444] hover:text-[#1E1E1E] transition-all shrink-0">
                   SIGN IN
                 </button>
                 <button onClick={() => navigate('/portal?mode=register')}
-                  className="px-2 sm:px-3 py-1.5 text-[11px] font-bold tracking-widest text-neutral-950 bg-gold-500 hover:bg-gold-400 rounded-lg transition-all shrink-0">
+                  className="px-4 py-2 text-[10px] font-bold tracking-[0.12em] text-white bg-[#C89B3C] hover:bg-[#A97828] rounded-full transition-all shrink-0 shadow-sm hover:shadow-md">
                   REGISTER
                 </button>
               </div>
             ) : (
               <div className="relative">
                 <button onClick={() => setProfileOpen(!profileOpen)}
-                  className="flex items-center gap-1.5 p-1.5 rounded-full border border-neutral-800 hover:border-gold-500/40 bg-neutral-900/50 transition-all active:scale-95 relative">
+                  className="flex items-center gap-1.5 p-1.5 rounded-full border border-neutral-200 hover:border-gold-500/40 bg-neutral-50 transition-all active:scale-95 relative">
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold-500/20 to-gold-600/10 flex items-center justify-center">
                     <User className="h-3.5 w-3.5 text-gold-500" />
                   </div>
@@ -479,7 +471,7 @@ export default function App() {
                       <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
                       <motion.div initial={{ opacity: 0, y: -8, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8, scale: 0.95 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 top-full mt-2 w-52 bg-[#0a0a0a] border border-neutral-800 rounded-lg shadow-2xl shadow-black/60 z-50 overflow-hidden">
+                        className="absolute right-0 top-full mt-2 w-52 bg-white border border-neutral-200 rounded-lg shadow-2xl shadow-black/60 z-50 overflow-hidden">
                         {profile?.role !== 'admin' && (
                           <div className="p-2">
                             <button onClick={() => { navigate('/portal'); setProfileOpen(false); }}
@@ -489,20 +481,20 @@ export default function App() {
                               </div>
                               <div>
                                 <p className="text-xs font-bold text-gold-500 tracking-wide">MY PORTAL</p>
-                                <p className="text-[11px] text-neutral-400 tracking-wide">Your personal sanctuary</p>
+                                <p className="text-[11px] text-neutral-600 tracking-wide">Your personal sanctuary</p>
                               </div>
                             </button>
                           </div>
                         )}
-                        <div className="border-t border-neutral-800 p-2">
+                        <div className="border-t border-neutral-200 p-2">
                           <button onClick={() => { signOut(); setProfileOpen(false); }}
-                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left hover:bg-neutral-900 transition-colors">
-                            <div className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center">
-                              <User className="h-3.5 w-3.5 text-neutral-400" />
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-left hover:bg-white transition-colors">
+                            <div className="w-8 h-8 rounded-full bg-neutral-50 border border-neutral-700 flex items-center justify-center">
+                              <User className="h-3.5 w-3.5 text-neutral-600" />
                             </div>
                             <div>
-                              <p className="text-[11px] font-semibold text-neutral-200 tracking-wide">Sign Out</p>
-                              <p className="text-[11px] text-neutral-500 tracking-wide">See you soon</p>
+                              <p className="text-[11px] font-semibold text-neutral-700 tracking-wide">Sign Out</p>
+                              <p className="text-[11px] text-neutral-700 tracking-wide">See you soon</p>
                             </div>
                           </button>
                         </div>
@@ -515,27 +507,14 @@ export default function App() {
           </div>
         </div>
 
-        {/* Subtle global scroll progress indicator */}
-        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-neutral-900/40 pointer-events-none z-50 overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-amber-600 via-gold-500 to-amber-500 transition-all duration-75"
-            style={{ width: `${scrollProgress}%` }}
-          />
-        </div>
       </header>
 
       {/* 2. Hero Section */}
       {activeNav === 'HOME' && (
-        <section className="relative overflow-hidden bg-[#050505] py-10 md:py-24 border-b border-neutral-900/60">
-          {/* Elegant Architectural Tech-Arts Grid Background */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c0c0c_1px,transparent_1px),linear-gradient(to_bottom,#0c0c0c_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] pointer-events-none" />
-          
-          {/* Glowing Ambient Spotlights */}
-          <div className="absolute top-12 left-10 h-72 w-72 rounded-full bg-gold-500/5 blur-[100px] pointer-events-none" />
-          <div className="absolute bottom-12 right-20 h-96 w-96 rounded-full bg-amber-500/3 blur-[140px] pointer-events-none" />
-
-          {/* Simulated Slow Moving Spotlight Beam */}
-          <div className="absolute -top-40 left-1/3 w-[300px] sm:w-[500px] h-[600px] bg-gradient-to-b from-gold-500/3 via-transparent to-transparent -rotate-12 blur-3xl pointer-events-none" />
+        <section className="relative overflow-hidden bg-[#FCFAF7] pt-28 pb-16 md:pt-36 md:pb-24">
+          {/* Warm ambient glow */}
+          <div className="absolute top-20 left-1/4 h-96 w-96 rounded-full bg-[#C89B3C]/[0.04] blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-0 right-1/4 h-64 w-64 rounded-full bg-[#EFE7DA]/60 blur-[100px] pointer-events-none" />
 
           <div className="mx-auto max-w-7xl px-4 md:px-6 relative z-10">
             <motion.div 
@@ -547,7 +526,7 @@ export default function App() {
               
               {/* Left: Interactive Slide Visualizer */}
               <motion.div variants={heroScaleVariants} className="lg:col-span-4 relative group flex flex-col items-center order-2 lg:order-none">
-                <div className="relative aspect-[3/4] w-full max-w-[340px] sm:max-w-[400px] lg:max-w-[300px] overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950 shadow-[0_0_50px_-12px_rgba(212,163,89,0.15)] transition-all duration-500 group-hover:border-gold-500/30">
+                <div className="relative aspect-[3/4] w-full max-w-[340px] sm:max-w-[400px] lg:max-w-[300px] overflow-hidden rounded-[20px] bg-white shadow-[0_8px_40px_-8px_rgba(0,0,0,0.08)] transition-all duration-500">
                   {/* Visual filter transitions on slide change */}
                   <motion.div
                     key={currentSlideIdx}
@@ -558,8 +537,8 @@ export default function App() {
                   >
                     {/* Premium Shimmer Skeleton Loader (Only visible while image is loading) */}
                     {!loadedImages[activeSlide.image] && (
-                      <div className="absolute inset-0 bg-neutral-950 flex flex-col items-center justify-center z-10">
-                        <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-900/40 to-neutral-950 animate-pulse" />
+                      <div className="absolute inset-0 bg-white flex flex-col items-center justify-center z-10">
+                        <div className="absolute inset-0 bg-gradient-to-r from-neutral-950 via-neutral-100/40 to-neutral-950 animate-pulse" />
                         <div className="w-8 h-8 rounded-full border border-gold-500/10 flex items-center justify-center animate-spin">
                           <div className="w-5 h-5 rounded-full border-t border-gold-500/40" />
                         </div>
@@ -573,7 +552,7 @@ export default function App() {
                       // @ts-ignore
                       fetchPriority="high"
                       onLoad={() => handleImageLoad(activeSlide.image)}
-                      className={`h-full w-full object-cover grayscale brightness-90 group-hover:grayscale-0 group-hover:scale-[1.02] transition-all duration-700 ${
+                      className={`h-full w-full object-cover brightness-95 group-hover:scale-[1.02] transition-all duration-700 ${
                         loadedImages[activeSlide.image] ? 'opacity-100 scale-100 blur-0' : 'opacity-0 scale-105 blur-md'
                       }`}
                     />
@@ -582,9 +561,9 @@ export default function App() {
                   </motion.div>
 
                   {/* Vertical Navigation Slide Counts */}
-                  <div className="absolute left-5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 font-mono text-[11px] text-neutral-500 z-10">
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5 font-mono text-[11px] text-neutral-700 z-10">
                     <span className="text-gold-500 font-bold text-xs">{activeSlide.number}</span>
-                    <div className="h-10 w-[1px] bg-neutral-800" />
+                    <div className="h-10 w-[1px] bg-neutral-50" />
                     <span className="font-semibold">05</span>
                   </div>
 
@@ -595,7 +574,7 @@ export default function App() {
                         handlePrevSlide();
                         setIsPlayingSlide(false); // Pause on manual action
                       }}
-                      className="p-2 rounded-full border border-neutral-800/80 bg-black/80 text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors"
+                      className="p-2 rounded-full bg-white/80 backdrop-blur-sm text-[#444] hover:text-[#C89B3C] transition-colors shadow-sm"
                       aria-label="Previous slide"
                     >
                       <ChevronLeft className="h-3.5 w-3.5" />
@@ -605,7 +584,7 @@ export default function App() {
                         handleNextSlide();
                         setIsPlayingSlide(false); // Pause on manual action
                       }}
-                      className="p-2 rounded-full border border-neutral-800/80 bg-black/80 text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors"
+                      className="p-2 rounded-full bg-white/80 backdrop-blur-sm text-[#444] hover:text-[#C89B3C] transition-colors shadow-sm"
                       aria-label="Next slide"
                     >
                       <ChevronRight className="h-3.5 w-3.5" />
@@ -613,7 +592,7 @@ export default function App() {
                   </div>
 
                   {/* Smooth progress bar under slide image */}
-                  <div className="absolute bottom-0 left-0 w-full h-[3px] bg-neutral-900/60 z-20">
+                  <div className="absolute bottom-0 left-0 w-full h-[3px] bg-neutral-50 z-20">
                     <motion.div
                       key={currentSlideIdx}
                       initial={{ width: '0%' }}
@@ -641,10 +620,10 @@ export default function App() {
                       aria-label={`Go to slide ${idx + 1}`}
                     />
                   ))}
-                  <div className="w-[1px] h-3 bg-neutral-800 mx-1" />
+                  <div className="w-[1px] h-3 bg-neutral-50 mx-1" />
                   <button
                     onClick={() => setIsPlayingSlide(!isPlayingSlide)}
-                    className="p-1 rounded text-neutral-500 hover:text-gold-500 transition-colors"
+                    className="p-1 rounded text-neutral-700 hover:text-gold-500 transition-colors"
                     title={isPlayingSlide ? "Pause Autoplay" : "Resume Autoplay"}
                   >
                     {isPlayingSlide ? (
@@ -666,17 +645,17 @@ export default function App() {
                     </span>
                     <span className="h-[1px] w-5 bg-gold-500/40" />
                   </div>
-                  <p className="text-[11px] text-neutral-500 max-w-xs mx-auto leading-relaxed">
+                  <p className="text-[11px] text-neutral-700 max-w-xs mx-auto leading-relaxed">
                     Your hub for events, experiences, and connection with Gillian Anderson.
                   </p>
                   {userName ? (
-                    <h1 className="font-serif text-[28px] sm:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-white to-neutral-400 leading-[1.1] uppercase">
+                    <h1 className="font-serif text-[32px] sm:text-5xl font-bold text-[#1E1E1E] leading-[1.1] tracking-tight">
                       Welcome back,
-                      <span className="text-white hover:text-gold-500 transition-colors duration-500">{userName}</span>
+                      <span className="text-[#C89B3C]">{userName}</span>
                     </h1>
                   ) : (
-                    <h1 className="font-serif text-[28px] sm:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] sm:uppercase">
-                      Gillian Anderson
+                    <h1 className="font-serif text-[32px] sm:text-5xl font-bold text-[#1E1E1E] leading-[1.05] tracking-tight">
+                      Gillian<br />Anderson
                     </h1>
                   )}
                 </motion.div>
@@ -687,21 +666,21 @@ export default function App() {
                 {/* Name — desktop only inside this container */}
                 <motion.div variants={heroItemVariants} className="hidden lg:block space-y-2">
                   <div className="flex items-center gap-2 justify-center lg:justify-start">
-                    <span className="h-[1px] w-5 bg-gold-500/40" />
-                    <span className="text-[10px] font-mono tracking-[0.3em] text-gold-500 uppercase font-bold">
+                    <span className="h-[1px] w-8 bg-[#C89B3C]/30" />
+                    <span className="text-[10px] font-mono tracking-[0.3em] text-[#C89B3C] uppercase font-semibold">
                       OFFICIAL COMMUNITY
                     </span>
-                    <span className="h-[1px] w-5 bg-gold-500/40" />
+                    <span className="h-[1px] w-8 bg-[#C89B3C]/30" />
                   </div>
                   {userName ? (
-                    <h1 className="font-serif text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 via-white to-neutral-400 leading-[1.1] uppercase">
+                    <h1 className="font-serif text-5xl xl:text-6xl font-bold text-[#1E1E1E] leading-[1.1] tracking-tight">
                       Welcome back, <br />
-                      <span className="text-white hover:text-gold-500 transition-colors duration-500">{userName}</span>
+                      <span className="text-[#C89B3C]">{userName}</span>
                     </h1>
                   ) : (
-                    <h1 className="font-serif text-5xl xl:text-6xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-100 to-neutral-400 leading-[1.05] uppercase">
-                      GILLIAN <br />
-                      <span className="text-white hover:text-gold-500 transition-colors duration-500">ANDERSON</span>
+                    <h1 className="font-serif text-5xl xl:text-6xl font-bold text-[#1E1E1E] leading-[1.05] tracking-tight">
+                      Gillian <br />
+                      <span className="text-[#C89B3C]">Anderson</span>
                     </h1>
                   )}
                 </motion.div>
@@ -717,7 +696,7 @@ export default function App() {
                       transition={{ duration: 0.4 }}
                       className="space-y-4"
                     >
-                      <p className="font-serif italic text-base md:text-lg text-neutral-300 leading-relaxed max-w-md">
+                      <p className="font-serif italic text-base md:text-lg text-neutral-700 leading-relaxed max-w-md">
                         "{activeSlide.quote}"
                       </p>
                       <div className="flex items-center gap-2 justify-center lg:justify-start">
@@ -731,10 +710,10 @@ export default function App() {
                 </motion.div>
 
                 {/* Primary Buttons */}
-                <motion.div variants={heroItemVariants} className="flex flex-wrap items-center gap-2 sm:gap-3.5 justify-center lg:justify-start pt-1">
+                <motion.div variants={heroItemVariants} className="flex flex-wrap items-center gap-3 sm:gap-4 justify-center lg:justify-start pt-2">
                   <button
                     onClick={() => user ? navigate('/portal') : navigate('/portal?mode=register')}
-                    className="bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold px-6 py-3 rounded-lg text-xs tracking-widest transition-all hover:shadow-[0_0_20px_rgba(212,163,89,0.3)] active:scale-95 shadow-lg shadow-gold-500/10"
+                    className="bg-[#C89B3C] hover:bg-[#A97828] text-[#333] font-semibold px-7 py-3.5 rounded-full text-xs tracking-[0.12em] transition-all duration-300 hover:shadow-[0_8px_30px_-4px_rgba(200,155,60,0.35)] active:scale-[0.97] shadow-sm"
                   >
                     {user ? 'ENTER YOUR PORTAL' : 'REGISTER'}
                   </button>
@@ -743,55 +722,60 @@ export default function App() {
                       const videoItem = MEDIA_ITEMS.find((m) => m.id === 'media-bts') || MEDIA_ITEMS[0];
                       setSelectedMedia(videoItem);
                     }}
-                    className="border border-neutral-800 hover:border-gold-500/60 bg-neutral-950 hover:bg-gold-500/5 text-gold-500 hover:text-white font-semibold px-5 py-3 rounded-lg text-xs tracking-widest transition-all active:scale-95 flex items-center gap-2"
+                    className="border border-[rgba(0,0,0,0.08)] hover:border-[#C89B3C]/30 bg-white hover:bg-[#FCFAF7] text-[#1E1E1E] font-semibold px-6 py-3.5 rounded-full text-xs tracking-[0.12em] transition-all duration-300 active:scale-[0.97] flex items-center gap-2.5 shadow-sm"
                   >
-                    <Play className="h-3.5 w-3.5 fill-gold-500 hover:fill-white" />
+                    <Play className="h-3.5 w-3.5 fill-[#C89B3C] text-[#C89B3C]" />
                     WATCH WELCOME VIDEO
                   </button>
                 </motion.div>
 
                 {/* Achievements Bento Badge */}
-                <motion.div variants={heroItemVariants} className="grid grid-cols-3 gap-2 sm:gap-3 max-w-md pt-2">
-                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
-                    <span className="font-serif text-base sm:text-lg font-bold text-gold-500 tracking-tight flex items-center gap-1">
+                <motion.div variants={heroItemVariants} className="grid grid-cols-3 gap-3 sm:gap-4 max-w-md pt-3">
+                  <div className="p-4 rounded-2xl bg-[#F8F6F2] hover:bg-[#EFE7DA] transition-all duration-400 flex flex-col text-left group">
+                    <span className="font-serif text-lg sm:text-xl font-bold text-[#C89B3C] tracking-tight flex items-center gap-1">
                       30+
-                      <Compass className="h-3 w-3 text-gold-500/60 group-hover:rotate-45 transition-transform" />
+                      <Compass className="h-3 w-3 text-[#C89B3C]/60 group-hover:rotate-45 transition-transform duration-500" />
                     </span>
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Years on Stage & Screen</span>
+                    <span className="text-[9px] font-mono text-[#444] uppercase tracking-[0.12em] leading-tight mt-1.5">Years on Stage & Screen</span>
                   </div>
-                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
-                    <span className="font-serif text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-1">
+                  <div className="p-4 rounded-2xl bg-[#F8F6F2] hover:bg-[#EFE7DA] transition-all duration-400 flex flex-col text-left group">
+                    <span className="font-serif text-lg sm:text-xl font-bold text-[#1E1E1E] tracking-tight flex items-center gap-1">
                       2x
-                      <Award className="h-3 w-3 text-amber-500/60 group-hover:scale-110 transition-transform animate-pulse" />
+                      <Award className="h-3 w-3 text-[#C89B3C]/60 group-hover:scale-110 transition-transform duration-300" />
                     </span>
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Emmys & Golden Globes</span>
+                    <span className="text-[9px] font-mono text-[#444] uppercase tracking-[0.12em] leading-tight mt-1.5">Emmys & Golden Globes</span>
                   </div>
-                  <div className="p-3 rounded-xl border border-neutral-900 bg-neutral-950/40 hover:border-neutral-800 hover:bg-neutral-950/60 transition-all flex flex-col text-left group">
-                    <span className="font-serif text-base sm:text-lg font-bold text-gold-500 tracking-tight flex items-center gap-1">
+                  <div className="p-4 rounded-2xl bg-[#F8F6F2] hover:bg-[#EFE7DA] transition-all duration-400 flex flex-col text-left group">
+                    <span className="font-serif text-lg sm:text-xl font-bold text-[#C89B3C] tracking-tight flex items-center gap-1">
                       100%
-                      <Sparkles className="h-3 w-3 text-gold-500/60 group-hover:scale-110 transition-transform" />
+                      <Sparkles className="h-3 w-3 text-[#C89B3C]/60 group-hover:scale-110 transition-transform duration-300" />
                     </span>
-                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider leading-tight mt-1">Empowering Advocacy</span>
+                    <span className="text-[9px] font-mono text-[#444] uppercase tracking-[0.12em] leading-tight mt-1.5">Empowering Advocacy</span>
                   </div>
                 </motion.div>
 
                 {/* Social Proof fans banner */}
-                <motion.div variants={heroItemVariants} className="flex items-center gap-3 pt-4 justify-center lg:justify-start border-t border-neutral-900 max-w-sm">
-                  <div className="flex -space-x-2">
-                    {[1, 2, 3, 4].map((num) => (
+                <motion.div variants={heroItemVariants} className="flex items-center gap-3.5 pt-6 justify-center lg:justify-start">
+                  <div className="flex -space-x-2.5">
+                    {[
+                      { initials: 'AM', bg: 'bg-[#C89B3C]/15', text: 'text-[#8B6914]', border: 'border-[#C89B3C]/30' },
+                      { initials: 'JW', bg: 'bg-[#2E8B57]/15', text: 'text-[#1B6B3A]', border: 'border-[#2E8B57]/30' },
+                      { initials: 'ND', bg: 'bg-[#1E1E1E]/10', text: 'text-[#333]', border: 'border-[#1E1E1E]/20' },
+                      { initials: 'KR', bg: 'bg-[#C89B3C]/15', text: 'text-[#8B6914]', border: 'border-[#C89B3C]/30' },
+                    ].map((item) => (
                       <div
-                        key={num}
-                        className="h-7 w-7 rounded-full border border-neutral-950 bg-neutral-900 flex items-center justify-center text-[11px] font-mono font-bold text-neutral-300 overflow-hidden shadow-inner"
+                        key={item.initials}
+                        className={`h-9 w-9 rounded-full ${item.bg} ${item.border} border-2 flex items-center justify-center text-[9px] font-mono font-bold ${item.text}`}
                       >
-                        {['AM', 'JW', 'ND', 'KR'][num - 1]}
+                        {item.initials}
                       </div>
                     ))}
                   </div>
                   <div className="flex flex-col text-left">
-                    <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest">
+                    <span className="text-[11px] font-mono text-[#111] uppercase tracking-[0.1em] font-bold">
                       24.2M+ Subscribers & Followers
                     </span>
-                    <span className="text-[11px] font-mono text-gold-500/80 font-bold">
+                    <span className="text-[11px] font-mono text-[#C89B3C] font-semibold tracking-wide">
                       Worldwide Community
                     </span>
                   </div>
@@ -800,8 +784,8 @@ export default function App() {
 
               {/* Right: Monthly Video Box — hidden on mobile */}
               <motion.div variants={heroScaleVariants} className="hidden lg:block lg:col-span-3">
-                <div className="rounded-2xl border border-neutral-900/80 bg-neutral-950/80 p-5 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-neutral-800 transition-all">
-                  <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-500 uppercase tracking-widest pb-2 border-b border-neutral-900">
+                <div className="rounded-2xl border border-neutral-200/80 bg-white/80 p-5 space-y-4 shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-neutral-200 transition-all">
+                  <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-700 uppercase tracking-widest pb-2 border-b border-neutral-200">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-gold-500"></span>
@@ -810,7 +794,7 @@ export default function App() {
                   </div>
 
                   {/* Video Image Container */}
-                  <div className="relative aspect-video rounded-xl overflow-hidden border border-neutral-900 bg-neutral-900 group">
+                  <div className="relative aspect-video rounded-xl overflow-hidden border border-neutral-200 bg-white group">
                     <img
                       src="/assets/images/gillian_theatre_rehearsal_1783349680324.jpg"
                       alt="Monthly Video Message Thumbnail"
@@ -837,10 +821,10 @@ export default function App() {
                   </div>
 
                   <div className="space-y-1 text-left">
-                    <h3 className="text-xs font-semibold text-white tracking-wider uppercase">
+                    <h3 className="text-xs font-semibold text-[#111] tracking-wider uppercase">
                       A message to you all
                     </h3>
-                    <p className="text-[11px] font-mono text-neutral-500 tracking-widest">
+                    <p className="text-[11px] font-mono text-neutral-700 tracking-widest">
                       ARCHIVE PREVIEW
                     </p>
                   </div>
@@ -850,7 +834,7 @@ export default function App() {
                       const videoItem = MEDIA_ITEMS.find((m) => m.id === 'media-bts') || MEDIA_ITEMS[0];
                       setSelectedMedia(videoItem);
                     }}
-                    className="w-full text-center border border-neutral-800 hover:border-gold-500/50 hover:bg-gold-500/5 text-[10px] font-mono text-neutral-400 hover:text-gold-500 font-semibold py-2.5 rounded-lg transition-colors"
+                    className="w-full text-center border border-neutral-200 hover:border-gold-500/50 hover:bg-gold-500/5 text-[10px] font-mono text-neutral-600 hover:text-gold-500 font-semibold py-2.5 rounded-lg transition-colors"
                   >
                     WATCH NOW
                   </button>
@@ -876,29 +860,29 @@ export default function App() {
               <div className="space-y-0">
                 {/* How It Works — Simple Guide for New Visitors */}
                 <ScrollReveal>
-                  <section className="py-12 sm:py-16 bg-[#050505] border-t border-neutral-900/60">
+                  <section className="section-luxury bg-[#FCFAF7]">
                     <div className="mx-auto max-w-5xl px-4 sm:px-6">
-                      <div className="text-center space-y-3 mb-10">
-                        <h2 className="font-serif text-2xl md:text-3xl font-bold text-white uppercase tracking-tight">
-                          How It <span className="text-gold-500">Works</span>
+                      <div className="text-center space-y-4 mb-14">
+                        <h2 className="font-serif text-3xl md:text-4xl font-bold text-[#1E1E1E] tracking-tight">
+                          How It <span className="text-[#C89B3C]">Works</span>
                         </h2>
-                        <div className="scroll-line h-[1px] w-16 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto" />
-                        <p className="text-xs text-neutral-400 max-w-lg mx-auto leading-relaxed">
+                        <div className="divider-luxury w-16 mx-auto" />
+                        <p className="text-sm text-[#444] max-w-lg mx-auto leading-relaxed">
                           Getting started is easy. Here's how to join the community and make the most of it.
                         </p>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
                         {[
                           { step: '1', title: 'Create Your Free Account', desc: 'Click "Join" at the top and sign up with your email. It takes less than a minute.' },
                           { step: '2', title: 'Explore & Connect', desc: 'Browse experiences, events, and community posts. Share your thoughts and connect with other fans.' },
                           { step: '3', title: 'Join as a Member', desc: 'Choose a membership tier to unlock exclusive perks, events, and your personalized membership card.' },
                         ].map((item) => (
-                          <div key={item.step} className="text-center space-y-3 p-5 rounded-xl border border-neutral-900 bg-neutral-950/40">
-                            <div className="mx-auto w-10 h-10 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                              <span className="font-serif text-lg font-bold text-gold-500">{item.step}</span>
+                          <div key={item.step} className="text-center space-y-4 p-6">
+                            <div className="mx-auto w-12 h-12 rounded-2xl bg-[#EFE7DA] flex items-center justify-center">
+                              <span className="font-serif text-lg font-bold text-[#C89B3C]">{item.step}</span>
                             </div>
-                            <h3 className="text-xs font-bold tracking-wider text-white uppercase">{item.title}</h3>
-                            <p className="text-[10px] text-neutral-400 leading-relaxed">{item.desc}</p>
+                            <h3 className="text-sm font-bold tracking-[0.08em] text-[#1E1E1E]">{item.title}</h3>
+                            <p className="text-xs text-[#444] leading-relaxed">{item.desc}</p>
                           </div>
                         ))}
                       </div>
@@ -913,138 +897,131 @@ export default function App() {
 
                 {/* Six Community Pillars Navigation Cards */}
                 <ScrollReveal>
-                  <section className="py-12 sm:py-20 bg-[#050505] border-t border-neutral-900/60 relative overflow-hidden">
-                    {/* Subtle aesthetic lines */}
-                    <div className="absolute top-0 left-10 w-[1px] h-full bg-neutral-900/30 pointer-events-none" />
-                    <div className="absolute top-0 right-10 w-[1px] h-full bg-neutral-900/30 pointer-events-none" />
-
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-10 sm:space-y-16 relative z-10">
+                  <section className="section-luxury bg-[#F8F6F2] relative overflow-hidden">
+                    <div className="mx-auto max-w-7xl px-4 sm:px-6 space-y-12 sm:space-y-16 relative z-10">
                       <div className="text-center space-y-4">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[11px] font-mono tracking-widest uppercase font-bold">
-                          <Star className="h-3 w-3 animate-pulse" />
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#EFE7DA] text-[#C89B3C] text-[10px] font-mono tracking-[0.2em] uppercase font-semibold">
+                          <Star className="h-3 w-3" />
                           GET INVOLVED
                         </div>
-                        <h2 className="font-serif text-3xl md:text-5xl font-black text-white uppercase tracking-tight">
-                          Explore <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-500 to-amber-300">What We Offer</span>
+                        <h2 className="font-serif text-3xl md:text-5xl font-bold text-[#1E1E1E] tracking-tight">
+                          Explore <span className="text-[#C89B3C]">What We Offer</span>
                         </h2>
-                        <div className="scroll-line h-[1px] w-20 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto" />
-                        <p className="text-xs text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed">
+                        <div className="divider-luxury w-20 mx-auto" />
+                        <p className="text-sm text-[#444] max-w-2xl mx-auto font-sans leading-relaxed">
                           Choose an area below to learn more, join in, and connect with the community.
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 text-left">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 text-left">
                         {/* Experiences Card */}
                         <button
                           onClick={() => handleNavClick('EXPERIENCES')}
-                          className="flex flex-col justify-between p-5 sm:p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[180px] sm:min-h-[230px] shadow-lg shadow-black/40"
+                          className="card-lift flex flex-col justify-between p-6 sm:p-8 rounded-[20px] text-left relative overflow-hidden min-h-[160px] sm:min-h-[180px] aspect-[1.6/1] shadow-[0_2px_12px_rgba(0,0,0,0.08)] group"
                         >
-                          {/* Rich Background Visual */}
                           <div className="absolute inset-0 z-0 overflow-hidden">
                             <img
                               src="/assets/images/pillar_experiences_1784103582190.jpg"
                               alt="Experiences Background"
                               referrerPolicy="no-referrer"
                               loading="lazy"
-                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
+                              className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
                           </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 z-[1]" />
 
-                          <div className="absolute top-4 right-4 font-mono text-[11px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                          <div className="absolute top-5 right-5 font-mono text-[11px] text-white/50 z-10">
                             01
                           </div>
                           <div className="space-y-4 relative z-10">
-                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-850 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
-                              <Star className="h-4 w-4" />
+                            <span className="p-3 inline-block rounded-2xl bg-white/15 backdrop-blur-sm text-white">
+                              <Star className="h-5 w-5" />
                             </span>
-                            <div className="space-y-1">
-                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
+                            <div className="space-y-1.5">
+                              <h3 className="text-sm font-bold tracking-[0.08em] text-white group-hover:text-[#C89B3C] transition-colors">
                                 EXPERIENCES
                               </h3>
-                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
+                              <p className="text-xs text-white/80 leading-relaxed font-sans">
                                 Book one-on-one experiences, meetings, and special sessions with Gillian.
                               </p>
                             </div>
                           </div>
-                          <span className="text-[11px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
-                            LEARN MORE <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                          <span className="text-[11px] font-mono font-semibold tracking-wider text-[#C89B3C] flex items-center gap-1.5 mt-6 relative z-10">
+                            LEARN MORE <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                           </span>
                         </button>
 
                         {/* Membership Card */}
                         <button
                           onClick={() => handleNavClick('MEMBERSHIP')}
-                          className="flex flex-col justify-between p-5 sm:p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[180px] sm:min-h-[230px] shadow-lg shadow-black/40"
+                          className="card-lift flex flex-col justify-between p-6 sm:p-8 rounded-[20px] text-left relative overflow-hidden min-h-[160px] sm:min-h-[180px] aspect-[1.6/1] shadow-[0_2px_12px_rgba(0,0,0,0.08)] group"
                         >
-                          {/* Rich Background Visual */}
                           <div className="absolute inset-0 z-0 overflow-hidden">
                             <img
                               src="/assets/images/pillar_membership_1784103595657.jpg"
                               alt="Membership Background"
                               referrerPolicy="no-referrer"
                               loading="lazy"
-                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
+                              className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
                           </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 z-[1]" />
 
-                          <div className="absolute top-4 right-4 font-mono text-[11px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                          <div className="absolute top-5 right-5 font-mono text-[11px] text-white/50 z-10">
                             02
                           </div>
                           <div className="space-y-4 relative z-10">
-                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-850 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
-                              <Crown className="h-4 w-4" />
+                            <span className="p-3 inline-block rounded-2xl bg-white/15 backdrop-blur-sm text-white">
+                              <Crown className="h-5 w-5" />
                             </span>
-                            <div className="space-y-1">
-                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
+                            <div className="space-y-1.5">
+                              <h3 className="text-sm font-bold tracking-[0.08em] text-white group-hover:text-[#C89B3C] transition-colors">
                                 MEMBERSHIP
                               </h3>
-                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
+                              <p className="text-xs text-white/80 leading-relaxed font-sans">
                                 Join as an official member and get your personalized membership card.
                               </p>
                             </div>
                           </div>
-                          <span className="text-[11px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
-                            SEE TIERS <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                          <span className="text-[11px] font-mono font-semibold tracking-wider text-[#C89B3C] flex items-center gap-1.5 mt-6 relative z-10">
+                            SEE TIERS <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                           </span>
                         </button>
 
                         {/* Events Card */}
                         <button
                           onClick={() => handleNavClick('EVENTS')}
-                          className="flex flex-col justify-between p-5 sm:p-6 rounded-2xl border border-neutral-900 bg-[#070707] hover:border-gold-500/40 hover:bg-neutral-950/90 transition-all duration-500 group text-left relative overflow-hidden min-h-[180px] sm:min-h-[230px] shadow-lg shadow-black/40"
+                          className="card-lift flex flex-col justify-between p-6 sm:p-8 rounded-[20px] text-left relative overflow-hidden min-h-[160px] sm:min-h-[180px] aspect-[1.6/1] shadow-[0_2px_12px_rgba(0,0,0,0.08)] group"
                         >
-                          {/* Rich Background Visual */}
                           <div className="absolute inset-0 z-0 overflow-hidden">
                             <img
                               src="/assets/images/pillar_events_1784103610855.jpg"
                               alt="Events Background"
                               referrerPolicy="no-referrer"
                               loading="lazy"
-                              className="h-full w-full object-cover opacity-[0.05] group-hover:opacity-[0.15] group-hover:scale-110 transition-all duration-700 grayscale"
+                              className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
                           </div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10 z-[1]" />
 
-                          <div className="absolute top-4 right-4 font-mono text-[11px] text-neutral-700 group-hover:text-gold-500/40 transition-colors z-10">
+                          <div className="absolute top-5 right-5 font-mono text-[11px] text-white/50 z-10">
                             03
                           </div>
                           <div className="space-y-4 relative z-10">
-                            <span className="p-2.5 inline-block rounded-xl bg-neutral-900 border border-neutral-850 text-gold-500 group-hover:bg-gold-500/10 group-hover:border-gold-500/20 transition-all duration-300">
-                              <Calendar className="h-4 w-4" />
+                            <span className="p-3 inline-block rounded-2xl bg-white/15 backdrop-blur-sm text-white">
+                              <Calendar className="h-5 w-5" />
                             </span>
-                            <div className="space-y-1">
-                              <h3 className="text-xs font-bold tracking-wider text-white uppercase group-hover:text-gold-500 transition-colors">
+                            <div className="space-y-1.5">
+                              <h3 className="text-sm font-bold tracking-[0.08em] text-white group-hover:text-[#C89B3C] transition-colors">
                                 EVENTS
                               </h3>
-                              <p className="text-[10px] text-neutral-400 leading-relaxed font-sans">
+                              <p className="text-xs text-white/80 leading-relaxed font-sans">
                                 Attend live Q&A sessions, watch parties, and special celebrations.
                               </p>
                             </div>
                           </div>
-                          <span className="text-[11px] font-mono font-semibold tracking-wider text-gold-500/80 group-hover:text-gold-500 transition-colors flex items-center gap-1 mt-6 relative z-10">
-                            VIEW EVENTS <ArrowRight className="h-2.5 w-2.5 transition-transform group-hover:translate-x-1" />
+                          <span className="text-[11px] font-mono font-semibold tracking-wider text-[#C89B3C] flex items-center gap-1.5 mt-6 relative z-10">
+                            VIEW EVENTS <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                           </span>
                         </button>
 
@@ -1054,38 +1031,30 @@ export default function App() {
                 </ScrollReveal>
 
                 {/* Journal Section */}
-                <ScrollReveal>
                   <JournalSection />
-                </ScrollReveal>
 
                 {/* Media Section */}
-                <ScrollReveal>
                   <MediaSection />
-                </ScrollReveal>
 
                 {/* Community Section */}
-                <ScrollReveal>
                   <CommunitySection />
-                </ScrollReveal>
 
                 {/* FAQ Section */}
-                <ScrollReveal>
                   <FAQSection />
-                </ScrollReveal>
 
                 {/* Fast interactive portal prompt to finish landing */}
                 <ScrollReveal>
-                  <section className="py-12 sm:py-20 bg-neutral-950/20 border-t border-neutral-900/60">
-                    <div className="mx-auto max-w-4xl px-4 text-center space-y-6">
-                      <h3 className="font-serif text-2xl md:text-3xl font-extrabold text-white uppercase tracking-tight">
-                        Be Excellent To <span className="text-gold-500">Each Other</span>
+                  <section className="section-luxury bg-[#FCFAF7]">
+                    <div className="mx-auto max-w-4xl px-4 text-center space-y-8">
+                      <h3 className="font-serif text-3xl md:text-4xl font-bold text-[#1E1E1E] tracking-tight">
+                        Be Excellent To <span className="text-[#C89B3C]">Each Other</span>
                       </h3>
-                      <p className="text-xs text-neutral-400 max-w-lg mx-auto leading-relaxed">
+                      <p className="text-sm text-[#444] max-w-lg mx-auto leading-relaxed">
                         Access our interactive custom portals to chat, write custom blogs, share high-definition photographs, and review opportunities.
                       </p>
                       <button
                         onClick={() => user ? navigate('/portal') : navigate('/portal?mode=register')}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold rounded-lg text-xs tracking-widest uppercase transition-all"
+                        className="inline-flex items-center gap-2.5 px-8 py-4 bg-[#C89B3C] hover:bg-[#A97828] text-[#333] font-semibold rounded-full text-xs tracking-[0.12em] uppercase transition-all duration-300 hover:shadow-[0_8px_30px_-4px_rgba(200,155,60,0.35)] active:scale-[0.97]"
                       >
                         {user ? 'ENTER YOUR PORTAL' : 'REGISTER'}
                         <ArrowRight className="h-4 w-4" />
@@ -1114,16 +1083,16 @@ export default function App() {
 
       {/* 6. Footer — only on HOME */}
       {activeNav === 'HOME' && (
-      <footer className="border-t border-neutral-900 bg-[#030303] py-8 sm:py-12 pb-24 lg:pb-12">
+      <footer className="bg-[#F8F6F2] py-12 sm:py-16 pb-24 lg:pb-16">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="grid gap-8 md:grid-cols-12 items-center">
+          <div className="grid gap-10 md:grid-cols-12 items-center">
             
             {/* Left Column: Footer Info (4 Cols) */}
-            <div className="md:col-span-4 text-center md:text-left space-y-2">
-              <h4 className="text-xs font-bold tracking-widest text-white uppercase">
+            <div className="md:col-span-4 text-center md:text-left space-y-3">
+              <h4 className="text-xs font-bold tracking-[0.14em] text-[#1E1E1E] uppercase">
                 STAY CONNECTED
               </h4>
-              <p className="text-[11px] leading-relaxed text-neutral-400 max-w-xs mx-auto md:mx-0">
+              <p className="text-xs leading-relaxed text-[#444] max-w-xs mx-auto md:mx-0">
                 Get the latest updates, news, and exclusive content. No spam, only genuine messages.
               </p>
             </div>
@@ -1131,23 +1100,23 @@ export default function App() {
             {/* Center Column: Subscription Form (5 Cols) */}
             <div className="md:col-span-5">
               {!subscribed ? (
-                <div className="max-w-md mx-auto md:mx-0 space-y-1.5">
+                <div className="max-w-md mx-auto md:mx-0 space-y-2">
                   <form noValidate onSubmit={handleSubscribeSubmit} className="flex gap-2">
                     <input
                       type="email"
                       placeholder="Enter your email address"
                       value={subscribeEmail}
                       onChange={(e) => handleEmailChange(e.target.value)}
-                      className={`flex-1 bg-neutral-950 border text-xs text-white px-4 py-2 rounded outline-none transition-colors ${
+                      className={`flex-1 bg-white text-xs text-[#1E1E1E] px-4 py-3 rounded-full outline-none transition-all duration-300 ${
                         subscribeError 
-                          ? 'border-red-500/50 focus:border-red-500' 
-                          : 'border-neutral-900 focus:border-gold-500/40'
+                          ? 'border border-[#D9534F]/40 focus:border-[#D9534F]' 
+                          : 'border border-[rgba(0,0,0,0.06)] focus:border-[#C89B3C]/40'
                       }`}
                     />
                     <button
                       type="submit"
                       disabled={!!subscribeError}
-                      className="bg-gold-500 hover:bg-gold-400 disabled:opacity-50 disabled:cursor-not-allowed text-neutral-950 font-bold px-5 py-2 rounded text-[10px] tracking-wider transition-all active:scale-95 shrink-0"
+                      className="bg-[#C89B3C] hover:bg-[#A97828] disabled:opacity-50 disabled:cursor-not-allowed text-[#333] font-semibold px-6 py-3 rounded-full text-[10px] tracking-[0.12em] transition-all duration-300 active:scale-[0.97] shrink-0"
                     >
                       SUBSCRIBE
                     </button>
@@ -1158,7 +1127,7 @@ export default function App() {
                         initial={{ opacity: 0, y: -4 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -4 }}
-                        className="text-[10px] text-red-500 font-mono text-left pl-1"
+                        className="text-[10px] text-[#D9534F] font-mono text-left pl-4"
                       >
                         {subscribeError}
                       </motion.p>
@@ -1169,17 +1138,17 @@ export default function App() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-neutral-950 border border-neutral-900/60 px-4 py-2.5 rounded flex items-center gap-2.5 max-w-md mx-auto md:mx-0 text-gold-500 text-xs font-serif italic"
+                  className="bg-white px-5 py-3 rounded-full flex items-center gap-3 max-w-md mx-auto md:mx-0 text-[#C89B3C] text-xs font-serif italic"
                 >
-                  <Check className="h-4 w-4 text-gold-500 shrink-0" />
-                  <span>"Wonderful! You are now part of the journey. Stay curious and seek the truth."</span>
+                  <Check className="h-4 w-4 text-[#2E8B57] shrink-0" />
+                  <span>"Wonderful! You are now part of the journey."</span>
                 </motion.div>
               )}
             </div>
 
             {/* Right Column: Social Links (3 Cols) */}
             <div className="md:col-span-3 text-center md:text-right space-y-3">
-              <span className="text-[11px] font-mono text-neutral-500 tracking-widest uppercase block">
+              <span className="text-[10px] font-mono text-[#333] tracking-[0.14em] uppercase block">
                 FOLLOW GILLIAN
               </span>
               <div className="flex justify-center md:justify-end items-center gap-3">
@@ -1187,7 +1156,7 @@ export default function App() {
                   href="https://www.instagram.com/gilliananderson"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-1.5 rounded bg-neutral-950 border border-neutral-900/80 text-neutral-400 hover:text-gold-500 hover:border-gold-500/40 transition-colors"
+                  className="p-2.5 rounded-full bg-white text-[#444] hover:text-[#C89B3C] transition-all duration-300 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
                   aria-label="Instagram link"
                 >
                   <Instagram className="h-4 w-4" />
@@ -1196,7 +1165,7 @@ export default function App() {
                   href="https://open.spotify.com/artist/5K4W6rqBFWDnAN6FQUkS6x"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-1.5 rounded bg-neutral-950 border border-neutral-900/80 text-neutral-400 hover:text-gold-500 hover:border-gold-500/40 transition-colors"
+                  className="p-2.5 rounded-full bg-white text-[#444] hover:text-[#C89B3C] transition-all duration-300 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
                   aria-label="Spotify / Music link"
                 >
                   <Music className="h-4 w-4" />
@@ -1205,7 +1174,7 @@ export default function App() {
                   href="https://www.youtube.com/@GillianAnderson"
                   target="_blank"
                   rel="noreferrer"
-                  className="p-1.5 rounded bg-neutral-950 border border-neutral-900/80 text-neutral-400 hover:text-gold-500 hover:border-gold-500/40 transition-colors"
+                  className="p-2.5 rounded-full bg-white text-[#444] hover:text-[#C89B3C] transition-all duration-300 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)]"
                   aria-label="Youtube link"
                 >
                   <Youtube className="h-4 w-4" />
@@ -1216,14 +1185,15 @@ export default function App() {
           </div>
 
           {/* Copyright lines */}
-          <div className="border-t border-neutral-900/60 pt-6 mt-8 flex flex-col sm:flex-row justify-between items-center text-[10px] font-mono text-neutral-500 gap-2">
-            <span>© 2026 GILLIAN ANDERSON OFFICIAL. ALL RIGHTS RESERVED.</span>
+          <div className="divider-luxury mt-10 mb-6" />
+          <div className="flex flex-col sm:flex-row justify-between items-center text-[10px] font-mono text-[#333] gap-2">
+            <span>&copy; 2026 GILLIAN ANDERSON OFFICIAL. ALL RIGHTS RESERVED.</span>
             <div className="flex flex-wrap gap-4 justify-center">
-              <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-gold-500 transition-colors uppercase">
+              <button onClick={() => setIsPrivacyOpen(true)} className="hover:text-[#C89B3C] transition-colors uppercase tracking-wider font-bold">
                 Privacy Policy
               </button>
-              <span>•</span>
-              <button onClick={() => setIsTermsOpen(true)} className="hover:text-gold-500 transition-colors uppercase">
+              <span className="text-[rgba(0,0,0,0.12)]">&bull;</span>
+              <button onClick={() => setIsTermsOpen(true)} className="hover:text-[#C89B3C] transition-colors uppercase tracking-wider font-bold">
                 Terms of Service
               </button>
             </div>
@@ -1264,32 +1234,32 @@ export default function App() {
         />
       )}
 
-      {/* Mobile Bottom Navigation — 5 tabs */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden border-t border-neutral-900 bg-[#050505]/98 backdrop-blur-md flex items-stretch justify-around shadow-2xl shadow-black/80 overflow-hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      {/* Mobile Bottom Navigation — 4 tabs */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white/80 backdrop-blur-xl border-t border-[rgba(0,0,0,0.04)] flex items-stretch justify-around shadow-[0_-2px_16px_rgba(0,0,0,0.04)] overflow-hidden" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
         {/* Home */}
         <button onClick={() => { navigateTo('landing', 'HOME'); setMobileExploreOpen(false); }}
-          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${activeNav === 'HOME' && viewMode === 'landing' ? 'text-gold-500' : 'text-neutral-500'}`}>
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${activeNav === 'HOME' && viewMode === 'landing' ? 'text-[#C89B3C]' : 'text-[#444]'}`}>
           <Home className="h-5 w-5" strokeWidth={activeNav === 'HOME' && viewMode === 'landing' ? 2.5 : 1.5} />
           <span className="text-[10px] font-bold tracking-widest uppercase">Home</span>
         </button>
 
         {/* Explore */}
         <button onClick={() => setMobileExploreOpen(!mobileExploreOpen)}
-          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${mobileExploreOpen ? 'text-gold-500' : 'text-neutral-500'}`}>
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${mobileExploreOpen ? 'text-[#C89B3C]' : 'text-[#444]'}`}>
           <Compass className="h-5 w-5" strokeWidth={mobileExploreOpen ? 2.5 : 1.5} />
           <span className="text-[10px] font-bold tracking-widest uppercase">Explore</span>
         </button>
 
         {/* Portal */}
         <button onClick={() => { if (!user) { navigate('/portal?mode=login'); } else { navigate('/portal'); } setMobileExploreOpen(false); }}
-          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${location.pathname === '/portal' ? 'text-gold-500' : 'text-neutral-500'}`}>
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${location.pathname === '/portal' ? 'text-[#C89B3C]' : 'text-[#444]'}`}>
           <Sparkles className="h-5 w-5" strokeWidth={location.pathname === '/portal' ? 2.5 : 1.5} />
           <span className="text-[10px] font-bold tracking-widest uppercase">Portal</span>
         </button>
 
         {/* Events */}
         <button onClick={() => { handleNavClick('EVENTS'); setMobileExploreOpen(false); }}
-          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${activeNav === 'EVENTS' ? 'text-gold-500' : 'text-neutral-500'}`}>
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 py-2 min-h-[56px] transition-all ${activeNav === 'EVENTS' ? 'text-[#C89B3C]' : 'text-[#444]'}`}>
           <Calendar className="h-5 w-5" strokeWidth={activeNav === 'EVENTS' ? 2.5 : 1.5} />
           <span className="text-[10px] font-bold tracking-widest uppercase">Events</span>
         </button>
@@ -1303,7 +1273,7 @@ export default function App() {
               className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => setMobileExploreOpen(false)} />
             <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-[#0a0a0a] border-t border-neutral-800 rounded-t-2xl max-h-[80vh] overflow-y-auto"
+              className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-white border-t border-neutral-200 rounded-t-2xl max-h-[80vh] overflow-y-auto"
               style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
               {/* Handle bar */}
               <div className="flex justify-center pt-3 pb-2">
@@ -1311,9 +1281,9 @@ export default function App() {
               </div>
               {/* Header */}
               <div className="px-5 pb-3 flex items-center justify-between">
-                <h3 className="text-sm font-bold text-white tracking-wide">Explore</h3>
-                <button onClick={() => setMobileExploreOpen(false)} className="p-1.5 rounded-full hover:bg-neutral-800 transition-colors">
-                  <X className="h-4 w-4 text-neutral-400" />
+                <h3 className="text-sm font-bold text-[#111] tracking-wide">Explore</h3>
+                <button onClick={() => setMobileExploreOpen(false)} className="p-1.5 rounded-full hover:bg-neutral-50 transition-colors">
+                  <X className="h-4 w-4 text-neutral-600" />
                 </button>
               </div>
               {/* Navigation Grid */}
@@ -1322,15 +1292,11 @@ export default function App() {
                   { icon: <Star className="h-5 w-5" />, label: 'About', nav: 'ABOUT' },
                   { icon: <BookOpen className="h-5 w-5" />, label: 'Journal', nav: 'JOURNAL' },
                   { icon: <Play className="h-5 w-5" />, label: 'Media', nav: 'MEDIA' },
-                  { icon: <MessageSquare className="h-5 w-5" />, label: 'Community', nav: 'COMMUNITY' },
-                  { icon: <Compass className="h-5 w-5" />, label: 'Experiences', nav: 'EXPERIENCES' },
                   { icon: <Crown className="h-5 w-5" />, label: 'Membership', nav: 'MEMBERSHIP' },
-                  { icon: <Calendar className="h-5 w-5" />, label: 'Events', nav: 'EVENTS' },
                   { icon: <HelpCircle className="h-5 w-5" />, label: 'FAQ', nav: 'FAQ' },
-                  { icon: <Heart className="h-5 w-5" />, label: 'Advocacy', nav: 'ABOUT' },
                 ].map((item) => (
                   <button key={item.label} onClick={() => { handleNavClick(item.nav); setMobileExploreOpen(false); }}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all min-h-[80px] ${activeNav === item.nav ? 'border-gold-500/30 bg-gold-500/5 text-gold-500' : 'border-neutral-800/60 bg-neutral-900/30 text-neutral-400 hover:text-white hover:border-neutral-700'}`}>
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all min-h-[80px] ${activeNav === item.nav ? 'border-gold-500/30 bg-gold-500/5 text-gold-500' : 'border-neutral-200/60 bg-neutral-50 text-neutral-600 hover:text-neutral-900 hover:border-neutral-400'}`}>
                     {item.icon}
                     <span className="text-[11px] font-bold tracking-widest uppercase">{item.label}</span>
                   </button>
@@ -1338,13 +1304,13 @@ export default function App() {
               </div>
               {/* Auth CTA at bottom */}
               {!user && (
-                <div className="px-5 pb-6 pt-2 border-t border-neutral-800/60 space-y-2.5">
+                <div className="px-5 pb-6 pt-2 border-t border-neutral-200/60 space-y-2.5">
                   <button onClick={() => { navigate('/portal?mode=register'); setMobileExploreOpen(false); }}
                     className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-neutral-950 text-[11px] font-bold tracking-widest uppercase transition-colors">
                     REGISTER
                   </button>
                   <button onClick={() => { navigate('/portal?mode=login'); setMobileExploreOpen(false); }}
-                    className="w-full py-3 rounded-xl border border-neutral-800 bg-neutral-900/50 hover:bg-neutral-900 text-neutral-300 text-[11px] font-bold tracking-widest uppercase transition-colors">
+                    className="w-full py-3 rounded-xl border border-neutral-200 bg-neutral-50 hover:bg-white text-neutral-700 text-[11px] font-bold tracking-widest uppercase transition-colors">
                     SIGN IN
                   </button>
                 </div>

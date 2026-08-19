@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -86,7 +86,7 @@ export default function AskGillianModal({ isOpen, onClose }: AskGillianModalProp
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Ask Gillian" maxWidth="max-w-xl">
-      <div className="flex h-[450px] flex-col rounded-lg border border-neutral-900 bg-neutral-950 p-4">
+      <div className="flex h-[450px] flex-col rounded-lg border border-[rgba(0,0,0,0.06)] bg-white p-4">
         {/* Messages List */}
         <div className="flex-1 overflow-y-auto space-y-4 pr-1 scrollbar-thin">
           <AnimatePresence initial={false}>
@@ -102,8 +102,8 @@ export default function AskGillianModal({ isOpen, onClose }: AskGillianModalProp
                 <div
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-xs font-medium ${
                     msg.sender === 'user'
-                      ? 'border-neutral-700 bg-neutral-900 text-white'
-                      : 'border-gold-800/50 bg-neutral-900 text-gold-500'
+                      ? 'border-neutral-700 bg-white text-white'
+                      : 'border-gold-800/50 bg-white text-[#C89B3C]'
                   }`}
                 >
                   {msg.sender === 'user' ? <User className="h-4 w-4" /> : 'GA'}
@@ -114,14 +114,14 @@ export default function AskGillianModal({ isOpen, onClose }: AskGillianModalProp
                   <div
                     className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                       msg.sender === 'user'
-                        ? 'bg-gold-500 text-neutral-950 font-medium'
-                        : 'bg-neutral-900 text-neutral-200'
+                        ? 'bg-[#C89B3C] text-neutral-950 font-medium'
+                        : 'bg-white text-[#444]'
                     }`}
                   >
                     {msg.text}
                   </div>
                   <p
-                    className={`text-[10px] text-neutral-500 ${
+                    className={`text-[10px] text-[#444] ${
                       msg.sender === 'user' ? 'text-right' : 'text-left'
                     }`}
                   >
@@ -137,14 +137,14 @@ export default function AskGillianModal({ isOpen, onClose }: AskGillianModalProp
                 animate={{ opacity: 1, y: 0 }}
                 className="flex gap-3 flex-row"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gold-800/50 bg-neutral-900 text-xs font-medium text-gold-500">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-gold-800/50 bg-white text-xs font-medium text-[#C89B3C]">
                   GA
                 </div>
-                <div className="rounded-2xl bg-neutral-900 px-4 py-3 text-sm text-neutral-400">
+                <div className="rounded-2xl bg-white px-4 py-3 text-sm text-[#444]">
                   <div className="flex items-center gap-1">
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-neutral-500 [animation-delay:-0.3s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-neutral-500 [animation-delay:-0.15s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-neutral-500" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#F8F6F2]0 [animation-delay:-0.3s]" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#F8F6F2]0 [animation-delay:-0.15s]" />
+                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[#F8F6F2]0" />
                   </div>
                 </div>
               </motion.div>
@@ -154,26 +154,26 @@ export default function AskGillianModal({ isOpen, onClose }: AskGillianModalProp
 
         {/* Warning Indicator */}
         {warning && (
-          <div className="mt-2 flex items-center gap-2 rounded bg-gold-950/40 border border-gold-900/30 px-3 py-1.5 text-[11px] text-gold-500">
+          <div className="mt-2 flex items-center gap-2 rounded bg-gold-950/40 border border-gold-900/30 px-3 py-1.5 text-[11px] text-[#C89B3C]">
             <AlertCircle className="h-3.5 w-3.5 shrink-0" />
             <span className="flex-1">{warning}</span>
           </div>
         )}
 
         {/* Input Form */}
-        <form onSubmit={handleSubmit} className="mt-4 flex gap-2 border-t border-neutral-900 pt-4">
+        <form onSubmit={handleSubmit} className="mt-4 flex gap-2 border-t border-[rgba(0,0,0,0.06)] pt-4">
           <input
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             disabled={isTyping}
             placeholder="Ask about theater, characters, life, mentoring..."
-            className="flex-1 rounded-md border border-neutral-800 bg-neutral-900/50 px-4 py-2 text-sm text-white placeholder-neutral-500 outline-none transition-colors focus:border-gold-500/50 focus:bg-neutral-900"
+            className="flex-1 rounded-md border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] px-4 py-2 text-sm text-white placeholder-neutral-500 outline-none transition-colors focus:border-[#C89B3C]/50 focus:bg-white"
           />
           <button
             type="submit"
             disabled={!question.trim() || isTyping}
-            className="flex h-9 w-9 items-center justify-center rounded-md bg-gold-500 text-neutral-950 transition-all hover:bg-gold-400 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
+            className="flex h-9 w-9 items-center justify-center rounded-md bg-[#C89B3C] text-neutral-950 transition-all hover:bg-[#A97828] active:scale-95 disabled:pointer-events-none disabled:opacity-50"
           >
             <Send className="h-4 w-4" />
           </button>

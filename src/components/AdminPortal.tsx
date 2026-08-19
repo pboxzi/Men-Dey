@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -272,21 +272,21 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   // Admin auth gate
   if (!authLoading && (!user || !isAdmin)) {
     return (
-      <div className="min-h-screen bg-[#070709] text-neutral-200 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#F8F6F2] text-[#444] flex items-center justify-center p-4">
         <div className="max-w-md w-full text-center space-y-6">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 border border-red-500/20">
             <Shield className="h-8 w-8 text-red-400" />
           </div>
           <div className="space-y-2">
             <h2 className="font-serif text-xl font-bold text-white tracking-wider">Access Restricted</h2>
-            <p className="text-sm text-neutral-400 leading-relaxed">
+            <p className="text-sm text-[#444] leading-relaxed">
               This area is for administrators only. Please sign in with an admin account to access the management portal.
             </p>
           </div>
           <div className="flex gap-3 justify-center">
             <button
               onClick={onBackToHome}
-              className="px-5 py-2.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white text-xs font-mono tracking-wider transition-colors"
+              className="px-5 py-2.5 rounded bg-white border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white text-xs font-mono tracking-wider transition-colors"
             >
               ← Back to Home
             </button>
@@ -298,16 +298,16 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#070709] text-neutral-200 flex items-center justify-center">
+      <div className="min-h-screen bg-[#F8F6F2] text-[#444] flex items-center justify-center">
         <div className="text-center space-y-6 animate-pulse">
           <div className="mx-auto w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
             <Shield className="h-7 w-7 text-red-400" />
           </div>
           <div className="space-y-2">
             <h1 className="font-serif text-xl font-bold text-white tracking-widest">WELCOME, ADMIN</h1>
-            <p className="text-xs font-mono text-neutral-500 tracking-wider">Preparing your command center...</p>
+            <p className="text-xs font-mono text-[#444] tracking-wider">Preparing your command center...</p>
           </div>
-          <div className="w-48 h-1 mx-auto bg-neutral-900 rounded-full overflow-hidden">
+          <div className="w-48 h-1 mx-auto bg-white rounded-full overflow-hidden">
             <div className="h-full bg-gradient-to-r from-red-500 to-amber-500 rounded-full" style={{ animation: 'shimmer 1.5s ease-in-out infinite', width: '60%' }} />
           </div>
         </div>
@@ -602,19 +602,19 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
   }) : [];
 
   return (
-    <div className="min-h-screen bg-[#070709] text-neutral-200 flex flex-col font-sans selection:bg-gold-500 selection:text-neutral-950">
+    <div className="min-h-screen bg-[#F8F6F2] text-[#444] flex flex-col font-sans selection:bg-[#C89B3C] selection:text-neutral-950">
       
       {/* 1. TOP PORTAL HEADER BAR */}
-      <header className="sticky top-0 z-40 w-full border-b border-neutral-900 bg-[#070709]/95 backdrop-blur-md px-3 sm:px-4 md:px-6 py-3 flex items-center justify-between gap-2">
+      <header className="sticky top-0 z-40 w-full border-b border-[rgba(0,0,0,0.06)] bg-[#F8F6F2]/95 backdrop-blur-md px-3 sm:px-4 md:px-6 py-3 flex items-center justify-between gap-2">
         
         {/* Left: Brand logo & name */}
         <div className="flex items-center gap-2 shrink-0">
-          <span className="font-serif text-lg font-bold tracking-widest text-gold-500">
+          <span className="font-serif text-lg font-bold tracking-widest text-[#C89B3C]">
             GA
           </span>
-          <div className="hidden sm:block h-4 w-[1px] bg-neutral-800" />
+          <div className="hidden sm:block h-4 w-[1px] bg-[#F8F6F2]" />
           <div className="hidden sm:flex flex-col text-left">
-            <span className="font-serif text-[10px] font-bold tracking-widest text-neutral-300">
+            <span className="font-serif text-[10px] font-bold tracking-widest text-[#444]">
               GILLIAN ANDERSON
             </span>
             <span className="font-mono text-[10px] tracking-[0.2em] text-red-500 font-bold uppercase">
@@ -630,9 +630,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             placeholder="Search bookings, members, orders, events..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-neutral-950 border border-neutral-900 rounded px-3.5 py-1.5 pl-9 text-xs text-neutral-300 placeholder-neutral-600 outline-none focus:border-red-500/30 transition-colors"
+            className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded px-3.5 py-1.5 pl-9 text-xs text-[#444] placeholder-neutral-600 outline-none focus:border-red-500/30 transition-colors"
           />
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-600" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#444]" />
         </div>
 
         {/* Right Actions: bell, messages, profile dropdown */}
@@ -642,7 +642,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className="p-2 rounded bg-neutral-900/50 border border-neutral-900 hover:border-neutral-800 text-neutral-400 hover:text-white transition-all cursor-pointer"
+              className="p-2 rounded bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] hover:border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white transition-all cursor-pointer"
             >
               <Bell className="h-4 w-4" />
               {notificationCount > 0 && (
@@ -653,22 +653,22 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             </button>
 
             {showNotifications && (
-              <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-80 bg-neutral-950 border border-neutral-900 rounded-lg shadow-2xl z-50 overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-900">
+              <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] max-w-80 bg-white border border-[rgba(0,0,0,0.06)] rounded-lg shadow-2xl z-50 overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-[rgba(0,0,0,0.06)]">
                   <h4 className="text-xs font-mono font-bold text-white uppercase tracking-wider">Notifications</h4>
                   <button
                     onClick={() => {
                       setNotificationCount(0);
                       showToast('Notifications cleared.', 'info');
                     }}
-                    className="text-[11px] font-mono text-neutral-500 hover:text-white"
+                    className="text-[11px] font-mono text-[#444] hover:text-white"
                   >
                     Clear all
                   </button>
                 </div>
                 <div className="max-h-72 overflow-y-auto divide-y divide-neutral-900/40">
                   {notifications.length === 0 ? (
-                    <div className="px-4 py-8 text-center text-[10px] font-mono text-neutral-500">
+                    <div className="px-4 py-8 text-center text-[10px] font-mono text-[#444]">
                       No notifications yet
                     </div>
                   ) : (
@@ -683,19 +683,19 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             });
                           }
                         }}
-                        className={`w-full text-left px-4 py-3 hover:bg-neutral-900/40 transition-colors ${!n.is_read ? 'bg-amber-500/[0.03] border-l-2 border-l-amber-500' : ''}`}
+                        className={`w-full text-left px-4 py-3 hover:bg-neutral-100 transition-colors ${!n.is_read ? 'bg-amber-500/[0.03] border-l-2 border-l-amber-500' : ''}`}
                       >
                         <h5 className="text-xs font-semibold text-white">{n.title}</h5>
-                        <p className="text-[10px] text-neutral-400 mt-0.5 line-clamp-2">{n.message}</p>
-                        <span className="text-[10px] font-mono text-neutral-600 mt-1 block">{n.created_at ? new Date(n.created_at).toLocaleDateString() : ''}</span>
+                        <p className="text-[10px] text-[#444] mt-0.5 line-clamp-2">{n.message}</p>
+                        <span className="text-[10px] font-mono text-[#444] mt-1 block">{n.created_at ? new Date(n.created_at).toLocaleDateString() : ''}</span>
                       </button>
                     ))
                   )}
                 </div>
-                <div className="px-4 py-2.5 border-t border-neutral-900 text-center">
+                <div className="px-4 py-2.5 border-t border-[rgba(0,0,0,0.06)] text-center">
                   <button
                     onClick={() => { setShowNotifications(false); setActiveTab('Notifications'); }}
-                    className="text-[10px] font-mono text-gold-500 hover:text-gold-400"
+                    className="text-[10px] font-mono text-[#C89B3C] hover:text-gold-400"
                   >
                     View all notifications
                   </button>
@@ -706,7 +706,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
           <button
             onClick={() => setActiveTab('Communication Log')}
-            className="relative p-2 rounded bg-neutral-900/50 border border-neutral-900 hover:border-neutral-800 text-neutral-400 hover:text-white transition-all hidden sm:block"
+            className="relative p-2 rounded bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] hover:border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white transition-all hidden sm:block"
           >
             <Mail className="h-4 w-4" />
             {notificationCount > 0 && (
@@ -716,33 +716,33 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             )}
           </button>
 
-          <div className="hidden sm:block h-5 w-[1px] bg-neutral-800" />
+          <div className="hidden sm:block h-5 w-[1px] bg-[#F8F6F2]" />
 
           {/* Super Administrator Menu */}
           <div className="relative" ref={profileMenuRef}>
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center gap-2 hover:bg-neutral-900/50 rounded-lg px-1.5 sm:px-2 py-1.5 transition-colors cursor-pointer"
+              className="flex items-center gap-2 hover:bg-neutral-100 rounded-lg px-1.5 sm:px-2 py-1.5 transition-colors cursor-pointer"
             >
-              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full border-2 border-red-500 bg-neutral-900 overflow-hidden shrink-0 flex items-center justify-center relative">
+              <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-full border-2 border-red-500 bg-white overflow-hidden shrink-0 flex items-center justify-center relative">
                 <div className="text-[10px] sm:text-xs font-mono font-bold text-white">{((profile?.name || user?.email?.split('@')[0] || 'Admin').match(/\b\w/g) || []).join('').toUpperCase().slice(0, 2) || 'AD'}</div>
               </div>
               <div className="hidden md:flex flex-col text-left">
                 <span className="text-xs font-semibold text-white leading-tight">{profile?.name || user?.email?.split('@')[0] || 'Admin'}</span>
                 <span className="text-[11px] font-mono font-bold text-red-400 leading-none">Super Administrator</span>
               </div>
-              <ChevronDown className={`hidden sm:block h-3.5 w-3.5 text-neutral-500 transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`hidden sm:block h-3.5 w-3.5 text-[#444] transition-transform ${showProfileMenu ? 'rotate-180' : ''}`} />
             </button>
 
             {showProfileMenu && (
-              <div className="absolute right-0 top-full mt-2 w-48 bg-neutral-950 border border-neutral-900 rounded-lg shadow-2xl z-50 overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-[rgba(0,0,0,0.06)] rounded-lg shadow-2xl z-50 overflow-hidden">
                 <div className="p-1">
                   <button
                     onClick={() => { signOut(); navigate('/'); setShowProfileMenu(false); }}
                     className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-md text-left hover:bg-red-500/10 transition-colors group"
                   >
                     <LogOut className="h-3.5 w-3.5 text-red-400" />
-                    <span className="text-[11px] font-semibold text-neutral-300 group-hover:text-red-400">Sign Out</span>
+                    <span className="text-[11px] font-semibold text-[#444] group-hover:text-red-400">Sign Out</span>
                   </button>
                 </div>
               </div>
@@ -752,7 +752,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           {/* Mobile hamburger menu button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded bg-neutral-900/50 border border-neutral-900 text-neutral-400 hover:text-white transition-all"
+            className="md:hidden p-2 rounded bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white transition-all"
             aria-label="Toggle navigation menu"
           >
             {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -774,11 +774,11 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
         )}
 
         {/* LEFT NAV SIDEBAR */}
-        <aside className={`w-60 border-r border-neutral-900 bg-[#070709] shrink-0 overflow-y-auto text-left flex flex-col justify-between p-4 transition-all duration-300 z-50 ${isMobileMenuOpen ? 'fixed top-[52px] left-0 bottom-0 w-64 bg-[#070709] border-r border-neutral-900 shadow-2xl flex' : 'hidden md:flex'}`}>
+        <aside className={`w-60 border-r border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] shrink-0 overflow-y-auto text-left flex flex-col justify-between p-4 transition-all duration-300 z-50 ${isMobileMenuOpen ? 'fixed top-[52px] left-0 bottom-0 w-64 bg-[#F8F6F2] border-r border-[rgba(0,0,0,0.06)] shadow-2xl flex' : 'hidden md:flex'}`}>
           
           <div className="space-y-6">
             <div>
-              <span className="text-[10px] font-mono font-bold tracking-widest text-neutral-600 uppercase block pl-2 mb-2">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-[#444] uppercase block pl-2 mb-2">
                 MAIN
               </span>
               <nav className="space-y-0.5">
@@ -805,12 +805,12 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       }}
                       className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all ${
                         isActive
-                          ? 'bg-neutral-900 text-white font-semibold'
-                          : 'text-neutral-400 hover:text-white hover:bg-neutral-900/40'
+                          ? 'bg-white text-white font-semibold'
+                          : 'text-[#444] hover:text-white hover:bg-neutral-100'
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-red-400' : 'text-neutral-500'}`} />
+                        <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-red-400' : 'text-[#444]'}`} />
                         <span>{item.name}</span>
                       </div>
                       {item.count !== null && (
@@ -825,7 +825,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             </div>
 
             <div>
-              <span className="text-[10px] font-mono font-bold tracking-widest text-neutral-600 uppercase block pl-2 mb-2">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-[#444] uppercase block pl-2 mb-2">
                 SYSTEM
               </span>
               <nav className="space-y-0.5">
@@ -848,12 +848,12 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       }}
                       className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs font-medium tracking-wide transition-all ${
                         isActive
-                          ? 'bg-neutral-900 text-white font-semibold'
-                          : 'text-neutral-400 hover:text-white hover:bg-neutral-900/40'
+                          ? 'bg-white text-white font-semibold'
+                          : 'text-[#444] hover:text-white hover:bg-neutral-100'
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-red-400' : 'text-neutral-500'}`} />
+                        <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-red-400' : 'text-[#444]'}`} />
                         <span>{item.name}</span>
                       </div>
                       {item.count !== null && (
@@ -869,16 +869,16 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
           </div>
 
           {/* Bottom logout branding */}
-          <div className="pt-4 border-t border-neutral-900 text-[10px] text-neutral-500 font-mono">
+          <div className="pt-4 border-t border-[rgba(0,0,0,0.06)] text-[10px] text-[#444] font-mono">
             <p>Version 2.4.0-Prod</p>
-            <p className="mt-0.5 text-[11px] text-neutral-600">© Gillian Anderson representation</p>
+            <p className="mt-0.5 text-[11px] text-[#444]">© Gillian Anderson representation</p>
           </div>
 
         </aside>
 
         {/* MAIN WORKSPACE SCREEN CONTENT */}
         <main 
-          className="flex-1 overflow-y-auto bg-[#070709] p-4 md:p-6 lg:p-8 space-y-6"
+          className="flex-1 overflow-y-auto bg-[#F8F6F2] p-4 md:p-6 lg:p-8 space-y-6"
           onClick={() => setIsMobileMenuOpen(false)}
         >
           
@@ -892,18 +892,18 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   <h1 className="font-serif text-2xl font-bold tracking-wider text-white">
                     Welcome back, {profile?.name || user?.email?.split('@')[0] || 'Admin'}
                   </h1>
-                  <p className="text-xs text-neutral-500 font-mono">
+                  <p className="text-xs text-[#444] font-mono">
                     Here's what's happening on the platform today.
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 bg-neutral-900 border border-neutral-800 px-2 sm:px-3 py-1.5 rounded text-xs text-neutral-300 font-mono">
-                    <Calendar className="h-3.5 w-3.5 text-neutral-500" />
+                  <div className="flex items-center gap-1 bg-white border border-[rgba(0,0,0,0.06)] px-2 sm:px-3 py-1.5 rounded text-xs text-[#444] font-mono">
+                    <Calendar className="h-3.5 w-3.5 text-[#444]" />
                     <span className="hidden sm:inline">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                     <span className="sm:hidden">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                    <span className="text-neutral-600 mx-0.5">·</span>
-                    <span className="text-neutral-400">{currentTime}</span>
+                    <span className="text-[#444] mx-0.5">·</span>
+                    <span className="text-[#444]">{currentTime}</span>
                   </div>
 
                   {/* Quick Actions Dropdown */}
@@ -918,24 +918,24 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     </button>
                     
                     {showQuickActions && (
-                      <div className="absolute right-0 top-full mt-1.5 w-52 bg-neutral-950 border border-neutral-900 rounded-lg shadow-xl py-1 z-30">
+                      <div className="absolute right-0 top-full mt-1.5 w-52 bg-white border border-[rgba(0,0,0,0.06)] rounded-lg shadow-xl py-1 z-30">
                         <button
                           onClick={() => { setActiveTab('Events'); setShowQuickActions(false); }}
-                          className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center gap-2"
+                          className="w-full text-left px-4 py-2 text-xs hover:bg-white text-[#444] hover:text-white flex items-center gap-2"
                         >
                           <Plus className="h-3.5 w-3.5 text-amber-500" />
                           Add New Event
                         </button>
                         <button
                           onClick={() => { setShowAnnounceModal(true); setShowQuickActions(false); }}
-                          className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center gap-2"
+                          className="w-full text-left px-4 py-2 text-xs hover:bg-white text-[#444] hover:text-white flex items-center gap-2"
                         >
                           <Bell className="h-3.5 w-3.5 text-amber-500" />
                           Send Announcement
                         </button>
                         <button
                           onClick={() => { setShowJournalModal(true); setShowQuickActions(false); }}
-                          className="w-full text-left px-4 py-2 text-xs hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center gap-2"
+                          className="w-full text-left px-4 py-2 text-xs hover:bg-white text-[#444] hover:text-white flex items-center gap-2"
                         >
                           <FileSpreadsheet className="h-3.5 w-3.5 text-amber-500" />
                           Create Journal Post
@@ -950,10 +950,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
                 
                 {/* Total Members */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5 relative overflow-hidden">
+                <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5 relative overflow-hidden">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Members</span>
-                    <Users className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
+                    <span className="text-[11px] sm:text-[10px] font-mono text-[#444] uppercase tracking-wider">Members</span>
+                    <Users className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-[#444]" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalMembers}</h3>
                   <p className="text-[11px] sm:text-[10px] font-mono text-green-500 flex items-center gap-0.5">
@@ -962,10 +962,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 </div>
 
                 {/* Event Registrations */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
+                <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Events</span>
-                    <Calendar className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
+                    <span className="text-[11px] sm:text-[10px] font-mono text-[#444] uppercase tracking-wider">Events</span>
+                    <Calendar className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-[#444]" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.eventRegistrations}</h3>
                   <p className="text-[11px] sm:text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
@@ -974,10 +974,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 </div>
 
                 {/* Experience Bookings */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
+                <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Bookings</span>
-                    <Star className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
+                    <span className="text-[11px] sm:text-[10px] font-mono text-[#444] uppercase tracking-wider">Bookings</span>
+                    <Star className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-[#444]" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.experienceBookings}</h3>
                   <p className="text-[11px] sm:text-[10px] font-mono text-green-500 flex items-center gap-0.5">
@@ -986,10 +986,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 </div>
 
                 {/* Pending Memberships */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
+                <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Pending</span>
-                    <Clock className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
+                    <span className="text-[11px] sm:text-[10px] font-mono text-[#444] uppercase tracking-wider">Pending</span>
+                    <Clock className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-[#444]" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-amber-500">{dashboardStats.pendingMemberships + dashboardStats.pendingBookings}</h3>
                   <p className="text-[11px] sm:text-[10px] font-mono text-amber-500 flex items-center gap-0.5">
@@ -998,10 +998,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 </div>
 
                 {/* Active Conversations */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
+                <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Chats</span>
-                    <MessageCircle className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
+                    <span className="text-[11px] sm:text-[10px] font-mono text-[#444] uppercase tracking-wider">Chats</span>
+                    <MessageCircle className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-[#444]" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.activeConversations}</h3>
                   <p className="text-[11px] sm:text-[10px] font-mono text-blue-500 flex items-center gap-0.5">
@@ -1010,10 +1010,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 </div>
 
                 {/* Rewards Redeemed */}
-                <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
+                <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-3 sm:p-4.5 text-left space-y-1 sm:space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] sm:text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Rewards</span>
-                    <Award className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-neutral-600" />
+                    <span className="text-[11px] sm:text-[10px] font-mono text-[#444] uppercase tracking-wider">Rewards</span>
+                    <Award className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-[#444]" />
                   </div>
                   <h3 className="text-lg sm:text-xl md:text-2xl font-semibold font-mono text-white">{dashboardStats.totalRewardsRedeemed}</h3>
                   <p className="text-[11px] sm:text-[10px] font-mono text-purple-500 flex items-center gap-0.5">
@@ -1030,14 +1030,14 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 <div className="xl:col-span-9 space-y-6">
                   
                   {/* Recent Experience Bookings Panel */}
-                  <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden">
-                    <div className="px-5 py-4 border-b border-neutral-900 flex items-center justify-between">
+                  <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] overflow-hidden">
+                    <div className="px-5 py-4 border-b border-[rgba(0,0,0,0.06)] flex items-center justify-between">
                       <h3 className="text-xs font-mono font-bold tracking-wider text-white uppercase text-left">
                         Recent Experience Bookings
                       </h3>
                       <button
                         onClick={() => setActiveTab('Experiences')}
-                        className="text-[10px] font-mono text-gold-500 hover:text-gold-400 font-semibold"
+                        className="text-[10px] font-mono text-[#C89B3C] hover:text-gold-400 font-semibold"
                       >
                         View All
                       </button>
@@ -1046,7 +1046,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs border-collapse min-w-[500px]">
                         <thead>
-                          <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[10px] uppercase">
+                          <tr className="border-b border-[rgba(0,0,0,0.06)] text-[#444] font-mono text-[10px] uppercase">
                             <th className="px-4 sm:px-5 py-3 font-semibold">Ref</th>
                             <th className="px-3 sm:px-4 py-3 font-semibold">Member</th>
                             <th className="hidden sm:table-cell px-3 sm:px-4 py-3 font-semibold">Date</th>
@@ -1070,22 +1070,22 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                               statusLabel === 'Discussion' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
                               'bg-amber-500/10 text-amber-500 border-amber-500/20';
                             return (
-                              <tr key={bk.id} className="hover:bg-neutral-950/40 transition-colors">
-                                <td className="px-4 sm:px-5 py-3.5 font-mono font-semibold text-neutral-300 text-[11px]">
+                              <tr key={bk.id} className="hover:bg-neutral-100 transition-colors">
+                                <td className="px-4 sm:px-5 py-3.5 font-mono font-semibold text-[#444] text-[11px]">
                                   {bk.bookingReference || bk.id?.toString().slice(0, 8)}
                                 </td>
                                 <td className="px-3 sm:px-4 py-3.5">
                                   <div className="flex items-center gap-2">
-                                    <div className="h-6 w-6 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-[10px] font-mono text-gold-500 font-bold shrink-0">
+                                    <div className="h-6 w-6 rounded-full bg-white border border-[rgba(0,0,0,0.06)] flex items-center justify-center text-[10px] font-mono text-[#C89B3C] font-bold shrink-0">
                                       {bk.memberAvatar || (bk.memberName || '?').slice(0, 2).toUpperCase()}
                                     </div>
-                                    <span className="text-neutral-300 font-medium text-[11px]">{bk.memberName || bk.fullName || 'Anonymous'}</span>
+                                    <span className="text-[#444] font-medium text-[11px]">{bk.memberName || bk.fullName || 'Anonymous'}</span>
                                   </div>
                                 </td>
-                                <td className="hidden sm:table-cell px-3 sm:px-4 py-3.5 text-neutral-400 font-mono text-[11px]">
+                                <td className="hidden sm:table-cell px-3 sm:px-4 py-3.5 text-[#444] font-mono text-[11px]">
                                   {bk.preferredDate || bk.confirmedDate || '-'}
                                 </td>
-                                <td className="hidden md:table-cell px-3 sm:px-4 py-3.5 text-neutral-300 font-mono">
+                                <td className="hidden md:table-cell px-3 sm:px-4 py-3.5 text-[#444] font-mono">
                                   {bk.participants || 1}
                                 </td>
                                 <td className="px-3 sm:px-4 py-3.5">
@@ -1099,7 +1099,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                                 <td className="px-4 sm:px-5 py-3.5 text-right">
                                   <button
                                     onClick={() => setActiveTab('Experiences')}
-                                    className="px-2.5 sm:px-3 py-1 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-[10px] font-mono text-neutral-300 rounded hover:text-white transition-colors"
+                                    className="px-2.5 sm:px-3 py-1 bg-white hover:bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] text-[10px] font-mono text-[#444] rounded hover:text-white transition-colors"
                                   >
                                     View
                                   </button>
@@ -1109,7 +1109,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                           })}
                           {recentBookings.length === 0 && (
                             <tr>
-                              <td colSpan={6} className="px-4 sm:px-5 py-8 text-center text-[10px] font-mono text-neutral-500">
+                              <td colSpan={6} className="px-4 sm:px-5 py-8 text-center text-[10px] font-mono text-[#444]">
                                 No experience bookings yet
                               </td>
                             </tr>
@@ -1123,14 +1123,14 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   <div className="grid gap-6 md:grid-cols-2">
                     
                     {/* Upcoming Events Box */}
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden text-left">
-                      <div className="px-5 py-4 border-b border-neutral-900 flex items-center justify-between">
+                    <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] overflow-hidden text-left">
+                      <div className="px-5 py-4 border-b border-[rgba(0,0,0,0.06)] flex items-center justify-between">
                         <h3 className="text-xs font-mono font-bold tracking-wider text-white uppercase">
-                          Upcoming Events <span className="text-neutral-500 font-normal">({dashboardEvents.length})</span>
+                          Upcoming Events <span className="text-[#444] font-normal">({dashboardEvents.length})</span>
                         </h3>
                         <button
                           onClick={() => setActiveTab('Events')}
-                          className="text-[10px] font-mono text-gold-500 hover:text-gold-400 font-semibold"
+                          className="text-[10px] font-mono text-[#C89B3C] hover:text-gold-400 font-semibold"
                         >
                           Manage
                         </button>
@@ -1138,25 +1138,25 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       <div className="p-3 space-y-2">
                         {dashboardEvents.length === 0 ? (
                           <div className="p-4 text-center">
-                            <Calendar className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
-                            <p className="text-xs text-neutral-500 font-mono">No events scheduled yet.</p>
+                            <Calendar className="h-5 w-5 text-[#444] mx-auto mb-2" />
+                            <p className="text-xs text-[#444] font-mono">No events scheduled yet.</p>
                           </div>
                         ) : (
                           dashboardEvents.slice(0, 5).map((ev: AdminEvent) => (
-                            <div key={ev.id} className="flex items-start gap-3 p-3 rounded-lg border border-neutral-900/60 bg-neutral-950/20 hover:border-neutral-800 transition-colors group">
-                              <div className="h-9 w-9 rounded-lg bg-neutral-950 border border-neutral-900 flex flex-col items-center justify-center shrink-0">
+                            <div key={ev.id} className="flex items-start gap-3 p-3 rounded-lg border border-[rgba(0,0,0,0.06)]/60 bg-[#F8F6F2] hover:border-[rgba(0,0,0,0.06)] transition-colors group">
+                              <div className="h-9 w-9 rounded-lg bg-white border border-[rgba(0,0,0,0.06)] flex flex-col items-center justify-center shrink-0">
                                 <span className="text-xs font-bold text-white leading-none">{ev.day || '--'}</span>
-                                <span className="text-[10px] font-mono text-gold-500 uppercase">{ev.month?.slice(0, 3) || '---'}</span>
+                                <span className="text-[10px] font-mono text-[#C89B3C] uppercase">{ev.month?.slice(0, 3) || '---'}</span>
                               </div>
                               <div className="flex-1 min-w-0 text-left">
-                                <p className="text-xs font-semibold text-white truncate group-hover:text-gold-500/80 transition-colors">{ev.title}</p>
+                                <p className="text-xs font-semibold text-white truncate group-hover:text-[#C89B3C]/80 transition-colors">{ev.title}</p>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                  <span className="text-[11px] font-mono text-neutral-500">{ev.time || 'TBA'}</span>
-                                  <span className="h-1 w-1 rounded-full bg-neutral-800" />
-                                  <span className="text-[11px] font-mono text-neutral-500 truncate">{ev.location || 'TBA'}</span>
+                                  <span className="text-[11px] font-mono text-[#444]">{ev.time || 'TBA'}</span>
+                                  <span className="h-1 w-1 rounded-full bg-[#F8F6F2]" />
+                                  <span className="text-[11px] font-mono text-[#444] truncate">{ev.location || 'TBA'}</span>
                                 </div>
                               </div>
-                              <span className="shrink-0 self-center text-[10px] font-mono px-1.5 py-0.5 rounded border border-neutral-800 text-neutral-500">
+                              <span className="shrink-0 self-center text-[10px] font-mono px-1.5 py-0.5 rounded border border-[rgba(0,0,0,0.06)] text-[#444]">
                                 {ev.event_type || 'Event'}
                               </span>
                             </div>
@@ -1166,8 +1166,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                     </div>
 
                     {/* Recent Activity Feed */}
-                    <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden text-left">
-                      <div className="px-5 py-4 border-b border-neutral-900 flex items-center justify-between">
+                    <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] overflow-hidden text-left">
+                      <div className="px-5 py-4 border-b border-[rgba(0,0,0,0.06)] flex items-center justify-between">
                         <h3 className="text-xs font-mono font-bold tracking-wider text-white uppercase">
                           Recent Activity
                         </h3>
@@ -1178,8 +1178,8 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       <div className="p-3 space-y-1">
                         {recentActivity.length === 0 ? (
                           <div className="p-4 text-center">
-                            <Bell className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
-                            <p className="text-xs text-neutral-500 font-mono">No activity yet.</p>
+                            <Bell className="h-5 w-5 text-[#444] mx-auto mb-2" />
+                            <p className="text-xs text-[#444] font-mono">No activity yet.</p>
                           </div>
                         ) : (
                           recentActivity.map((act: ActivityFeedItem) => {
@@ -1194,13 +1194,13 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                               system: 'border-neutral-700',
                             };
                             return (
-                              <div key={act.id} className={`flex items-start gap-3 p-2.5 rounded-lg border ${typeColor[act.type] || 'border-neutral-900/60'} bg-neutral-950/20 transition-colors`}>
+                              <div key={act.id} className={`flex items-start gap-3 p-2.5 rounded-lg border ${typeColor[act.type] || 'border-[rgba(0,0,0,0.06)]/60'} bg-[#F8F6F2] transition-colors`}>
                                 <span className="text-sm mt-0.5 shrink-0">{typeIcon[act.type] || '📌'}</span>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-[11px] font-semibold text-white truncate">{act.title}</p>
-                                  <p className="text-[10px] text-neutral-500 truncate">{act.message}</p>
+                                  <p className="text-[10px] text-[#444] truncate">{act.message}</p>
                                 </div>
-                                <span className="text-[10px] font-mono text-neutral-600 shrink-0 mt-0.5">
+                                <span className="text-[10px] font-mono text-[#444] shrink-0 mt-0.5">
                                   {new Date(act.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                               </div>
@@ -1218,14 +1218,14 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 <div className="xl:col-span-3 space-y-6">
                   
                   {/* Booking Status - SVG Donut Chart */}
-                  <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 text-left space-y-4">
-                    <div className="flex items-center justify-between pb-3 border-b border-neutral-900">
-                      <h4 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase">
+                  <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-5 text-left space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-[rgba(0,0,0,0.06)]">
+                      <h4 className="text-xs font-mono font-bold tracking-widest text-[#444] uppercase">
                         Booking Status
                       </h4>
                       <button
                         onClick={() => setActiveTab('Experiences')}
-                        className="text-[10px] font-mono text-gold-500 hover:text-gold-400 font-semibold"
+                        className="text-[10px] font-mono text-[#C89B3C] hover:text-gold-400 font-semibold"
                       >
                         Manage
                       </button>
@@ -1235,19 +1235,19 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                       {/* Interactive Visual Donut SVG */}
                       <div className="relative h-32 w-32 shrink-0">
                         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#161619" strokeWidth="3" />
+                          <circle cx="18" cy="18" r="15.915" fill="none" stroke="#e0e0e0" strokeWidth="3" />
                           {bookingArcs.map((d) => (
                             <circle key={d.key} cx="18" cy="18" r="15.915" fill="none" stroke={d.color} strokeWidth="3" strokeDasharray={d.dasharray} strokeDashoffset={d.offset} />
                           ))}
                         </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                         <span className="text-xl font-bold font-mono text-white leading-none">{dashboardStats.experienceBookings}</span>
-                        <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider mt-0.5">Total</span>
+                        <span className="text-[10px] font-mono text-[#444] uppercase tracking-wider mt-0.5">Total</span>
                       </div>
                       </div>
 
                       {/* Donut Legend */}
-                      <div className="flex-1 text-[11px] font-mono text-neutral-400 space-y-1.5 w-full">
+                      <div className="flex-1 text-[11px] font-mono text-[#444] space-y-1.5 w-full">
                         <div className="flex items-center justify-between">
                           <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#f59e0b]" />Pending</span>
                           <span className="text-white font-semibold">{bookingStatusCounts.pending}</span>
@@ -1265,9 +1265,9 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   </div>
 
                   {/* System Alerts */}
-                  <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 text-left space-y-4">
-                    <div className="flex items-center justify-between pb-3 border-b border-neutral-900">
-                      <h4 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase">
+                  <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-5 text-left space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-[rgba(0,0,0,0.06)]">
+                      <h4 className="text-xs font-mono font-bold tracking-widest text-[#444] uppercase">
                         System Alerts
                       </h4>
                       <span className="text-[10px] font-mono bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold uppercase animate-pulse">
@@ -1287,10 +1287,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                           </div>
                           <div className="space-y-0.5">
                             <h5 className="text-xs font-semibold text-white">{dashboardStats.pendingBookings} experience bookings pending</h5>
-                            <p className="text-[10px] text-neutral-400">Awaiting confirmation</p>
+                            <p className="text-[10px] text-[#444]">Awaiting confirmation</p>
                           </div>
                         </div>
-                        <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-white transition-colors" />
+                        <ChevronRight className="h-3.5 w-3.5 text-[#444] group-hover:text-white transition-colors" />
                       </button>
 
                       {/* Alert 2 - Memberships */}
@@ -1304,10 +1304,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                           </div>
                           <div className="space-y-0.5">
                             <h5 className="text-xs font-semibold text-white">{dashboardStats.pendingMemberships} membership applications</h5>
-                            <p className="text-[10px] text-neutral-400">Pending approval</p>
+                            <p className="text-[10px] text-[#444]">Pending approval</p>
                           </div>
                         </div>
-                        <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-white transition-colors" />
+                        <ChevronRight className="h-3.5 w-3.5 text-[#444] group-hover:text-white transition-colors" />
                       </button>
 
                       {/* Alert 3 - Conversations */}
@@ -1321,10 +1321,10 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                           </div>
                           <div className="space-y-0.5">
                             <h5 className="text-xs font-semibold text-white">{dashboardStats.activeConversations} active conversations</h5>
-                            <p className="text-[10px] text-neutral-400">Fan messages awaiting response</p>
+                            <p className="text-[10px] text-[#444]">Fan messages awaiting response</p>
                           </div>
                         </div>
-                        <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-white transition-colors" />
+                        <ChevronRight className="h-3.5 w-3.5 text-[#444] group-hover:text-white transition-colors" />
                       </button>
 
                       {/* Alert 4 */}
@@ -1338,29 +1338,29 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                           </div>
                           <div className="space-y-0.5">
                             <h5 className="text-xs font-semibold text-white">{dashboardStats.eventRegistrations} event registrations</h5>
-                            <p className="text-[10px] text-neutral-400">Total across all events</p>
+                            <p className="text-[10px] text-[#444]">Total across all events</p>
                           </div>
                         </div>
-                        <ChevronRight className="h-3.5 w-3.5 text-neutral-600 group-hover:text-white transition-colors" />
+                        <ChevronRight className="h-3.5 w-3.5 text-[#444] group-hover:text-white transition-colors" />
                       </button>
 
                     </div>
                   </div>
 
                   {/* Platform Activity (7 Days) - Live bar chart */}
-                  <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] p-5 text-left space-y-4">
-                    <div className="flex items-center justify-between pb-3 border-b border-neutral-900">
-                      <h4 className="text-xs font-mono font-bold tracking-widest text-neutral-400 uppercase">
+                  <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-5 text-left space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-[rgba(0,0,0,0.06)]">
+                      <h4 className="text-xs font-mono font-bold tracking-widest text-[#444] uppercase">
                         Platform Activity (7 Days)
                       </h4>
-                      <span className="text-[10px] font-mono text-neutral-500">
+                      <span className="text-[10px] font-mono text-[#444]">
                         Today: <span className="text-white font-semibold">{activityData.today.bookings + activityData.today.orders + activityData.today.members}</span>
                       </span>
                     </div>
 
                     <div className="space-y-4">
                       {/* Daily Bar Chart */}
-                      <div className="h-28 w-full bg-neutral-950/40 rounded border border-neutral-900/60 p-3 flex items-end gap-1.5">
+                      <div className="h-28 w-full bg-[#F8F6F2] rounded border border-[rgba(0,0,0,0.06)]/60 p-3 flex items-end gap-1.5">
                           {activityData.dailyBars.map((day, i) => {
                           const maxVal = Math.max(...activityData.dailyBars.map(d => Math.max(d.bookings, d.orders, d.members, 1)));
                           return (
@@ -1382,7 +1382,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                                   title={`${day.orders} orders`}
                                 />
                               </div>
-                              <span className="text-[10px] font-mono text-neutral-500 leading-none">{day.label}</span>
+                              <span className="text-[10px] font-mono text-[#444] leading-none">{day.label}</span>
                             </div>
                           );
                         })}
@@ -1390,7 +1390,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
                       {/* Summary + Legend */}
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500">
+                        <div className="flex items-center gap-3 text-[11px] font-mono text-[#444]">
                           <div className="flex items-center gap-1">
                             <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]" />
                             <span>Members</span>
@@ -1404,7 +1404,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             <span>Orders</span>
                           </div>
                         </div>
-                        <div className="text-[11px] font-mono text-neutral-500">
+                        <div className="text-[11px] font-mono text-[#444]">
                           <span className="text-white font-semibold">{activityData.week.bookings + activityData.week.orders + activityData.week.members}</span> this week
                         </div>
                       </div>
@@ -1430,29 +1430,29 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             <div className="space-y-6">
               <div className="space-y-1">
                 <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">Notifications</h2>
-                <p className="text-xs text-neutral-500 font-mono">Platform notifications and announcements.</p>
+                <p className="text-xs text-[#444] font-mono">Platform notifications and announcements.</p>
               </div>
               <div className="space-y-3">
                 {notifications.length === 0 ? (
-                  <div className="rounded-xl border border-neutral-900 p-12 text-center text-neutral-500 text-xs font-mono">
+                  <div className="rounded-xl border border-[rgba(0,0,0,0.06)] p-12 text-center text-[#444] text-xs font-mono">
                     No notifications yet.
                   </div>
                 ) : (
                   notifications.map((n: AdminNotification) => (
                     <div key={n.id} className={`p-4 rounded-xl border text-xs text-left flex justify-between items-start gap-4 transition-all ${
-                      !n.is_read ? 'border-gold-500/30 bg-gold-500/[0.02]' : 'border-neutral-900 bg-neutral-950/40'
+                      !n.is_read ? 'border-[#C89B3C]/30 bg-[#C89B3C]/[0.02]' : 'border-[rgba(0,0,0,0.06)] bg-white/40'
                     }`}>
                       <div className="space-y-1 flex-1">
                         <p className="text-white font-bold text-[11px]">{n.title}</p>
-                        <p className="text-neutral-400 leading-relaxed">{n.message}</p>
+                        <p className="text-[#444] leading-relaxed">{n.message}</p>
                         <div className="flex items-center gap-3">
-                          <p className="text-[11px] font-mono text-neutral-500">{new Date(n.created_at).toLocaleString()}</p>
-                          {n.type && <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-900 text-neutral-400">{n.type}</span>}
+                          <p className="text-[11px] font-mono text-[#444]">{new Date(n.created_at).toLocaleString()}</p>
+                          {n.type && <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white text-[#444]">{n.type}</span>}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         {!n.is_read && (
-                          <span className="h-2 w-2 rounded-full bg-gold-500" />
+                          <span className="h-2 w-2 rounded-full bg-[#C89B3C]" />
                         )}
                         <button
                           onClick={async () => {
@@ -1460,7 +1460,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                             setNotifications(prev => prev.map((x: AdminNotification) => x.id === n.id ? { ...x, is_read: true } : x));
                             setNotificationCount(prev => Math.max(0, prev - 1));
                           }}
-                          className="text-[11px] font-mono text-gold-500/70 hover:text-gold-500 cursor-pointer"
+                          className="text-[11px] font-mono text-[#C89B3C]/70 hover:text-[#C89B3C] cursor-pointer"
                         >
                           Mark Read
                         </button>
@@ -1510,27 +1510,27 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
         
         {/* SEND ANNOUNCEMENT MODAL */}
         {showAnnounceModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#050505]/80 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 backdrop-blur-sm">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-md bg-neutral-950 border border-neutral-900 rounded-xl overflow-hidden shadow-2xl text-left"
+              className="w-full max-w-md bg-white border border-[rgba(0,0,0,0.06)] rounded-xl overflow-hidden shadow-2xl text-left"
             >
-              <div className="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between">
-                <span className="text-xs font-mono font-bold tracking-widest text-gold-500">DISPATCH ANNOUNCEMENT</span>
-                <button onClick={() => setShowAnnounceModal(false)} className="p-1 rounded text-neutral-500 hover:text-white">
+              <div className="px-5 py-3.5 border-b border-[rgba(0,0,0,0.06)] flex items-center justify-between">
+                <span className="text-xs font-mono font-bold tracking-widest text-[#C89B3C]">DISPATCH ANNOUNCEMENT</span>
+                <button onClick={() => setShowAnnounceModal(false)} className="p-1 rounded text-[#444] hover:text-white">
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
               <form onSubmit={handleSendAnnouncement} className="p-5 space-y-4 text-xs">
                 <div className="space-y-1.5">
-                  <label className="text-neutral-400 font-mono">RECIPIENT SCOPE</label>
+                  <label className="text-[#444] font-mono">RECIPIENT SCOPE</label>
                   <select
                     value={announceScope}
                     onChange={(e) => setAnnounceScope(e.target.value)}
-                    className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none"
+                    className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded px-3 py-2 text-white outline-none"
                   >
                     <option value="All Members">All Members</option>
                     <option value="Gold Members Only">Gold Members Only</option>
@@ -1539,26 +1539,26 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-neutral-400 font-mono">ANNOUNCEMENT TITLE</label>
+                  <label className="text-[#444] font-mono">ANNOUNCEMENT TITLE</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Exclusive Signed Posters Stock Update"
                     value={announceTitle}
                     onChange={(e) => setAnnounceTitle(e.target.value)}
-                    className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none focus:border-red-500/40"
+                    className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded px-3 py-2 text-white outline-none focus:border-red-500/40"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-neutral-400 font-mono">MESSAGE TRANSLATER</label>
+                  <label className="text-[#444] font-mono">MESSAGE TRANSLATER</label>
                   <textarea
                     rows={4}
                     required
                     placeholder="Type details of the announcement to dispatch via email/push notices..."
                     value={announceText}
                     onChange={(e) => setAnnounceText(e.target.value)}
-                    className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none focus:border-red-500/40 leading-relaxed"
+                    className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded px-3 py-2 text-white outline-none focus:border-red-500/40 leading-relaxed"
                   />
                 </div>
 
@@ -1566,7 +1566,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   <button
                     type="button"
                     onClick={() => setShowAnnounceModal(false)}
-                    className="px-4 py-2 border border-neutral-800 rounded font-bold hover:bg-neutral-900"
+                    className="px-4 py-2 border border-[rgba(0,0,0,0.06)] rounded font-bold hover:bg-white"
                   >
                     Cancel
                   </button>
@@ -1584,16 +1584,16 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
 
         {/* JOURNAL CMS CREATE MODAL */}
         {showJournalModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#050505]/80 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/80 backdrop-blur-sm">
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-lg bg-neutral-950 border border-neutral-900 rounded-xl overflow-hidden shadow-2xl text-left"
+              className="w-full max-w-lg bg-white border border-[rgba(0,0,0,0.06)] rounded-xl overflow-hidden shadow-2xl text-left"
             >
-              <div className="px-5 py-3.5 border-b border-neutral-900 flex items-center justify-between">
-                <span className="text-xs font-mono font-bold tracking-widest text-gold-500">CMS JOURNAL PUBLISH</span>
-                <button onClick={() => setShowJournalModal(false)} className="p-1 rounded text-neutral-500 hover:text-white">
+              <div className="px-5 py-3.5 border-b border-[rgba(0,0,0,0.06)] flex items-center justify-between">
+                <span className="text-xs font-mono font-bold tracking-widest text-[#C89B3C]">CMS JOURNAL PUBLISH</span>
+                <button onClick={() => setShowJournalModal(false)} className="p-1 rounded text-[#444] hover:text-white">
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -1601,22 +1601,22 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
               <form onSubmit={handleCreateJournal} className="p-5 space-y-4 text-xs">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-neutral-400 font-mono">POST TITLE</label>
+                    <label className="text-[#444] font-mono">POST TITLE</label>
                     <input
                       type="text"
                       required
                       placeholder="e.g. Gillian's Philanthropic Milestone"
                       value={journalTitle}
                       onChange={(e) => setJournalTitle(e.target.value)}
-                      className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none focus:border-red-500/40"
+                      className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded px-3 py-2 text-white outline-none focus:border-red-500/40"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-neutral-400 font-mono">CATEGORY</label>
+                    <label className="text-[#444] font-mono">CATEGORY</label>
                     <select
                       value={journalCategory}
                       onChange={(e) => setJournalCategory(e.target.value)}
-                      className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none"
+                      className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded px-3 py-2 text-white outline-none"
                     >
                       <option value="Philanthropy">Philanthropy</option>
                       <option value="Behind the Scenes">Behind the Scenes</option>
@@ -1627,26 +1627,26 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-neutral-400 font-mono">EXCERPT (SHORT PITCH)</label>
+                  <label className="text-[#444] font-mono">EXCERPT (SHORT PITCH)</label>
                   <input
                     type="text"
                     required
                     placeholder="Short summary for homepage cards..."
                     value={journalExcerpt}
                     onChange={(e) => setJournalExcerpt(e.target.value)}
-                    className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none focus:border-red-500/40"
+                    className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded px-3 py-2 text-white outline-none focus:border-red-500/40"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-neutral-400 font-mono">FULL BODY TEXT (CMS)</label>
+                  <label className="text-[#444] font-mono">FULL BODY TEXT (CMS)</label>
                   <textarea
                     rows={6}
                     required
                     placeholder="Full storytelling body text to read on the portal..."
                     value={journalContent}
                     onChange={(e) => setJournalContent(e.target.value)}
-                    className="w-full bg-neutral-900 border border-neutral-800 rounded px-3 py-2 text-white outline-none focus:border-red-500/40 leading-relaxed font-sans"
+                    className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded px-3 py-2 text-white outline-none focus:border-red-500/40 leading-relaxed font-sans"
                   />
                 </div>
 
@@ -1654,7 +1654,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
                   <button
                     type="button"
                     onClick={() => setShowJournalModal(false)}
-                    className="px-4 py-2 border border-neutral-800 rounded font-bold hover:bg-neutral-900"
+                    className="px-4 py-2 border border-[rgba(0,0,0,0.06)] rounded font-bold hover:bg-white"
                   >
                     Cancel
                   </button>
@@ -1676,7 +1676,7 @@ export default function AdminPortal({ onBackToHome }: AdminPortalProps) {
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="fixed top-4 right-4 z-50 flex items-center gap-2.5 rounded-lg border border-red-500 bg-[#0a0a0c] px-4 py-3 shadow-2xl shadow-red-500/10 min-w-[300px]"
+            className="fixed top-4 right-4 z-50 flex items-center gap-2.5 rounded-lg border border-red-500 bg-white px-4 py-3 shadow-2xl shadow-red-500/10 min-w-[300px]"
           >
             <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
             <div className="flex-1 text-xs text-left">

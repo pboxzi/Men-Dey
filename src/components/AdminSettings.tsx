@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
 import {
   Settings, Save, Loader2, Globe, Share2, Mail, Phone,
@@ -83,7 +83,7 @@ export default function AdminSettings({ showToast }: Props) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 text-gold-500 animate-spin" />
+        <Loader2 className="h-6 w-6 text-[#C89B3C] animate-spin" />
       </div>
     );
   }
@@ -91,19 +91,19 @@ export default function AdminSettings({ showToast }: Props) {
   return (
     <div className="space-y-6 text-left">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-900 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[rgba(0,0,0,0.06)] pb-4">
         <div>
           <div className="flex items-center gap-2 text-[10px] font-mono text-gold-400 tracking-widest uppercase mb-1">
             <Settings className="h-3 w-3" />
             Platform Settings
           </div>
           <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">Configuration</h2>
-          <p className="text-xs text-neutral-500 font-mono">Manage platform-wide settings and feature toggles.</p>
+          <p className="text-xs text-[#444] font-mono">Manage platform-wide settings and feature toggles.</p>
         </div>
         <button
           onClick={handleSave}
           disabled={!hasChanges || saving}
-          className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gold-500 text-neutral-950 text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-gold-400 disabled:opacity-40 transition-all"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-[#C89B3C] text-neutral-950 text-[10px] font-mono font-bold uppercase tracking-widest hover:bg-[#A97828] disabled:opacity-40 transition-all"
         >
           {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
           {saving ? 'Saving...' : 'Save Changes'}
@@ -126,13 +126,13 @@ export default function AdminSettings({ showToast }: Props) {
               onClick={() => setActiveGroup(group.id)}
               className={`w-full flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-[11px] font-medium transition-all ${
                 activeGroup === group.id
-                  ? 'bg-neutral-900 text-white font-semibold'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-900/40'
+                  ? 'bg-white text-white font-semibold'
+                  : 'text-[#444] hover:text-white hover:bg-neutral-100'
               }`}
             >
-              <group.icon className={`h-4 w-4 ${activeGroup === group.id ? 'text-gold-500' : 'text-neutral-500'}`} />
+              <group.icon className={`h-4 w-4 ${activeGroup === group.id ? 'text-[#C89B3C]' : 'text-[#444]'}`} />
               {group.label}
-              <span className="ml-auto text-[11px] font-mono text-neutral-600">
+              <span className="ml-auto text-[11px] font-mono text-[#444]">
                 {settings.filter(s => s.group === group.id).length}
               </span>
             </button>
@@ -140,8 +140,8 @@ export default function AdminSettings({ showToast }: Props) {
         </div>
 
         {/* Settings Content */}
-        <div className="lg:col-span-3 rounded-xl border border-neutral-900 bg-neutral-950 p-6 space-y-6">
-          <h3 className="text-xs font-mono font-bold text-white uppercase tracking-widest pb-3 border-b border-neutral-900">
+        <div className="lg:col-span-3 rounded-xl border border-[rgba(0,0,0,0.06)] bg-white p-6 space-y-6">
+          <h3 className="text-xs font-mono font-bold text-white uppercase tracking-widest pb-3 border-b border-[rgba(0,0,0,0.06)]">
             {groups.find(g => g.id === activeGroup)?.label} Settings
           </h3>
 
@@ -202,7 +202,7 @@ export default function AdminSettings({ showToast }: Props) {
                 description="Public contact email address"
                 value={getSetting('contact_email')?.value || ''}
                 onChange={(v) => updateSetting('contact_email', v)}
-                icon={<Mail className="h-3.5 w-3.5 text-gold-500" />}
+                icon={<Mail className="h-3.5 w-3.5 text-[#C89B3C]" />}
               />
               <SettingInput
                 label="WhatsApp Number"
@@ -216,7 +216,7 @@ export default function AdminSettings({ showToast }: Props) {
                 description="Phone number (optional)"
                 value={getSetting('contact_phone')?.value || ''}
                 onChange={(v) => updateSetting('contact_phone', v)}
-                icon={<Phone className="h-3.5 w-3.5 text-gold-500" />}
+                icon={<Phone className="h-3.5 w-3.5 text-[#C89B3C]" />}
               />
             </div>
           )}
@@ -275,10 +275,10 @@ export default function AdminSettings({ showToast }: Props) {
                 description="Email address that notifications are sent from (must be verified in Resend)"
                 value={getSetting('resend_sender_email')?.value || ''}
                 onChange={(v) => updateSetting('resend_sender_email', v)}
-                icon={<Mail className="h-3.5 w-3.5 text-gold-500" />}
+                icon={<Mail className="h-3.5 w-3.5 text-[#C89B3C]" />}
               />
-              <div className="rounded-lg bg-neutral-900/30 border border-neutral-900 p-3">
-                <p className="text-[11px] text-neutral-500 leading-relaxed">
+              <div className="rounded-lg bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] p-3">
+                <p className="text-[11px] text-[#444] leading-relaxed">
                   Emails are sent automatically when: membership status changes, experience requests are updated,
                   event registrations are confirmed, and admin responds to fan messages.
                   Fans receive notifications in-app and via email if enabled.
@@ -298,14 +298,14 @@ export default function AdminSettings({ showToast }: Props) {
                 danger
               />
 
-              <div className="pt-4 border-t border-neutral-900">
+              <div className="pt-4 border-t border-[rgba(0,0,0,0.06)]">
                 <h4 className="text-xs font-mono font-bold text-white uppercase tracking-widest mb-4">System Utilities</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="p-4 rounded-lg border border-neutral-900 bg-neutral-900/30 flex items-center gap-3">
+                  <div className="p-4 rounded-lg border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] flex items-center gap-3">
                     <Database className="h-5 w-5 text-amber-500" />
                     <div>
                       <p className="text-[10px] font-mono font-bold text-white">Supabase DB</p>
-                      <p className="text-[11px] text-neutral-500">Automatic backups managed</p>
+                      <p className="text-[11px] text-[#444]">Automatic backups managed</p>
                     </div>
                   </div>
                   <button
@@ -313,12 +313,12 @@ export default function AdminSettings({ showToast }: Props) {
                       await fetchSettings();
                       showToast('Settings refreshed from database', 'success');
                     }}
-                    className="p-4 rounded-lg border border-neutral-900 hover:border-neutral-800 bg-neutral-900/30 flex items-center gap-3 group transition-all"
+                    className="p-4 rounded-lg border border-[rgba(0,0,0,0.06)] hover:border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] flex items-center gap-3 group transition-all"
                   >
                     <RefreshCw className="h-5 w-5 text-blue-500 group-hover:rotate-180 transition-transform duration-500" />
                     <div className="text-left">
                       <p className="text-[10px] font-mono font-bold text-white">Refresh Settings</p>
-                      <p className="text-[11px] text-neutral-500">Re-fetch from database</p>
+                      <p className="text-[11px] text-[#444]">Re-fetch from database</p>
                     </div>
                   </button>
                 </div>
@@ -345,23 +345,23 @@ function SettingInput({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center gap-2">
-        {icon && <span className="text-neutral-500">{icon}</span>}
+        {icon && <span className="text-[#444]">{icon}</span>}
         <label className="text-[10px] font-mono font-bold text-white uppercase tracking-widest">{label}</label>
       </div>
-      <p className="text-[11px] text-neutral-500">{description}</p>
+      <p className="text-[11px] text-[#444]">{description}</p>
       {textarea ? (
         <textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
           rows={3}
-          className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-gold-500/40 resize-none transition-colors"
+          className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-[#C89B3C]/40 resize-none transition-colors"
         />
       ) : (
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-gold-500/40 transition-colors"
+          className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-xs text-white outline-none focus:border-[#C89B3C]/40 transition-colors"
         />
       )}
     </div>
@@ -381,13 +381,13 @@ function SettingToggle({
 }) {
   return (
     <div className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
-      danger && value ? 'border-red-500/30 bg-red-500/5' : 'border-neutral-900 bg-neutral-900/30'
+      danger && value ? 'border-red-500/30 bg-red-500/5' : 'border-[rgba(0,0,0,0.06)] bg-white/30'
     }`}>
       <div className="flex items-center gap-3">
-        <span className={`${danger && value ? 'text-red-400' : 'text-gold-500'}`}>{icon}</span>
+        <span className={`${danger && value ? 'text-red-400' : 'text-[#C89B3C]'}`}>{icon}</span>
         <div>
           <span className="text-xs font-bold text-white">{label}</span>
-          <p className="text-[10px] text-neutral-500 mt-0.5">{description}</p>
+          <p className="text-[10px] text-[#444] mt-0.5">{description}</p>
         </div>
       </div>
       <button
@@ -397,7 +397,7 @@ function SettingToggle({
         {value ? (
           <Wifi className={`h-6 w-6 ${danger ? 'text-red-400' : 'text-emerald-400'}`} />
         ) : (
-          <WifiOff className="h-6 w-6 text-neutral-600" />
+          <WifiOff className="h-6 w-6 text-[#444]" />
         )}
       </button>
     </div>

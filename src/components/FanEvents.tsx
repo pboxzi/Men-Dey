@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../utils/supabase';
 import { useAuth } from '../utils/AuthContext';
@@ -40,7 +40,7 @@ function getStatusColor(status: string) {
     case 'attended': return 'text-blue-500 border-blue-500/20 bg-blue-500/5';
     case 'cancelled': return 'text-red-400 border-red-500/20 bg-red-500/5';
     case 'active': return 'text-emerald-500 border-emerald-500/20 bg-emerald-500/5';
-    case 'confirmed': return 'text-gold-500 border-gold-500/20 bg-gold-500/5';
+    case 'confirmed': return 'text-[#C89B3C] border-[#C89B3C]/20 bg-[#C89B3C]/5';
     default: return 'text-amber-500 border-amber-500/20 bg-amber-500/5';
   }
 }
@@ -214,24 +214,24 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
     return (
       <div className="space-y-6">
         <button onClick={() => setSelectedReg(null)}
-          className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase text-neutral-500 hover:text-gold-500 transition-colors"
+          className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase text-[#444] hover:text-[#C89B3C] transition-colors"
         ><ArrowLeft className="h-3.5 w-3.5" /> Back to Events</button>
 
-        <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-3">
+        <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-5 space-y-3">
           <div className="flex items-start gap-4">
-            <div className="flex flex-col items-center justify-center h-14 w-14 rounded-xl border border-neutral-800/60 bg-neutral-950/60 font-mono shrink-0">
-              <span className="text-lg font-bold text-white leading-none">{ev.day}</span>
-              <span className="text-[6px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{ev.month}</span>
+            <div className="flex flex-col items-center justify-center h-14 w-14 rounded-xl border border-[rgba(0,0,0,0.06)]/60 bg-[#F8F6F2] font-mono shrink-0">
+              <span className="text-lg font-bold text-[#111] leading-none">{ev.day}</span>
+              <span className="text-[6px] font-bold text-[#C89B3C]/60 tracking-widest mt-0.5 uppercase leading-none">{ev.month}</span>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="font-serif text-base font-bold text-white">{ev.title}</h3>
+                <h3 className="font-serif text-base font-bold text-[#111]">{ev.title}</h3>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border ${getStatusColor(ev.regStatus || 'pending')}`}>
                   {STATUS_STEPS.find(s => s.key === ev.regStatus)?.label || ev.regStatus || 'Pending'}
                 </span>
               </div>
-              <p className="text-[10px] font-mono text-neutral-500 mt-1">Ref: {ev.ticketRef}</p>
-              <div className="flex items-center gap-3 text-[11px] font-mono text-neutral-500 mt-1">
+              <p className="text-[10px] font-mono text-[#444] mt-1">Ref: {ev.ticketRef}</p>
+              <div className="flex items-center gap-3 text-[11px] font-mono text-[#444] mt-1">
                 <span><Calendar className="h-2.5 w-2.5 inline-block mr-1" />{ev.month} {ev.day}, 2026</span>
                 <span><Clock className="h-2.5 w-2.5 inline-block mr-1" />{ev.time}</span>
                 <span><MapPin className="h-2.5 w-2.5 inline-block mr-1" />{ev.location}</span>
@@ -241,8 +241,8 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
         </div>
 
         {isPending && currentIdx >= 0 && (
-          <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4">
-            <h4 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold flex items-center gap-1.5">
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-5 space-y-4">
+            <h4 className="text-[11px] font-mono text-[#444] uppercase tracking-widest font-bold flex items-center gap-1.5">
               <Clock className="h-3 w-3" /> Registration Progress
             </h4>
             <div className="relative">
@@ -253,13 +253,13 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                   <div key={step.key} className="flex items-start gap-3 pb-4 last:pb-0">
                     <div className="flex flex-col items-center">
                       <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center text-[11px] font-bold ${
-                        isDone ? 'border-gold-500 bg-gold-500 text-neutral-950' : 'border-neutral-800 bg-neutral-900/40 text-neutral-600'
+                        isDone ? 'border-[#C89B3C] bg-[#C89B3C] text-neutral-950' : 'border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] text-[#444]'
                       }`}>
                         {isDone && i < STATUS_STEPS.length - 1 ? <CheckCircle className="h-3 w-3" /> : i === 3 && isDone ? <CheckCircle className="h-3 w-3" /> : i + 1}
                       </div>
-                      {i < STATUS_STEPS.length - 1 && <div className={`w-px h-6 ${isDone ? 'bg-gold-500/30' : 'bg-neutral-900'}`} />}
+                      {i < STATUS_STEPS.length - 1 && <div className={`w-px h-6 ${isDone ? 'bg-[#C89B3C]/30' : 'bg-white'}`} />}
                     </div>
-                    <div className={`pt-0.5 ${isCurrent ? 'text-gold-500' : isDone ? 'text-neutral-300' : 'text-neutral-600'}`}>
+                    <div className={`pt-0.5 ${isCurrent ? 'text-[#C89B3C]' : isDone ? 'text-[#444]' : 'text-[#444]'}`}>
                       <p className="text-xs font-bold">{step.label}</p>
                     </div>
                   </div>
@@ -276,50 +276,50 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
               <CheckCircle className="h-3 w-3" /> Confirmed Event Details
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-              {ev.confirmedDate && <div><span className="text-neutral-500 block text-[11px]">Date</span><span className="text-white">{ev.confirmedDate}</span></div>}
-              {ev.confirmedTime && <div><span className="text-neutral-500 block text-[11px]">Time</span><span className="text-white">{ev.confirmedTime}</span></div>}
-              {ev.confirmedLocation && <div className="sm:col-span-2"><span className="text-neutral-500 block text-[11px]">Location</span><span className="text-white">{ev.confirmedLocation}</span></div>}
+              {ev.confirmedDate && <div><span className="text-[#444] block text-[11px]">Date</span><span className="text-[#111]">{ev.confirmedDate}</span></div>}
+              {ev.confirmedTime && <div><span className="text-[#444] block text-[11px]">Time</span><span className="text-[#111]">{ev.confirmedTime}</span></div>}
+              {ev.confirmedLocation && <div className="sm:col-span-2"><span className="text-[#444] block text-[11px]">Location</span><span className="text-[#111]">{ev.confirmedLocation}</span></div>}
             </div>
           </div>
         )}
 
         {/* Admin notes */}
         {ev.adminNotes && (
-          <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-2">
-            <h4 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Administrator Notes</h4>
-            <p className="text-[11px] text-neutral-300 whitespace-pre-line">{ev.adminNotes}</p>
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-4 space-y-2">
+            <h4 className="text-[11px] font-mono text-[#444] uppercase tracking-widest font-bold">Administrator Notes</h4>
+            <p className="text-[11px] text-[#444] whitespace-pre-line">{ev.adminNotes}</p>
           </div>
         )}
 
         {/* Registration details */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-2">
-            <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Registration Details</h4>
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-4 space-y-2">
+            <h4 className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">Registration Details</h4>
             <div className="text-[11px] space-y-1">
-              <p><span className="text-neutral-500">Attendees:</span> <span className="text-white">{ev.attendees || 1}</span></p>
-              {ev.specialRequests && <p><span className="text-neutral-500">Special Reqs:</span> <span className="text-white">{ev.specialRequests}</span></p>}
+              <p><span className="text-[#444]">Attendees:</span> <span className="text-[#111]">{ev.attendees || 1}</span></p>
+              {ev.specialRequests && <p><span className="text-[#444]">Special Reqs:</span> <span className="text-[#111]">{ev.specialRequests}</span></p>}
             </div>
           </div>
-          <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-2">
-            <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Communication</h4>
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-4 space-y-2">
+            <h4 className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">Communication</h4>
             <div className="text-[11px] flex items-center gap-2">
               {ev.commMethod === 'whatsapp' ? <MessageCircle className="h-4 w-4 text-emerald-400" /> : <Mail className="h-4 w-4 text-blue-400" />}
-              <span className="text-white capitalize">{ev.commMethod}</span>
+              <span className="text-[#111] capitalize">{ev.commMethod}</span>
             </div>
           </div>
         </div>
 
         {/* Ticket */}
-        <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5">
-          <div className="rounded border border-neutral-900 bg-neutral-950 p-3 flex justify-between items-center gap-3">
+        <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-5">
+          <div className="rounded border border-[rgba(0,0,0,0.06)] bg-white p-3 flex justify-between items-center gap-3">
             <div className="text-left space-y-1 font-mono text-[10px]">
-              <p className="text-neutral-500">TICKET REFERENCE</p>
+              <p className="text-[#444]">TICKET REFERENCE</p>
               <p className="text-white font-bold">{ev.ticketRef}</p>
-              <p className="text-gold-500 font-semibold mt-1">
+              <p className="text-[#C89B3C] font-semibold mt-1">
                 {ev.regStatus === 'cancelled' ? '✕ CANCELLED' : ev.regStatus === 'attended' ? '✓ ATTENDED' : '✓ ACCESS GRANTED'}
               </p>
             </div>
-            <div className="h-12 w-12 bg-white border border-neutral-800 rounded p-1 shrink-0 flex items-center justify-center">
+            <div className="h-12 w-12 bg-white border border-[rgba(0,0,0,0.06)] rounded p-1 shrink-0 flex items-center justify-center">
               <div className="grid grid-cols-5 gap-0.5">
                 {[...Array(25)].map((_, i) => (
                   <div key={i} className={`h-1.5 w-1.5 ${[0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24].includes(i) ? 'bg-black' : 'bg-transparent'}`} />
@@ -329,7 +329,7 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-3 pt-2 border-t border-neutral-900/60">
+        <div className="flex flex-wrap gap-3 pt-2 border-t border-[rgba(0,0,0,0.06)]/60">
           {(ev.regStatus === 'pending' || ev.regStatus === 'confirmed') && (
             <>
               <button onClick={() => {
@@ -341,15 +341,15 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                   openEmail('Event Registration - ' + ev.ticketRef, msg);
                 }
               }}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-[10px] tracking-widest uppercase transition-all"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold text-[10px] tracking-widest uppercase transition-all"
               >{ev.commMethod === 'whatsapp' ? <MessageCircle className="h-3 w-3" /> : <Mail className="h-3 w-3" />} Continue Conversation</button>
               <button onClick={() => showToast?.('Reminder scheduled!', 'success')}
-                className="px-4 py-2 rounded-lg border border-neutral-800 text-neutral-400 hover:text-white text-[10px] font-mono transition-all"
+                className="px-4 py-2 rounded-lg border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white text-[10px] font-mono transition-all"
               >Add Reminder</button>
             </>
           )}
           <button onClick={() => showToast?.('Downloading pass...', 'info')}
-            className="px-3 py-2 border border-neutral-800 bg-neutral-900 hover:bg-neutral-850 text-neutral-300 hover:text-white rounded transition-colors"
+            className="px-3 py-2 border border-[rgba(0,0,0,0.06)] bg-white hover:bg-neutral-850 text-[#444] hover:text-white rounded transition-colors"
           ><Download className="h-3.5 w-3.5" /></button>
         </div>
       </div>
@@ -360,32 +360,32 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
   if (embedded) {
     const upcoming = events.filter(e => !e.registered);
     return (
-      <div className="rounded-2xl border border-neutral-900/70 bg-neutral-950/20 overflow-hidden shadow-xl shadow-black/20 hover:border-gold-500/20 transition-colors duration-500">
-        <div className="flex items-center gap-2.5 px-5 pt-4 pb-3 border-b border-neutral-900/30">
-          <div className="h-5 w-5 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-            <Calendar className="h-3 w-3 text-gold-500/70" />
+      <div className="rounded-2xl border border-[rgba(0,0,0,0.06)]/70 bg-[#F8F6F2] overflow-hidden shadow-xl shadow-black/20 hover:border-[#C89B3C]/20 transition-colors duration-500">
+        <div className="flex items-center gap-2.5 px-5 pt-4 pb-3 border-b border-[rgba(0,0,0,0.06)]/30">
+          <div className="h-5 w-5 rounded-lg bg-[#C89B3C]/10 border border-[#C89B3C]/20 flex items-center justify-center">
+            <Calendar className="h-3 w-3 text-[#C89B3C]/70" />
           </div>
-          <span className="font-mono text-[11px] text-gold-500/70 uppercase tracking-[0.15em] font-bold">Upcoming</span>
+          <span className="font-mono text-[11px] text-[#C89B3C]/70 uppercase tracking-[0.15em] font-bold">Upcoming</span>
         </div>
         {upcoming.length > 0 ? (
-          <button onClick={() => onNavigate?.('Events')} className="w-full text-left p-5 group hover:bg-gold-500/[0.02] transition-colors">
+          <button onClick={() => onNavigate?.('Events')} className="w-full text-left p-5 group hover:bg-[#C89B3C]/[0.02] transition-colors">
             <div className="flex items-center gap-4">
-              <div className="flex flex-col items-center justify-center h-14 w-14 rounded-xl border border-neutral-800/60 bg-neutral-950/60 font-mono shrink-0 shadow-inner shadow-black/30">
-                <span className="text-lg font-bold text-white leading-none">{upcoming[0].day}</span>
-                <span className="text-[6px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{upcoming[0].month}</span>
+              <div className="flex flex-col items-center justify-center h-14 w-14 rounded-xl border border-[rgba(0,0,0,0.06)]/60 bg-[#F8F6F2] font-mono shrink-0 shadow-inner shadow-black/30">
+                <span className="text-lg font-bold text-[#111] leading-none">{upcoming[0].day}</span>
+                <span className="text-[6px] font-bold text-[#C89B3C]/60 tracking-widest mt-0.5 uppercase leading-none">{upcoming[0].month}</span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-elegant text-sm font-bold text-neutral-100 group-hover:text-gold-500/60 transition-colors tracking-wide truncate">{upcoming[0].title}</p>
-                <p className="text-[10px] text-neutral-500 font-sans mt-1">{upcoming[0].location}</p>
-                <span className="inline-block mt-2 text-[10px] font-mono text-gold-500/50 uppercase tracking-wider group-hover:text-gold-500/70 transition-colors">Register now →</span>
+                <p className="font-elegant text-sm font-bold text-[#1E1E1E] group-hover:text-[#C89B3C]/60 transition-colors tracking-wide truncate">{upcoming[0].title}</p>
+                <p className="text-[10px] text-[#444] font-sans mt-1">{upcoming[0].location}</p>
+                <span className="inline-block mt-2 text-[10px] font-mono text-[#C89B3C]/50 uppercase tracking-wider group-hover:text-[#C89B3C]/70 transition-colors">Register now →</span>
               </div>
             </div>
           </button>
         ) : (
           <div className="p-6 text-center">
-            <Calendar className="h-5 w-5 text-neutral-700 mx-auto mb-2" />
-            <p className="font-elegant text-sm text-neutral-500">All clear on the horizon</p>
-            <p className="text-[10px] text-neutral-600 mt-0.5 font-sans">New events will appear here when announced.</p>
+            <Calendar className="h-5 w-5 text-[#444] mx-auto mb-2" />
+            <p className="font-elegant text-sm text-[#444]">All clear on the horizon</p>
+            <p className="text-[10px] text-[#444] mt-0.5 font-sans">New events will appear here when announced.</p>
           </div>
         )}
       </div>
@@ -395,22 +395,22 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="space-y-1 border-b border-neutral-900 pb-4">
-          <div className="h-6 w-56 rounded bg-neutral-800 animate-pulse" />
-          <div className="h-3 w-72 rounded bg-neutral-800 animate-pulse mt-2" />
+        <div className="space-y-1 border-b border-[rgba(0,0,0,0.06)] pb-4">
+          <div className="h-6 w-56 rounded bg-[#F8F6F2] animate-pulse" />
+          <div className="h-3 w-72 rounded bg-[#F8F6F2] animate-pulse mt-2" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[1,2].map(i => (
-            <div key={i} className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4 animate-pulse">
-              <div className="h-4 w-16 rounded bg-neutral-800" />
-              <div className="h-5 w-48 rounded bg-neutral-800" />
-              <div className="h-3 w-full rounded bg-neutral-800" />
+            <div key={i} className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-5 space-y-4 animate-pulse">
+              <div className="h-4 w-16 rounded bg-[#F8F6F2]" />
+              <div className="h-5 w-48 rounded bg-[#F8F6F2]" />
+              <div className="h-3 w-full rounded bg-[#F8F6F2]" />
               <div className="space-y-2">
-                <div className="h-3 w-40 rounded bg-neutral-800" />
-                <div className="h-3 w-36 rounded bg-neutral-800" />
-                <div className="h-3 w-44 rounded bg-neutral-800" />
+                <div className="h-3 w-40 rounded bg-[#F8F6F2]" />
+                <div className="h-3 w-36 rounded bg-[#F8F6F2]" />
+                <div className="h-3 w-44 rounded bg-[#F8F6F2]" />
               </div>
-              <div className="h-10 w-full rounded-lg bg-neutral-800" />
+              <div className="h-10 w-full rounded-lg bg-[#F8F6F2]" />
             </div>
           ))}
         </div>
@@ -421,8 +421,8 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
   if (error) {
     return (
       <div className="space-y-6">
-        <div className="space-y-1 border-b border-neutral-900 pb-4">
-          <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">Official Community Events</h2>
+        <div className="space-y-1 border-b border-[rgba(0,0,0,0.06)] pb-4">
+          <h2 className="font-serif text-xl font-bold tracking-wider text-[#111] uppercase">Official Community Events</h2>
         </div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="max-w-lg mx-auto text-center py-16 border border-dashed border-red-900/40 rounded-2xl bg-red-950/10 space-y-4"
@@ -445,9 +445,9 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
 
   return (
     <div className="space-y-8">
-      <div className="space-y-1 border-b border-neutral-900 pb-4">
-        <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">Official Community Events</h2>
-        <p className="text-xs text-neutral-500 font-mono">Participate in live group Q&As, virtual panels, or request charity dinner tickets.</p>
+      <div className="space-y-1 border-b border-[rgba(0,0,0,0.06)] pb-4">
+        <h2 className="font-serif text-xl font-bold tracking-wider text-[#111] uppercase">Official Community Events</h2>
+        <p className="text-xs text-[#444] font-mono">Participate in live group Q&As, virtual panels, or request charity dinner tickets.</p>
       </div>
 
       {/* Registration Modal */}
@@ -457,37 +457,37 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
             className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-12 md:pt-20 bg-black/80 backdrop-blur-sm overflow-y-auto"
           >
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-2xl bg-neutral-950 border border-neutral-800 rounded-2xl overflow-hidden shadow-2xl text-left"
+              className="w-full max-w-2xl bg-white border border-[rgba(0,0,0,0.06)] rounded-2xl overflow-hidden shadow-2xl text-left"
             >
-              <div className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between">
+              <div className="px-6 py-4 border-b border-[rgba(0,0,0,0.06)] flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   {step !== 'submitted' && (
                     <button onClick={step === 'review' ? () => setStep('form') : resetFlow}
-                      className="p-1 rounded text-neutral-500 hover:text-white transition-colors"
+                      className="p-1 rounded text-[#444] hover:text-white transition-colors"
                     ><ArrowLeft className="h-4 w-4" /></button>
                   )}
                   <div>
-                    <span className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">
+                    <span className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">
                       {step === 'form' ? 'Step 2 of 6 — Your Details' : step === 'review' ? 'Step 4 of 6 — Review' : 'Registration Complete'}
                     </span>
-                    <p className="text-[10px] text-neutral-500 mt-0.5 font-mono">{registeringEvent.title}</p>
+                    <p className="text-[10px] text-[#444] mt-0.5 font-mono">{registeringEvent.title}</p>
                   </div>
                 </div>
                 {step !== 'submitted' && (
-                  <button onClick={resetFlow} className="p-1 rounded text-neutral-500 hover:text-white transition-colors"><X className="h-5 w-5" /></button>
+                  <button onClick={resetFlow} className="p-1 rounded text-[#444] hover:text-white transition-colors"><X className="h-5 w-5" /></button>
                 )}
               </div>
 
               <div className="p-6 space-y-5">
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-neutral-900/30 border border-neutral-800/60">
-                  <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg border border-neutral-800 bg-neutral-950 font-mono shrink-0">
-                    <span className="text-sm font-bold text-white leading-none">{registeringEvent.day}</span>
-                    <span className="text-[10px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{registeringEvent.month}</span>
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60">
+                  <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg border border-[rgba(0,0,0,0.06)] bg-white font-mono shrink-0">
+                    <span className="text-sm font-bold text-[#111] leading-none">{registeringEvent.day}</span>
+                    <span className="text-[10px] font-bold text-[#C89B3C]/60 tracking-widest mt-0.5 uppercase leading-none">{registeringEvent.month}</span>
                   </div>
                   <div className="text-[11px] space-y-0.5">
-                    <p className="font-bold text-white">{registeringEvent.title}</p>
-                    <p className="text-neutral-400 font-mono text-[10px]">{registeringEvent.month} {registeringEvent.day}, 2026 — {registeringEvent.time}</p>
-                    <p className="text-neutral-500 font-mono text-[11px]">{registeringEvent.location}</p>
+                    <p className="font-bold text-[#111]">{registeringEvent.title}</p>
+                    <p className="text-[#444] font-mono text-[10px]">{registeringEvent.month} {registeringEvent.day}, 2026 — {registeringEvent.time}</p>
+                    <p className="text-[#444] font-mono text-[11px]">{registeringEvent.location}</p>
                   </div>
                 </div>
 
@@ -495,40 +495,40 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Full Name *</label>
+                        <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Full Name *</label>
                         <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                          className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                          className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Email Address *</label>
+                        <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Email Address *</label>
                         <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                          className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                          className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Phone Number</label>
+                        <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Phone Number</label>
                         <input type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-                          className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                          className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Country</label>
+                        <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Country</label>
                         <input type="text" value={form.country} onChange={e => setForm(p => ({ ...p, country: e.target.value }))}
-                          className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                          className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Number of Attendees</label>
+                        <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Number of Attendees</label>
                         <input type="number" min={1} value={form.attendees} onChange={e => setForm(p => ({ ...p, attendees: Math.max(1, parseInt(e.target.value) || 1) }))}
-                          className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                          className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Special Requirements</label>
+                        <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Special Requirements</label>
                         <input type="text" value={form.specialRequests} onChange={e => setForm(p => ({ ...p, specialRequests: e.target.value }))} placeholder="Dietary, accessibility, etc."
-                          className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2.5 text-[12px] text-white outline-none focus:border-gold-500/40 transition-colors" />
+                          className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2.5 text-[12px] text-[#111] outline-none focus:border-[#C89B3C]/40 transition-colors" />
                       </div>
                     </div>
-                    <div className="space-y-2 pt-2 border-t border-neutral-800/60">
-                      <label className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">Preferred Communication Method *</label>
+                    <div className="space-y-2 pt-2 border-t border-[rgba(0,0,0,0.06)]/60">
+                      <label className="text-[11px] font-mono text-[#444] uppercase tracking-wider">Preferred Communication Method *</label>
                       <div className="grid grid-cols-2 gap-3">
                         {[
                           { id: 'whatsapp' as const, label: 'WhatsApp', icon: MessageCircle, desc: 'Quick messaging' },
@@ -536,22 +536,22 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                         ].map(opt => (
                           <button key={opt.id} onClick={() => setForm(p => ({ ...p, commMethod: opt.id }))}
                             className={`flex items-center gap-3 p-4 rounded-xl border transition-all text-left ${
-                              form.commMethod === opt.id ? 'border-gold-500/40 bg-gold-500/[0.04] ring-1 ring-gold-500/20' : 'border-neutral-800 bg-neutral-900/30 hover:border-neutral-700'
+                              form.commMethod === opt.id ? 'border-[#C89B3C]/40 bg-[#C89B3C]/[0.04] ring-1 ring-gold-500/20' : 'border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] hover:border-neutral-700'
                             }`}
                           >
-                            <div className={`p-2 rounded-lg ${form.commMethod === opt.id ? 'bg-gold-500/10 text-gold-500' : 'bg-neutral-900 text-neutral-400'}`}>
+                            <div className={`p-2 rounded-lg ${form.commMethod === opt.id ? 'bg-[#C89B3C]/10 text-[#C89B3C]' : 'bg-white text-[#444]'}`}>
                               <opt.icon className="h-4 w-4" />
                             </div>
                             <div>
-                              <p className={`text-xs font-bold ${form.commMethod === opt.id ? 'text-gold-500' : 'text-white'}`}>{opt.label}</p>
-                              <p className="text-[11px] text-neutral-500 mt-0.5">{opt.desc}</p>
+                              <p className={`text-xs font-bold ${form.commMethod === opt.id ? 'text-[#C89B3C]' : 'text-[#111]'}`}>{opt.label}</p>
+                              <p className="text-[11px] text-[#444] mt-0.5">{opt.desc}</p>
                             </div>
                           </button>
                         ))}
                       </div>
                     </div>
                     <button onClick={handleSubmitForm} disabled={!form.name || !form.email}
-                      className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="w-full py-3 rounded-xl bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     ><FileText className="h-4 w-4" /> Review Registration</button>
                   </div>
                 )}
@@ -559,21 +559,21 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                 {step === 'review' && (
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-3 p-4 rounded-xl bg-neutral-900/20 border border-neutral-800/60">
-                        <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Fan Information</h4>
+                      <div className="space-y-3 p-4 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60">
+                        <h4 className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">Fan Information</h4>
                         <div className="text-[11px] space-y-1">
-                          <p><span className="text-neutral-500">Name:</span> <span className="text-white">{form.name}</span></p>
-                          <p><span className="text-neutral-500">Email:</span> <span className="text-white">{form.email}</span></p>
-                          <p><span className="text-neutral-500">Phone:</span> <span className="text-white">{form.phone || '—'}</span></p>
-                          <p><span className="text-neutral-500">Country:</span> <span className="text-white">{form.country || '—'}</span></p>
+                          <p><span className="text-[#444]">Name:</span> <span className="text-[#111]">{form.name}</span></p>
+                          <p><span className="text-[#444]">Email:</span> <span className="text-[#111]">{form.email}</span></p>
+                          <p><span className="text-[#444]">Phone:</span> <span className="text-[#111]">{form.phone || '—'}</span></p>
+                          <p><span className="text-[#444]">Country:</span> <span className="text-[#111]">{form.country || '—'}</span></p>
                         </div>
                       </div>
-                      <div className="space-y-3 p-4 rounded-xl bg-neutral-900/20 border border-neutral-800/60">
-                        <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Registration Details</h4>
+                      <div className="space-y-3 p-4 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60">
+                        <h4 className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">Registration Details</h4>
                         <div className="text-[11px] space-y-1">
-                          <p><span className="text-neutral-500">Attendees:</span> <span className="text-white">{form.attendees}</span></p>
-                          <p><span className="text-neutral-500">Special Reqs:</span> <span className="text-white">{form.specialRequests || 'None'}</span></p>
-                          <p><span className="text-neutral-500">Method:</span> <span className="text-white capitalize flex items-center gap-1">{form.commMethod === 'whatsapp' ? <MessageCircle className="h-3 w-3 text-emerald-400" /> : <Mail className="h-3 w-3 text-blue-400" />}{form.commMethod}</span></p>
+                          <p><span className="text-[#444]">Attendees:</span> <span className="text-[#111]">{form.attendees}</span></p>
+                          <p><span className="text-[#444]">Special Reqs:</span> <span className="text-[#111]">{form.specialRequests || 'None'}</span></p>
+                          <p><span className="text-[#444]">Method:</span> <span className="text-[#111] capitalize flex items-center gap-1">{form.commMethod === 'whatsapp' ? <MessageCircle className="h-3 w-3 text-emerald-400" /> : <Mail className="h-3 w-3 text-blue-400" />}{form.commMethod}</span></p>
                         </div>
                       </div>
                     </div>
@@ -582,10 +582,10 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                     )}
                     <div className="flex gap-3 pt-2">
                       <button onClick={() => setStep('form')}
-                        className="flex-1 py-3 rounded-xl border border-neutral-800 text-neutral-400 hover:text-white text-xs font-mono transition-colors"
+                        className="flex-1 py-3 rounded-xl border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white text-xs font-mono transition-colors"
                       >Back & Edit</button>
                       <button onClick={handleSubmitRegistration} disabled={saving}
-                        className="flex-1 py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="flex-1 py-3 rounded-xl bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                       >{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} {saving ? 'Submitting...' : 'Submit Registration'}</button>
                     </div>
                   </div>
@@ -597,23 +597,23 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
                       <CheckCircle className="h-8 w-8 text-emerald-400" />
                     </div>
                     <div className="space-y-1">
-                      <h3 className="font-serif text-lg font-bold text-white">Registration Submitted!</h3>
-                      <p className="text-xs text-neutral-400">Your registration reference is:</p>
-                      <p className="font-mono text-sm text-gold-500 font-bold bg-gold-500/5 border border-gold-500/20 rounded-lg inline-block px-4 py-2">{ticketRef}</p>
+                      <h3 className="font-serif text-lg font-bold text-[#111]">Registration Submitted!</h3>
+                      <p className="text-xs text-[#444]">Your registration reference is:</p>
+                      <p className="font-mono text-sm text-[#C89B3C] font-bold bg-[#C89B3C]/5 border border-[#C89B3C]/20 rounded-lg inline-block px-4 py-2">{ticketRef}</p>
                     </div>
-                    <div className="p-4 rounded-xl bg-neutral-900/20 border border-neutral-800/60 text-left space-y-2">
-                      <p className="text-[10px] text-neutral-400 leading-relaxed">
+                    <div className="p-4 rounded-xl bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)]/60 text-left space-y-2">
+                      <p className="text-[10px] text-[#444] leading-relaxed">
                         Please send the pre-filled message via your chosen method to complete your registration.
                         Once the administrator confirms, your status will update here.
                       </p>
                     </div>
                     <button onClick={openCommApp}
-                      className="w-full py-3 rounded-xl bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 rounded-xl bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2"
                     >{form.commMethod === 'whatsapp' ? <MessageCircle className="h-4 w-4" /> : <Mail className="h-4 w-4" />}
                       Open {form.commMethod === 'whatsapp' ? 'WhatsApp' : 'Email'}
                     </button>
                     <button onClick={resetFlow}
-                      className="w-full py-2 text-[10px] font-mono text-neutral-500 hover:text-white transition-colors"
+                      className="w-full py-2 text-[10px] font-mono text-[#444] hover:text-white transition-colors"
                     >Back to Events</button>
                   </div>
                 )}
@@ -625,78 +625,78 @@ export default function FanEvents({ onNavigate, showToast, addJourneyMilestone, 
 
       {/* My Registrations */}
       <div className="space-y-3">
-        <h3 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">My Registrations</h3>
+        <h3 className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">My Registrations</h3>
         {registeredEvents.length > 0 ? (
           registeredEvents.map(ev => (
             <div key={ev.id} onClick={() => setSelectedReg(ev)}
-              className="p-4 rounded-xl border border-gold-500/20 bg-gradient-to-b from-gold-500/[0.02] to-transparent hover:border-gold-500/40 transition-all cursor-pointer group"
+              className="p-4 rounded-xl border border-[#C89B3C]/20 bg-gradient-to-b from-gold-500/[0.02] to-transparent hover:border-[#C89B3C]/40 transition-all cursor-pointer group"
             >
               <div className="flex items-start gap-4">
-                <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg border border-neutral-800/60 bg-neutral-950/60 font-mono shrink-0">
-                  <span className="text-sm font-bold text-white leading-none">{ev.day}</span>
-                  <span className="text-[10px] font-bold text-gold-500/60 tracking-widest mt-0.5 uppercase leading-none">{ev.month}</span>
+                <div className="flex flex-col items-center justify-center h-12 w-12 rounded-lg border border-[rgba(0,0,0,0.06)]/60 bg-[#F8F6F2] font-mono shrink-0">
+                  <span className="text-sm font-bold text-[#111] leading-none">{ev.day}</span>
+                  <span className="text-[10px] font-bold text-[#C89B3C]/60 tracking-widest mt-0.5 uppercase leading-none">{ev.month}</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="text-sm font-bold text-white group-hover:text-gold-500/80 transition-colors">{ev.title}</h4>
+                    <h4 className="text-sm font-bold text-[#111] group-hover:text-[#C89B3C]/80 transition-colors">{ev.title}</h4>
                     <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${getStatusColor(ev.regStatus || 'pending')}`}>
                       {STATUS_STEPS.find(s => s.key === ev.regStatus)?.label || ev.regStatus || 'Pending'}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-500 mt-1">
+                  <div className="flex items-center gap-2 text-[11px] font-mono text-[#444] mt-1">
                     <span>{ev.month} {ev.day}, 2026</span>
-                    <span className="text-neutral-700">•</span>
+                    <span className="text-[#444]">•</span>
                     <span>{ev.time}</span>
                   </div>
-                  <p className="text-[11px] font-mono text-neutral-600 mt-0.5">Ref: {ev.ticketRef}</p>
+                  <p className="text-[11px] font-mono text-[#444] mt-0.5">Ref: {ev.ticketRef}</p>
                 </div>
-                <ChevronRight className="h-4 w-4 text-neutral-600 group-hover:text-gold-500/60 mt-1 shrink-0 transition-colors" />
+                <ChevronRight className="h-4 w-4 text-[#444] group-hover:text-[#C89B3C]/60 mt-1 shrink-0 transition-colors" />
               </div>
             </div>
           ))
         ) : (
-          <div className="text-center py-6 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10 space-y-2">
-            <Ticket className="h-5 w-5 text-neutral-700 mx-auto" />
-            <p className="text-[11px] text-neutral-500">No registrations yet.</p>
-            <p className="text-[11px] text-neutral-600 font-mono">Register for an event below to see it here.</p>
+          <div className="text-center py-6 border border-dashed border-[rgba(0,0,0,0.06)] rounded-xl bg-white/10 space-y-2">
+            <Ticket className="h-5 w-5 text-[#444] mx-auto" />
+            <p className="text-[11px] text-[#444]">No registrations yet.</p>
+            <p className="text-[11px] text-[#444] font-mono">Register for an event below to see it here.</p>
           </div>
         )}
       </div>
 
       {/* Available Events */}
       <div className="space-y-3">
-        <h3 className="text-[11px] font-mono text-neutral-400 uppercase tracking-widest font-bold">
+        <h3 className="text-[11px] font-mono text-[#444] uppercase tracking-widest font-bold">
           {registeredEvents.length > 0 ? 'More Events' : 'All Events'}
         </h3>
         {upcomingEvents.length === 0 ? (
-          <div className="text-center py-10 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/10 space-y-2">
-            <Calendar className="h-7 w-7 text-neutral-700 mx-auto" />
+          <div className="text-center py-10 border border-dashed border-[rgba(0,0,0,0.06)] rounded-xl bg-white/10 space-y-2">
+            <Calendar className="h-7 w-7 text-[#444] mx-auto" />
             <div>
-              <p className="text-[11px] text-neutral-400 font-bold">All caught up!</p>
-              <p className="text-[11px] text-neutral-600 mt-0.5 font-mono">No more events available right now. Check back soon.</p>
+              <p className="text-[11px] text-[#444] font-bold">All caught up!</p>
+              <p className="text-[11px] text-[#444] mt-0.5 font-mono">No more events available right now. Check back soon.</p>
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {upcomingEvents.map(ev => (
-              <div key={ev.id} className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4 relative overflow-hidden flex flex-col justify-between">
+              <div key={ev.id} className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-5 space-y-4 relative overflow-hidden flex flex-col justify-between">
                 <div className="space-y-2">
                   <div className="flex justify-between items-start">
-                    <span className="inline-block px-1.5 py-0.5 rounded bg-neutral-900 text-gold-500 text-[10px] font-mono uppercase font-bold border border-gold-800/20">{ev.type}</span>
+                    <span className="inline-block px-1.5 py-0.5 rounded bg-white text-[#C89B3C] text-[10px] font-mono uppercase font-bold border border-gold-800/20">{ev.type}</span>
                   </div>
-                  <h3 className="font-serif text-base font-bold text-white tracking-wide">{ev.title}</h3>
-                  {ev.description && <p className="text-[10px] text-neutral-500 leading-relaxed">{ev.description}</p>}
-                  <div className="space-y-1 text-xs text-neutral-400 font-mono pt-2">
-                    <p className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-neutral-500 shrink-0" /> {ev.month} {ev.day}, 2026</p>
-                    <p className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-neutral-500 shrink-0" /> {ev.time}</p>
-                    <p className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-neutral-500 shrink-0" /> {ev.location}</p>
+                  <h3 className="font-serif text-base font-bold text-[#111] tracking-wide">{ev.title}</h3>
+                  {ev.description && <p className="text-[10px] text-[#444] leading-relaxed">{ev.description}</p>}
+                  <div className="space-y-1 text-xs text-[#444] font-mono pt-2">
+                    <p className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 text-[#444] shrink-0" /> {ev.month} {ev.day}, 2026</p>
+                    <p className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-[#444] shrink-0" /> {ev.time}</p>
+                    <p className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-[#444] shrink-0" /> {ev.location}</p>
                   </div>
                 </div>
                 <button onClick={() => startRegistration(ev)}
                   className={`w-full mt-3 font-bold py-2.5 rounded-lg text-xs transition-all uppercase tracking-wider active:scale-[0.98] ${
                     membership?.status === 'active'
-                      ? 'bg-gold-500 hover:bg-gold-400 text-neutral-950'
-                      : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-400 border border-neutral-700'
+                      ? 'bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950'
+                      : 'bg-[#F8F6F2] hover:bg-neutral-700 text-[#444] border border-neutral-700'
                   }`}
                 >
                   {membership?.status === 'active' ? 'Register Now' : '🔒 Membership Required'}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
 import { notifyExperienceStatus } from '../utils/notifications';
 import { logger } from '../utils/logger';
@@ -53,11 +53,11 @@ export default function AdminExperiences({ showToast }: Props) {
     <div className="space-y-6">
       <div className="space-y-1">
         <h2 className="font-serif text-xl font-bold tracking-wider text-white uppercase">Experiences</h2>
-        <p className="text-xs text-neutral-500 font-mono">Manage the experience catalogue and fan bookings.</p>
+        <p className="text-xs text-[#444] font-mono">Manage the experience catalogue and fan bookings.</p>
       </div>
 
       {/* Sub-tab navigation */}
-      <div className="flex gap-1 bg-neutral-950 border border-neutral-900 rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-white border border-[rgba(0,0,0,0.06)] rounded-xl p-1 w-fit">
         {[
           { id: 'catalogue' as const, label: 'Catalogue', icon: LayoutGrid },
           { id: 'bookings' as const, label: 'Bookings', icon: List },
@@ -67,8 +67,8 @@ export default function AdminExperiences({ showToast }: Props) {
             onClick={() => setActiveSubTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-mono tracking-widest uppercase transition-all ${
               activeSubTab === tab.id
-                ? 'bg-gold-500 text-neutral-950 font-bold'
-                : 'text-neutral-500 hover:text-white'
+                ? 'bg-[#C89B3C] text-neutral-950 font-bold'
+                : 'text-[#444] hover:text-white'
             }`}
           >
             <tab.icon className="h-3.5 w-3.5" />
@@ -336,17 +336,17 @@ function CatalogueTab({ showToast }: Props) {
 
   if (previewId) {
     const exp = experiences.find(e => e.id === previewId);
-    if (!exp) return <div className="text-neutral-500">Not found</div>;
+    if (!exp) return <div className="text-[#444]">Not found</div>;
     return (
       <div className="space-y-4">
-        <button onClick={() => setPreviewId(null)} className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase text-neutral-500 hover:text-gold-500 transition-colors">← Back</button>
-        <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-6 space-y-4">
-          <div className="relative h-48 rounded-lg overflow-hidden bg-neutral-900">
-            {exp.image ? <img src={exp.image} alt={exp.title} loading="lazy" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-neutral-600 text-sm">No Image</div>}
+        <button onClick={() => setPreviewId(null)} className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase text-[#444] hover:text-[#C89B3C] transition-colors">← Back</button>
+        <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-6 space-y-4">
+          <div className="relative h-48 rounded-lg overflow-hidden bg-white">
+            {exp.image ? <img src={exp.image} alt={exp.title} loading="lazy" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-[#444] text-sm">No Image</div>}
             <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
             <div className="absolute bottom-4 left-4">
               <h2 className="font-serif text-xl font-bold text-white">{exp.title}</h2>
-              <p className="text-xs text-neutral-400">{exp.category} — {exp.duration}</p>
+              <p className="text-xs text-[#444]">{exp.category} — {exp.duration}</p>
             </div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -354,13 +354,13 @@ function CatalogueTab({ showToast }: Props) {
               { label: 'Location', value: exp.location }, { label: 'Price', value: exp.price },
               { label: 'Spots', value: `${exp.spots - exp.spotsTaken} / ${exp.spots}` }, { label: 'Type', value: exp.is_virtual ? 'Virtual' : 'Physical' },
             ].map(s => (
-              <div key={s.label} className="bg-neutral-900/40 border border-neutral-900 rounded-lg p-3">
-                <span className="text-[10px] font-mono text-neutral-500 uppercase">{s.label}</span>
+              <div key={s.label} className="bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-lg p-3">
+                <span className="text-[10px] font-mono text-[#444] uppercase">{s.label}</span>
                 <p className="text-xs font-bold text-white mt-1">{s.value}</p>
               </div>
             ))}
           </div>
-          <p className="text-xs text-neutral-300 leading-relaxed">{exp.short_description || exp.description}</p>
+          <p className="text-xs text-[#444] leading-relaxed">{exp.short_description || exp.description}</p>
         </div>
       </div>
     );
@@ -370,145 +370,145 @@ function CatalogueTab({ showToast }: Props) {
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2">
-          <button onClick={seedExperiences} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-800 text-neutral-400 hover:text-white text-[10px] font-mono transition-all">
+          <button onClick={seedExperiences} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white text-[10px] font-mono transition-all">
             <RefreshCw className="h-3.5 w-3.5" /> Seed
           </button>
-          <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-800 text-neutral-400 hover:text-white text-[10px] font-mono transition-all">
+          <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white text-[10px] font-mono transition-all">
             <FileSpreadsheet className="h-3.5 w-3.5" /> Export
           </button>
         </div>
-        <button onClick={openCreate} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-[10px] tracking-widest uppercase transition-all">
+        <button onClick={openCreate} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold text-[10px] tracking-widest uppercase transition-all">
           <Plus className="h-3.5 w-3.5" /> New Experience
         </button>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#444]" />
           <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search experiences..." className="w-full bg-neutral-950 border border-neutral-900 rounded-lg pl-9 pr-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
+            placeholder="Search experiences..." className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg pl-9 pr-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/40" />
         </div>
         <select value={filterPublished} onChange={e => setFilterPublished(e.target.value as 'all' | 'published' | 'unpublished' | 'archived')}
-          className="bg-neutral-950 border border-neutral-900 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40">
+          className="bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/40">
           <option value="all">All</option>
           <option value="published">Published</option>
           <option value="unpublished">Unpublished</option>
           <option value="archived">Archived</option>
         </select>
-        <span className="text-[10px] font-mono text-neutral-500">{filtered.length} experience{filtered.length !== 1 ? 's' : ''}</span>
+        <span className="text-[10px] font-mono text-[#444]">{filtered.length} experience{filtered.length !== 1 ? 's' : ''}</span>
       </div>
 
       {/* Edit/Create Form */}
       {(editing || form.title) && (
-        <div className="rounded-xl border border-gold-500/20 bg-neutral-950/60 p-5 space-y-4">
+        <div className="rounded-xl border border-[#C89B3C]/20 bg-[#F8F6F2] p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">
+            <h3 className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">
               {editing ? `Edit: ${editing.title}` : 'New Experience'}
             </h3>
-            <button onClick={() => { setEditing(null); setForm({ ...DEFAULT_FORM }); }} className="text-neutral-500 hover:text-white"><X className="h-4 w-4" /></button>
+            <button onClick={() => { setEditing(null); setForm({ ...DEFAULT_FORM }); }} className="text-[#444] hover:text-white"><X className="h-4 w-4" /></button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Title *</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Title *</label>
               <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Category</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Category</label>
               <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40">
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40">
                 {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Tier</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Tier</label>
               <select value={form.tier} onChange={e => setForm({ ...form, tier: e.target.value })}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40">
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40">
                 <option value="Scully">Scully</option><option value="Gibson">Gibson</option><option value="Milburn">Milburn</option>
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Duration</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Duration</label>
               <input type="text" value={form.duration} onChange={e => setForm({ ...form, duration: e.target.value })} placeholder="e.g. 2 Hours"
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Location</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Location</label>
               <input type="text" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} placeholder="e.g. London, UK"
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Price</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Price</label>
               <input type="text" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} placeholder="e.g. $2,500"
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Type</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Type</label>
               <select value={form.capacity} onChange={e => setForm({ ...form, capacity: e.target.value, is_virtual: e.target.value === 'Virtual' })}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40">
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40">
                 <option value="Physical">Physical</option><option value="Virtual">Virtual</option>
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Spots</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Spots</label>
               <input type="number" min={1} value={form.spots} onChange={e => setForm({ ...form, spots: parseInt(e.target.value) || 1 })}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Max Guests</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Max Guests</label>
               <input type="number" min={1} value={form.max_guests} onChange={e => setForm({ ...form, max_guests: parseInt(e.target.value) || 1 })}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Sort Order</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Sort Order</label>
               <input type="number" value={form.sort_order} onChange={e => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Image URL</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Image URL</label>
               <input type="text" value={form.image} onChange={e => setForm({ ...form, image: e.target.value })} placeholder="https://..."
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Gallery Images (comma-separated URLs)</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Gallery Images (comma-separated URLs)</label>
               <input type="text" value={form.gallery_images} onChange={e => setForm({ ...form, gallery_images: e.target.value })}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1 sm:col-span-3">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Short Description</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Short Description</label>
               <textarea rows={2} value={form.short_description} onChange={e => setForm({ ...form, short_description: e.target.value })}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40 resize-none" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40 resize-none" />
             </div>
             <div className="space-y-1 sm:col-span-3">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Full Description</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Full Description</label>
               <textarea rows={4} value={form.full_description} onChange={e => setForm({ ...form, full_description: e.target.value })}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40 resize-none" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40 resize-none" />
             </div>
             <div className="space-y-1 sm:col-span-3">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Booking Requirements</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Booking Requirements</label>
               <textarea rows={2} value={form.booking_requirements} onChange={e => setForm({ ...form, booking_requirements: e.target.value })}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40 resize-none" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40 resize-none" />
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.featured} onChange={e => setForm({ ...form, featured: e.target.checked })} className="accent-gold-500 h-3.5 w-3.5" />
-              <span className="text-[10px] font-mono text-neutral-400">Featured</span>
+              <span className="text-[10px] font-mono text-[#444]">Featured</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.published} onChange={e => setForm({ ...form, published: e.target.checked })} className="accent-gold-500 h-3.5 w-3.5" />
-              <span className="text-[10px] font-mono text-neutral-400">Published</span>
+              <span className="text-[10px] font-mono text-[#444]">Published</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.popular} onChange={e => setForm({ ...form, popular: e.target.checked })} className="accent-gold-500 h-3.5 w-3.5" />
-              <span className="text-[10px] font-mono text-neutral-400">Popular</span>
+              <span className="text-[10px] font-mono text-[#444]">Popular</span>
             </label>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button onClick={() => { setEditing(null); setForm({ ...DEFAULT_FORM }); }}
-              className="px-4 py-2 rounded-lg border border-neutral-800 text-neutral-400 hover:text-white text-[10px] font-mono transition-all">Cancel</button>
+              className="px-4 py-2 rounded-lg border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white text-[10px] font-mono transition-all">Cancel</button>
             <button onClick={handleSave} disabled={saving || !form.title.trim()}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-[10px] tracking-widest uppercase transition-all disabled:opacity-40">
+              className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold text-[10px] tracking-widest uppercase transition-all disabled:opacity-40">
               {saving ? <span className="h-3 w-3 border-2 border-neutral-950 border-t-transparent rounded-full animate-spin" /> : <Save className="h-3 w-3" />}
               {editing ? 'Update' : 'Create'}
             </button>
@@ -517,56 +517,56 @@ function CatalogueTab({ showToast }: Props) {
       )}
 
       {loading ? (
-        <div className="text-center py-20"><div className="h-8 w-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto" /></div>
+        <div className="text-center py-20"><div className="h-8 w-8 border-2 border-[#C89B3C] border-t-transparent rounded-full animate-spin mx-auto" /></div>
       ) : filtered.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.sort((a, b) => a.sort_order - b.sort_order).map(exp => (
-            <div key={exp.id} className={`rounded-xl border bg-neutral-950/40 overflow-hidden group transition-all hover:border-gold-500/20 ${exp.archived ? 'border-neutral-900/40 opacity-60' : 'border-neutral-900'}`}>
-              <div className="relative h-28 bg-neutral-900/60 overflow-hidden">
+            <div key={exp.id} className={`rounded-xl border bg-[#F8F6F2] overflow-hidden group transition-all hover:border-[#C89B3C]/20 ${exp.archived ? 'border-[rgba(0,0,0,0.06)]/40 opacity-60' : 'border-[rgba(0,0,0,0.06)]'}`}>
+              <div className="relative h-28 bg-[#F8F6F2] overflow-hidden">
                 {exp.image ? (
                   <img src={exp.image} alt={exp.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center"><Star className="h-6 w-6 text-neutral-700" /></div>
+                  <div className="w-full h-full flex items-center justify-center"><Star className="h-6 w-6 text-[#444]" /></div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
                 <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
-                  {exp.featured && <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-gold-500/10 border border-gold-500/20 text-gold-500">Featured</span>}
+                  {exp.featured && <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-[#C89B3C]/10 border border-[#C89B3C]/20 text-[#C89B3C]">Featured</span>}
                   {exp.is_virtual && <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-blue-500/10 border border-blue-500/20 text-blue-400">Virtual</span>}
                   {!exp.published && <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-amber-500/10 border border-amber-500/20 text-amber-400">Draft</span>}
                   {exp.archived && <span className="px-1.5 py-0.5 rounded text-[10px] font-mono uppercase bg-red-500/10 border border-red-500/20 text-red-400">Archived</span>}
                 </div>
                 <div className="absolute bottom-2 left-2">
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono uppercase border ${(CATEGORY_META[exp.category]?.color) || 'bg-neutral-900/80 border-neutral-800 text-neutral-400'}`}>
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono uppercase border ${(CATEGORY_META[exp.category]?.color) || 'bg-white/80 border-[rgba(0,0,0,0.06)] text-[#444]'}`}>
                     {exp.category}
                   </span>
                 </div>
               </div>
               <div className="p-3 space-y-2">
                 <h3 className="text-xs font-bold text-white leading-snug line-clamp-1">{exp.title}</h3>
-                <p className="text-[11px] font-mono text-neutral-500">{exp.duration} — {exp.price}</p>
-                <div className="flex items-center gap-1.5 text-[10px] text-neutral-500">
+                <p className="text-[11px] font-mono text-[#444]">{exp.duration} — {exp.price}</p>
+                <div className="flex items-center gap-1.5 text-[10px] text-[#444]">
                   <MapPin className="h-2.5 w-2.5" />{exp.location}
                   <Users className="h-2.5 w-2.5 ml-1" />{exp.spots - exp.spotsTaken}/{exp.spots}
                 </div>
-                <div className="flex items-center gap-1 pt-1 border-t border-neutral-900/60">
-                  <button onClick={() => openEdit(exp)} className="p-1 rounded text-neutral-500 hover:text-gold-500 hover:bg-gold-500/5 transition-all" title="Edit"><Edit3 className="h-3 w-3" /></button>
-                  <button onClick={() => togglePublished(exp)} className="p-1 rounded text-neutral-500 hover:text-emerald-400 hover:bg-emerald-500/5 transition-all" title={exp.published ? 'Unpublish' : 'Publish'}>
+                <div className="flex items-center gap-1 pt-1 border-t border-[rgba(0,0,0,0.06)]/60">
+                  <button onClick={() => openEdit(exp)} className="p-1 rounded text-[#444] hover:text-[#C89B3C] hover:bg-[#C89B3C]/5 transition-all" title="Edit"><Edit3 className="h-3 w-3" /></button>
+                  <button onClick={() => togglePublished(exp)} className="p-1 rounded text-[#444] hover:text-emerald-400 hover:bg-emerald-500/5 transition-all" title={exp.published ? 'Unpublish' : 'Publish'}>
                     {exp.published ? <X className="h-3 w-3" /> : <Check className="h-3 w-3" />}
                   </button>
-                  <button onClick={() => handleDuplicate(exp)} className="p-1 rounded text-neutral-500 hover:text-blue-400 hover:bg-blue-500/5 transition-all" title="Duplicate"><Copy className="h-3 w-3" /></button>
-                  <button onClick={() => setPreviewId(exp.id)} className="p-1 rounded text-neutral-500 hover:text-purple-400 hover:bg-purple-500/5 transition-all" title="Preview"><Eye className="h-3 w-3" /></button>
-                  <button onClick={() => moveOrder(exp.id, 'up')} className="p-1 rounded text-neutral-500 hover:text-white hover:bg-neutral-800 transition-all" title="Move Up"><ArrowUp className="h-3 w-3" /></button>
-                  <button onClick={() => moveOrder(exp.id, 'down')} className="p-1 rounded text-neutral-500 hover:text-white hover:bg-neutral-800 transition-all" title="Move Down"><ArrowDown className="h-3 w-3" /></button>
-                  <button onClick={() => handleArchive(exp)} className="p-1 rounded text-neutral-500 hover:text-red-400 hover:bg-red-500/5 transition-all ml-auto" title="Archive"><Trash2 className="h-3 w-3" /></button>
+                  <button onClick={() => handleDuplicate(exp)} className="p-1 rounded text-[#444] hover:text-blue-400 hover:bg-blue-500/5 transition-all" title="Duplicate"><Copy className="h-3 w-3" /></button>
+                  <button onClick={() => setPreviewId(exp.id)} className="p-1 rounded text-[#444] hover:text-purple-400 hover:bg-purple-500/5 transition-all" title="Preview"><Eye className="h-3 w-3" /></button>
+                  <button onClick={() => moveOrder(exp.id, 'up')} className="p-1 rounded text-[#444] hover:text-white hover:bg-[#F8F6F2] transition-all" title="Move Up"><ArrowUp className="h-3 w-3" /></button>
+                  <button onClick={() => moveOrder(exp.id, 'down')} className="p-1 rounded text-[#444] hover:text-white hover:bg-[#F8F6F2] transition-all" title="Move Down"><ArrowDown className="h-3 w-3" /></button>
+                  <button onClick={() => handleArchive(exp)} className="p-1 rounded text-[#444] hover:text-red-400 hover:bg-red-500/5 transition-all ml-auto" title="Archive"><Trash2 className="h-3 w-3" /></button>
                 </div>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 border border-dashed border-neutral-900 rounded-xl">
-          <p className="text-sm text-neutral-500">No experiences found.</p>
-          <button onClick={openCreate} className="mt-3 text-xs text-gold-500 hover:text-gold-400 font-mono">Create your first experience</button>
+        <div className="text-center py-20 border border-dashed border-[rgba(0,0,0,0.06)] rounded-xl">
+          <p className="text-sm text-[#444]">No experiences found.</p>
+          <button onClick={openCreate} className="mt-3 text-xs text-[#C89B3C] hover:text-gold-400 font-mono">Create your first experience</button>
         </div>
       )}
     </div>
@@ -749,110 +749,110 @@ function BookingsTab({ showToast }: Props) {
       completed: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
       cancelled: 'bg-red-500/10 text-red-400 border-red-500/20',
     };
-    return colors[status] || 'bg-neutral-900 text-neutral-400 border-neutral-800';
+    return colors[status] || 'bg-white text-[#444] border-[rgba(0,0,0,0.06)]';
   };
 
   if (selectedBooking) {
     const b = selectedBooking;
     return (
       <div className="space-y-6">
-        <button onClick={() => setSelectedBooking(null)} className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase text-neutral-500 hover:text-gold-500 transition-colors">
+        <button onClick={() => setSelectedBooking(null)} className="flex items-center gap-1.5 text-[10px] font-mono tracking-wider uppercase text-[#444] hover:text-[#C89B3C] transition-colors">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Bookings
         </button>
-        <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4">
+        <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-5 space-y-4">
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h3 className="font-serif text-lg font-bold text-white">{experiences[b.experienceId]?.title || b.experienceTitle}</h3>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase border ${getStatusBadge(b.status)}`}>{b.status}</span>
               </div>
-              <p className="text-[10px] font-mono text-neutral-500 mt-1">Ref: {b.bookingReference} | ID: {b.id}</p>
-              <p className="text-[10px] font-mono text-neutral-500">Submitted: {formatDate(b.submittedDate || b.createdAt)}</p>
-              <p className="text-[10px] font-mono text-neutral-500">{b.fullName} — {b.email}</p>
+              <p className="text-[10px] font-mono text-[#444] mt-1">Ref: {b.bookingReference} | ID: {b.id}</p>
+              <p className="text-[10px] font-mono text-[#444]">Submitted: {formatDate(b.submittedDate || b.createdAt)}</p>
+              <p className="text-[10px] font-mono text-[#444]">{b.fullName} — {b.email}</p>
             </div>
           </div>
         </div>
-        <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-4">
-          <h4 className="text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">Update Booking</h4>
+        <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-5 space-y-4">
+          <h4 className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">Update Booking</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Status</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Status</label>
               <select value={editStatus} onChange={e => setEditStatus(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40">
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40">
                 {BOOKING_STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Date</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Confirmed Date</label>
               <input type="date" value={editDate} onChange={e => setEditDate(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Time</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Confirmed Time</label>
               <input type="time" value={editTime} onChange={e => setEditTime(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Meeting Venue</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Meeting Venue</label>
               <input type="text" value={editVenue} onChange={e => setEditVenue(e.target.value)} placeholder="e.g. The Ritz London"
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Virtual Link</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Virtual Link</label>
               <input type="text" value={editVirtualLink} onChange={e => setEditVirtualLink(e.target.value)} placeholder="e.g. https://zoom.us/j/..."
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Dress Code</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Dress Code</label>
               <input type="text" value={editDressCode} onChange={e => setEditDressCode(e.target.value)} placeholder="e.g. Black tie"
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Confirmed Location</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Confirmed Location</label>
               <input type="text" value={editLocation} onChange={e => setEditLocation(e.target.value)} placeholder="e.g. London, UK"
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
             <div className="space-y-1 sm:col-span-2">
-              <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Arrival Instructions</label>
+              <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Arrival Instructions</label>
               <input type="text" value={editArrival} onChange={e => setEditArrival(e.target.value)} placeholder="e.g. Enter through the main lobby..."
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40" />
+                className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40" />
             </div>
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">Admin Notes</label>
+            <label className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Admin Notes</label>
             <textarea rows={3} value={editNotes} onChange={e => setEditNotes(e.target.value)}
-              className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-gold-500/40 resize-none" />
+              className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-[#C89B3C]/40 resize-none" />
           </div>
           {editStatus === 'cancelled' && (
             <div className="space-y-1">
               <label className="text-[10px] font-mono text-red-400 uppercase tracking-wider">Cancellation Reason *</label>
               <input type="text" value={editCancelReason} onChange={e => setEditCancelReason(e.target.value)} required
-                className="w-full bg-neutral-900 border border-red-900/50 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-red-500/40" />
+                className="w-full bg-white border border-red-900/50 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-red-500/40" />
             </div>
           )}
           <div className="flex justify-end gap-2 pt-2">
-            <button onClick={() => setSelectedBooking(null)} className="px-4 py-2 rounded-lg border border-neutral-800 text-neutral-400 hover:text-white text-[10px] font-mono transition-all">Cancel</button>
+            <button onClick={() => setSelectedBooking(null)} className="px-4 py-2 rounded-lg border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white text-[10px] font-mono transition-all">Cancel</button>
             <button onClick={handleUpdate} disabled={saving || (editStatus === 'cancelled' && !editCancelReason.trim())}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold text-[10px] tracking-widest uppercase transition-all disabled:opacity-40">
+              className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-[#C89B3C] hover:bg-[#A97828] text-neutral-950 font-bold text-[10px] tracking-widest uppercase transition-all disabled:opacity-40">
               {saving ? <span className="h-3 w-3 border-2 border-neutral-950 border-t-transparent rounded-full animate-spin" /> : <Check className="h-3 w-3" />}
               Update
             </button>
           </div>
         </div>
         {b.timeline && b.timeline.length > 0 && (
-          <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-5 space-y-3">
-            <h4 className="text-[11px] font-mono text-neutral-500 uppercase tracking-widest font-bold">Activity Timeline</h4>
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-5 space-y-3">
+            <h4 className="text-[11px] font-mono text-[#444] uppercase tracking-widest font-bold">Activity Timeline</h4>
             <div className="space-y-3">
               {b.timeline.map((entry: TimelineEntry, i: number) => (
                 <div key={i} className="flex gap-3">
                   <div className="flex flex-col items-center pt-1">
-                    <div className="h-2 w-2 rounded-full bg-gold-500/40 ring-2 ring-[#050505]" />
-                    {i < b.timeline.length - 1 && <div className="w-px flex-1 bg-neutral-900/60" />}
+                    <div className="h-2 w-2 rounded-full bg-[#C89B3C]/40 ring-2 ring-[#050505]" />
+                    {i < b.timeline.length - 1 && <div className="w-px flex-1 bg-[#F8F6F2]" />}
                   </div>
                   <div className="flex-1 min-w-0 pb-1">
-                    <p className="text-xs font-bold text-neutral-200">{entry.event}</p>
-                    {entry.note && <p className="text-[10px] text-neutral-500 mt-0.5">{entry.note}</p>}
-                    <p className="text-[10px] font-mono text-neutral-600 mt-0.5">{formatDate(entry.date)}</p>
+                    <p className="text-xs font-bold text-[#444]">{entry.event}</p>
+                    {entry.note && <p className="text-[10px] text-[#444] mt-0.5">{entry.note}</p>}
+                    <p className="text-[10px] font-mono text-[#444] mt-0.5">{formatDate(entry.date)}</p>
                   </div>
                 </div>
               ))}
@@ -860,19 +860,19 @@ function BookingsTab({ showToast }: Props) {
           </div>
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-1.5 text-[11px]">
-            <h5 className="text-[11px] font-mono text-gold-500 uppercase tracking-wider font-bold">Fan Details</h5>
-            <p><span className="text-neutral-500">Name:</span> <span className="text-white">{b.fullName}</span></p>
-            <p><span className="text-neutral-500">Email:</span> <span className="text-white">{b.email}</span></p>
-            <p><span className="text-neutral-500">Phone:</span> <span className="text-white">{b.phone || 'N/A'}</span></p>
-            <p><span className="text-neutral-500">Country:</span> <span className="text-white">{b.country}</span></p>
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-4 space-y-1.5 text-[11px]">
+            <h5 className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-wider font-bold">Fan Details</h5>
+            <p><span className="text-[#444]">Name:</span> <span className="text-white">{b.fullName}</span></p>
+            <p><span className="text-[#444]">Email:</span> <span className="text-white">{b.email}</span></p>
+            <p><span className="text-[#444]">Phone:</span> <span className="text-white">{b.phone || 'N/A'}</span></p>
+            <p><span className="text-[#444]">Country:</span> <span className="text-white">{b.country}</span></p>
           </div>
-          <div className="rounded-xl border border-neutral-900 bg-neutral-950/40 p-4 space-y-1.5 text-[11px]">
-            <h5 className="text-[11px] font-mono text-gold-500 uppercase tracking-wider font-bold">Booking Details</h5>
-            <p className="capitalize"><span className="text-neutral-500">Method:</span> <span className="text-white">{b.communicationMethod}</span></p>
-            <p><span className="text-neutral-500">Guests:</span> <span className="text-white">{b.participants}</span></p>
-            <p><span className="text-neutral-500">Pref. Date:</span> <span className="text-white">{b.preferredDate} {b.preferredTime}</span></p>
-            {b.specialRequests && <div className="pt-1 border-t border-neutral-900/60 mt-1"><span className="text-neutral-500">Requests:</span><p className="text-white mt-0.5">{b.specialRequests}</p></div>}
+          <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] p-4 space-y-1.5 text-[11px]">
+            <h5 className="text-[11px] font-mono text-[#C89B3C] uppercase tracking-wider font-bold">Booking Details</h5>
+            <p className="capitalize"><span className="text-[#444]">Method:</span> <span className="text-white">{b.communicationMethod}</span></p>
+            <p><span className="text-[#444]">Guests:</span> <span className="text-white">{b.participants}</span></p>
+            <p><span className="text-[#444]">Pref. Date:</span> <span className="text-white">{b.preferredDate} {b.preferredTime}</span></p>
+            {b.specialRequests && <div className="pt-1 border-t border-[rgba(0,0,0,0.06)]/60 mt-1"><span className="text-[#444]">Requests:</span><p className="text-white mt-0.5">{b.specialRequests}</p></div>}
           </div>
         </div>
       </div>
@@ -883,32 +883,32 @@ function BookingsTab({ showToast }: Props) {
     <div className="space-y-5">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2">
-          <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-800 text-neutral-400 hover:text-white text-[10px] font-mono transition-all">
+          <button onClick={exportCsv} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-white text-[10px] font-mono transition-all">
             <FileSpreadsheet className="h-3.5 w-3.5" /> Export CSV
           </button>
         </div>
-        <span className="text-[10px] font-mono text-neutral-500">{filtered.length} booking{filtered.length !== 1 ? 's' : ''}</span>
+        <span className="text-[10px] font-mono text-[#444]">{filtered.length} booking{filtered.length !== 1 ? 's' : ''}</span>
       </div>
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#444]" />
           <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search by fan, reference, experience..." className="w-full bg-neutral-950 border border-neutral-900 rounded-lg pl-9 pr-3 py-2 text-xs text-white outline-none focus:border-gold-500/40" />
+            placeholder="Search by fan, reference, experience..." className="w-full bg-white border border-[rgba(0,0,0,0.06)] rounded-lg pl-9 pr-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/40" />
         </div>
         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-          className="bg-neutral-950 border border-neutral-900 rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-gold-500/40">
+          className="bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[#C89B3C]/40">
           <option value="all">All Status</option>
           {BOOKING_STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
         </select>
       </div>
       {loading ? (
-        <div className="text-center py-20"><div className="h-8 w-8 border-2 border-gold-500 border-t-transparent rounded-full animate-spin mx-auto" /></div>
+        <div className="text-center py-20"><div className="h-8 w-8 border-2 border-[#C89B3C] border-t-transparent rounded-full animate-spin mx-auto" /></div>
       ) : filtered.length > 0 ? (
-        <div className="rounded-xl border border-neutral-900 bg-[#0c0c0e] overflow-hidden">
+        <div className="rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-neutral-900 text-neutral-500 font-mono text-[11px] uppercase">
+                <tr className="border-b border-[rgba(0,0,0,0.06)] text-[#444] font-mono text-[11px] uppercase">
                   <th className="px-4 py-3 font-semibold">Reference</th>
                   <th className="px-4 py-3 font-semibold">Fan</th>
                   <th className="px-4 py-3 font-semibold">Experience</th>
@@ -920,20 +920,20 @@ function BookingsTab({ showToast }: Props) {
               </thead>
               <tbody className="divide-y divide-neutral-900/40">
                 {filtered.map(b => (
-                  <tr key={b.id} className="hover:bg-neutral-950/30 transition-all">
-                    <td className="px-4 py-3.5 font-mono font-semibold text-neutral-300">{b.bookingReference}</td>
+                  <tr key={b.id} className="hover:bg-neutral-100 transition-all">
+                    <td className="px-4 py-3.5 font-mono font-semibold text-[#444]">{b.bookingReference}</td>
                     <td className="px-4 py-3.5">
                       <span className="font-semibold text-white">{b.fullName}</span>
-                      <span className="block text-[11px] text-neutral-500">{b.email}</span>
+                      <span className="block text-[11px] text-[#444]">{b.email}</span>
                     </td>
-                    <td className="px-4 py-3.5 text-neutral-300">{experiences[b.experienceId]?.title || b.experienceTitle}</td>
+                    <td className="px-4 py-3.5 text-[#444]">{experiences[b.experienceId]?.title || b.experienceTitle}</td>
                     <td className="px-4 py-3.5">
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${getStatusBadge(b.status)}`}>{b.status}</span>
                     </td>
-                    <td className="px-4 py-3.5 text-neutral-500 capitalize">{b.communicationMethod}</td>
-                    <td className="px-4 py-3.5 text-neutral-500 font-mono">{formatDate(b.submittedDate || b.createdAt)}</td>
+                    <td className="px-4 py-3.5 text-[#444] capitalize">{b.communicationMethod}</td>
+                    <td className="px-4 py-3.5 text-[#444] font-mono">{formatDate(b.submittedDate || b.createdAt)}</td>
                     <td className="px-4 py-3.5 text-right">
-                      <button onClick={() => openDetail(b)} className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-[11px] font-mono text-neutral-300 rounded hover:text-white transition-colors">Manage</button>
+                      <button onClick={() => openDetail(b)} className="px-3 py-1.5 bg-white hover:bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] text-[11px] font-mono text-[#444] rounded hover:text-white transition-colors">Manage</button>
                     </td>
                   </tr>
                 ))}
@@ -942,8 +942,8 @@ function BookingsTab({ showToast }: Props) {
           </div>
         </div>
       ) : (
-        <div className="text-center py-20 border border-dashed border-neutral-900 rounded-xl">
-          <p className="text-sm text-neutral-500">No bookings found.</p>
+        <div className="text-center py-20 border border-dashed border-[rgba(0,0,0,0.06)] rounded-xl">
+          <p className="text-sm text-[#444]">No bookings found.</p>
         </div>
       )}
     </div>

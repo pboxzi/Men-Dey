@@ -2,16 +2,16 @@ export type PaletteType = 'Gibson Gold' | 'Scully Red' | 'X-Files Green' | 'Cybe
 
 export const PALETTES: Record<PaletteType, Record<string, string>> = {
   'Gibson Gold': {
-    '--gold-50': '#faf6ef',
-    '--gold-100': '#f3e9d8',
-    '--gold-200': '#e7d2b2',
-    '--gold-300': '#d6b484',
-    '--gold-400': '#c5975d',
-    '--gold-500': '#dfba89',
-    '--gold-600': '#c5a880',
-    '--gold-700': '#9e815b',
-    '--gold-800': '#7c6446',
-    '--gold-900': '#554430',
+    '--gold-50': '#FCFAF7',
+    '--gold-100': '#EFE7DA',
+    '--gold-200': '#e8c99a',
+    '--gold-300': '#d4a85c',
+    '--gold-400': '#C89B3C',
+    '--gold-500': '#C89B3C',
+    '--gold-600': '#A97828',
+    '--gold-700': '#806015',
+    '--gold-800': '#604818',
+    '--gold-900': '#1E1E1E',
   },
   'Scully Red': {
     '--gold-50': '#fff5f5',

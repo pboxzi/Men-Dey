@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { YOUTUBE_VIDEOS as FALLBACK_VIDEOS, GALLERY_PHOTOS as FALLBACK_PHOTOS } from '../mediaData';
 import { MediaItem, PhotoItem } from '../types';
@@ -218,21 +218,19 @@ export default function MediaSection() {
   const currentPhoto = lightboxIndex !== null ? filteredPhotos[lightboxIndex] : null;
 
   return (
-    <section id="media-page" className="py-10 px-3 sm:py-20 sm:px-4 md:px-6 relative min-h-[900px] border-t border-neutral-900 bg-[#050505]">
-      <div className="absolute right-1/4 bottom-1/4 h-96 w-96 rounded-full blur-[120px] pointer-events-none bg-gold-500/5" />
-      <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full blur-[140px] pointer-events-none bg-gold-500/3" />
+    <section id="media-page" className="py-10 px-3 sm:py-20 sm:px-4 md:px-6 relative min-h-[900px] border-t border-neutral-200 bg-white">
 
-      <div className="mx-auto max-w-7xl space-y-6 sm:space-y-12">
+      <div className="mx-auto max-w-7xl space-y-6 sm:space-y-12 relative z-10">
         {/* Page Title */}
         <div className="text-center space-y-2 sm:space-y-4">
-          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full border border-gold-500/20 bg-gold-500/5 text-gold-500 text-[11px] sm:text-[10px] font-mono tracking-widest uppercase">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full border border-[#C89B3C]/20 bg-[#C89B3C]/5 text-[#C89B3C] text-[11px] sm:text-[10px] font-mono tracking-widest uppercase">
             <Tv className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             MEDIA THEATER & ARCHIVES
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl font-extrabold text-white uppercase tracking-tight">
-            Official <span className="text-gold-500">Media</span> Vault
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl font-extrabold text-[#111] uppercase tracking-tight">
+            Official <span className="text-[#C89B3C]">Media</span> Vault
           </h2>
-          <p className="text-[11px] sm:text-xs md:text-sm text-neutral-400 max-w-2xl mx-auto font-sans leading-relaxed px-2">
+          <p className="text-[11px] sm:text-xs md:text-sm text-[#444] max-w-2xl mx-auto font-sans leading-relaxed px-2">
             Step into Gillian Anderson's official theater. Play real YouTube broadcasts, exclusive set interviews, behind-the-scenes clips, and explore over 100 curated portrait archives.
           </p>
         </div>
@@ -240,26 +238,26 @@ export default function MediaSection() {
         {/* Stats Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 max-w-3xl mx-auto">
           {[
-            { icon: Film, value: videos.length, label: 'Videos', color: 'text-gold-500' },
+            { icon: Film, value: videos.length, label: 'Videos', color: 'text-[#C89B3C]' },
             { icon: Image, value: photos.length, label: 'Photos', color: 'text-amber-400' },
             { icon: Heart, value: (Object.values(videoLikes) as number[]).reduce((a: number, b: number) => a + b, 0) + (Object.values(photoLikes) as number[]).reduce((a: number, b: number) => a + b, 0), label: 'Total Likes', color: 'text-red-400' },
             { icon: Tv, value: activeTab === 'videos' ? videoCategories.length - 1 : photoCategories.length - 1, label: 'Categories', color: 'text-emerald-400' },
           ].map((stat) => (
-            <div key={stat.label} className="bg-neutral-950/60 border border-neutral-900 rounded-lg sm:rounded-xl p-2 sm:p-4 text-center space-y-0.5 sm:space-y-1.5 hover:border-neutral-800 transition-colors">
+            <div key={stat.label} className="bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-lg sm:rounded-xl p-2 sm:p-4 text-center space-y-0.5 sm:space-y-1.5 hover:border-[rgba(0,0,0,0.06)] transition-colors">
               <stat.icon className={`h-3 w-3 sm:h-4 sm:w-4 ${stat.color} mx-auto`} />
               <span className={`block text-sm sm:text-xl font-bold ${stat.color}`}>{stat.value}</span>
-              <span className="text-[10px] sm:text-[11px] font-mono text-neutral-500 uppercase tracking-widest">{stat.label}</span>
+              <span className="text-[10px] sm:text-[11px] font-mono text-[#444] uppercase tracking-widest">{stat.label}</span>
             </div>
           ))}
         </div>
 
         {/* Tab Bar */}
         <div className="flex justify-center">
-          <div className="inline-flex bg-neutral-950 p-1 rounded-lg sm:p-1.5 sm:rounded-xl border border-neutral-900 shadow-2xl">
+          <div className="inline-flex bg-white p-1 rounded-lg sm:p-1.5 sm:rounded-xl border border-[rgba(0,0,0,0.06)] shadow-2xl">
             <button
               onClick={() => setActiveTab('videos')}
               className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-1.5 sm:py-3 rounded-md sm:rounded-lg text-[11px] sm:text-xs tracking-widest font-mono uppercase font-bold transition-all ${
-                activeTab === 'videos' ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/10' : 'text-neutral-400 hover:text-white'
+                activeTab === 'videos' ? 'bg-[#C89B3C] text-neutral-950 shadow-lg shadow-gold-500/10' : 'text-[#444] hover:text-[#111]'
               }`}
             >
               <Film className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -268,7 +266,7 @@ export default function MediaSection() {
             <button
               onClick={() => setActiveTab('photos')}
               className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-6 py-1.5 sm:py-3 rounded-md sm:rounded-lg text-[11px] sm:text-xs tracking-widest font-mono uppercase font-bold transition-all ${
-                activeTab === 'photos' ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/10' : 'text-neutral-400 hover:text-white'
+                activeTab === 'photos' ? 'bg-[#C89B3C] text-neutral-950 shadow-lg shadow-gold-500/10' : 'text-[#444] hover:text-[#111]'
               }`}
             >
               <Image className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -305,8 +303,8 @@ export default function MediaSection() {
                     />
                   )}
                   {embedError ? (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-900/95 gap-3 p-4">
-                      <p className="text-[10px] sm:text-xs font-mono text-neutral-400 text-center">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/95 gap-3 p-4">
+                      <p className="text-[10px] sm:text-xs font-mono text-[#444] text-center">
                         This video cannot be embedded due to the uploader's restrictions
                       </p>
                       <a
@@ -324,14 +322,14 @@ export default function MediaSection() {
                       {videoLoading && (
                         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40">
                           <div className="flex flex-col items-center gap-2">
-                            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full border-2 border-gold-500/30 border-t-gold-500 animate-spin" />
-                            <span className="text-[10px] sm:text-[10px] font-mono text-gold-500 uppercase tracking-widest">Loading...</span>
+                            <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full border-2 border-[#C89B3C]/30 border-t-gold-500 animate-spin" />
+                            <span className="text-[10px] sm:text-[10px] font-mono text-[#C89B3C] uppercase tracking-widest">Loading...</span>
                           </div>
                         </div>
                       )}
                     </>
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/40 text-neutral-500 text-[10px] sm:text-xs font-mono">
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#F8F6F2] text-[#444] text-[10px] sm:text-xs font-mono">
                       No video source
                     </div>
                   )}
@@ -340,14 +338,14 @@ export default function MediaSection() {
 
               {/* Subtitle Bar */}
               {selectedVideo.subtitles && selectedVideo.subtitles.length > 0 && (
-                <div className="bg-neutral-950/80 border border-neutral-900 rounded-lg sm:rounded-xl p-2.5 sm:p-4">
+                <div className="bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-lg sm:rounded-xl p-2.5 sm:p-4">
                   <div className="flex items-center gap-1.5 mb-1.5 sm:mb-2">
-                    <div className="w-0.5 sm:w-1 h-3 sm:h-4 bg-gold-500 rounded-full" />
-                    <span className="text-[10px] sm:text-[11px] font-mono text-gold-500 uppercase tracking-widest font-bold">SUBTITLES</span>
+                    <div className="w-0.5 sm:w-1 h-3 sm:h-4 bg-[#C89B3C] rounded-full" />
+                    <span className="text-[10px] sm:text-[11px] font-mono text-[#C89B3C] uppercase tracking-widest font-bold">SUBTITLES</span>
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {selectedVideo.subtitles.map((sub, i) => (
-                      <span key={i} className="px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded bg-neutral-900/80 border border-neutral-800 text-[10px] sm:text-[10px] font-mono text-neutral-300">
+                      <span key={i} className="px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded bg-white/80 border border-[rgba(0,0,0,0.06)] text-[10px] sm:text-[10px] font-mono text-[#444]">
                         {sub}
                       </span>
                     ))}
@@ -356,21 +354,21 @@ export default function MediaSection() {
               )}
 
               {/* Video Info Card */}
-              <div className="bg-neutral-950/40 border border-neutral-900 p-3 sm:p-6 rounded-lg sm:rounded-xl space-y-2.5 sm:space-y-4 text-left relative overflow-hidden">
+              <div className="bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] p-3 sm:p-6 rounded-lg sm:rounded-xl space-y-2.5 sm:space-y-4 text-left relative overflow-hidden">
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-gold-500 via-amber-400 to-gold-500" />
                 <div className="flex items-start sm:items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <span className="text-[11px] sm:text-[10px] font-mono text-gold-500 uppercase tracking-wider font-semibold">
+                    <span className="text-[11px] sm:text-[10px] font-mono text-[#C89B3C] uppercase tracking-wider font-semibold">
                       {selectedVideo.category}
                     </span>
-                    <h3 className="font-serif text-xs sm:text-lg font-bold text-white mt-0.5 truncate">
+                    <h3 className="font-serif text-xs sm:text-lg font-bold text-[#111] mt-0.5 truncate">
                       {selectedVideo.title}
                     </h3>
                   </div>
                   <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                     <button
                       onClick={() => handleCopyLink('video', selectedVideo.id)}
-                      className="flex items-center gap-1 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded border border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white transition-colors text-[10px] sm:text-[10px] font-mono font-bold"
+                      className="flex items-center gap-1 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] text-[#444] hover:text-neutral-900 transition-colors text-[10px] sm:text-[10px] font-mono font-bold"
                     >
                       <Share2 className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5" />
                       <span className="hidden sm:inline">Share</span>
@@ -380,7 +378,7 @@ export default function MediaSection() {
                       className={`flex items-center gap-1 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded border transition-colors text-[10px] sm:text-[10px] font-mono font-bold ${
                         hasLikedVideo[selectedVideo.id]
                           ? 'border-red-500/40 bg-red-500/5 text-red-500'
-                          : 'border-neutral-800 bg-neutral-900/40 text-neutral-400 hover:text-white'
+                          : 'border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] text-[#444] hover:text-[#111]'
                       }`}
                     >
                       <Heart className={`h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 ${hasLikedVideo[selectedVideo.id] ? 'fill-red-500 stroke-red-500' : ''}`} />
@@ -389,21 +387,21 @@ export default function MediaSection() {
                   </div>
                 </div>
                 <div className="grid grid-cols-4 gap-1.5 sm:gap-3 pt-1 sm:pt-2">
-                  <div className="border border-neutral-900 p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-neutral-950/20">
-                    <span className="text-[10px] sm:text-[11px] font-mono text-neutral-500 uppercase block">DURATION</span>
-                    <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">{selectedVideo.duration}</span>
+                  <div className="border border-[rgba(0,0,0,0.06)] p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-[#F8F6F2]">
+                    <span className="text-[10px] sm:text-[11px] font-mono text-[#444] uppercase block">DURATION</span>
+                    <span className="text-[11px] sm:text-xs font-mono text-[#333] font-semibold">{selectedVideo.duration}</span>
                   </div>
-                  <div className="border border-neutral-900 p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-neutral-950/20">
-                    <span className="text-[10px] sm:text-[11px] font-mono text-neutral-500 uppercase block">REACTIONS</span>
-                    <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">{videoLikes[selectedVideo.id] || 0}</span>
+                  <div className="border border-[rgba(0,0,0,0.06)] p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-[#F8F6F2]">
+                    <span className="text-[10px] sm:text-[11px] font-mono text-[#444] uppercase block">REACTIONS</span>
+                    <span className="text-[11px] sm:text-xs font-mono text-[#333] font-semibold">{videoLikes[selectedVideo.id] || 0}</span>
                   </div>
-                  <div className="border border-neutral-900 p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-neutral-950/20">
-                    <span className="text-[10px] sm:text-[11px] font-mono text-neutral-500 uppercase block">SOURCE</span>
-                    <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">YOUTUBE</span>
+                  <div className="border border-[rgba(0,0,0,0.06)] p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-[#F8F6F2]">
+                    <span className="text-[10px] sm:text-[11px] font-mono text-[#444] uppercase block">SOURCE</span>
+                    <span className="text-[11px] sm:text-xs font-mono text-[#333] font-semibold">YOUTUBE</span>
                   </div>
-                  <div className="border border-neutral-900 p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-neutral-950/20">
-                    <span className="text-[10px] sm:text-[11px] font-mono text-neutral-500 uppercase block">QUALITY</span>
-                    <span className="text-[11px] sm:text-xs font-mono text-white font-semibold">HD</span>
+                  <div className="border border-[rgba(0,0,0,0.06)] p-1.5 sm:p-3 rounded-md sm:rounded-lg text-center bg-[#F8F6F2]">
+                    <span className="text-[10px] sm:text-[11px] font-mono text-[#444] uppercase block">QUALITY</span>
+                    <span className="text-[11px] sm:text-xs font-mono text-[#333] font-semibold">HD</span>
                   </div>
                 </div>
               </div>
@@ -412,17 +410,17 @@ export default function MediaSection() {
               <div className="sm:hidden">
                 <button
                   onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-                  className="w-full flex items-center justify-between p-2.5 rounded-lg bg-neutral-950 border border-neutral-900 text-left"
+                  className="w-full flex items-center justify-between p-2.5 rounded-lg bg-white border border-[rgba(0,0,0,0.06)] text-left"
                 >
                   <div className="flex items-center gap-2">
-                    <Filter className="h-3 w-3 text-gold-500" />
-                    <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider">Filter & Browse</span>
+                    <Filter className="h-3 w-3 text-[#C89B3C]" />
+                    <span className="text-[10px] font-mono text-[#444] uppercase tracking-wider">Filter & Browse</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono text-gold-500 bg-gold-500/10 border border-gold-500/20 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-mono text-[#C89B3C] bg-[#C89B3C]/10 border border-[#C89B3C]/20 px-2 py-0.5 rounded-full">
                       {filteredVideos.length}
                     </span>
-                    <ChevronRight className={`h-3 w-3 text-neutral-500 transition-transform ${mobileFiltersOpen ? 'rotate-90' : ''}`} />
+                    <ChevronRight className={`h-3 w-3 text-[#444] transition-transform ${mobileFiltersOpen ? 'rotate-90' : ''}`} />
                   </div>
                 </button>
                 <AnimatePresence>
@@ -435,13 +433,13 @@ export default function MediaSection() {
                     >
                       <div className="pt-2 space-y-2">
                         <div className="relative">
-                          <Search className="absolute left-2.5 top-2 h-3 w-3 text-neutral-600" />
+                          <Search className="absolute left-2.5 top-2 h-3 w-3 text-[#444]" />
                           <input
                             type="text"
                             placeholder="Search videos..."
                             value={videoSearch}
                             onChange={(e) => setVideoSearch(e.target.value)}
-                            className="w-full bg-neutral-900/60 border border-neutral-800 rounded-lg pl-7 pr-3 py-1.5 text-[10px] text-white placeholder-neutral-500 focus:outline-none focus:border-gold-500/50"
+                            className="w-full bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-lg pl-7 pr-3 py-1.5 text-[10px] text-[#111] placeholder-neutral-600 focus:outline-none focus:border-[#C89B3C]/50"
                           />
                         </div>
                         <div className="flex flex-wrap gap-1">
@@ -453,8 +451,8 @@ export default function MediaSection() {
                                 onClick={() => setVideoCategory(cat)}
                                 className={`px-1.5 py-0.5 rounded text-[10px] font-mono uppercase border transition-all ${
                                   videoCategory === cat
-                                    ? 'bg-gold-500/10 border-gold-500 text-gold-500 font-bold'
-                                    : 'bg-neutral-900 border-neutral-800/80 text-neutral-400 hover:text-white'
+                                    ? 'bg-[#C89B3C]/10 border-[#C89B3C] text-[#C89B3C] font-bold'
+                                    : 'bg-white border-[rgba(0,0,0,0.06)]/80 text-[#444] hover:text-[#111]'
                                 }`}
                               >
                                 {cat} ({count})
@@ -470,24 +468,24 @@ export default function MediaSection() {
 
               {/* Desktop: Sidebar */}
               <div className="hidden sm:block space-y-3 lg:space-y-4">
-                <div className="bg-neutral-950 border border-neutral-900 p-3 lg:p-4 rounded-xl space-y-2.5 lg:space-y-3 text-left">
+                <div className="bg-white border border-[rgba(0,0,0,0.06)] p-3 lg:p-4 rounded-xl space-y-2.5 lg:space-y-3 text-left">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-xs font-mono text-neutral-400 uppercase tracking-wider">
-                      <Filter className="h-3.5 w-3.5 text-gold-500" />
+                    <div className="flex items-center gap-1.5 text-xs font-mono text-[#444] uppercase tracking-wider">
+                      <Filter className="h-3.5 w-3.5 text-[#C89B3C]" />
                       <span>Filter</span>
                     </div>
-                    <span className="text-[11px] font-mono text-gold-500 bg-gold-500/10 border border-gold-500/20 px-2 py-0.5 rounded-full">
+                    <span className="text-[11px] font-mono text-[#C89B3C] bg-[#C89B3C]/10 border border-[#C89B3C]/20 px-2 py-0.5 rounded-full">
                       {filteredVideos.length} videos
                     </span>
                   </div>
                   <div className="relative">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-neutral-600" />
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-[#444]" />
                     <input
                       type="text"
                       placeholder="Search videos..."
                       value={videoSearch}
                       onChange={(e) => setVideoSearch(e.target.value)}
-                      className="w-full bg-neutral-900/60 border border-neutral-800 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-gold-500/50"
+                      className="w-full bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-lg pl-9 pr-3 py-2 text-xs text-[#111] placeholder-neutral-600 focus:outline-none focus:border-[#C89B3C]/50"
                     />
                   </div>
                   <div className="flex flex-wrap gap-1.5 pt-1 max-h-[120px] overflow-y-auto custom-scrollbar">
@@ -499,8 +497,8 @@ export default function MediaSection() {
                           onClick={() => setVideoCategory(cat)}
                           className={`px-2 py-1 rounded text-[11px] font-mono uppercase border transition-all ${
                             videoCategory === cat
-                              ? 'bg-gold-500/10 border-gold-500 text-gold-500 font-bold'
-                              : 'bg-neutral-900 border-neutral-800/80 text-neutral-400 hover:text-white'
+                              ? 'bg-[#C89B3C]/10 border-[#C89B3C] text-[#C89B3C] font-bold'
+                              : 'bg-white border-[rgba(0,0,0,0.06)]/80 text-[#444] hover:text-[#111]'
                           }`}
                         >
                           {cat} ({count})
@@ -511,7 +509,7 @@ export default function MediaSection() {
                 </div>
                 <div className="space-y-2 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
                   {filteredVideos.length === 0 ? (
-                    <div className="text-center py-10 border border-dashed border-neutral-900 rounded-xl bg-neutral-950/20 text-neutral-500 text-xs font-mono">
+                    <div className="text-center py-10 border border-dashed border-[rgba(0,0,0,0.06)] rounded-xl bg-[#F8F6F2] text-[#444] text-xs font-mono">
                       No videos match criteria
                     </div>
                   ) : (
@@ -523,21 +521,21 @@ export default function MediaSection() {
                           onClick={() => setSelectedVideo(item)}
                           className={`w-full p-3 rounded-xl border text-left transition-all flex items-center gap-3 group cursor-pointer ${
                             isCurrent
-                              ? 'bg-gold-500/5 border-gold-500/40 shadow-lg'
-                              : 'bg-neutral-950/30 border-neutral-900 hover:border-neutral-800 hover:bg-neutral-950/80'
+                              ? 'bg-[#C89B3C]/5 border-[#C89B3C]/40 shadow-lg'
+                              : 'bg-[#F8F6F2] border-[rgba(0,0,0,0.06)] hover:border-[rgba(0,0,0,0.06)] hover:bg-[#F8F6F2]'
                           }`}
                         >
-                          <div className="h-14 w-20 rounded-lg overflow-hidden border border-neutral-800/80 shrink-0 bg-neutral-900 relative">
+                          <div className="h-14 w-20 rounded-lg overflow-hidden border border-[rgba(0,0,0,0.06)]/80 shrink-0 bg-white relative">
                             {item.thumbnail ? (
                               <img src={item.thumbnail} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
                             ) : (
-                              <div className={`w-full h-full flex items-center justify-center ${isCurrent ? 'bg-gold-500/10' : 'bg-neutral-900'}`}>
-                                <Play className={`h-4 w-4 transition-colors ${isCurrent ? 'text-gold-500 fill-gold-500/20' : 'text-neutral-600 group-hover:text-gold-500'}`} />
+                              <div className={`w-full h-full flex items-center justify-center ${isCurrent ? 'bg-[#C89B3C]/10' : 'bg-white'}`}>
+                                <Play className={`h-4 w-4 transition-colors ${isCurrent ? 'text-[#C89B3C] fill-gold-500/20' : 'text-[#444] group-hover:text-[#C89B3C]'}`} />
                               </div>
                             )}
                             {isCurrent && (
-                              <div className="absolute inset-0 bg-gold-500/10 flex items-center justify-center">
-                                <div className="w-6 h-6 rounded-full bg-gold-500/90 flex items-center justify-center">
+                              <div className="absolute inset-0 bg-[#C89B3C]/10 flex items-center justify-center">
+                                <div className="w-6 h-6 rounded-full bg-[#C89B3C]/90 flex items-center justify-center">
                                   <Play className="h-3 w-3 text-neutral-950 fill-neutral-950" />
                                 </div>
                               </div>
@@ -545,10 +543,10 @@ export default function MediaSection() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
-                              <span className="text-[10px] font-mono text-gold-500/80 uppercase font-semibold">{item.category}</span>
-                              <span className="text-[10px] font-mono text-neutral-500">{item.duration}</span>
+                              <span className="text-[10px] font-mono text-[#C89B3C]/80 uppercase font-semibold">{item.category}</span>
+                              <span className="text-[10px] font-mono text-[#444]">{item.duration}</span>
                             </div>
-                            <h4 className={`text-[11px] font-bold truncate mt-0.5 ${isCurrent ? 'text-gold-500' : 'text-white'}`}>{item.title}</h4>
+                            <h4 className={`text-[11px] font-bold truncate mt-0.5 ${isCurrent ? 'text-[#C89B3C]' : 'text-[#111]'}`}>{item.title}</h4>
                           </div>
                         </button>
                       );
@@ -560,10 +558,10 @@ export default function MediaSection() {
               {/* Mobile: Horizontal Scroll Video List */}
               <div className="sm:hidden">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider">{filteredVideos.length} videos</span>
+                  <span className="text-[11px] font-mono text-[#444] uppercase tracking-wider">{filteredVideos.length} videos</span>
                 </div>
                 {filteredVideos.length === 0 ? (
-                  <div className="text-center py-8 border border-dashed border-neutral-900 rounded-lg bg-neutral-950/20 text-neutral-500 text-[10px] font-mono">
+                  <div className="text-center py-8 border border-dashed border-[rgba(0,0,0,0.06)] rounded-lg bg-[#F8F6F2] text-[#444] text-[10px] font-mono">
                     No videos match criteria
                   </div>
                 ) : (
@@ -576,21 +574,21 @@ export default function MediaSection() {
                           onClick={() => { setSelectedVideo(item); scrollToPlayer(); }}
                           className={`shrink-0 w-[100px] rounded-lg border text-left transition-all overflow-hidden cursor-pointer ${
                             isCurrent
-                              ? 'border-gold-500/40 bg-gold-500/5 shadow-lg ring-1 ring-gold-500/20'
-                              : 'border-neutral-900 bg-neutral-950/30 hover:border-neutral-800'
+                              ? 'border-[#C89B3C]/40 bg-[#C89B3C]/5 shadow-lg ring-1 ring-gold-500/20'
+                              : 'border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] hover:border-[rgba(0,0,0,0.06)]'
                           }`}
                         >
-                          <div className="aspect-video relative bg-neutral-900">
+                          <div className="aspect-video relative bg-white">
                             {item.thumbnail ? (
                               <img src={item.thumbnail} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
-                                <Play className="h-5 w-5 text-neutral-600" />
+                                <Play className="h-5 w-5 text-[#444]" />
                               </div>
                             )}
                             {isCurrent && (
-                              <div className="absolute inset-0 bg-gold-500/15 flex items-center justify-center">
-                                <div className="w-6 h-6 rounded-full bg-gold-500/90 flex items-center justify-center">
+                              <div className="absolute inset-0 bg-[#C89B3C]/15 flex items-center justify-center">
+                                <div className="w-6 h-6 rounded-full bg-[#C89B3C]/90 flex items-center justify-center">
                                   <Play className="h-2.5 w-2.5 text-neutral-950 fill-neutral-950" />
                                 </div>
                               </div>
@@ -598,7 +596,7 @@ export default function MediaSection() {
                             <span className="absolute bottom-0.5 right-0.5 text-[10px] font-mono text-white/70 bg-black/60 px-1 rounded">{item.duration}</span>
                           </div>
                           <div className="p-1.5">
-                            <h4 className={`text-[10px] font-bold leading-tight line-clamp-2 ${isCurrent ? 'text-gold-500' : 'text-white'}`}>{item.title}</h4>
+                            <h4 className={`text-[10px] font-bold leading-tight line-clamp-2 ${isCurrent ? 'text-[#C89B3C]' : 'text-[#111]'}`}>{item.title}</h4>
                           </div>
                         </button>
                       );
@@ -617,25 +615,25 @@ export default function MediaSection() {
               className="space-y-3 sm:space-y-6"
             >
               {/* Photo Filter Bar */}
-              <div className="bg-neutral-950 border border-neutral-900 p-2.5 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-4 text-left">
+              <div className="bg-white border border-[rgba(0,0,0,0.06)] p-2.5 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-4 text-left">
                 <div className="flex items-center gap-2">
-                  <Filter className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-gold-500" />
-                  <span className="text-[10px] sm:text-xs font-mono text-neutral-400 uppercase tracking-widest font-bold">
+                  <Filter className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-[#C89B3C]" />
+                  <span className="text-[10px] sm:text-xs font-mono text-[#444] uppercase tracking-widest font-bold">
                     Filter ({filteredPhotos.length}/{photos.length})
                   </span>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2 md:w-2/3 items-stretch sm:items-center">
                   <div className="relative flex-1">
-                    <Search className="absolute left-2.5 sm:left-3 top-2 h-3 sm:h-4 w-3 sm:w-4 text-neutral-600" />
+                    <Search className="absolute left-2.5 sm:left-3 top-2 h-3 sm:h-4 w-3 sm:w-4 text-[#444]" />
                     <input
                       type="text"
                       placeholder="Search photos..."
                       value={photoSearch}
                       onChange={(e) => setPhotoSearch(e.target.value)}
-                      className="w-full bg-neutral-900/60 border border-neutral-800 rounded-lg pl-7 sm:pl-9 pr-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-gold-500/50"
+                      className="w-full bg-[#F8F6F2] border border-[rgba(0,0,0,0.06)] rounded-lg pl-7 sm:pl-9 pr-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-[#111] placeholder-neutral-600 focus:outline-none focus:border-[#C89B3C]/50"
                     />
                     {photoSearch && (
-                      <button onClick={() => setPhotoSearch('')} className="absolute right-2.5 sm:right-3 top-2 text-neutral-400 hover:text-white">
+                      <button onClick={() => setPhotoSearch('')} className="absolute right-2.5 sm:right-3 top-2 text-[#444] hover:text-[#111]">
                         <X className="h-3 sm:h-4 w-3 sm:w-4" />
                       </button>
                     )}
@@ -644,13 +642,13 @@ export default function MediaSection() {
                     <select
                       value={photoCategory}
                       onChange={(e) => setPhotoCategory(e.target.value)}
-                      className="bg-neutral-900 border border-neutral-800 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-white focus:outline-none focus:border-gold-500/50 cursor-pointer pr-7 sm:pr-8 appearance-none"
+                      className="bg-white border border-[rgba(0,0,0,0.06)] rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-neutral-900 focus:outline-none focus:border-[#C89B3C]/50 cursor-pointer pr-7 sm:pr-8 appearance-none"
                     >
                       {photoCategories.map((cat) => (
                         <option key={cat} value={cat}>{cat === 'All' ? 'All Galleries' : cat}</option>
                       ))}
                     </select>
-                    <span className="absolute right-2.5 sm:right-3 top-1.5 sm:top-3 pointer-events-none text-neutral-500 border-l border-neutral-800 pl-1 sm:pl-1.5 text-[10px] sm:text-[10px] font-mono">▼</span>
+                    <span className="absolute right-2.5 sm:right-3 top-1.5 sm:top-3 pointer-events-none text-[#444] border-l border-[rgba(0,0,0,0.06)] pl-1 sm:pl-1.5 text-[10px] sm:text-[10px] font-mono">▼</span>
                   </div>
                 </div>
               </div>
@@ -665,8 +663,8 @@ export default function MediaSection() {
                       onClick={() => setPhotoCategory(cat)}
                       className={`px-3 py-1.5 rounded-full text-[10px] font-mono uppercase border tracking-wider transition-all ${
                         photoCategory === cat
-                          ? 'bg-gold-500 border-gold-500 text-neutral-950 font-bold shadow-lg shadow-gold-500/10'
-                          : 'bg-neutral-950/60 border-neutral-900 text-neutral-400 hover:text-white hover:border-neutral-800'
+                          ? 'bg-[#C89B3C] border-[#C89B3C] text-neutral-950 font-bold shadow-lg shadow-gold-500/10'
+                          : 'bg-[#F8F6F2] border-[rgba(0,0,0,0.06)] text-[#444] hover:text-neutral-900 hover:border-[rgba(0,0,0,0.06)]'
                       }`}
                     >
                       {cat} ({count})
@@ -677,12 +675,12 @@ export default function MediaSection() {
 
               {/* Photo Grid */}
               {filteredPhotos.length === 0 ? (
-                <div className="text-center py-12 sm:py-20 border border-dashed border-neutral-900 rounded-2xl bg-neutral-950/10">
-                  <Image className="h-6 sm:h-8 text-neutral-700 mx-auto mb-2 sm:mb-3" />
-                  <p className="text-[10px] sm:text-xs font-mono text-neutral-500">No portrait records match criteria.</p>
+                <div className="text-center py-12 sm:py-20 border border-dashed border-[rgba(0,0,0,0.06)] rounded-2xl bg-white/10">
+                  <Image className="h-6 sm:h-8 text-[#444] mx-auto mb-2 sm:mb-3" />
+                  <p className="text-[10px] sm:text-xs font-mono text-[#444]">No portrait records match criteria.</p>
                   <button
                     onClick={() => { setPhotoSearch(''); setPhotoCategory('All'); }}
-                    className="mt-3 sm:mt-4 text-[11px] sm:text-[10px] font-mono text-gold-500 border border-gold-500/30 hover:bg-gold-500/5 px-3 sm:px-4 py-1 sm:py-1.5 rounded"
+                    className="mt-3 sm:mt-4 text-[11px] sm:text-[10px] font-mono text-[#C89B3C] border border-[#C89B3C]/30 hover:bg-[#C89B3C]/5 px-3 sm:px-4 py-1 sm:py-1.5 rounded"
                   >
                     Clear Filter
                   </button>
@@ -698,12 +696,12 @@ export default function MediaSection() {
                         key={photo.id}
                         layoutId={`photo-card-${photo.id}`}
                         onClick={() => setLightboxIndex(index)}
-                        className={`group relative bg-neutral-950 rounded-lg sm:rounded-xl border border-neutral-900 overflow-hidden cursor-pointer hover:border-gold-500/40 shadow-lg hover:shadow-2xl hover:shadow-black/60 transition-all flex flex-col justify-end ${
+                        className={`group relative bg-white rounded-lg sm:rounded-xl border border-[rgba(0,0,0,0.06)] overflow-hidden cursor-pointer hover:border-[#C89B3C]/40 shadow-lg hover:shadow-2xl hover:shadow-black/60 transition-all flex flex-col justify-end ${
                           isLarge ? 'sm:col-span-2 sm:row-span-2' : ''
                         }`}
                         whileHover={{ y: -4 }}
                       >
-                        <div className="absolute inset-0 z-0 overflow-hidden bg-neutral-900">
+                        <div className="absolute inset-0 z-0 overflow-hidden bg-white">
                           <img
                             src={photo.url}
                             alt={photo.title}
@@ -714,28 +712,28 @@ export default function MediaSection() {
                           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/5 opacity-80 z-1" />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-500 z-[2] flex items-center justify-center">
                             <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
-                              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-gold-500/90 flex items-center justify-center">
+                              <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-[#C89B3C]/90 flex items-center justify-center">
                                 <Image className="h-3.5 w-3.5 sm:h-5 sm:w-5 text-neutral-950" />
                               </div>
                             </div>
                           </div>
                         </div>
                         <div className="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0 transition-all duration-300">
-                          <span className="px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded bg-black/80 backdrop-blur-sm text-[6px] sm:text-[10px] font-mono text-gold-500 border border-gold-500/20">
+                          <span className="px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded bg-black/80 backdrop-blur-sm text-[6px] sm:text-[10px] font-mono text-[#C89B3C] border border-[#C89B3C]/20">
                             {photo.category}
                           </span>
                         </div>
                         <div className="relative z-10 p-1.5 sm:p-3 space-y-0 bg-gradient-to-t from-black/95 to-transparent text-left">
-                          <h4 className={`font-bold text-white tracking-wide truncate group-hover:text-gold-500 transition-colors text-[11px] sm:text-[11px] ${isLarge ? 'sm:text-sm' : ''}`}>
+                          <h4 className={`font-bold text-[#111] tracking-wide truncate group-hover:text-[#C89B3C] transition-colors text-[11px] sm:text-[11px] ${isLarge ? 'sm:text-sm' : ''}`}>
                             {photo.title.split(' (Archive')[0]}
                           </h4>
                           <div className="flex items-center justify-between">
-                            <span className="text-[6px] sm:text-[10px] font-mono text-neutral-500 uppercase">
+                            <span className="text-[6px] sm:text-[10px] font-mono text-[#444] uppercase">
                               #{photo.id.replace('photo-', '')}
                             </span>
                             <button
                               onClick={(e) => handlePhotoLike(photo.id, e)}
-                              className="flex items-center gap-0.5 text-[10px] sm:text-[11px] font-mono text-neutral-400 hover:text-red-500 transition-colors"
+                              className="flex items-center gap-0.5 text-[10px] sm:text-[11px] font-mono text-[#444] hover:text-red-500 transition-colors"
                             >
                               <Heart className={`h-2 w-2 sm:h-3 sm:w-3 ${isLiked ? 'fill-red-500 stroke-red-500 text-red-500' : ''}`} />
                               <span className={isLiked ? 'text-red-500 font-bold' : ''}>{count}</span>
@@ -764,10 +762,10 @@ export default function MediaSection() {
           >
             <div className="w-full flex items-center justify-between pb-1.5 sm:pb-4" onClick={(e) => e.stopPropagation()}>
               <div className="text-left flex items-center gap-1.5 sm:gap-3 flex-wrap">
-                <span className="text-[10px] sm:text-[10px] font-mono bg-neutral-900 text-gold-500 px-1.5 sm:px-2.5 py-0.5 rounded border border-neutral-800 uppercase tracking-widest font-semibold">
+                <span className="text-[10px] sm:text-[10px] font-mono bg-white text-[#C89B3C] px-1.5 sm:px-2.5 py-0.5 rounded border border-[rgba(0,0,0,0.06)] uppercase tracking-widest font-semibold">
                   {currentPhoto.category}
                 </span>
-                <span className="text-[10px] sm:text-[10px] font-mono text-neutral-500">
+                <span className="text-[10px] sm:text-[10px] font-mono text-[#444]">
                   #{currentPhoto.id.replace('photo-', '')} of {photos.length}
                 </span>
               </div>
@@ -775,16 +773,16 @@ export default function MediaSection() {
                 <button
                   onClick={(e) => { e.stopPropagation(); setIsSlideshowActive(!isSlideshowActive); }}
                   className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all text-[10px] font-mono font-bold cursor-pointer ${
-                    isSlideshowActive ? 'bg-gold-500/20 border-gold-500 text-gold-500 animate-pulse' : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
+                    isSlideshowActive ? 'bg-[#C89B3C]/20 border-[#C89B3C] text-[#C89B3C] animate-pulse' : 'bg-white border-[rgba(0,0,0,0.06)] text-[#444] hover:text-[#111]'
                   }`}
                 >
-                  <Play className={`h-3 w-3 ${isSlideshowActive ? 'fill-gold-500 text-gold-500' : 'fill-current'}`} />
+                  <Play className={`h-3 w-3 ${isSlideshowActive ? 'fill-gold-500 text-[#C89B3C]' : 'fill-current'}`} />
                   <span>{isSlideshowActive ? 'Active' : 'Autoplay'}</span>
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); setIsZoomed(!isZoomed); }}
                   className={`p-1.5 sm:p-2 rounded-full border transition-all cursor-pointer ${
-                    isZoomed ? 'bg-gold-500 border-gold-400 text-neutral-950' : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
+                    isZoomed ? 'bg-[#C89B3C] border-gold-400 text-neutral-950' : 'bg-white border-[rgba(0,0,0,0.06)] text-[#444] hover:text-[#111]'
                   }`}
                 >
                   {isZoomed ? <Minimize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /> : <Maximize2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
@@ -793,13 +791,13 @@ export default function MediaSection() {
                   href={`${currentPhoto.url}&dl=gillian_archive.jpg`}
                   target="_blank"
                   rel="noreferrer"
-                  className="p-1.5 sm:p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors cursor-pointer"
+                  className="p-1.5 sm:p-2 rounded-full bg-white border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-neutral-900 hover:border-neutral-700 transition-colors cursor-pointer"
                 >
                   <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </a>
                 <button
                   onClick={() => { setLightboxIndex(null); setIsSlideshowActive(false); }}
-                  className="p-1.5 sm:p-2 rounded-full bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors cursor-pointer"
+                  className="p-1.5 sm:p-2 rounded-full bg-white border border-[rgba(0,0,0,0.06)] text-[#444] hover:text-neutral-900 hover:border-neutral-700 transition-colors cursor-pointer"
                 >
                   <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </button>
@@ -809,12 +807,12 @@ export default function MediaSection() {
             <div className="flex-1 flex items-center justify-between w-full relative max-h-[70vh]">
               <button
                 onClick={handlePrevPhoto}
-                className="p-2 sm:p-3.5 rounded-full bg-neutral-900/65 border border-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all absolute left-0.5 sm:left-4 z-50 cursor-pointer"
+                className="p-2 sm:p-3.5 rounded-full bg-white/65 border border-[rgba(0,0,0,0.06)]/50 text-[#444] hover:text-neutral-900 hover:bg-white transition-all absolute left-0.5 sm:left-4 z-50 cursor-pointer"
               >
                 <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
               <div
-                className={`mx-auto max-w-4xl max-h-full rounded-lg sm:rounded-xl border border-neutral-900 overflow-hidden shadow-2xl bg-neutral-950 flex items-center justify-center relative transition-all duration-500 ${
+                className={`mx-auto max-w-4xl max-h-full rounded-lg sm:rounded-xl border border-[rgba(0,0,0,0.06)] overflow-hidden shadow-2xl bg-white flex items-center justify-center relative transition-all duration-500 ${
                   isZoomed ? 'scale-110 md:scale-125 overflow-auto max-h-[85vh] cursor-zoom-out' : 'cursor-zoom-in'
                 }`}
                 onClick={(e) => { e.stopPropagation(); setIsZoomed(!isZoomed); }}
@@ -830,7 +828,7 @@ export default function MediaSection() {
               </div>
               <button
                 onClick={handleNextPhoto}
-                className="p-2 sm:p-3.5 rounded-full bg-neutral-900/65 border border-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-900 transition-all absolute right-0.5 sm:right-4 z-50 cursor-pointer"
+                className="p-2 sm:p-3.5 rounded-full bg-white/65 border border-[rgba(0,0,0,0.06)]/50 text-[#444] hover:text-neutral-900 hover:bg-white transition-all absolute right-0.5 sm:right-4 z-50 cursor-pointer"
               >
                 <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
@@ -846,7 +844,7 @@ export default function MediaSection() {
                       key={photo.id}
                       onClick={() => setLightboxIndex(actualIndex)}
                       className={`shrink-0 w-10 h-7 sm:w-16 sm:h-12 rounded-md sm:rounded-lg overflow-hidden border-2 transition-all ${
-                        isActive ? 'border-gold-500 ring-1 sm:ring-2 ring-gold-500/30 scale-110' : 'border-neutral-700 opacity-50 hover:opacity-80 hover:border-neutral-500'
+                        isActive ? 'border-[#C89B3C] ring-1 sm:ring-2 ring-gold-500/30 scale-110' : 'border-neutral-700 opacity-50 hover:opacity-80 hover:border-neutral-500'
                       }`}
                     >
                       <img src={photo.url} alt={photo.title} loading="lazy" className="w-full h-full object-cover" />
@@ -857,21 +855,21 @@ export default function MediaSection() {
             </div>
 
             <div
-              className="w-full max-w-4xl mx-auto bg-neutral-950/80 backdrop-blur-sm border border-neutral-900 p-2.5 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-5 text-left z-10"
+              className="w-full max-w-4xl mx-auto bg-white/80 backdrop-blur-sm border border-[rgba(0,0,0,0.06)] p-2.5 sm:p-5 rounded-xl sm:rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-5 text-left z-10"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex-1 space-y-0.5 sm:space-y-1.5 min-w-0">
-                <h3 className="font-serif text-sm sm:text-xl font-extrabold text-white uppercase tracking-tight truncate">
+                <h3 className="font-serif text-sm sm:text-xl font-extrabold text-[#111] uppercase tracking-tight truncate">
                   {currentPhoto.title}
                 </h3>
-                <p className="text-[10px] sm:text-xs text-neutral-400 leading-relaxed max-w-2xl font-sans line-clamp-2">
+                <p className="text-[10px] sm:text-xs text-[#444] leading-relaxed max-w-2xl font-sans line-clamp-2">
                   {currentPhoto.description}
                 </p>
               </div>
-              <div className="flex items-center gap-2 sm:gap-3 shrink-0 border-t border-neutral-900 pt-2 sm:pt-3 sm:border-0 sm:pt-0">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0 border-t border-[rgba(0,0,0,0.06)] pt-2 sm:pt-3 sm:border-0 sm:pt-0">
                 <button
                   onClick={() => handleCopyLink('photo', currentPhoto.id)}
-                  className="flex items-center gap-1 sm:gap-2 px-2.5 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl border border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all text-[10px] sm:text-xs font-mono font-bold cursor-pointer"
+                  className="flex items-center gap-1 sm:gap-2 px-2.5 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl border border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] text-[#444] hover:text-neutral-900 hover:border-neutral-700 transition-all text-[10px] sm:text-xs font-mono font-bold cursor-pointer"
                 >
                   <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span>Share</span>
@@ -881,7 +879,7 @@ export default function MediaSection() {
                   className={`flex items-center gap-1 sm:gap-2 px-2.5 sm:px-5 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl border transition-all text-[10px] sm:text-xs font-mono font-bold cursor-pointer ${
                     hasLikedPhoto[currentPhoto.id]
                       ? 'border-red-500 bg-red-500/10 text-red-500 font-extrabold'
-                      : 'border-neutral-800 bg-neutral-900/50 text-neutral-400 hover:text-white hover:border-neutral-700'
+                      : 'border-[rgba(0,0,0,0.06)] bg-[#F8F6F2] text-[#444] hover:text-neutral-900 hover:border-neutral-700'
                   }`}
                 >
                   <Heart className={`h-3 w-3 sm:h-4 sm:w-4 ${hasLikedPhoto[currentPhoto.id] ? 'fill-red-500 stroke-red-500' : ''}`} />
@@ -901,7 +899,7 @@ export default function MediaSection() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 z-[110] bg-gold-500 text-neutral-950 px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-mono text-[11px] sm:text-[11px] font-bold shadow-2xl flex items-center gap-1.5 sm:gap-2 border border-gold-400 max-w-[90vw]"
+            className="fixed bottom-20 sm:bottom-6 left-1/2 -translate-x-1/2 z-[110] bg-[#C89B3C] text-neutral-950 px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-mono text-[11px] sm:text-[11px] font-bold shadow-2xl flex items-center gap-1.5 sm:gap-2 border border-gold-400 max-w-[90vw]"
           >
             <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-pulse shrink-0" />
             <span>{showToast}</span>

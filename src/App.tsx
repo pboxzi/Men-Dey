@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -51,6 +51,9 @@ import VideoPlayerModal from './components/VideoPlayerModal';
 import ExperienceModal from './components/ExperienceModal';
 import MembershipModal from './components/MembershipModal';
 import Modal from './components/Modal';
+import GillianManagementHomePage from './components/GillianManagementHomePage';
+import GillianUserDashboard from './components/GillianUserDashboard';
+import GillianManagementDashboard from './components/GillianManagementDashboard';
 import { TermsOfServiceModal, PrivacyPolicyModal } from './components/LegalModals';
 
 // Import Core Inline Sections
@@ -104,6 +107,8 @@ export default function App() {
 
   const pathToNav: Record<string, string> = {
     '/': 'HOME',
+    '/home': 'HOME',
+    '/fan': 'HOME',
     '/about': 'ABOUT',
     '/journal': 'JOURNAL',
     '/media': 'MEDIA',
@@ -115,9 +120,10 @@ export default function App() {
   };
 
   const getViewFromPath = (pathname: string) => {
-    if (pathname === '/portal') return { vm: 'portal' as const, nav: 'HOME' };
-    if (pathname === '/admin') return { vm: 'admin' as const, nav: 'HOME' };
+    if (pathname === '/portal' || pathname === '/dashboard') return { vm: 'portal' as const, nav: 'HOME' };
+    if (pathname === '/admin' || pathname === '/management' || pathname.startsWith('/management/')) return { vm: 'admin' as const, nav: 'HOME' };
     if (pathname === '/confirm-email') return { vm: 'confirm-email' as const, nav: 'HOME' };
+    if (pathname === '/home' || pathname === '/fan') return { vm: 'landing' as const, nav: 'HOME' };
     if (pathname.startsWith('/experiences/book/')) return { vm: 'landing' as const, nav: 'EXPERIENCES' };
     if (pathname.startsWith('/journal/')) return { vm: 'landing' as const, nav: 'JOURNAL' };
     const nav = pathToNav[pathname] || 'HOME';
@@ -391,11 +397,27 @@ export default function App() {
       navigate('/admin', { replace: true });
       return null;
     }
-    return <ErrorBoundary><React.Suspense fallback={null}><FanPortal onBackToHome={() => navigateTo('landing')} /></React.Suspense></ErrorBoundary>;
+    return (
+      <ErrorBoundary>
+        <GillianUserDashboard />
+      </ErrorBoundary>
+    );
   }
 
   if (viewMode === 'admin') {
-    return <ErrorBoundary><React.Suspense fallback={null}><AdminPortal onBackToHome={() => navigateTo('landing')} /></React.Suspense></ErrorBoundary>;
+    return (
+      <ErrorBoundary>
+        <GillianManagementDashboard />
+      </ErrorBoundary>
+    );
+  }
+
+  if (viewMode === 'landing' && (activeNav === 'HOME' || location.pathname === '/' || location.pathname === '/home' || location.pathname === '/fan')) {
+    return (
+      <ErrorBoundary>
+        <GillianManagementHomePage />
+      </ErrorBoundary>
+    );
   }
 
   return (

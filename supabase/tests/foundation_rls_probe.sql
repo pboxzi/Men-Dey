@@ -261,7 +261,7 @@ begin
   perform set_config('role', 'authenticated', true);
   perform set_config('request.jwt.claims', json_build_object('sub', uid_a, 'role', 'authenticated')::text, true);
   insert into public.requests (user_id, type, title, description)
-  values (uid_a::uuid, 'general', 'A request', 'from A')
+  values (uid_a::uuid, 'other', 'A request', 'from A')
   returning id into rid;
 
   -- A sees own request only

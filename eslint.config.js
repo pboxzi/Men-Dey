@@ -23,6 +23,8 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       'react-hooks/rules-of-hooks': 'warn',
       'react-hooks/exhaustive-deps': 'warn',
+      // Loading data on mount legitimately sets loading state in an effect.
+      'react-hooks/set-state-in-effect': 'warn',
       'react-refresh/only-export-components': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': 'off',

@@ -7,11 +7,10 @@ import {
   RequireManagement,
 } from './auth/guards';
 import {ErrorBoundary} from './components/ErrorBoundary';
+import {DashboardLayout} from './components/layout/DashboardLayout';
+import {HomeLayout} from './components/layout/HomeLayout';
 import {ManagementLayout} from './components/layout/ManagementLayout';
 import {PublicLayout} from './components/layout/PublicLayout';
-import {UserLayout} from './components/layout/UserLayout';
-import {FullPageLoader} from './components/ui/FullPageLoader';
-import {useAuth} from './auth/AuthContext';
 import {ForbiddenPage, NotFoundPage} from './pages/ErrorPages';
 import {SectionPage} from './pages/SectionPage';
 import {AcknowledgementPage} from './pages/auth/AcknowledgementPage';
@@ -30,18 +29,20 @@ import {InterestsStep} from './pages/auth/application/steps/InterestsStep';
 import {PersonalStep} from './pages/auth/application/steps/PersonalStep';
 import {ReviewStep} from './pages/auth/application/steps/ReviewStep';
 import {LandingPage} from './pages/public/LandingPage';
+import {DashboardHomePage} from './pages/user/DashboardHomePage';
+import {DocumentsPage} from './pages/user/DocumentsPage';
+import {ExperiencesPage} from './pages/user/ExperiencesPage';
 import {HomePage} from './pages/user/HomePage';
-
-const USER_SECTIONS = [
-  {path: 'messages', eyebrow: 'Account', title: 'Messages', description: 'Your conversation with the management office.'},
-  {path: 'requests', eyebrow: 'Account', title: 'Requests', description: 'Requests you have submitted to management.'},
-  {path: 'membership', eyebrow: 'Account', title: 'Membership', description: 'Your membership status and applications.'},
-  {path: 'experiences', eyebrow: 'Account', title: 'Experiences', description: 'Experiences approved and proposed for you.'},
-  {path: 'notifications', eyebrow: 'Account', title: 'Notifications', description: 'Updates about your requests and account.'},
-  {path: 'documents', eyebrow: 'Account', title: 'Documents', description: 'Documents shared with you by management.'},
-  {path: 'profile', eyebrow: 'Account', title: 'Profile', description: 'Your personal details and preferences.'},
-  {path: 'settings', eyebrow: 'Account', title: 'Settings', description: 'Security and notification settings.'},
-];
+import {MembershipPage} from './pages/user/MembershipPage';
+import {ProfilePage} from './pages/user/ProfilePage';
+import {SettingsPage} from './pages/user/SettingsPage';
+import {NotificationDetailPage} from './pages/user/notifications/NotificationDetailPage';
+import {NotificationsListPage} from './pages/user/notifications/NotificationsListPage';
+import {ConversationPage} from './pages/user/messages/ConversationPage';
+import {MessagesListPage} from './pages/user/messages/MessagesListPage';
+import {NewRequestPage} from './pages/user/requests/NewRequestPage';
+import {RequestDetailPage} from './pages/user/requests/RequestDetailPage';
+import {RequestsListPage} from './pages/user/requests/RequestsListPage';
 
 const MANAGEMENT_SECTIONS = [
   {path: 'inbox', title: 'Inbox', description: 'Everything that needs a management response.'},
@@ -100,31 +101,24 @@ export function AppRoutes() {
         </Route>
 
         <Route element={<RequireAuth />}>
-          <Route element={<UserLayout />}>
+          <Route element={<HomeLayout />}>
             <Route path="/home" element={<HomePage />} />
-            <Route
-              path="/dashboard"
-              element={
-                <SectionPage
-                  eyebrow="Account"
-                  title="Dashboard"
-                  description="An overview of your account with management."
-                />
-              }
-            />
-            {USER_SECTIONS.map((section) => (
-              <Route
-                key={section.path}
-                path={`/dashboard/${section.path}`}
-                element={
-                  <SectionPage
-                    eyebrow={section.eyebrow}
-                    title={section.title}
-                    description={section.description}
-                  />
-                }
-              />
-            ))}
+          </Route>
+
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<DashboardHomePage />} />
+            <Route path="/dashboard/messages" element={<MessagesListPage />} />
+            <Route path="/dashboard/messages/:conversationId" element={<ConversationPage />} />
+            <Route path="/dashboard/requests" element={<RequestsListPage />} />
+            <Route path="/dashboard/requests/new" element={<NewRequestPage />} />
+            <Route path="/dashboard/requests/:id" element={<RequestDetailPage />} />
+            <Route path="/dashboard/notifications" element={<NotificationsListPage />} />
+            <Route path="/dashboard/notifications/:id" element={<NotificationDetailPage />} />
+            <Route path="/dashboard/experiences" element={<ExperiencesPage />} />
+            <Route path="/dashboard/membership" element={<MembershipPage />} />
+            <Route path="/dashboard/documents" element={<DocumentsPage />} />
+            <Route path="/dashboard/profile" element={<ProfilePage />} />
+            <Route path="/dashboard/settings" element={<SettingsPage />} />
           </Route>
         </Route>
 

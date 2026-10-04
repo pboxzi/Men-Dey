@@ -2,20 +2,37 @@ export type Role = 'user' | 'management' | 'admin';
 export type ProfileStatus = 'pending' | 'active' | 'suspended';
 
 export type RequestType =
-  | 'general'
-  | 'appearance'
-  | 'booking'
-  | 'collaboration'
-  | 'press'
+  | 'personal_experience'
+  | 'video_communication'
+  | 'voice_message'
+  | 'text_message'
+  | 'virtual_meeting'
+  | 'meet_greet'
+  | 'business_professional'
+  | 'special_occasion'
   | 'other';
 
 export type RequestStatus =
   | 'submitted'
   | 'in_review'
   | 'information_requested'
+  | 'proposal'
   | 'approved'
+  | 'scheduled'
+  | 'completed'
   | 'declined'
-  | 'closed'
+  | 'cancelled';
+
+export type RequestEventType =
+  | 'submitted'
+  | 'management_received'
+  | 'review_started'
+  | 'information_requested'
+  | 'proposal_created'
+  | 'approved'
+  | 'scheduled'
+  | 'completed'
+  | 'declined'
   | 'cancelled';
 
 export type ApplicantStatus = 'new' | 'draft' | 'submitted' | 'in_review' | 'approved' | 'rejected';
@@ -50,6 +67,9 @@ export interface Profile {
   role: Role;
   status: ProfileStatus;
   email_verified_at: string | null;
+  notify_requests: boolean;
+  notify_membership: boolean;
+  notify_experiences: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -141,6 +161,13 @@ export interface ManagementConversation {
   updated_at: string;
 }
 
+export interface MessageAttachment {
+  name: string;
+  path: string;
+  size?: number;
+  mime?: string;
+}
+
 export interface ManagementMessage {
   id: string;
   conversation_id: string;
@@ -148,6 +175,7 @@ export interface ManagementMessage {
   body: string;
   is_internal: boolean;
   read_at: string | null;
+  attachments: MessageAttachment[];
   created_at: string;
 }
 
@@ -170,10 +198,25 @@ export interface Request {
   status: RequestStatus;
   priority: 'low' | 'normal' | 'high' | 'urgent';
   assigned_to: string | null;
+  preferred_date: string | null;
+  preferred_time: string | null;
+  location: string | null;
+  participants: string | null;
+  contact_method: string | null;
+  additional_requirements: string | null;
   submitted_at: string;
   resolved_at: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface RequestEvent {
+  id: string;
+  request_id: string;
+  actor_id: string | null;
+  event_type: RequestEventType;
+  note: string | null;
+  created_at: string;
 }
 
 export interface RequestMessage {

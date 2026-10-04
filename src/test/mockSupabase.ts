@@ -197,19 +197,6 @@ class MockBuilder implements PromiseLike<MockResult> {
     return out;
   }
 
-  private attachEmbeds(rows: Row[]): Row[] {
-    if (this.selectCols.includes('last:management_messages')) {
-      const messages = materialize('management_messages');
-      for (const row of rows) {
-        const conversationMessages = messages
-          .filter((m) => m.conversation_id === row.id)
-          .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
-        row.last = structuredClone(conversationMessages.slice(0, 1));
-      }
-    }
-    return rows;
-  }
-
   private execute(): Promise<MockResult> {
     if (mockCtl.failTables.has(this.table)) {
       return Promise.resolve({data: null, error: {message: `mock failure on ${this.table}`}, count: null});
@@ -320,14 +307,14 @@ class MockBuilder implements PromiseLike<MockResult> {
       if (rows.length !== 1) {
         return Promise.resolve({data: null, error: {message: `single: expected 1 row, got ${rows.length}`}, count: null});
       }
-      const single = this.attachEmbeds(structuredClone(rows));
+      const single = structuredClone(rows);
       return Promise.resolve({data: single[0], error: null, count: null});
     }
     if (this.mode === 'maybe') {
-      const maybe = rows.length ? this.attachEmbeds(structuredClone(rows)) : [];
+      const maybe = rows.length ? structuredClone(rows) : [];
       return Promise.resolve({data: maybe.length ? maybe[0] : null, error: null, count: null});
     }
-    return Promise.resolve({data: this.attachEmbeds(structuredClone(rows)), error: null, count: rows.length});
+    return Promise.resolve({data: structuredClone(rows), error: null, count: rows.length});
   }
 
   then<TResult1 = MockResult, TResult2 = never>(

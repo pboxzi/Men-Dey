@@ -4,28 +4,18 @@ import {Link, useNavigate} from 'react-router-dom';
 
 import {useAuth} from '../../../auth/AuthContext';
 import {Spinner} from '../../../components/ui/Spinner';
+import {loadConversationSummaries, type ConversationSummary} from '../../../lib/conversations';
 import {relativeTime} from '../../../lib/format';
 import {onRowInserted} from '../../../lib/realtime';
 import {supabase} from '../../../lib/supabase';
-import type {ManagementConversation} from '../../../types';
 import {EmptyNote, ErrorNote, SectionCard} from '../components/SectionCard';
-
-interface ConversationRow extends ManagementConversation {
-  last: Array<{body: string; created_at: string; sender_id: string | null}>;
-}
-
-function sortKey(row: ConversationRow): number {
-  const updated = Date.parse(row.updated_at) || 0;
-  const last = row.last?.[0] ? Date.parse(row.last[0].created_at) || 0 : 0;
-  return Math.max(updated, last);
-}
 
 export function MessagesListPage() {
   const {session, profile} = useAuth();
   const navigate = useNavigate();
   const me = session?.user.id ?? null;
 
-  const [rows, setRows] = useState<ConversationRow[]>([]);
+  const [rows, setRows] = useState<ConversationSummary[]>([]);
   const [unreadByConversation, setUnreadByConversation] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,30 +26,8 @@ export function MessagesListPage() {
     setLoading(true);
     setError(null);
     try {
-      const [convs, unread] = await Promise.all([
-        supabase
-          .from('management_conversations')
-          .select('*, last:management_messages(body,created_at,sender_id,order:created_at.desc,limit:1)')
-          .order('updated_at', {ascending: false})
-          .limit(100),
-        supabase
-          .from('management_messages')
-          .select('conversation_id,sender_id')
-          .is('read_at', null)
-          .limit(500),
-      ]);
-      if (convs.error) throw new Error(convs.error.message);
-      if (unread.error) throw new Error(unread.error.message);
-
-      const counts: Record<string, number> = {};
-      for (const msg of (unread.data ?? []) as Array<{conversation_id: string; sender_id: string | null}>) {
-        if (me && msg.sender_id === me) continue;
-        counts[msg.conversation_id] = (counts[msg.conversation_id] ?? 0) + 1;
-      }
-      const sorted = ((convs.data ?? []) as unknown as ConversationRow[]).sort(
-        (a, b) => sortKey(b) - sortKey(a),
-      );
-      setRows(sorted);
+      const {conversations, unreadByConversation: counts} = await loadConversationSummaries(me);
+      setRows(conversations);
       setUnreadByConversation(counts);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not load your conversations.');
@@ -136,7 +104,7 @@ export function MessagesListPage() {
         <SectionCard title="Conversations">
           <ul className="divide-y divide-stone">
             {rows.map((row) => {
-              const last = row.last?.[0];
+              const last = row.last;
               const unread = unreadByConversation[row.id] ?? 0;
               return (
                 <li key={row.id}>

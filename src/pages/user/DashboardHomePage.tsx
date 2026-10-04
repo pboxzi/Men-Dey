@@ -5,6 +5,7 @@ import {Link, Navigate} from 'react-router-dom';
 import {useAuth} from '../../auth/AuthContext';
 import {Chip} from '../../components/ui/Chip';
 import {FullPageLoader} from '../../components/ui/FullPageLoader';
+import {loadConversationSummaries, type ConversationSummary} from '../../lib/conversations';
 import {formatDateTime, greetingForNow, relativeTime} from '../../lib/format';
 import {REQUEST_STATUS_LABELS, REQUEST_STATUS_TONES} from '../../lib/requests';
 import {supabase} from '../../lib/supabase';
@@ -17,14 +18,6 @@ import type {
   Request,
 } from '../../types';
 import {EmptyNote, ErrorNote, SectionCard} from './components/SectionCard';
-
-interface ConversationSummary {
-  id: string;
-  subject: string;
-  status: string;
-  updated_at: string;
-  last: Array<{body: string; created_at: string}>;
-}
 
 interface DashboardData {
   applicant: ApplicantProfile | null;
@@ -80,7 +73,8 @@ function StatCard({
 }
 
 export function DashboardHomePage() {
-  const {profile, role} = useAuth();
+  const {profile, role, session} = useAuth();
+  const me = session?.user.id ?? null;
   const [data, setData] = useState<DashboardData>(EMPTY);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,7 +86,7 @@ export function DashboardHomePage() {
       const [
         applicantRes,
         membershipRes,
-        conversationRes,
+        conversationSummary,
         requestsRes,
         experiencesRes,
         appointmentsRes,
@@ -100,12 +94,7 @@ export function DashboardHomePage() {
       ] = await Promise.all([
         supabase.from('applicant_profiles').select('*').order('created_at', {ascending: false}).limit(1).maybeSingle(),
         supabase.from('memberships').select('*').order('created_at', {ascending: false}).limit(1).maybeSingle(),
-        supabase
-          .from('management_conversations')
-          .select('*, last:management_messages(body,created_at,order:created_at.desc,limit:1)')
-          .order('updated_at', {ascending: false})
-          .limit(1)
-          .maybeSingle(),
+        loadConversationSummaries(me, 50),
         supabase.from('requests').select('*').order('created_at', {ascending: false}).limit(50),
         supabase.from('experience_requests').select('*').order('created_at', {ascending: false}).limit(50),
         supabase
@@ -118,7 +107,7 @@ export function DashboardHomePage() {
         supabase.from('notifications').select('*').order('created_at', {ascending: false}).limit(5),
       ]);
 
-      const firstError = [applicantRes, membershipRes, conversationRes, requestsRes, experiencesRes, appointmentsRes, notificationsRes]
+      const firstError = [applicantRes, membershipRes, requestsRes, experiencesRes, appointmentsRes, notificationsRes]
         .map((r) => r.error)
         .find(Boolean);
       if (firstError) throw new Error(firstError.message);
@@ -126,7 +115,7 @@ export function DashboardHomePage() {
       setData({
         applicant: (applicantRes.data as ApplicantProfile | null) ?? null,
         membership: (membershipRes.data as Membership | null) ?? null,
-        conversation: (conversationRes.data as ConversationSummary | null) ?? null,
+        conversation: conversationSummary.conversations[0] ?? null,
         requests: (requestsRes.data as Request[]) ?? [],
         experiences: (experiencesRes.data as ExperienceRequest[]) ?? [],
         appointments: (appointmentsRes.data as Appointment[]) ?? [],
@@ -137,7 +126,7 @@ export function DashboardHomePage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [me]);
 
   useEffect(() => {
     void load();
@@ -159,7 +148,7 @@ export function DashboardHomePage() {
   const openRequests = data.requests.filter(
     (r) => !['completed', 'declined', 'cancelled'].includes(r.status),
   );
-  const lastMessage = data.conversation?.last?.[0];
+  const lastMessage = data.conversation?.last;
 
   return (
     <div className="space-y-8">

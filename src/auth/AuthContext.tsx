@@ -15,13 +15,12 @@ import type {Profile, Role} from '../types';
 interface SignUpInput {
   email: string;
   password: string;
-  fullName: string;
-  ackVersion: number;
-  ackAt: string;
+  data: Record<string, unknown>;
 }
 
 interface AuthContextValue {
   loading: boolean;
+  profileLoading: boolean;
   session: Session | null;
   user: User | null;
   profile: Profile | null;
@@ -47,6 +46,7 @@ async function fetchProfile(userId: string): Promise<Profile | null> {
 
 export function AuthProvider({children}: {children: ReactNode}) {
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileUserId, setProfileUserId] = useState<string | null>(null);
@@ -55,8 +55,10 @@ export function AuthProvider({children}: {children: ReactNode}) {
     if (!userId) {
       setProfile(null);
       setProfileUserId(null);
+      setProfileLoading(false);
       return;
     }
+    setProfileLoading(true);
     try {
       const row = await fetchProfile(userId);
       setProfile(row);
@@ -64,6 +66,8 @@ export function AuthProvider({children}: {children: ReactNode}) {
     } catch {
       setProfile(null);
       setProfileUserId(userId);
+    } finally {
+      setProfileLoading(false);
     }
   }, []);
 
@@ -114,9 +118,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
       options: {
         emailRedirectTo: `${window.location.origin}/verify-email`,
         data: {
-          full_name: input.fullName,
-          ack_version: String(input.ackVersion),
-          ack_at: input.ackAt,
+          ...input.data,
           user_agent: navigator.userAgent.slice(0, 500),
         },
       },
@@ -141,6 +143,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
     const user = session?.user ?? null;
     return {
       loading,
+      profileLoading,
       session,
       user,
       profile,
@@ -151,7 +154,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
       signOut,
       refreshProfile,
     };
-  }, [loading, session, profile, signIn, signUp, signOut, refreshProfile]);
+  }, [loading, profileLoading, session, profile, signIn, signUp, signOut, refreshProfile]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

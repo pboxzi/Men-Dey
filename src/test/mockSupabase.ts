@@ -114,6 +114,18 @@ function ackQuery() {
   return api;
 }
 
+function applicantQuery() {
+  const api = {
+    select: () => api,
+    eq: () => api,
+    not: () => api,
+    order: () => api,
+    limit: () => api,
+    maybeSingle: async () => ({data: null, error: null}),
+  };
+  return api;
+}
+
 export function buildSupabaseMock() {
   const listeners = new Set<(event: string, session: Session | null) => void>();
 
@@ -139,6 +151,10 @@ export function buildSupabaseMock() {
       updateUser: mockCtl.updateUser,
       exchangeCodeForSession: mockCtl.exchangeCodeForSession,
     },
-    from: vi.fn((table: string) => (table === 'acknowledgement_versions' ? ackQuery() : profileQuery())),
+    from: vi.fn((table: string) => {
+      if (table === 'acknowledgement_versions') return ackQuery();
+      if (table === 'applicant_profiles') return applicantQuery();
+      return profileQuery();
+    }),
   };
 }

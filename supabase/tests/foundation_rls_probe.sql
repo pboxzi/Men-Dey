@@ -334,11 +334,25 @@ begin
   perform set_config('role', 'authenticated', true);
 
   begin
-    update public.applicant_profiles set status = 'submitted', submitted_at = now() where user_id = uid_a::uuid;
+    update public.applicant_profiles set headline = 'Probe: own applicant fields' where user_id = uid_a::uuid;
   exception when others then
     perform set_config('role', 'postgres', true);
     raise exception 'PROBE FAIL: user A cannot update own applicant profile (%)', sqlerrm;
   end;
+
+  -- Status is submitted by the platform at signup ('new'); users cannot move it themselves.
+  begin
+    update public.applicant_profiles set status = 'submitted' where user_id = uid_a::uuid;
+    perform set_config('role', 'postgres', true);
+    raise exception 'PROBE FAIL: user A changed their own applicant status';
+  exception when raise_exception then
+    if sqlerrm like 'PROBE FAIL%' then raise; end if;
+    if sqlerrm not like '%only management can change status%' then
+      perform set_config('role', 'postgres', true);
+      raise exception 'PROBE FAIL: unexpected applicant status error: %', sqlerrm;
+    end if;
+  end;
+  perform set_config('role', 'authenticated', true);
 
   perform set_config('request.jwt.claims', json_build_object('sub', uid_m, 'role', 'authenticated')::text, true);
   update public.applicant_profiles set status = 'in_review' where user_id = uid_a::uuid;

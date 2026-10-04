@@ -2,7 +2,6 @@ import {Navigate, Route, Routes} from 'react-router-dom';
 
 import {
   RedirectIfAuthed,
-  RequireAcknowledgement,
   RequireAdmin,
   RequireAuth,
   RequireManagement,
@@ -16,12 +15,22 @@ import {useAuth} from './auth/AuthContext';
 import {ForbiddenPage, NotFoundPage} from './pages/ErrorPages';
 import {SectionPage} from './pages/SectionPage';
 import {AcknowledgementPage} from './pages/auth/AcknowledgementPage';
-import {CreateAccountPage} from './pages/auth/CreateAccountPage';
 import {ForgotPasswordPage} from './pages/auth/ForgotPasswordPage';
 import {ResetPasswordPage} from './pages/auth/ResetPasswordPage';
 import {SignInPage} from './pages/auth/SignInPage';
 import {VerifyEmailPage} from './pages/auth/VerifyEmailPage';
+import {
+  ApplicationGate,
+  ApplicationProvider,
+} from './pages/auth/application/ApplicationProvider';
+import {AboutStep} from './pages/auth/application/steps/AboutStep';
+import {ContactStep} from './pages/auth/application/steps/ContactStep';
+import {CredentialsStep} from './pages/auth/application/steps/CredentialsStep';
+import {InterestsStep} from './pages/auth/application/steps/InterestsStep';
+import {PersonalStep} from './pages/auth/application/steps/PersonalStep';
+import {ReviewStep} from './pages/auth/application/steps/ReviewStep';
 import {LandingPage} from './pages/public/LandingPage';
+import {HomePage} from './pages/user/HomePage';
 
 const USER_SECTIONS = [
   {path: 'messages', eyebrow: 'Account', title: 'Messages', description: 'Your conversation with the management office.'},
@@ -59,14 +68,6 @@ const MANAGEMENT_SECTIONS = [
   {path: 'cms', title: 'CMS', description: 'Public pages and content sections.'},
 ];
 
-function HomeRedirect() {
-  const {loading, isAuthenticated, role} = useAuth();
-  if (loading) return <FullPageLoader />;
-  if (!isAuthenticated) return <Navigate to="/sign-in" replace />;
-  if (role === 'admin' || role === 'management') return <Navigate to="/management" replace />;
-  return <Navigate to="/dashboard" replace />;
-}
-
 export function AppRoutes() {
   return (
     <ErrorBoundary>
@@ -76,21 +77,31 @@ export function AppRoutes() {
 
           <Route element={<RedirectIfAuthed />}>
             <Route path="/acknowledgement" element={<AcknowledgementPage />} />
-            <Route element={<RequireAcknowledgement />}>
-              <Route path="/create-account" element={<CreateAccountPage />} />
-            </Route>
             <Route path="/sign-in" element={<SignInPage />} />
+          </Route>
+
+          {/* New-account application: acknowledgement first, then the wizard. */}
+          <Route element={<ApplicationGate />}>
+            <Route path="/create-account" element={<ApplicationProvider />}>
+              <Route index element={<Navigate to="/create-account/personal" replace />} />
+              <Route path="personal" element={<PersonalStep />} />
+              <Route path="about" element={<AboutStep />} />
+              <Route path="contact" element={<ContactStep />} />
+              <Route path="interests" element={<InterestsStep />} />
+              <Route path="review" element={<ReviewStep />} />
+              <Route path="account" element={<CredentialsStep />} />
+            </Route>
           </Route>
 
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/forbidden" element={<ForbiddenPage />} />
-          <Route path="/home" element={<HomeRedirect />} />
         </Route>
 
         <Route element={<RequireAuth />}>
           <Route element={<UserLayout />}>
+            <Route path="/home" element={<HomePage />} />
             <Route
               path="/dashboard"
               element={
@@ -132,10 +143,7 @@ export function AppRoutes() {
             {MANAGEMENT_SECTIONS.map((section) => {
               if (section.path === 'audit') {
                 return (
-                  <Route
-                    key={section.path}
-                    element={<RequireAdmin />}
-                  >
+                  <Route key={section.path} element={<RequireAdmin />}>
                     <Route
                       path="/management/audit"
                       element={

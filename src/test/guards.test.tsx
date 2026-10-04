@@ -43,7 +43,7 @@ describe('route guards', () => {
     mockCtl.profile = makeProfile('user-1', 'user');
 
     renderApp('/sign-in');
-    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/dashboard'));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/home'));
   });
 
   it('redirects regular users from the management console to forbidden', async () => {
@@ -101,8 +101,8 @@ describe('acknowledgement gate', () => {
     );
 
     renderApp('/create-account');
-    expect(await screen.findByText('Create your account')).toBeInTheDocument();
-    expect(screen.getByText(/Acknowledged version 1/)).toBeInTheDocument();
+    expect(await screen.findByRole('heading', {name: 'Personal information'})).toBeInTheDocument();
+    expect(screen.getByText(/Step 1 of 6/)).toBeInTheDocument();
   });
 });
 

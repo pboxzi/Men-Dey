@@ -18,7 +18,18 @@ export type RequestStatus =
   | 'closed'
   | 'cancelled';
 
-export type ApplicantStatus = 'draft' | 'submitted' | 'in_review' | 'approved' | 'rejected';
+export type ApplicantStatus = 'new' | 'draft' | 'submitted' | 'in_review' | 'approved' | 'rejected';
+
+export type ExperienceInterestKey =
+  | 'personal_experience'
+  | 'video_communication'
+  | 'voice_message'
+  | 'text_communication'
+  | 'virtual_meeting'
+  | 'meet_greet'
+  | 'business_request'
+  | 'special_occasion'
+  | 'other';
 
 export type ConversationStatus = 'open' | 'waiting' | 'closed';
 
@@ -102,6 +113,15 @@ export interface ApplicantProfile {
   headline: string | null;
   background: string | null;
   interests: string | null;
+  reason_for_joining: string | null;
+  platform_motivation: string | null;
+  connection_interest: string | null;
+  experience_interests: ExperienceInterestKey[];
+  contact_email_ok: boolean;
+  contact_phone_ok: boolean;
+  contact_whatsapp_ok: boolean;
+  whatsapp_number: string | null;
+  application_completed_at: string | null;
   referred_by: string | null;
   submitted_at: string | null;
   reviewed_by: string | null;

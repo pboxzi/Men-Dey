@@ -10,7 +10,7 @@ vi.mock('../lib/supabase', async () => {
 
 import {AuthProvider} from '../auth/AuthContext';
 import {AppRoutes} from '../routes';
-import {makeProfile, makeSession, mockCtl, resetMockCtl} from './mockSupabase';
+import {mockCtl, resetMockCtl} from './mockSupabase';
 
 function LocationDisplay() {
   const location = useLocation();
@@ -49,6 +49,7 @@ describe('sign in', () => {
         password: 'supersecret1',
       }),
     );
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/home'));
   });
 
   it('shows a friendly message for bad credentials', async () => {
@@ -65,60 +66,55 @@ describe('sign in', () => {
       'Email or password is incorrect.',
     );
   });
+
+  it('does not show the acknowledgement on the sign-in page', async () => {
+    renderApp('/sign-in');
+    expect(await screen.findByRole('heading', {name: 'Sign in'})).toBeInTheDocument();
+    expect(screen.queryByText(/acknowledgement/i)).not.toBeInTheDocument();
+  });
 });
 
-describe('create account', () => {
-  it('signs up with the stored acknowledgement metadata', async () => {
-    mockCtl.signUp.mockResolvedValue({data: {session: null}, error: null});
-    window.localStorage.setItem(
-      'gam-acknowledgement',
-      JSON.stringify({version: 1, at: '2026-10-04T10:00:00.000Z'}),
-    );
+describe('email verification', () => {
+  it('verifies a token_hash link and shows the account-created state', async () => {
+    mockCtl.verifyOtp.mockResolvedValue({error: null});
 
-    renderApp('/create-account');
-    const user = userEvent.setup();
+    renderApp('/verify-email?token_hash=abc123&type=signup');
 
-    await user.type(await screen.findByLabelText('Full name'), 'Test Person');
-    await user.type(screen.getByLabelText('Email'), 'new@example.com');
-    await user.type(screen.getByLabelText('Password'), 'supersecret1');
-    await user.type(screen.getByLabelText('Confirm password'), 'supersecret1');
-    await user.click(screen.getByRole('button', {name: /create account/i}));
-
-    await waitFor(() => expect(mockCtl.signUp).toHaveBeenCalledTimes(1));
-    const payload = mockCtl.signUp.mock.calls[0]?.[0] as {
-      email: string;
-      options: {data: Record<string, string>};
-    };
-    expect(payload.email).toBe('new@example.com');
-    expect(payload.options.data.ack_version).toBe('1');
-    expect(payload.options.data.ack_at).toBe('2026-10-04T10:00:00.000Z');
-    expect(payload.options.data.full_name).toBe('Test Person');
-
-    await waitFor(() =>
-      expect(screen.getByTestId('location')).toHaveTextContent('/verify-email'),
-    );
+    expect(await screen.findByRole('heading', {name: 'Email verified'})).toBeInTheDocument();
+    expect(mockCtl.verifyOtp).toHaveBeenCalledWith({type: 'signup', token_hash: 'abc123'});
+    expect(screen.getByRole('link', {name: /continue to your home/i})).toBeInTheDocument();
   });
 
-  it('surfaces acknowledgement errors from the server', async () => {
-    mockCtl.signUp.mockRejectedValue(
-      new Error('acknowledgement required before account creation'),
-    );
-    window.localStorage.setItem(
-      'gam-acknowledgement',
-      JSON.stringify({version: 1, at: '2026-10-04T10:00:00.000Z'}),
-    );
+  it('surfaces expired links with a recovery path', async () => {
+    mockCtl.verifyOtp.mockResolvedValue({error: new Error('token has expired')});
 
-    renderApp('/create-account');
-    const user = userEvent.setup();
-
-    await user.type(await screen.findByLabelText('Full name'), 'Test Person');
-    await user.type(screen.getByLabelText('Email'), 'new@example.com');
-    await user.type(screen.getByLabelText('Password'), 'supersecret1');
-    await user.type(screen.getByLabelText('Confirm password'), 'supersecret1');
-    await user.click(screen.getByRole('button', {name: /create account/i}));
+    renderApp('/verify-email?token_hash=expired&type=signup');
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Please read and accept the acknowledgement before creating an account.',
+      'This verification link has expired or is invalid. Request a new one below.',
     );
+    expect(screen.getByRole('button', {name: /resend verification email/i})).toBeInTheDocument();
+  });
+
+  it('resends the verification email', async () => {
+    mockCtl.resend.mockResolvedValue({error: null});
+
+    renderApp('/verify-email?email=applicant@example.com');
+    const user = userEvent.setup();
+
+    await user.click(await screen.findByRole('button', {name: /resend verification email/i}));
+
+    await waitFor(() => expect(mockCtl.resend).toHaveBeenCalledTimes(1));
+    expect(await screen.findByText(/a new confirmation email has been sent/i)).toBeInTheDocument();
+  });
+
+  it('treats an active session as already verified', async () => {
+    mockCtl.session = {
+      access_token: 't',
+      user: {id: 'u', email: 'x@example.com'},
+    } as never;
+
+    renderApp('/verify-email');
+    expect(await screen.findByRole('heading', {name: 'Email verified'})).toBeInTheDocument();
   });
 });

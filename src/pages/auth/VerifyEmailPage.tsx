@@ -1,6 +1,6 @@
 import {CircleCheck} from 'lucide-react';
 import {useEffect, useState} from 'react';
-import {Link, useNavigate, useSearchParams} from 'react-router-dom';
+import {Link, useSearchParams} from 'react-router-dom';
 
 import {useAuth} from '../../auth/AuthContext';
 import {Alert} from '../../components/ui/Alert';
@@ -12,81 +12,78 @@ import {supabase} from '../../lib/supabase';
 
 export function VerifyEmailPage() {
   const [params] = useSearchParams();
-  const navigate = useNavigate();
-  const {session, refreshProfile} = useAuth();
-
-  const [status, setStatus] = useState<'working' | 'verified' | 'waiting' | 'error'>('waiting');
-  const [message, setMessage] = useState<string | null>(null);
-  const [resending, setResending] = useState(false);
-  const [resent, setResent] = useState(false);
+  const {refreshProfile} = useAuth();
 
   const email = params.get('email') ?? '';
   const tokenHash = params.get('token_hash');
   const token = params.get('token');
   const type = params.get('type') ?? 'signup';
 
+  // Verification links arrive with the token already in the URL, so the
+  // initial state can be derived without a synchronous effect update.
+  const [status, setStatus] = useState<'working' | 'verified' | 'waiting' | 'error'>(() =>
+    tokenHash ? 'working' : 'waiting',
+  );
+  const [message, setMessage] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
+
   useEffect(() => {
-    if (!tokenHash) {
-      // Supabase Auth confirmation links (?token=...) are resolved automatically
-      // by detectSessionInUrl — wait for the session to arrive instead.
-      if (!token) return undefined;
-      let done = false;
-      const {
-        data: {subscription},
-      } = supabase.auth.onAuthStateChange((event) => {
-        if (!done && event === 'SIGNED_IN') {
-          done = true;
+    if (tokenHash) {
+      // Server-side OTP verification (email confirmation / recovery links).
+      let active = true;
+
+      supabase.auth
+        .verifyOtp({
+          type: (type === 'recovery' ? 'recovery' : 'signup') as 'signup' | 'recovery',
+          token_hash: tokenHash,
+        })
+        .then(async ({error}) => {
+          if (!active) return;
+          if (error) {
+            setStatus('error');
+            setMessage(toFriendlyMessage(error));
+            return;
+          }
+          await refreshProfile();
           setStatus('verified');
-        }
-      });
-      supabase.auth.getSession().then(({data}) => {
-        if (!done && data.session) {
-          done = true;
-          setStatus('verified');
-        }
-      });
-      return () => subscription.unsubscribe();
+        })
+        .catch((err: unknown) => {
+          if (!active) return;
+          setStatus('error');
+          setMessage(toFriendlyMessage(err));
+        });
+
+      return () => {
+        active = false;
+      };
     }
 
+    // No token_hash: confirmation links (?token=...) are resolved automatically
+    // by detectSessionInUrl. An active session here means "already verified".
     let active = true;
-    setStatus('working');
 
-    supabase.auth
-      .verifyOtp({
-        type: (type === 'recovery' ? 'recovery' : 'signup') as 'signup' | 'recovery',
-        token_hash: tokenHash,
-      })
-      .then(async ({error}) => {
-        if (!active) return;
-        if (error) {
-          setStatus('error');
-          setMessage(toFriendlyMessage(error));
-          return;
-        }
-        await refreshProfile();
-        setStatus('verified');
-      })
-      .catch((err: unknown) => {
-        if (!active) return;
-        setStatus('error');
-        setMessage(toFriendlyMessage(err));
-      });
+    supabase.auth.getSession().then(({data}) => {
+      if (active && data.session) setStatus('verified');
+    });
+
+    const {
+      data: {subscription},
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (active && event === 'SIGNED_IN') setStatus('verified');
+    });
 
     return () => {
       active = false;
+      subscription.unsubscribe();
     };
   }, [tokenHash, token, type, refreshProfile]);
 
-  useEffect(() => {
-    if (status === 'verified' && session) {
-      const timer = setTimeout(() => navigate('/home', {replace: true}), 1200);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [status, session, navigate]);
-
   const handleResend = async () => {
-    if (!email) return;
+    if (!email) {
+      setMessage('We could not determine your email. Sign in to request a new link.');
+      return;
+    }
     setResending(true);
     const {error} = await supabase.auth.resend({
       type: 'signup',
@@ -115,8 +112,14 @@ export function VerifyEmailPage() {
       <div className="mx-auto w-full max-w-md px-6 py-24">
         <Card className="text-center">
           <CircleCheck className="mx-auto mb-4 size-10 text-success" aria-hidden />
+          <p className="eyebrow mb-2">Account created</p>
           <h1 className="mb-2 text-2xl">Email verified</h1>
-          <p className="text-sm text-muted">Your account is confirmed. Taking you inside…</p>
+          <p className="mb-6 text-sm text-muted">
+            Your account is confirmed and your application is with management.
+          </p>
+          <Link to="/home" className="btn btn-primary">
+            Continue to your home
+          </Link>
         </Card>
       </div>
     );
@@ -124,11 +127,11 @@ export function VerifyEmailPage() {
 
   return (
     <div className="mx-auto w-full max-w-md px-6 py-16">
-      <p className="eyebrow mb-3">Verify your email</p>
-      <h1 className="mb-2 text-3xl">Check your inbox</h1>
+      <p className="eyebrow mb-3">Almost there</p>
+      <h1 className="mb-2 text-3xl">Check your email</h1>
       <p className="mb-8 text-sm text-muted">
-        We sent a confirmation link{email ? ` to ${email}` : ''}. Open it to activate your
-        account.
+        We sent a confirmation link{email ? ` to ${email}` : ''}. Your account must be
+        verified before you can sign in — open the link to finish.
       </p>
 
       <Card className="flex flex-col gap-4">
@@ -136,11 +139,9 @@ export function VerifyEmailPage() {
         {resent ? <Alert tone="success">A new confirmation email has been sent.</Alert> : null}
         {message && status !== 'error' ? <Alert tone="info">{message}</Alert> : null}
 
-        {email ? (
-          <Button variant="secondary" loading={resending} onClick={() => void handleResend()}>
-            Resend confirmation email
-          </Button>
-        ) : null}
+        <Button variant="secondary" loading={resending} onClick={() => void handleResend()}>
+          Resend verification email
+        </Button>
 
         <Link to="/sign-in" className="btn btn-ghost">
           Back to sign in

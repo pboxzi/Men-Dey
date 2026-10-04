@@ -30,6 +30,14 @@ const FRIENDLY_MESSAGES: Array<{match: RegExp; message: string}> = [
     message: 'Please verify your email address before signing in.',
   },
   {
+    match: /otp.*expired|token.*expired|link.*expired|has expired/i,
+    message: 'This verification link has expired or is invalid. Request a new one below.',
+  },
+  {
+    match: /already.*verified|already.*confirmed/i,
+    message: 'This email address is already verified. You can sign in now.',
+  },
+  {
     match: /rate limit|too many requests/i,
     message: 'Too many attempts. Please wait a moment and try again.',
   },

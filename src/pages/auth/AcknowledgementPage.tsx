@@ -98,15 +98,12 @@ export function AcknowledgementPage() {
           checked={accepted}
           onChange={(event) => setAccepted(event.target.checked)}
         />
-        <span>
-          I have read and understood this acknowledgement, and I accept it voluntarily before
-          creating my account.
-        </span>
+        <span>I have read and understand the acknowledgement.</span>
       </label>
 
       <div className="mt-8 flex flex-wrap gap-3">
         <Button onClick={() => void handleAccept()} disabled={!accepted} loading={submitting}>
-          Continue to account creation
+          Continue
         </Button>
         <Link to="/" className="btn btn-ghost">
           Cancel

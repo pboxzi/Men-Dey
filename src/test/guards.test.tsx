@@ -122,7 +122,8 @@ describe('acknowledgement page', () => {
     renderApp('/acknowledgement');
     expect(await screen.findByText('Platform Acknowledgement')).toBeInTheDocument();
 
-    const continueButton = screen.getByRole('button', {name: /continue to account creation/i});
+    const continueButton = screen.getByRole('button', {name: /^continue$/i});
+    expect(screen.getByText('I have read and understand the acknowledgement.')).toBeInTheDocument();
     expect(continueButton).toBeDisabled();
   });
 });

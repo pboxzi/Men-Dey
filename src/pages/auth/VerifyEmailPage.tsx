@@ -1,157 +1,151 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
-import { useSeo } from '../../hooks/useSeo';
-import { useAuth } from '../../utils/AuthContext';
-import { supabase } from '../../utils/supabase';
-import Button from '../../components/ui/Button';
+import {CircleCheck} from 'lucide-react';
+import {useEffect, useState} from 'react';
+import {Link, useNavigate, useSearchParams} from 'react-router-dom';
 
-type Status = 'working' | 'success' | 'error';
+import {useAuth} from '../../auth/AuthContext';
+import {Alert} from '../../components/ui/Alert';
+import {Button} from '../../components/ui/Button';
+import {Card} from '../../components/ui/Card';
+import {Spinner} from '../../components/ui/Spinner';
+import {toFriendlyMessage} from '../../lib/errors';
+import {supabase} from '../../lib/supabase';
 
-/**
- * Landing page for email confirmation links.
- * Handles the custom token issued by the `confirm-email` edge function
- * as well as Supabase's native `token_hash` links.
- * Also mounted at /confirm-email for links already sent.
- */
-export default function VerifyEmailPage() {
-  useSeo({
-    title: 'Verify Your Email',
-    description: 'Confirm your email address to activate your fan account.',
-    canonicalPath: '/verify-email',
-    noindex: true,
-  });
+export function VerifyEmailPage() {
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
+  const {session, refreshProfile} = useAuth();
 
-  const [searchParams] = useSearchParams();
-  const { refreshProfile, session, user } = useAuth();
-  const [status, setStatus] = useState<Status>('working');
-  const [message, setMessage] = useState('');
-  const started = useRef(false);
+  const [status, setStatus] = useState<'working' | 'verified' | 'waiting' | 'error'>('waiting');
+  const [message, setMessage] = useState<string | null>(null);
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
+
+  const email = params.get('email') ?? '';
+  const tokenHash = params.get('token_hash');
+  const token = params.get('token');
+  const type = params.get('type') ?? 'signup';
 
   useEffect(() => {
-    if (started.current) return;
-    started.current = true;
+    if (!tokenHash) {
+      // Supabase Auth confirmation links (?token=...) are resolved automatically
+      // by detectSessionInUrl — wait for the session to arrive instead.
+      if (!token) return undefined;
+      let done = false;
+      const {
+        data: {subscription},
+      } = supabase.auth.onAuthStateChange((event) => {
+        if (!done && event === 'SIGNED_IN') {
+          done = true;
+          setStatus('verified');
+        }
+      });
+      supabase.auth.getSession().then(({data}) => {
+        if (!done && data.session) {
+          done = true;
+          setStatus('verified');
+        }
+      });
+      return () => subscription.unsubscribe();
+    }
 
-    const token = searchParams.get('token');
-    const tokenHash = searchParams.get('token_hash');
-    const type = searchParams.get('type');
+    let active = true;
+    setStatus('working');
 
-    const run = async () => {
-      try {
-        if (token) {
-          const { data, error } = await supabase.functions.invoke('confirm-email', {
-            body: { token },
-          });
-          if (error) {
-            setStatus('error');
-            setMessage(error.message || 'Confirmation failed. Please try again.');
-            return;
-          }
-          if (data?.success) {
-            await refreshProfile();
-            setStatus('success');
-            setMessage('Your email is confirmed. You can now sign in to your account.');
-          } else {
-            setStatus('error');
-            setMessage(data?.error || 'This confirmation link is invalid or has expired.');
-          }
+    supabase.auth
+      .verifyOtp({
+        type: (type === 'recovery' ? 'recovery' : 'signup') as 'signup' | 'recovery',
+        token_hash: tokenHash,
+      })
+      .then(async ({error}) => {
+        if (!active) return;
+        if (error) {
+          setStatus('error');
+          setMessage(toFriendlyMessage(error));
           return;
         }
-
-        if (tokenHash) {
-          const { error } = await supabase.auth.verifyOtp({
-            type: (type as 'signup' | 'recovery' | 'email_change') || 'signup',
-            token_hash: tokenHash,
-          });
-          if (error) {
-            setStatus('error');
-            setMessage(error.message || 'This verification link is invalid or has expired.');
-            return;
-          }
-          await refreshProfile();
-          setStatus('success');
-          setMessage('Your email is confirmed. You can now sign in to your account.');
-          return;
-        }
-
+        await refreshProfile();
+        setStatus('verified');
+      })
+      .catch((err: unknown) => {
+        if (!active) return;
         setStatus('error');
-        setMessage('This verification link is incomplete. Please open the link from your email.');
-      } catch {
-        setStatus('error');
-        setMessage('Something went wrong confirming your email. Please try again shortly.');
-      }
+        setMessage(toFriendlyMessage(err));
+      });
+
+    return () => {
+      active = false;
     };
+  }, [tokenHash, token, type, refreshProfile]);
 
-    run();
-  }, [searchParams, refreshProfile]);
+  useEffect(() => {
+    if (status === 'verified' && session) {
+      const timer = setTimeout(() => navigate('/home', {replace: true}), 1200);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [status, session, navigate]);
 
-  const signedIn = Boolean(session && user);
+  const handleResend = async () => {
+    if (!email) return;
+    setResending(true);
+    const {error} = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {emailRedirectTo: `${window.location.origin}/verify-email`},
+    });
+    setResending(false);
+    if (error) {
+      setMessage(toFriendlyMessage(error));
+    } else {
+      setResent(true);
+    }
+  };
+
+  if (status === 'working') {
+    return (
+      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-4 px-6 py-24">
+        <Spinner label="Verifying" />
+        <p className="text-sm text-muted">Confirming your email address…</p>
+      </div>
+    );
+  }
+
+  if (status === 'verified') {
+    return (
+      <div className="mx-auto w-full max-w-md px-6 py-24">
+        <Card className="text-center">
+          <CircleCheck className="mx-auto mb-4 size-10 text-success" aria-hidden />
+          <h1 className="mb-2 text-2xl">Email verified</h1>
+          <p className="text-sm text-muted">Your account is confirmed. Taking you inside…</p>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="text-center">
-      <span
-        className="mx-auto flex h-12 w-12 items-center justify-center rounded-full"
-        style={{
-          background:
-            status === 'success'
-              ? 'var(--ed-success-soft)'
-              : status === 'error'
-                ? 'var(--ed-danger-soft)'
-                : 'var(--ed-accent-soft)',
-          color:
-            status === 'success'
-              ? '#245840'
-              : status === 'error'
-                ? '#7E2D26'
-                : 'var(--ed-accent-strong)',
-        }}
-        aria-hidden="true"
-      >
-        {status === 'working' && <Loader2 className="h-5 w-5" style={{ animation: 'spin 1s linear infinite' }} />}
-        {status === 'success' && <CheckCircle2 className="h-5 w-5" />}
-        {status === 'error' && <XCircle className="h-5 w-5" />}
-      </span>
-
-      <h1 className="t-h1 mt-5" style={{ fontSize: 'clamp(1.6rem,3vw,2.1rem)' }}>
-        {status === 'working' && 'Confirming your email'}
-        {status === 'success' && 'Email confirmed'}
-        {status === 'error' && 'Confirmation failed'}
-      </h1>
-
-      <p
-        className="t-body-sm mx-auto mt-3"
-        style={{ maxWidth: '24rem', color: status === 'working' ? 'var(--ed-muted)' : undefined }}
-        role={status === 'working' ? 'status' : 'alert'}
-        aria-live="polite"
-      >
-        {status === 'working'
-          ? 'Verifying your account, this only takes a moment.'
-          : message}
+    <div className="mx-auto w-full max-w-md px-6 py-16">
+      <p className="eyebrow mb-3">Verify your email</p>
+      <h1 className="mb-2 text-3xl">Check your inbox</h1>
+      <p className="mb-8 text-sm text-muted">
+        We sent a confirmation link{email ? ` to ${email}` : ''}. Open it to activate your
+        account.
       </p>
 
-      {status === 'success' && (
-        <div className="mt-7">
-          <Button
-            variant="primary"
-            size="lg"
-            to={signedIn ? '/fan' : '/sign-in'}
-            replace
-          >
-            {signedIn ? 'Enter Your Fan Area' : 'Sign In'}
-          </Button>
-        </div>
-      )}
+      <Card className="flex flex-col gap-4">
+        {status === 'error' ? <Alert tone="error">{message}</Alert> : null}
+        {resent ? <Alert tone="success">A new confirmation email has been sent.</Alert> : null}
+        {message && status !== 'error' ? <Alert tone="info">{message}</Alert> : null}
 
-      {status === 'error' && (
-        <div className="mt-7 flex flex-col items-center gap-3">
-          <Button to="/create-account" variant="secondary" size="lg">
-            Create a New Account
+        {email ? (
+          <Button variant="secondary" loading={resending} onClick={() => void handleResend()}>
+            Resend confirmation email
           </Button>
-          <Link to="/contact" className="text-[13px] underline t-accent">
-            Contact the management office
-          </Link>
-        </div>
-      )}
+        ) : null}
+
+        <Link to="/sign-in" className="btn btn-ghost">
+          Back to sign in
+        </Link>
+      </Card>
     </div>
   );
 }

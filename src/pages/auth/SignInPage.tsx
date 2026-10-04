@@ -1,122 +1,101 @@
-import { useState, type FormEvent } from 'react';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { useSeo } from '../../hooks/useSeo';
-import { useAuth } from '../../utils/AuthContext';
-import Button from '../../components/ui/Button';
-import { TextField } from '../../components/ui/Field';
+import {useState, type FormEvent} from 'react';
+import {Link, Navigate, useNavigate, useSearchParams} from 'react-router-dom';
 
-export default function SignInPage() {
-  useSeo({
-    title: 'Sign In',
-    description: 'Sign in to your private fan area with Gillian Anderson Management.',
-    canonicalPath: '/sign-in',
-  });
+import {useAuth} from '../../auth/AuthContext';
+import {Alert} from '../../components/ui/Alert';
+import {Button} from '../../components/ui/Button';
+import {Card} from '../../components/ui/Card';
+import {Field} from '../../components/ui/Field';
+import {FullPageLoader} from '../../components/ui/FullPageLoader';
+import {toFriendlyMessage} from '../../lib/errors';
 
-  const { signIn, user, loading } = useAuth();
+export function SignInPage() {
+  const {loading: authLoading, isAuthenticated, role, signIn} = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = (location.state as { from?: string } | null)?.from;
+  const [params] = useSearchParams();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [fieldError, setFieldError] = useState<{ email?: string; password?: string }>({});
   const [submitting, setSubmitting] = useState(false);
 
-  if (!loading && user) {
-    return <Navigate to={from || '/fan'} replace />;
+  if (authLoading) return <FullPageLoader />;
+
+  if (isAuthenticated) {
+    const next = params.get('next');
+    const target = next && next.startsWith('/') ? next : role === 'admin' || role === 'management' ? '/management' : '/home';
+    return <Navigate to={target} replace />;
   }
 
-  const onSubmit = async (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    const next: { email?: string; password?: string } = {};
-    if (!email.trim()) next.email = 'Please enter your email address.';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = 'Please enter a valid email address.';
-    if (!password) next.password = 'Please enter your password.';
-    setFieldError(next);
     setError(null);
-    if (Object.keys(next).length > 0) {
-      document.getElementById(next.email ? 'signin-email' : 'signin-password')?.focus();
-      return;
-    }
-
     setSubmitting(true);
-    const result = await signIn(email.trim(), password);
-    setSubmitting(false);
-
-    if (result.error) {
-      setError(result.error);
-      document.getElementById('signin-email')?.focus();
-      return;
+    try {
+      await signIn(email.trim(), password);
+      const next = params.get('next');
+      navigate(next && next.startsWith('/') ? next : '/home', {replace: true});
+    } catch (err) {
+      setError(toFriendlyMessage(err));
+    } finally {
+      setSubmitting(false);
     }
-    navigate(from || '/fan', { replace: true });
   };
 
   return (
-    <div>
-      <span className="t-meta">Private Fan Access</span>
-      <h1 className="t-h1 mt-3" style={{ fontSize: 'clamp(1.75rem,3vw,2.25rem)' }}>
-        Welcome back
-      </h1>
-      <p className="t-body-sm mt-3" style={{ maxWidth: '24rem' }}>
-        Sign in to read management replies, track your requests and receive official updates.
+    <div className="mx-auto w-full max-w-md px-6 py-16">
+      <p className="eyebrow mb-3">Private access</p>
+      <h1 className="mb-2 text-3xl md:text-4xl">Sign in</h1>
+      <p className="mb-8 text-sm text-muted">
+        Access your requests, membership and approved experiences.
       </p>
 
-      <form className="mt-7 space-y-4" onSubmit={onSubmit} noValidate>
-        {error && (
-          <div className="form-alert form-alert-error" role="alert">
-            {error}
+      <Card>
+        <form className="flex flex-col gap-5" onSubmit={(event) => void handleSubmit(event)}>
+          {error ? <Alert tone="error">{error}</Alert> : null}
+
+          <Field label="Email">
+            {(props) => (
+              <input
+                {...props}
+                className="field-input"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            )}
+          </Field>
+
+          <Field label="Password">
+            {(props) => (
+              <input
+                {...props}
+                className="field-input"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            )}
+          </Field>
+
+          <Button type="submit" loading={submitting}>
+            Sign in
+          </Button>
+
+          <div className="flex items-center justify-between text-xs text-muted">
+            <Link to="/forgot-password" className="underline-offset-2 hover:text-gold-deep hover:underline">
+              Forgot password?
+            </Link>
+            <Link to="/acknowledgement" className="underline-offset-2 hover:text-gold-deep hover:underline">
+              Create account
+            </Link>
           </div>
-        )}
-
-        <TextField
-          id="signin-email"
-          label="Email address"
-          name="email"
-          type="email"
-          autoComplete="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          error={fieldError.email}
-          invalid={Boolean(fieldError.email)}
-        />
-
-        <TextField
-          id="signin-password"
-          label="Password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={fieldError.password}
-          invalid={Boolean(fieldError.password)}
-        />
-
-        <div className="flex items-center justify-end">
-          <Link
-            to="/forgot-password"
-            className="text-[13px] underline transition-opacity hover:opacity-70"
-            style={{ color: 'var(--ed-muted)' }}
-          >
-            Forgot your password?
-          </Link>
-        </div>
-
-        <Button type="submit" variant="primary" size="lg" fullWidth loading={submitting}>
-          Sign In
-        </Button>
-      </form>
-
-      <p className="t-body-sm mt-6" style={{ color: 'var(--ed-muted)' }}>
-        New to Fan Access?{' '}
-        <Link to="/create-account" className="underline t-accent">
-          Create an account
-        </Link>
-        .
-      </p>
+        </form>
+      </Card>
     </div>
   );
 }

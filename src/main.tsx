@@ -1,16 +1,17 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import {BrowserRouter} from 'react-router-dom';
-import App from './App.tsx';
-import { AuthProvider } from './utils/AuthContext.tsx';
-import './index.css';
 
-createRoot(document.getElementById('root')!).render(
+import './index.css';
+import {App} from './App';
+
+const container = document.getElementById('root');
+if (!container) throw new Error('Root container missing');
+
+createRoot(container).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <App />
     </BrowserRouter>
   </StrictMode>,
 );

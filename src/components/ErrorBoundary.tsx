@@ -1,54 +1,36 @@
-﻿import React from 'react';
-
-interface Props {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-}
+import {Component, type ErrorInfo, type ReactNode} from 'react';
 
 interface State {
-  hasError: boolean;
   error: Error | null;
 }
 
-export default class ErrorBoundary extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
+export class ErrorBoundary extends Component<{children: ReactNode}, State> {
+  state: State = {error: null};
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return {error};
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught:', error, errorInfo);
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('Unhandled UI error:', error, info.componentStack);
   }
 
   render() {
-    if (this.state.hasError) {
-      if (this.props.fallback) return this.props.fallback;
+    if (!this.state.error) return this.props.children;
 
-      return (
-        <div className="min-h-[400px] flex items-center justify-center p-8">
-          <div className="text-center space-y-4 max-w-sm">
-            <div className="mx-auto w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-              <span className="text-red-500 text-lg">!</span>
-            </div>
-            <h3 className="text-sm font-bold text-[#111]">Something went wrong</h3>
-            <p className="text-xs text-[#444]">
-              This section couldn't load. Please try refreshing the page.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-4 py-2 text-xs font-bold text-[#C89B3C] border border-[#C89B3C]/30 rounded-lg hover:bg-[#C89B3C]/5 transition-colors"
-            >
-              Refresh Page
-            </button>
-          </div>
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-alabaster px-6">
+        <div className="surface max-w-md p-8 text-center">
+          <p className="eyebrow mb-3">Unexpected error</p>
+          <h1 className="mb-3 text-2xl">Something went wrong</h1>
+          <p className="mb-6 text-sm text-muted">
+            The page could not be displayed. Your data is safe — please reload to continue.
+          </p>
+          <button type="button" className="btn btn-primary" onClick={() => window.location.reload()}>
+            Reload page
+          </button>
         </div>
-      );
-    }
-
-    return this.props.children;
+      </main>
+    );
   }
 }

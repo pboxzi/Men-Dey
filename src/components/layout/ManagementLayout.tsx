@@ -11,19 +11,15 @@ interface NavSection {
 const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Overview',
-    links: [
-      {to: '/management', label: 'Home'},
-      {to: '/management/inbox', label: 'Inbox'},
-      {to: '/management/applicants', label: 'Applicants'},
-      {to: '/management/requests', label: 'Requests'},
-      {to: '/management/messages', label: 'Messages'},
-      {to: '/management/notes', label: 'Notes'},
-      {to: '/management/conversations', label: 'Conversations'},
-    ],
+    links: [{to: '/management', label: 'Dashboard'}],
   },
   {
-    title: 'Membership',
+    title: 'Relationships',
     links: [
+      {to: '/management/fans', label: 'Fans'},
+      {to: '/management/applicants', label: 'Applicants'},
+      {to: '/management/messages', label: 'Messages'},
+      {to: '/management/requests', label: 'Requests'},
       {to: '/management/memberships', label: 'Memberships'},
     ],
   },
@@ -36,15 +32,35 @@ const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    title: 'Business',
+    links: [
+      {to: '/management/proposals', label: 'Proposals'},
+      {to: '/management/payments', label: 'Payments'},
+      {to: '/management/agreements', label: 'Agreements'},
+    ],
+  },
+  {
+    title: 'Content',
+    links: [
+      {to: '/management/cms', label: 'CMS'},
+      {to: '/management/media', label: 'Media library'},
+      {to: '/management/documents', label: 'Documents'},
+    ],
+  },
+  {
     title: 'Operations',
     links: [
       {to: '/management/tasks', label: 'Tasks'},
-      {to: '/management/documents', label: 'Documents'},
-      {to: '/management/media', label: 'Media'},
       {to: '/management/staff', label: 'Staff'},
-      {to: '/management/audit', label: 'Audit log'},
+      {to: '/management/notifications', label: 'Notifications'},
+    ],
+  },
+  {
+    title: 'System',
+    links: [
       {to: '/management/settings', label: 'Settings'},
-      {to: '/management/cms', label: 'CMS'},
+      {to: '/management/security', label: 'Security'},
+      {to: '/management/audit', label: 'Audit log'},
     ],
   },
 ];

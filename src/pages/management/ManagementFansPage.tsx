@@ -1,0 +1,180 @@
+import {Search} from 'lucide-react';
+import {useCallback, useEffect, useState} from 'react';
+import {Link} from 'react-router-dom';
+
+import {Alert} from '../../components/ui/Alert';
+import {Chip} from '../../components/ui/Chip';
+import {EmptyState} from '../../components/ui/EmptyState';
+import {PageHeader} from '../../components/ui/PageHeader';
+import {Spinner} from '../../components/ui/Spinner';
+import {formatDate} from '../../lib/format';
+import {supabase} from '../../lib/supabase';
+import {PROFILE_STATUS_LABELS, PROFILE_STATUS_TONES} from './shared';
+import type {ProfileStatus} from '../../types';
+
+interface FanRow {
+  id: string;
+  email: string | null;
+  full_name: string | null;
+  status: ProfileStatus;
+  country: string | null;
+  city: string | null;
+  profile_photo: string | null;
+  occupation: string | null;
+  created_at: string;
+}
+
+type StatusFilter = 'all' | ProfileStatus;
+
+const STATUS_FILTERS: StatusFilter[] = ['all', 'active', 'pending', 'suspended'];
+
+function displayName(row: Pick<FanRow, 'full_name' | 'email'>): string {
+  return row.full_name || row.email || 'Account';
+}
+
+function initialsFor(row: Pick<FanRow, 'full_name' | 'email'>): string {
+  const source = (row.full_name || row.email || '?').trim();
+  const parts = source.split(/[\s@._-]+/).filter(Boolean);
+  return ((parts[0]?.[0] ?? '?') + (parts[1]?.[0] ?? '')).toUpperCase();
+}
+
+export function ManagementFansPage() {
+  const [fans, setFans] = useState<FanRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const {data, error: resError} = await supabase
+        .from('profiles')
+        .select(
+          'id, email, full_name, status, country, city, profile_photo, occupation, created_at',
+        )
+        .eq('role', 'user')
+        .order('created_at', {ascending: false})
+        .limit(200);
+      if (resError) throw new Error(resError.message);
+      setFans((data as FanRow[]) ?? []);
+      setSearch('');
+      setStatusFilter('all');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not load fan accounts.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  if (loading) return <Spinner label="Loading fans" />;
+
+  const query = search.trim().toLowerCase();
+  const visible = fans.filter((fan) => {
+    if (statusFilter !== 'all' && fan.status !== statusFilter) return false;
+    if (!query) return true;
+    return (
+      (fan.full_name ?? '').toLowerCase().includes(query) ||
+      (fan.email ?? '').toLowerCase().includes(query)
+    );
+  });
+
+  return (
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="Relationships"
+        title="Fans"
+        description="Every account under management, with a direct path to each member record."
+      />
+
+      {error ? <Alert tone="error">{error}</Alert> : null}
+
+      <section className="surface p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            {STATUS_FILTERS.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                className={`btn ${statusFilter === filter ? 'btn-primary' : 'btn-ghost'}`}
+                onClick={() => setStatusFilter(filter)}
+              >
+                {filter === 'all' ? 'All' : PROFILE_STATUS_LABELS[filter]}
+              </button>
+            ))}
+          </div>
+          <span className="text-xs text-muted">
+            {visible.length} of {fans.length} accounts
+          </span>
+        </div>
+
+        <label className="mb-5 block text-sm">
+          <span className="mb-1 block text-xs uppercase tracking-wider text-muted">Search</span>
+          <span className="flex items-center gap-2">
+            <Search className="size-4 text-muted" aria-hidden />
+            <input
+              className="field-input"
+              value={search}
+              placeholder="Name or email"
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </span>
+        </label>
+
+        {visible.length === 0 ? (
+          <EmptyState
+            title="No accounts match."
+            description={
+              fans.length === 0
+                ? 'Fan accounts appear here as soon as they complete their application.'
+                : 'Adjust the search or status filter to see more accounts.'
+            }
+          />
+        ) : (
+          <ul className="divide-y divide-stone">
+            {visible.map((fan) => (
+              <li key={fan.id}>
+                <Link
+                  to={`/management/fans/${fan.id}`}
+                  className="flex items-center justify-between gap-4 py-3 hover:bg-stone/40"
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    {fan.profile_photo ? (
+                      <img
+                        src={fan.profile_photo}
+                        alt=""
+                        className="size-9 shrink-0 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-stone text-xs font-medium text-gold-deep">
+                        {initialsFor(fan)}
+                      </span>
+                    )}
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium text-charcoal">
+                        {displayName(fan)}
+                      </span>
+                      <span className="block truncate text-xs text-muted">
+                        {fan.occupation ? `${fan.occupation} · ` : ''}
+                        {fan.country || fan.city ? [fan.city, fan.country].filter(Boolean).join(', ') : 'Location not set'}{' '}
+                        · joined {formatDate(fan.created_at)}
+                      </span>
+                    </span>
+                  </span>
+                  <Chip tone={PROFILE_STATUS_TONES[fan.status]}>
+                    {PROFILE_STATUS_LABELS[fan.status]}
+                  </Chip>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}

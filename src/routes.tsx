@@ -12,7 +12,6 @@ import {HomeLayout} from './components/layout/HomeLayout';
 import {ManagementLayout} from './components/layout/ManagementLayout';
 import {PublicLayout} from './components/layout/PublicLayout';
 import {ForbiddenPage, NotFoundPage} from './pages/ErrorPages';
-import {SectionPage} from './pages/SectionPage';
 import {AcknowledgementPage} from './pages/auth/AcknowledgementPage';
 import {ForgotPasswordPage} from './pages/auth/ForgotPasswordPage';
 import {ResetPasswordPage} from './pages/auth/ResetPasswordPage';
@@ -28,12 +27,31 @@ import {CredentialsStep} from './pages/auth/application/steps/CredentialsStep';
 import {InterestsStep} from './pages/auth/application/steps/InterestsStep';
 import {PersonalStep} from './pages/auth/application/steps/PersonalStep';
 import {ReviewStep} from './pages/auth/application/steps/ReviewStep';
+import {ManagementApplicantDetailPage} from './pages/management/ManagementApplicantDetailPage';
+import {ManagementApplicantsPage} from './pages/management/ManagementApplicantsPage';
+import {ManagementAuditPage} from './pages/management/ManagementAuditPage';
 import {ManagementBookingsPage} from './pages/management/ManagementBookingsPage';
 import {ManagementCalendarPage} from './pages/management/ManagementCalendarPage';
+import {ManagementCmsPage} from './pages/management/ManagementCmsPage';
+import {ManagementDashboardPage} from './pages/management/ManagementDashboardPage';
+import {ManagementDocumentsPage} from './pages/management/ManagementDocumentsPage';
 import {ManagementExperienceDetailPage} from './pages/management/ManagementExperienceDetailPage';
 import {ManagementExperiencesPage} from './pages/management/ManagementExperiencesPage';
+import {ManagementFanDetailPage} from './pages/management/ManagementFanDetailPage';
+import {ManagementFansPage} from './pages/management/ManagementFansPage';
 import {ManagementMembershipDetailPage} from './pages/management/ManagementMembershipDetailPage';
 import {ManagementMembershipsPage} from './pages/management/ManagementMembershipsPage';
+import {ManagementMediaPage} from './pages/management/ManagementMediaPage';
+import {ManagementMessagesPage} from './pages/management/ManagementMessagesPage';
+import {ManagementNotificationsPage} from './pages/management/ManagementNotificationsPage';
+import {ManagementPaymentsPage} from './pages/management/ManagementPaymentsPage';
+import {ManagementProposalsPage} from './pages/management/ManagementProposalsPage';
+import {ManagementRequestDetailPage} from './pages/management/ManagementRequestDetailPage';
+import {ManagementRequestsPage} from './pages/management/ManagementRequestsPage';
+import {ManagementSecurityPage} from './pages/management/ManagementSecurityPage';
+import {ManagementSettingsPage} from './pages/management/ManagementSettingsPage';
+import {ManagementStaffPage} from './pages/management/ManagementStaffPage';
+import {ManagementTasksPage} from './pages/management/ManagementTasksPage';
 import {LandingPage} from './pages/public/LandingPage';
 import {DashboardHomePage} from './pages/user/DashboardHomePage';
 import {DocumentsPage} from './pages/user/DocumentsPage';
@@ -52,22 +70,6 @@ import {MessagesListPage} from './pages/user/messages/MessagesListPage';
 import {NewRequestPage} from './pages/user/requests/NewRequestPage';
 import {RequestDetailPage} from './pages/user/requests/RequestDetailPage';
 import {RequestsListPage} from './pages/user/requests/RequestsListPage';
-
-const MANAGEMENT_SECTIONS = [
-  {path: 'inbox', title: 'Inbox', description: 'Everything that needs a management response.'},
-  {path: 'applicants', title: 'Applicants', description: 'Applicant profiles awaiting review.'},
-  {path: 'requests', title: 'Requests', description: 'User requests routed through management.'},
-  {path: 'messages', title: 'Messages', description: 'Conversations with users.'},
-  {path: 'notes', title: 'Notes', description: 'Internal notes on users and conversations.'},
-  {path: 'conversations', title: 'Conversations', description: 'All management conversation threads.'},
-  {path: 'tasks', title: 'Tasks', description: 'Internal tasks for the management team.'},
-  {path: 'documents', title: 'Documents', description: 'Document library and visibility.'},
-  {path: 'media', title: 'Media', description: 'Media assets across all buckets.'},
-  {path: 'staff', title: 'Staff', description: 'Management team members and roles.'},
-  {path: 'audit', title: 'Audit log', description: 'Recorded privileged actions (administrators only).'},
-  {path: 'settings', title: 'Settings', description: 'Platform configuration.'},
-  {path: 'cms', title: 'CMS', description: 'Public pages and content sections.'},
-];
 
 export function AppRoutes() {
   return (
@@ -128,53 +130,50 @@ export function AppRoutes() {
 
         <Route element={<RequireManagement />}>
           <Route element={<ManagementLayout />}>
+            <Route path="/management" element={<ManagementDashboardPage />} />
+
+            <Route path="/management/fans" element={<ManagementFansPage />} />
+            <Route path="/management/fans/:id" element={<ManagementFanDetailPage />} />
+            <Route path="/management/applicants" element={<ManagementApplicantsPage />} />
+            <Route path="/management/applicants/:id" element={<ManagementApplicantDetailPage />} />
+            <Route path="/management/messages" element={<ManagementMessagesPage />} />
             <Route
-              path="/management"
-              element={
-                <SectionPage
-                  eyebrow="Console"
-                  title="Management home"
-                  description="The bridge between every user and Gillian."
-                />
-              }
+              path="/management/messages/:conversationId"
+              element={<ManagementMessagesPage />}
             />
+            <Route path="/management/requests" element={<ManagementRequestsPage />} />
+            <Route path="/management/requests/:id" element={<ManagementRequestDetailPage />} />
             <Route path="/management/memberships" element={<ManagementMembershipsPage />} />
             <Route path="/management/memberships/:id" element={<ManagementMembershipDetailPage />} />
             <Route path="/management/experiences" element={<ManagementExperiencesPage />} />
             <Route path="/management/experiences/:id" element={<ManagementExperienceDetailPage />} />
             <Route path="/management/bookings" element={<ManagementBookingsPage />} />
             <Route path="/management/calendar" element={<ManagementCalendarPage />} />
-            {MANAGEMENT_SECTIONS.map((section) => {
-              if (section.path === 'audit') {
-                return (
-                  <Route key={section.path} element={<RequireAdmin />}>
-                    <Route
-                      path="/management/audit"
-                      element={
-                        <SectionPage
-                          eyebrow="Console"
-                          title={section.title}
-                          description={section.description}
-                        />
-                      }
-                    />
-                  </Route>
-                );
-              }
-              return (
-                <Route
-                  key={section.path}
-                  path={`/management/${section.path}`}
-                  element={
-                    <SectionPage
-                      eyebrow="Console"
-                      title={section.title}
-                      description={section.description}
-                    />
-                  }
-                />
-              );
-            })}
+            <Route path="/management/proposals" element={<ManagementProposalsPage />} />
+            <Route path="/management/payments" element={<ManagementPaymentsPage />} />
+            <Route
+              path="/management/agreements"
+              element={<ManagementDocumentsPage presetCategory="agreement" />}
+            />
+            <Route path="/management/documents" element={<ManagementDocumentsPage />} />
+            <Route path="/management/cms" element={<ManagementCmsPage />} />
+            <Route path="/management/media" element={<ManagementMediaPage />} />
+            <Route path="/management/tasks" element={<ManagementTasksPage />} />
+            <Route path="/management/staff" element={<ManagementStaffPage />} />
+            <Route path="/management/notifications" element={<ManagementNotificationsPage />} />
+            <Route path="/management/settings" element={<ManagementSettingsPage />} />
+            <Route path="/management/security" element={<ManagementSecurityPage />} />
+            <Route element={<RequireAdmin />}>
+              <Route path="/management/audit" element={<ManagementAuditPage />} />
+            </Route>
+
+            {/* legacy console links */}
+            <Route path="/management/inbox" element={<Navigate to="/management" replace />} />
+            <Route path="/management/notes" element={<Navigate to="/management" replace />} />
+            <Route
+              path="/management/conversations"
+              element={<Navigate to="/management/messages" replace />}
+            />
           </Route>
         </Route>
 

@@ -338,7 +338,7 @@ try {
 
   // ---------- UI read paths ----------
   const membershipRead = await c1.from('memberships').select('*').limit(1);
-  const expRead = await c1.from('experience_requests').select('*').limit(1);
+  const expRead = await c1.from('requests').select('*').limit(1);
   const docsRead = await c1.from('documents').select('*').limit(1);
   const settingsRead = await c1.from('site_settings').select('*').eq('is_public', true).limit(1);
   ok(

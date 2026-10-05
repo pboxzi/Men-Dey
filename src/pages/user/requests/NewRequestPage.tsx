@@ -1,14 +1,14 @@
 import {ArrowLeft, Send} from 'lucide-react';
-import {useCallback, useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import {useCallback, useEffect, useRef, useState} from 'react';
+import {Link, useNavigate, useSearchParams} from 'react-router-dom';
 
 import {useAuth} from '../../../auth/AuthContext';
 import {Alert} from '../../../components/ui/Alert';
 import {Button} from '../../../components/ui/Button';
 import {Field} from '../../../components/ui/Field';
-import {CONTACT_METHOD_LABELS, REQUEST_CATEGORIES} from '../../../lib/requests';
+import {requestCategoryLabel, CONTACT_METHOD_LABELS, REQUEST_CATEGORIES} from '../../../lib/requests';
 import {supabase} from '../../../lib/supabase';
-import type {RequestType} from '../../../types';
+import type {Experience, RequestType} from '../../../types';
 
 interface FormState {
   type: RequestType | '';
@@ -50,16 +50,55 @@ function validate(form: FormState): Errors {
 export function NewRequestPage() {
   const {session} = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const me = session?.user.id ?? null;
+
+  const experienceId = searchParams.get('experience');
+  const typeParam = searchParams.get('type');
 
   const [form, setForm] = useState<FormState>(INITIAL);
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [experience, setExperience] = useState<Experience | null>(null);
+  const [experienceError, setExperienceError] = useState<string | null>(null);
+  const prefillRef = useRef(false);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({...prev, [key]: value}));
     setErrors((prev) => ({...prev, [key]: undefined, form: undefined}));
   };
+
+  useEffect(() => {
+    if (prefillRef.current) return;
+    prefillRef.current = true;
+    if (experienceId) {
+      void (async () => {
+        const {data, error} = await supabase
+          .from('experiences')
+          .select('*')
+          .eq('id', experienceId)
+          .maybeSingle();
+        if (error) {
+          setExperienceError(error.message);
+          return;
+        }
+        if (!data) {
+          setExperienceError('That experience could not be found.');
+          return;
+        }
+        const row = data as Experience;
+        setExperience(row);
+        setForm((prev) => ({
+          ...prev,
+          type: prev.type || row.type,
+          title: prev.title || row.title,
+          location: prev.location || row.location || '',
+        }));
+      })();
+    } else if (typeParam && REQUEST_CATEGORIES.some((category) => category.key === typeParam)) {
+      setForm((prev) => ({...prev, type: typeParam as RequestType}));
+    }
+  }, [experienceId, typeParam]);
 
   const submit = useCallback(async () => {
     if (!me) return;
@@ -78,6 +117,7 @@ export function NewRequestPage() {
           type: form.type,
           title: form.title.trim(),
           description: form.description.trim(),
+          experience_id: experienceId || null,
           preferred_date: form.preferred_date || null,
           preferred_time: form.preferred_time || null,
           location: form.location.trim() || null,
@@ -94,7 +134,7 @@ export function NewRequestPage() {
     } finally {
       setSubmitting(false);
     }
-  }, [form, me, navigate]);
+  }, [experienceId, form, me, navigate]);
 
   const contactOptions = Object.entries(CONTACT_METHOD_LABELS);
 
@@ -113,6 +153,17 @@ export function NewRequestPage() {
       </div>
 
       {errors.form ? <Alert tone="error">{errors.form}</Alert> : null}
+      {experienceError ? <Alert tone="error">{experienceError}</Alert> : null}
+
+      {experience ? (
+        <div className="surface border-l-2 border-l-gold p-4">
+          <p className="text-xs uppercase tracking-wider text-muted">Requesting experience</p>
+          <p className="mt-1 font-medium text-charcoal">{experience.title}</p>
+          <p className="mt-0.5 text-xs text-muted">
+            {requestCategoryLabel(experience.type)} · management reviews every request personally
+          </p>
+        </div>
+      ) : null}
 
       <form
         className="space-y-5"
@@ -252,7 +303,10 @@ export function NewRequestPage() {
         <div className="flex items-center justify-between gap-3 border-t border-stone pt-5">
           <p className="text-xs text-muted">Management reviews every request personally.</p>
           <div className="flex gap-2">
-            <Link to="/dashboard/requests" className="btn btn-ghost">
+            <Link
+              to={experienceId ? '/dashboard/experiences' : '/dashboard/requests'}
+              className="btn btn-ghost"
+            >
               Cancel
             </Link>
             <Button type="submit" loading={submitting}>

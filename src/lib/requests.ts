@@ -1,4 +1,9 @@
-import type {RequestEventType, RequestStatus, RequestType} from '../types';
+import type {
+  ExperienceProposalStatus,
+  RequestEventType,
+  RequestStatus,
+  RequestType,
+} from '../types';
 
 export const REQUEST_CATEGORIES: ReadonlyArray<{key: RequestType; label: string}> = [
   {key: 'personal_experience', label: 'Personal Experience'},
@@ -16,7 +21,9 @@ export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {
   submitted: 'Submitted',
   in_review: 'Under Review',
   information_requested: 'Awaiting Information',
-  proposal: 'Proposal',
+  proposal: 'Proposal Ready',
+  payment_required: 'Payment Required',
+  confirmed: 'Confirmed',
   approved: 'Approved',
   scheduled: 'Scheduled',
   completed: 'Completed',
@@ -31,6 +38,8 @@ export const REQUEST_STATUS_TONES: Record<RequestStatus, ChipTone> = {
   in_review: 'info',
   information_requested: 'gold',
   proposal: 'gold',
+  payment_required: 'gold',
+  confirmed: 'success',
   approved: 'success',
   scheduled: 'success',
   completed: 'neutral',
@@ -44,11 +53,41 @@ export const REQUEST_EVENT_LABELS: Record<RequestEventType, string> = {
   review_started: 'Review started',
   information_requested: 'Information requested',
   proposal_created: 'Proposal created',
+  proposal_accepted: 'Proposal accepted',
+  confirmed: 'Experience confirmed',
   approved: 'Approved',
   scheduled: 'Scheduled',
   completed: 'Completed',
   declined: 'Declined',
   cancelled: 'Cancelled',
+};
+
+export const EXPERIENCE_REQUEST_TYPES: ReadonlyArray<RequestType> = [
+  'personal_experience',
+  'virtual_meeting',
+  'meet_greet',
+  'business_professional',
+  'special_occasion',
+];
+
+export const PROPOSAL_STATUS_LABELS: Record<ExperienceProposalStatus, string> = {
+  draft: 'Draft',
+  sent: 'Awaiting your response',
+  viewed: 'Awaiting your response',
+  accepted: 'Accepted',
+  declined: 'Declined',
+  expired: 'Expired',
+  cancelled: 'Cancelled',
+};
+
+export const PROPOSAL_STATUS_TONES: Record<ExperienceProposalStatus, ChipTone> = {
+  draft: 'neutral',
+  sent: 'gold',
+  viewed: 'gold',
+  accepted: 'success',
+  declined: 'danger',
+  expired: 'neutral',
+  cancelled: 'neutral',
 };
 
 export function requestCategoryLabel(type: RequestType): string {

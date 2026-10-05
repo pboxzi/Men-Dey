@@ -7,12 +7,11 @@ import {Chip} from '../../components/ui/Chip';
 import {FullPageLoader} from '../../components/ui/FullPageLoader';
 import {loadConversationSummaries, type ConversationSummary} from '../../lib/conversations';
 import {formatDateTime, greetingForNow, relativeTime} from '../../lib/format';
-import {REQUEST_STATUS_LABELS, REQUEST_STATUS_TONES} from '../../lib/requests';
+import {REQUEST_STATUS_LABELS, REQUEST_STATUS_TONES, EXPERIENCE_REQUEST_TYPES} from '../../lib/requests';
 import {supabase} from '../../lib/supabase';
 import type {
   ApplicantProfile,
   Appointment,
-  ExperienceRequest,
   Membership,
   Notification,
   Request,
@@ -24,7 +23,6 @@ interface DashboardData {
   membership: Membership | null;
   conversation: ConversationSummary | null;
   requests: Request[];
-  experiences: ExperienceRequest[];
   appointments: Appointment[];
   notifications: Notification[];
 }
@@ -34,7 +32,6 @@ const EMPTY: DashboardData = {
   membership: null,
   conversation: null,
   requests: [],
-  experiences: [],
   appointments: [],
   notifications: [],
 };
@@ -88,7 +85,6 @@ export function DashboardHomePage() {
         membershipRes,
         conversationSummary,
         requestsRes,
-        experiencesRes,
         appointmentsRes,
         notificationsRes,
       ] = await Promise.all([
@@ -96,7 +92,6 @@ export function DashboardHomePage() {
         supabase.from('memberships').select('*').order('created_at', {ascending: false}).limit(1).maybeSingle(),
         loadConversationSummaries(me, 50),
         supabase.from('requests').select('*').order('created_at', {ascending: false}).limit(50),
-        supabase.from('experience_requests').select('*').order('created_at', {ascending: false}).limit(50),
         supabase
           .from('appointments')
           .select('*')
@@ -107,7 +102,7 @@ export function DashboardHomePage() {
         supabase.from('notifications').select('*').order('created_at', {ascending: false}).limit(5),
       ]);
 
-      const firstError = [applicantRes, membershipRes, requestsRes, experiencesRes, appointmentsRes, notificationsRes]
+      const firstError = [applicantRes, membershipRes, requestsRes, appointmentsRes, notificationsRes]
         .map((r) => r.error)
         .find(Boolean);
       if (firstError) throw new Error(firstError.message);
@@ -117,7 +112,6 @@ export function DashboardHomePage() {
         membership: (membershipRes.data as Membership | null) ?? null,
         conversation: conversationSummary.conversations[0] ?? null,
         requests: (requestsRes.data as Request[]) ?? [],
-        experiences: (experiencesRes.data as ExperienceRequest[]) ?? [],
         appointments: (appointmentsRes.data as Appointment[]) ?? [],
         notifications: (notificationsRes.data as Notification[]) ?? [],
       });
@@ -147,6 +141,9 @@ export function DashboardHomePage() {
   const firstName = profile?.full_name?.split(' ')[0];
   const openRequests = data.requests.filter(
     (r) => !['completed', 'declined', 'cancelled'].includes(r.status),
+  );
+  const experienceRequests = data.requests.filter(
+    (r) => EXPERIENCE_REQUEST_TYPES.includes(r.type) || r.experience_id !== null,
   );
   const lastMessage = data.conversation?.last;
 
@@ -206,8 +203,8 @@ export function DashboardHomePage() {
         />
         <StatCard
           label="Experiences"
-          value={data.experiences.length > 0 ? String(data.experiences.length) : 'None yet'}
-          hint={data.experiences.length > 0 ? 'Requests being arranged' : 'Arranged through management'}
+          value={experienceRequests.length > 0 ? String(experienceRequests.length) : 'None yet'}
+          hint={experienceRequests.length > 0 ? 'Requests being arranged' : 'Arranged through management'}
           to="/dashboard/experiences"
         />
       </div>

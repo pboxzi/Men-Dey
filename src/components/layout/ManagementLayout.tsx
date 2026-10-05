@@ -24,20 +24,15 @@ const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Membership',
     links: [
-      {to: '/management/membership', label: 'Overview'},
-      {to: '/management/membership/tiers', label: 'Tiers'},
-      {to: '/management/membership/applications', label: 'Applications'},
-      {to: '/management/membership/members', label: 'Members'},
-      {to: '/management/membership/payments', label: 'Payments'},
+      {to: '/management/memberships', label: 'Memberships'},
     ],
   },
   {
     title: 'Experiences',
     links: [
       {to: '/management/experiences', label: 'Experiences'},
-      {to: '/management/experiences/requests', label: 'Experience requests'},
-      {to: '/management/experiences/calendar', label: 'Calendar'},
-      {to: '/management/experiences/payments', label: 'Payments'},
+      {to: '/management/bookings', label: 'Bookings'},
+      {to: '/management/calendar', label: 'Calendar'},
     ],
   },
   {

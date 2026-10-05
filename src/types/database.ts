@@ -17,6 +17,8 @@ export type RequestStatus =
   | 'in_review'
   | 'information_requested'
   | 'proposal'
+  | 'payment_required'
+  | 'confirmed'
   | 'approved'
   | 'scheduled'
   | 'completed'
@@ -29,6 +31,8 @@ export type RequestEventType =
   | 'review_started'
   | 'information_requested'
   | 'proposal_created'
+  | 'proposal_accepted'
+  | 'confirmed'
   | 'approved'
   | 'scheduled'
   | 'completed'
@@ -198,6 +202,7 @@ export interface Request {
   status: RequestStatus;
   priority: 'low' | 'normal' | 'high' | 'urgent';
   assigned_to: string | null;
+  experience_id: string | null;
   preferred_date: string | null;
   preferred_time: string | null;
   location: string | null;
@@ -237,7 +242,7 @@ export interface MembershipTier {
   currency: string;
   interval: 'monthly' | 'annual' | 'one_time';
   benefits: string[];
-  is_active: boolean;
+  status: 'active' | 'draft' | 'archived';
   sort_order: number;
   created_at: string;
   updated_at: string;
@@ -257,17 +262,35 @@ export interface MembershipApplication {
   updated_at: string;
 }
 
+export type MembershipOfferStatus =
+  | 'draft'
+  | 'sent'
+  | 'viewed'
+  | 'accepted'
+  | 'declined'
+  | 'expired'
+  | 'cancelled';
+
 export interface MembershipOffer {
   id: string;
-  application_id: string;
+  application_id: string | null;
+  user_id: string;
   tier_id: string;
-  status: 'sent' | 'accepted' | 'declined' | 'expired';
+  status: MembershipOfferStatus;
+  price_cents: number | null;
+  currency: string;
+  message: string | null;
+  benefits: string[];
+  terms: string | null;
   offered_at: string;
   expires_at: string | null;
   responded_at: string | null;
+  viewed_at: string | null;
   created_at: string;
   updated_at: string;
 }
+
+export type MembershipStatus = 'pending' | 'verification' | 'active' | 'paused' | 'cancelled' | 'expired';
 
 export interface Membership {
   id: string;
@@ -275,24 +298,38 @@ export interface Membership {
   tier_id: string;
   application_id: string | null;
   offer_id: string | null;
-  status: 'pending' | 'active' | 'paused' | 'cancelled' | 'expired';
+  status: MembershipStatus;
   membership_number: string | null;
-  started_at: string | null;
-  expires_at: string | null;
+  activation_date: string | null;
+  expiration_date: string | null;
   cancelled_at: string | null;
   created_at: string;
   updated_at: string;
 }
 
+export type PaymentStatus = 'pending' | 'processing' | 'paid' | 'failed' | 'refunded' | 'cancelled';
+
 export interface MembershipPayment {
   id: string;
   membership_id: string;
+  user_id: string | null;
   amount_cents: number;
   currency: string;
-  status: 'pending' | 'succeeded' | 'failed' | 'refunded';
+  status: PaymentStatus;
   provider: string | null;
-  provider_ref: string | null;
+  reference: string | null;
+  notes: string | null;
   paid_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MembershipCard {
+  id: string;
+  membership_id: string;
+  card_serial: string;
+  issued_at: string;
+  revoked_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -300,6 +337,7 @@ export interface MembershipPayment {
 export interface Experience {
   id: string;
   slug: string;
+  type: RequestType;
   title: string;
   description: string | null;
   location: string | null;
@@ -307,37 +345,31 @@ export interface Experience {
   price_cents: number | null;
   currency: string;
   status: 'draft' | 'published' | 'full' | 'cancelled' | 'completed';
+  required_tier_id: string | null;
   starts_at: string | null;
   ends_at: string | null;
   created_at: string;
   updated_at: string;
 }
 
-export interface ExperienceRequest {
-  id: string;
-  experience_id: string | null;
-  user_id: string;
-  title: string;
-  description: string | null;
-  preferred_dates: string | null;
-  status:
-    | 'submitted'
-    | 'in_review'
-    | 'requirements'
-    | 'proposed'
-    | 'approved'
-    | 'declined'
-    | 'completed'
-    | 'cancelled';
-  assigned_to: string | null;
-  created_at: string;
-  updated_at: string;
-}
+export type RequirementCategory =
+  | 'membership_tier'
+  | 'availability'
+  | 'location'
+  | 'age'
+  | 'documents'
+  | 'dress'
+  | 'arrival_instructions'
+  | 'participants'
+  | 'payment'
+  | 'special_conditions'
+  | 'other';
 
 export interface ExperienceRequirement {
   id: string;
-  experience_request_id: string;
+  request_id: string;
   label: string;
+  category: RequirementCategory;
   description: string | null;
   is_required: boolean;
   response: string | null;
@@ -346,17 +378,34 @@ export interface ExperienceRequirement {
   updated_at: string;
 }
 
+export type ExperienceProposalStatus =
+  | 'draft'
+  | 'sent'
+  | 'viewed'
+  | 'accepted'
+  | 'declined'
+  | 'expired'
+  | 'cancelled';
+
 export interface ExperienceProposal {
   id: string;
-  experience_request_id: string;
+  request_id: string;
   version: number;
   summary: string;
   terms: string | null;
   amount_cents: number | null;
   currency: string;
-  status: 'draft' | 'sent' | 'accepted' | 'declined' | 'expired';
+  status: ExperienceProposalStatus;
+  proposed_date: string | null;
+  proposed_time: string | null;
+  location: string | null;
+  duration_minutes: number | null;
+  participants: string | null;
+  notes: string | null;
   sent_at: string | null;
   responded_at: string | null;
+  viewed_at: string | null;
+  expires_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -364,11 +413,15 @@ export interface ExperienceProposal {
 export interface ExperienceSchedule {
   id: string;
   experience_id: string | null;
-  experience_request_id: string | null;
+  request_id: string | null;
   title: string;
   location: string | null;
   starts_at: string;
   ends_at: string;
+  timezone: string | null;
+  virtual_link: string | null;
+  meeting_instructions: string | null;
+  internal_notes: string | null;
   status: 'scheduled' | 'changed' | 'cancelled' | 'completed';
   created_at: string;
   updated_at: string;
@@ -376,13 +429,15 @@ export interface ExperienceSchedule {
 
 export interface ExperiencePayment {
   id: string;
-  experience_request_id: string | null;
+  request_id: string;
+  user_id: string | null;
   proposal_id: string | null;
   amount_cents: number;
   currency: string;
-  status: 'pending' | 'succeeded' | 'failed' | 'refunded';
+  status: PaymentStatus;
   provider: string | null;
-  provider_ref: string | null;
+  reference: string | null;
+  notes: string | null;
   paid_at: string | null;
   created_at: string;
   updated_at: string;
@@ -391,12 +446,29 @@ export interface ExperiencePayment {
 export interface Appointment {
   id: string;
   user_id: string | null;
+  request_id: string | null;
   title: string;
   description: string | null;
   location: string | null;
   starts_at: string;
   ends_at: string;
+  timezone: string | null;
+  virtual_link: string | null;
+  meeting_instructions: string | null;
   status: 'scheduled' | 'confirmed' | 'cancelled' | 'completed' | 'no_show';
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AvailabilityBlock {
+  id: string;
+  title: string;
+  kind: 'blocked' | 'available';
+  starts_at: string;
+  ends_at: string;
+  timezone: string;
+  note: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;

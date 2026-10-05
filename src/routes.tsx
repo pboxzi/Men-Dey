@@ -28,6 +28,12 @@ import {CredentialsStep} from './pages/auth/application/steps/CredentialsStep';
 import {InterestsStep} from './pages/auth/application/steps/InterestsStep';
 import {PersonalStep} from './pages/auth/application/steps/PersonalStep';
 import {ReviewStep} from './pages/auth/application/steps/ReviewStep';
+import {ManagementBookingsPage} from './pages/management/ManagementBookingsPage';
+import {ManagementCalendarPage} from './pages/management/ManagementCalendarPage';
+import {ManagementExperienceDetailPage} from './pages/management/ManagementExperienceDetailPage';
+import {ManagementExperiencesPage} from './pages/management/ManagementExperiencesPage';
+import {ManagementMembershipDetailPage} from './pages/management/ManagementMembershipDetailPage';
+import {ManagementMembershipsPage} from './pages/management/ManagementMembershipsPage';
 import {LandingPage} from './pages/public/LandingPage';
 import {DashboardHomePage} from './pages/user/DashboardHomePage';
 import {DocumentsPage} from './pages/user/DocumentsPage';
@@ -36,6 +42,9 @@ import {HomePage} from './pages/user/HomePage';
 import {MembershipPage} from './pages/user/MembershipPage';
 import {ProfilePage} from './pages/user/ProfilePage';
 import {SettingsPage} from './pages/user/SettingsPage';
+import {MembershipCardPage} from './pages/user/membership/MembershipCardPage';
+import {MembershipDetailPage} from './pages/user/membership/MembershipDetailPage';
+import {MembershipOffersPage} from './pages/user/membership/MembershipOffersPage';
 import {NotificationDetailPage} from './pages/user/notifications/NotificationDetailPage';
 import {NotificationsListPage} from './pages/user/notifications/NotificationsListPage';
 import {ConversationPage} from './pages/user/messages/ConversationPage';
@@ -51,15 +60,6 @@ const MANAGEMENT_SECTIONS = [
   {path: 'messages', title: 'Messages', description: 'Conversations with users.'},
   {path: 'notes', title: 'Notes', description: 'Internal notes on users and conversations.'},
   {path: 'conversations', title: 'Conversations', description: 'All management conversation threads.'},
-  {path: 'membership', title: 'Membership overview', description: 'Membership health at a glance.'},
-  {path: 'membership/tiers', title: 'Membership tiers', description: 'Tier definitions, pricing and benefits.'},
-  {path: 'membership/applications', title: 'Membership applications', description: 'Applications awaiting review.'},
-  {path: 'membership/members', title: 'Members', description: 'Active and historical members.'},
-  {path: 'membership/payments', title: 'Membership payments', description: 'Payment records and statuses.'},
-  {path: 'experiences', title: 'Experiences', description: 'Experiences under management.'},
-  {path: 'experiences/requests', title: 'Experience requests', description: 'Requests to take part in experiences.'},
-  {path: 'experiences/calendar', title: 'Experience calendar', description: 'Schedules and appointments.'},
-  {path: 'experiences/payments', title: 'Experience payments', description: 'Payments for approved experiences.'},
   {path: 'tasks', title: 'Tasks', description: 'Internal tasks for the management team.'},
   {path: 'documents', title: 'Documents', description: 'Document library and visibility.'},
   {path: 'media', title: 'Media', description: 'Media assets across all buckets.'},
@@ -115,7 +115,11 @@ export function AppRoutes() {
             <Route path="/dashboard/notifications" element={<NotificationsListPage />} />
             <Route path="/dashboard/notifications/:id" element={<NotificationDetailPage />} />
             <Route path="/dashboard/experiences" element={<ExperiencesPage />} />
+            <Route path="/dashboard/experiences/:id" element={<RequestDetailPage />} />
             <Route path="/dashboard/membership" element={<MembershipPage />} />
+            <Route path="/dashboard/membership/offers" element={<MembershipOffersPage />} />
+            <Route path="/dashboard/membership/card" element={<MembershipCardPage />} />
+            <Route path="/dashboard/membership/:id" element={<MembershipDetailPage />} />
             <Route path="/dashboard/documents" element={<DocumentsPage />} />
             <Route path="/dashboard/profile" element={<ProfilePage />} />
             <Route path="/dashboard/settings" element={<SettingsPage />} />
@@ -134,6 +138,12 @@ export function AppRoutes() {
                 />
               }
             />
+            <Route path="/management/memberships" element={<ManagementMembershipsPage />} />
+            <Route path="/management/memberships/:id" element={<ManagementMembershipDetailPage />} />
+            <Route path="/management/experiences" element={<ManagementExperiencesPage />} />
+            <Route path="/management/experiences/:id" element={<ManagementExperienceDetailPage />} />
+            <Route path="/management/bookings" element={<ManagementBookingsPage />} />
+            <Route path="/management/calendar" element={<ManagementCalendarPage />} />
             {MANAGEMENT_SECTIONS.map((section) => {
               if (section.path === 'audit') {
                 return (

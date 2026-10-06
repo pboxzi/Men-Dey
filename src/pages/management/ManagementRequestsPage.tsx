@@ -9,6 +9,7 @@ import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
 import {REQUEST_STATUS_LABELS, REQUEST_STATUS_TONES, requestCategoryLabel} from '../../lib/requests';
+import {useDebouncedValue} from '../../hooks/useDebouncedValue';
 import {supabase} from '../../lib/supabase';
 import {PRIORITY_LABELS, PRIORITY_TONES} from './shared';
 import type {Request, RequestStatus} from '../../types';
@@ -42,6 +43,7 @@ export function ManagementRequestsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [statusFilter, setStatusFilter] = useState<'all' | RequestStatus>('all');
 
   const load = useCallback(async () => {
@@ -70,7 +72,7 @@ export function ManagementRequestsPage() {
 
   if (loading) return <Spinner label="Loading requests" />;
 
-  const query = search.trim().toLowerCase();
+  const query = debouncedSearch.trim().toLowerCase();
   const visible = requests.filter((request) => {
     if (statusFilter !== 'all' && request.status !== statusFilter) return false;
     if (!query) return true;

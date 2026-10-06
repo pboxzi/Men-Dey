@@ -8,6 +8,7 @@ import {EmptyState} from '../../components/ui/EmptyState';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {relativeTime} from '../../lib/format';
+import {useDebouncedValue} from '../../hooks/useDebouncedValue';
 import {supabase} from '../../lib/supabase';
 import {APPLICANT_STATUS_LABELS, APPLICANT_STATUS_TONES} from './shared';
 import type {ApplicantStatus} from '../../types';
@@ -47,6 +48,7 @@ export function ManagementApplicantsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   const load = useCallback(async () => {
@@ -75,7 +77,7 @@ export function ManagementApplicantsPage() {
 
   if (loading) return <Spinner label="Loading applicants" />;
 
-  const query = search.trim().toLowerCase();
+  const query = debouncedSearch.trim().toLowerCase();
   const visible = applicants.filter((applicant) => {
     if (statusFilter !== 'all' && applicant.status !== statusFilter) return false;
     if (!query) return true;

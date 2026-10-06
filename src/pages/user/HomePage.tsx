@@ -1,38 +1,40 @@
-import {ArrowRight, CalendarHeart, MessageSquare, Sparkles} from 'lucide-react';
+import {
+  ChevronRight,
+  Crown,
+  FileText,
+  MessageSquare,
+  Sparkles,
+} from 'lucide-react';
 import {useEffect, useState} from 'react';
 import {Link, Navigate} from 'react-router-dom';
 
 import {useAuth} from '../../auth/AuthContext';
 import {Spinner} from '../../components/ui/Spinner';
+import {GaBrand} from '../../components/ui/GaBrand';
 import {supabase} from '../../lib/supabase';
 import type {SiteSetting} from '../../types';
 
-const ACTIONS = [
-  {
-    to: '/dashboard/messages',
-    label: 'Talk to management',
-    description: 'Open your private conversation with the management office.',
-    icon: MessageSquare,
-  },
-  {
-    to: '/dashboard/requests/new',
-    label: 'Request something personal',
-    description: 'Tell management what you would like to explore. Every request is reviewed by hand.',
-    icon: CalendarHeart,
-  },
-  {
-    to: '/dashboard/membership',
-    label: 'Explore membership',
-    description: 'Understand how membership works. Nothing is ever purchased automatically.',
-    icon: Sparkles,
-  },
-];
-
 const JOURNEY = [
-  {step: '01', title: 'Connect', description: 'You join the platform and management receives your application.'},
-  {step: '02', title: 'Discuss', description: 'You write to management and share what matters to you.'},
-  {step: '03', title: 'Arrange', description: 'Management reviews, asks what is needed and prepares a proposal.'},
-  {step: '04', title: 'Experience', description: 'Approved experiences are scheduled and arranged for you.'},
+  {
+    step: '01',
+    title: 'CONNECT',
+    description: 'Create a relationship with management.',
+  },
+  {
+    step: '02',
+    title: 'DISCUSS',
+    description: 'Tell management what you are looking for.',
+  },
+  {
+    step: '03',
+    title: 'ARRANGE',
+    description: 'Management reviews availability and requirements.',
+  },
+  {
+    step: '04',
+    title: 'EXPERIENCE',
+    description: 'Approved experiences are coordinated privately.',
+  },
 ];
 
 interface FromManagement {
@@ -41,7 +43,7 @@ interface FromManagement {
 }
 
 export function HomePage() {
-  const {loading, profileLoading, role, profile} = useAuth();
+  const {loading, profileLoading, role} = useAuth();
   const [fromManagement, setFromManagement] = useState<FromManagement | null>(null);
   const [noteLoading, setNoteLoading] = useState(true);
 
@@ -85,123 +87,349 @@ export function HomePage() {
   }
   if (role === 'management' || role === 'admin') return <Navigate to="/management" replace />;
 
-  const firstName = profile?.full_name?.split(' ')[0];
-
   return (
-    <div>
-      {/* Hero — one editorial image, nothing media-heavy */}
-      <section className="border-b border-stone bg-white">
-        <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-14 md:grid-cols-[1.1fr_0.9fr] md:items-center md:py-20">
-          <div>
-            <p className="eyebrow mb-4">Private · Managed · Personal</p>
-            <h1 className="text-4xl leading-tight md:text-5xl">
-              Welcome to your private space{firstName ? `, ${firstName}` : ''}.
+    <div className="w-full bg-[#FAF8F5] text-[#1E1E1E]">
+      {/* =========================================================================
+          1. FULL-WIDTH HERO BANNER (Edge-to-edge, sleek, compact, matches reference image)
+      ========================================================================= */}
+      <section className="relative w-full overflow-hidden bg-[#FAF8F5] border-b border-[#EAE4DA]">
+        <div className="mx-auto w-full max-w-7xl min-h-[340px] sm:min-h-[380px] lg:min-h-[420px] relative flex items-center">
+          {/* Background Right: Seamless Gillian Hero Portrait */}
+          <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[60%] pointer-events-none select-none overflow-hidden flex justify-end">
+            <div className="relative h-full w-full">
+              <img
+                src="/assets/images/gillian_hero_compact.jpg"
+                alt="Gillian Anderson Management"
+                className="h-full w-full object-cover object-[center_top] lg:object-[left_center]"
+                loading="eager"
+              />
+              {/* Extra soft gradient for seamless blending into cream background */}
+              <div className="absolute inset-y-0 left-0 w-28 sm:w-44 bg-gradient-to-r from-[#FAF8F5] to-transparent" />
+              {/* Fade for mobile */}
+              <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#FAF8F5] to-transparent lg:hidden" />
+            </div>
+          </div>
+
+          {/* Left Hero Content */}
+          <div className="relative z-10 w-full lg:w-[50%] px-6 sm:px-10 py-8 sm:py-10 lg:py-12 space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em] text-[#8C8275]">
+                WELCOME TO YOUR PRIVATE SPACE.
+              </span>
+              <span className="w-8 h-[1px] bg-[#C89B3C]/70" />
+            </div>
+
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-[44px] text-[#1E1E1E] leading-[1.12] tracking-tight font-normal">
+              Gillian Anderson
+              <br />
+              Management
             </h1>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted">
+
+            <p className="text-xs sm:text-sm text-[#6E6A63] leading-relaxed max-w-md">
               A place to connect with management, explore your options and follow the experiences
               being arranged for you.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/dashboard/messages" className="btn btn-primary">
-                Talk to management
+
+            {/* 3 Action Pill Buttons */}
+            <div className="pt-2 flex flex-wrap items-center gap-2.5">
+              <Link
+                to="/dashboard/messages"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#1E1E1E] hover:bg-black text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.16em] transition-all shadow-xs"
+              >
+                <MessageSquare className="w-3.5 h-3.5 stroke-[2]" />
+                <span>TALK TO MANAGEMENT</span>
+                <ChevronRight className="w-3 h-3 ml-0.5 opacity-70" />
               </Link>
-              <Link to="/dashboard" className="btn btn-secondary">
-                Go to dashboard
+
+              <Link
+                to="/dashboard/requests"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/90 hover:bg-white text-[#1E1E1E] border border-[#EAE4DA] hover:border-[#C89B3C] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.16em] transition-all shadow-xs backdrop-blur-xs"
+              >
+                <FileText className="w-3.5 h-3.5 text-[#8C8275]" />
+                <span>MY REQUESTS</span>
+                <ChevronRight className="w-3 h-3 ml-0.5 text-[#8C8275]" />
+              </Link>
+
+              <Link
+                to="/dashboard/membership"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/90 hover:bg-white text-[#1E1E1E] border border-[#EAE4DA] hover:border-[#C89B3C] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.16em] transition-all shadow-xs backdrop-blur-xs"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#C89B3C]" />
+                <span>MY MEMBERSHIP</span>
+                <ChevronRight className="w-3 h-3 ml-0.5 text-[#8C8275]" />
               </Link>
             </div>
           </div>
-          <figure className="relative overflow-hidden rounded-sm border border-stone bg-stone">
-            <img
-              src="/assets/images/gillian_studio_portrait_1783349751129.jpg"
-              alt="Editorial portrait from the Gillian Anderson Management archive"
-              className="aspect-[4/5] w-full object-cover"
-              loading="eager"
-            />
-            <figcaption className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-charcoal/80 to-transparent p-4 text-xs uppercase tracking-[0.2em] text-alabaster">
-              Gillian Anderson Management
-            </figcaption>
-          </figure>
+
+          {/* Floating Quote on the far right (matches reference image) */}
+          <div className="hidden lg:block absolute bottom-6 right-8 z-10 max-w-[240px] text-right pointer-events-none">
+            <p className="font-serif italic text-[11px] text-stone-700 leading-relaxed drop-shadow-xs">
+              “Meaningful connections create the most extraordinary opportunities.”
+            </p>
+            <p className="text-[8px] font-bold uppercase tracking-[0.24em] text-[#9A7326] mt-1.5">
+              — GILLIAN ANDERSON
+            </p>
+          </div>
         </div>
       </section>
 
-      <div className="mx-auto w-full max-w-6xl px-6 py-14">
-        {/* Three primary actions */}
-        <section aria-labelledby="home-actions" className="mb-16">
-          <p className="eyebrow mb-2">Where would you like to begin</p>
-          <h2 id="home-actions" className="mb-6 text-2xl md:text-3xl">
-            Your next step
-          </h2>
-          <div className="grid gap-4 md:grid-cols-3">
-            {ACTIONS.map((action) => {
-              const Icon = action.icon;
-              return (
-                <Link key={action.to} to={action.to} className="surface group block p-6 transition-colors hover:border-gold">
-                  <span className="mb-4 flex size-10 items-center justify-center rounded-full bg-stone text-gold-deep">
-                    <Icon className="size-5" aria-hidden />
-                  </span>
-                  <span className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-charcoal">
-                    {action.label}
-                    <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-                  </span>
-                  <p className="text-sm leading-relaxed text-muted">{action.description}</p>
-                </Link>
-              );
-            })}
+      {/* =========================================================================
+          2. YOUR JOURNEY SECTION (Clean horizontal step progression)
+      ========================================================================= */}
+      <section className="py-14 sm:py-20 border-b border-[#EAE4DA] bg-white">
+        <div className="mx-auto w-full max-w-7xl px-6 sm:px-10">
+          <div className="mb-10 sm:mb-14">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#8C8275]">
+                YOUR JOURNEY
+              </span>
+              <span className="w-6 h-[1px] bg-[#C89B3C]/70" />
+            </div>
+            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#1E1E1E] tracking-tight">
+              The right experience, at the right time.
+            </h2>
           </div>
-        </section>
 
-        {/* Your Journey */}
-        <section aria-labelledby="home-journey" className="mb-16">
-          <p className="eyebrow mb-2">Your Journey</p>
-          <h2 id="home-journey" className="mb-6 text-2xl md:text-3xl">
-            How things move forward
-          </h2>
-          <ol className="grid gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
             {JOURNEY.map((item) => (
-              <li key={item.step} className="surface p-5">
-                <span className="text-3xl font-medium text-gold">{item.step}</span>
-                <h3 className="mt-3 text-lg">{item.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-muted">{item.description}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
+              <div key={item.step} className="relative flex flex-col items-center sm:items-start text-center sm:text-left">
+                {/* Number Circle Badge */}
+                <div className="w-10 h-10 rounded-full border border-[#D9D1C3] bg-[#FAF8F5] text-[#8C8275] font-serif text-xs font-semibold flex items-center justify-center mb-4">
+                  {item.step}
+                </div>
 
-        {/* From Management */}
-        <section aria-labelledby="home-from-management">
-          <p className="eyebrow mb-2">From Management</p>
-          <h2 id="home-from-management" className="mb-6 text-2xl md:text-3xl">
-            A message for you
-          </h2>
-          <div className="surface border-l-2 border-l-gold p-6 md:p-8">
-            {noteLoading ? (
-              <div className="flex items-center gap-3 text-sm text-muted">
-                <Spinner /> Loading message…
+                <h3 className="font-sans text-xs font-bold uppercase tracking-[0.18em] text-[#1E1E1E] mb-1.5">
+                  {item.title}
+                </h3>
+                <p className="text-xs text-[#6E6A63] leading-relaxed max-w-xs">
+                  {item.description}
+                </p>
               </div>
-            ) : fromManagement?.message ? (
-              <>
-                {fromManagement.title ? (
-                  <h3 className="mb-3 text-xl">{fromManagement.title}</h3>
-                ) : null}
-                <p className="whitespace-pre-line leading-relaxed text-ink">{fromManagement.message}</p>
-                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-                  Gillian Anderson Management
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="leading-relaxed text-muted">
-                  Messages from management will appear here. When there is something to share with
-                  you, it will arrive in this space and in your notifications.
-                </p>
-                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-muted">
-                  Gillian Anderson Management
-                </p>
-              </>
-            )}
+            ))}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          3. FEATURE CARDS GRID (3 image cards + 1 From Management card)
+      ========================================================================= */}
+      <section className="py-14 sm:py-20 border-b border-[#EAE4DA] bg-[#FAF8F5]">
+        <div className="mx-auto w-full max-w-7xl px-6 sm:px-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {/* Card 1: TALK TO MANAGEMENT */}
+            <div className="bg-white rounded-xl border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
+              <div>
+                <div className="relative h-32 w-full overflow-hidden bg-stone-100">
+                  <img
+                    src="/assets/images/feature_talk_management.jpg"
+                    alt="Talk to Management desk"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center text-[#1E1E1E] shadow-xs">
+                    <MessageSquare className="w-3.5 h-3.5 stroke-[1.8]" />
+                  </div>
+                </div>
+
+                <div className="p-5">
+                  <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                    TALK TO MANAGEMENT
+                  </h3>
+                  <p className="text-xs text-[#6E6A63] mt-2 leading-relaxed">
+                    Start a private conversation with the management team.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-5 pt-0">
+                <Link
+                  to="/dashboard/messages"
+                  className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+                >
+                  <span>OPEN MESSAGES</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Card 2: REQUEST SOMETHING PERSONAL */}
+            <div className="bg-white rounded-xl border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
+              <div>
+                <div className="relative h-32 w-full overflow-hidden bg-stone-100">
+                  <img
+                    src="/assets/images/feature_request_personal.jpg"
+                    alt="Request stationery"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center text-[#1E1E1E] shadow-xs">
+                    <FileText className="w-3.5 h-3.5 stroke-[1.8]" />
+                  </div>
+                </div>
+
+                <div className="p-5">
+                  <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                    REQUEST SOMETHING PERSONAL
+                  </h3>
+                  <p className="text-xs text-[#6E6A63] mt-2 leading-relaxed">
+                    Tell management what you would like to explore and we'll guide you through
+                    the appropriate process.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-5 pt-0">
+                <Link
+                  to="/dashboard/requests/new"
+                  className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+                >
+                  <span>MAKE A REQUEST</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Card 3: EXPLORE MEMBERSHIP */}
+            <div className="bg-white rounded-xl border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
+              <div>
+                <div className="relative h-32 w-full overflow-hidden bg-stone-100">
+                  <img
+                    src="/assets/images/feature_explore_membership.jpg"
+                    alt="Membership card"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center text-[#C89B3C] shadow-xs">
+                    <Crown className="w-3.5 h-3.5 stroke-[1.8]" />
+                  </div>
+                </div>
+
+                <div className="p-5">
+                  <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                    EXPLORE MEMBERSHIP
+                  </h3>
+                  <p className="text-xs text-[#6E6A63] mt-2 leading-relaxed">
+                    Learn how membership works and discuss your options with management.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-5 pt-0">
+                <Link
+                  to="/dashboard/membership"
+                  className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+                >
+                  <span>VIEW MEMBERSHIP</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            </div>
+
+            {/* Card 4: FROM MANAGEMENT */}
+            <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors">
+              <div>
+                <div className="pb-3 border-b border-[#F5EFE6] mb-3">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8C8275]">
+                    FROM MANAGEMENT
+                  </span>
+                </div>
+
+                {/* Avatar and sender */}
+                <div className="flex items-center justify-between gap-2.5 mb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-full bg-[#14171A] text-white flex items-center justify-center overflow-hidden shrink-0">
+                      <img
+                        src="/assets/images/ga-monogram-gold.png"
+                        alt="GA"
+                        className="w-4 h-4 object-contain"
+                      />
+                    </div>
+                    <span className="text-xs font-semibold text-[#1E1E1E]">
+                      Gillian Anderson Management
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-[#A89F91]">Today</span>
+                </div>
+
+                <p className="text-xs text-[#4A4742] leading-relaxed line-clamp-4 bg-[#FAF8F5] p-3 rounded-lg border border-[#F0ECE1] mt-2">
+                  {fromManagement?.message ||
+                    'Welcome to your private management space. If there is something you would like to explore, start by sending us a message.'}
+                </p>
+              </div>
+
+              <div className="pt-4">
+                <Link
+                  to="/dashboard/messages"
+                  className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+                >
+                  <span>VIEW MESSAGES</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          4. CLEAN SOLID DARK BANNER ("Where would you like to begin?")
+             (No duplicate text texture, pure luxury obsidian)
+      ========================================================================= */}
+      <section className="bg-[#14171A] text-white py-14 px-6 sm:px-10 border-t border-white/5">
+        <div className="max-w-4xl mx-auto text-center space-y-5">
+          <h3 className="font-serif text-2xl sm:text-3xl text-stone-100 font-light tracking-wide">
+            Where would you like to begin?
+          </h3>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-1 text-[11px] sm:text-xs font-semibold tracking-wider uppercase">
+            <Link
+              to="/dashboard/messages"
+              className="text-[#C89B3C] hover:text-[#E0B85C] transition-colors inline-flex items-center gap-1"
+            >
+              <span>Talk to Management</span>
+              <span>→</span>
+            </Link>
+            <span className="text-stone-700 hidden sm:inline">|</span>
+            <Link
+              to="/dashboard/membership"
+              className="text-stone-300 hover:text-white transition-colors inline-flex items-center gap-1"
+            >
+              <span>Explore Membership</span>
+              <span>→</span>
+            </Link>
+            <span className="text-stone-700 hidden sm:inline">|</span>
+            <Link
+              to="/dashboard/requests/new"
+              className="text-stone-300 hover:text-white transition-colors inline-flex items-center gap-1"
+            >
+              <span>Make a Request</span>
+              <span>→</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          5. FOOTER (With official horizontal logo lockup)
+      ========================================================================= */}
+      <footer className="bg-[#FAF8F5] border-t border-[#EAE4DA] py-8 px-6 sm:px-10">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+          <GaBrand variant="light" size="sm" to="/home" />
+
+          <div className="text-[11px] text-[#8C8275] flex flex-wrap items-center justify-center gap-4">
+            <Link to="/dashboard/documents" className="hover:text-[#1E1E1E] transition-colors">
+              Privacy
+            </Link>
+            <span>·</span>
+            <Link to="/dashboard/documents" className="hover:text-[#1E1E1E] transition-colors">
+              Terms
+            </Link>
+            <span>·</span>
+            <Link to="/dashboard/messages" className="hover:text-[#1E1E1E] transition-colors">
+              Contact
+            </Link>
+            <span>·</span>
+            <span>© Gillian Anderson Management</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

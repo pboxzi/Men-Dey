@@ -15,6 +15,7 @@ import {
   PAYMENT_STATUS_LABELS,
   PAYMENT_STATUS_TONES,
 } from '../../lib/payments';
+import {useDebouncedValue} from '../../hooks/useDebouncedValue';
 import {supabase} from '../../lib/supabase';
 import type {MembershipPayment, ExperiencePayment, PaymentStatus} from '../../types';
 
@@ -57,6 +58,7 @@ export function ManagementPaymentsPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | PaymentStatus>('all');
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -130,7 +132,7 @@ export function ManagementPaymentsPage() {
 
   if (loading) return <Spinner label="Loading payments" />;
 
-  const query = search.trim().toLowerCase();
+  const query = debouncedSearch.trim().toLowerCase();
   const visibleMemberships = memberships.filter((payment) => {
     if (statusFilter !== 'all' && payment.status !== statusFilter) return false;
     if (!query) return true;

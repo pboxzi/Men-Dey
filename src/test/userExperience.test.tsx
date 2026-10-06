@@ -164,23 +164,33 @@ describe('home page', () => {
   it('renders the private home with hero, journey and from-management sections', async () => {
     renderApp('/home');
 
-    expect(await screen.findByText(/Welcome to your private space/)).toBeInTheDocument();
+    expect(await screen.findByText(/welcome to your private space/i)).toBeInTheDocument();
     expect(
       screen.getByText(/A place to connect with management, explore your options/),
     ).toBeInTheDocument();
-    expect(screen.getByText('How things move forward')).toBeInTheDocument();
+    expect(screen.getByText('YOUR JOURNEY')).toBeInTheDocument();
     expect(screen.getByText('01')).toBeInTheDocument();
-    expect(screen.getByText('Connect')).toBeInTheDocument();
-    expect(screen.getByText('Arrange')).toBeInTheDocument();
-    expect(screen.getByText('Experience')).toBeInTheDocument();
-    expect(screen.getByText('A message for you')).toBeInTheDocument();
+    expect(screen.getByText('CONNECT')).toBeInTheDocument();
+    expect(screen.getByText('DISCUSS')).toBeInTheDocument();
+    expect(screen.getByText('ARRANGE')).toBeInTheDocument();
+    expect(screen.getByText('EXPERIENCE')).toBeInTheDocument();
+    expect(screen.getByText('FROM MANAGEMENT')).toBeInTheDocument();
     expect(screen.getAllByText(/Gillian Anderson Management/).length).toBeGreaterThan(0);
     expect(
-      await screen.findByText(/Messages from management will appear here/),
+      await screen.findByText(
+        /Welcome to your private management space\. If there is something you would like to explore/,
+      ),
     ).toBeInTheDocument();
     expect(screen.getAllByRole('link', {name: /Talk to management/i}).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('link', {name: /Request something personal/i}).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('link', {name: /Explore membership/i}).length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole('link', {name: /Make a request/i}).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole('link', {name: /Explore membership/i}).length,
+    ).toBeGreaterThan(0);
+    expect(
+      screen.getAllByText(/REQUEST SOMETHING PERSONAL/).length,
+    ).toBeGreaterThan(0);
     // home is not the dashboard
     expect(screen.queryByText(/Good (morning|afternoon|evening)/)).not.toBeInTheDocument();
     expect(screen.queryByText('Overview')).not.toBeInTheDocument();
@@ -189,7 +199,7 @@ describe('home page', () => {
 
   it('keeps the navigation: HOME, DASHBOARD, MESSAGES, REQUESTS, MEMBERSHIP', async () => {
     renderApp('/home');
-    await screen.findByText(/Welcome to your private space/);
+    await screen.findByText(/welcome to your private space/i);
     for (const label of ['HOME', 'DASHBOARD', 'MESSAGES', 'REQUESTS', 'MEMBERSHIP']) {
       expect(screen.getAllByRole('link', {name: label}).length).toBeGreaterThan(0);
     }
@@ -198,7 +208,7 @@ describe('home page', () => {
   it('navigates between home and dashboard', async () => {
     const user = userEvent.setup();
     renderApp('/home');
-    await screen.findByText(/Welcome to your private space/);
+    await screen.findByText(/welcome to your private space/i);
 
     await user.click(screen.getAllByRole('link', {name: 'DASHBOARD'})[0]);
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/dashboard'));
@@ -206,7 +216,7 @@ describe('home page', () => {
 
     await user.click(screen.getAllByRole('link', {name: 'Gillian Anderson Management home'})[0]);
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/home'));
-    expect(await screen.findByText(/Welcome to your private space/)).toBeInTheDocument();
+    expect(await screen.findByText(/welcome to your private space/i)).toBeInTheDocument();
   });
 });
 
@@ -217,29 +227,37 @@ describe('dashboard', () => {
 
     expect(await screen.findByText(/^Good (morning|afternoon|evening), Test\.$/)).toBeInTheDocument();
     expect(
-      screen.getByText(
-        'You are connected with management. Your next step is to tell us what you would like to explore.',
-      ),
+      screen.getByText("Here's what's happening in your private space."),
     ).toBeInTheDocument();
 
     expect(screen.getAllByText('Membership').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Management').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Requests').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Experiences').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('MANAGEMENT').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('REQUESTS').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('EXPERIENCES').length).toBeGreaterThan(0);
 
-    expect(screen.getByText('Not a member yet')).toBeInTheDocument();
-    expect(screen.getByText('No conversation yet.')).toBeInTheDocument();
-    expect(screen.getByText('Nothing here yet.')).toBeInTheDocument();
+    expect(screen.getByText('Not Yet Active')).toBeInTheDocument();
+    expect(screen.getByText('No Active Conversation')).toBeInTheDocument();
+    expect(screen.getByText('No Upcoming Experience')).toBeInTheDocument();
+    expect(screen.getByText('Not yet a member')).toBeInTheDocument();
     expect(
-      screen.getByText('When management receives your first request, it will appear here.'),
+      screen.getByText(
+        'No conversation yet. Start a private conversation with management.',
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByText('Nothing scheduled yet.')).toBeInTheDocument();
-    expect(screen.getByText('You’re up to date.')).toBeInTheDocument();
-    expect(screen.getByText('No membership yet.')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'No requests yet. When management receives your first request, it will appear here.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText('No upcoming experiences')).toBeInTheDocument();
+    expect(
+      screen.getByText("You're up to date. Notifications will appear here."),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Where would you like to begin?')).toBeInTheDocument();
 
     // sidebar groups
-    expect(screen.getByText('Overview')).toBeInTheDocument();
-    expect(screen.getByText('Personal')).toBeInTheDocument();
+    expect(screen.getByText('MAIN')).toBeInTheDocument();
+    expect(screen.getByText('PERSONAL')).toBeInTheDocument();
   });
 
   it('shows a page-level error state with retry', async () => {

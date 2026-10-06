@@ -9,6 +9,7 @@ import {EmptyState} from '../../components/ui/EmptyState';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
+import {useDebouncedValue} from '../../hooks/useDebouncedValue';
 import {supabase} from '../../lib/supabase';
 import {PROFILE_STATUS_LABELS, PROFILE_STATUS_TONES} from './shared';
 import type {Profile} from '../../types';
@@ -35,6 +36,7 @@ export function ManagementSecurityPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [statusFilter, setStatusFilter] = useState<'all' | Status>('all');
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -117,7 +119,7 @@ export function ManagementSecurityPage() {
 
   if (loading) return <Spinner label="Loading accounts" />;
 
-  const query = search.trim().toLowerCase();
+  const query = debouncedSearch.trim().toLowerCase();
   const visible = rows.filter((account) => {
     if (statusFilter !== 'all' && account.status !== statusFilter) return false;
     if (!query) return true;

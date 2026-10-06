@@ -8,6 +8,7 @@ import {EmptyState} from '../../components/ui/EmptyState';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
+import {useDebouncedValue} from '../../hooks/useDebouncedValue';
 import {supabase} from '../../lib/supabase';
 import {PROFILE_STATUS_LABELS, PROFILE_STATUS_TONES} from './shared';
 import type {ProfileStatus} from '../../types';
@@ -43,6 +44,7 @@ export function ManagementFansPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   const load = useCallback(async () => {
@@ -74,7 +76,7 @@ export function ManagementFansPage() {
 
   if (loading) return <Spinner label="Loading fans" />;
 
-  const query = search.trim().toLowerCase();
+  const query = debouncedSearch.trim().toLowerCase();
   const visible = fans.filter((fan) => {
     if (statusFilter !== 'all' && fan.status !== statusFilter) return false;
     if (!query) return true;

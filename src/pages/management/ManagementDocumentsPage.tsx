@@ -10,6 +10,7 @@ import {EmptyState} from '../../components/ui/EmptyState';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
+import {useDebouncedValue} from '../../hooks/useDebouncedValue';
 import {supabase} from '../../lib/supabase';
 import {
   DOCUMENT_CATEGORY_LABELS,
@@ -81,6 +82,7 @@ export function ManagementDocumentsPage({
   const [visibilityFilter, setVisibilityFilter] = useState<'all' | Visibility>('all');
   const [showArchived, setShowArchived] = useState(false);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
 
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -290,7 +292,7 @@ export function ManagementDocumentsPage({
 
   if (loading) return <Spinner label="Loading documents" />;
 
-  const query = search.trim().toLowerCase();
+  const query = debouncedSearch.trim().toLowerCase();
   const visible = documents.filter((document) => {
     if (categoryFilter !== 'all' && document.category !== categoryFilter) return false;
     if (visibilityFilter !== 'all' && document.visibility !== visibilityFilter) return false;

@@ -7,6 +7,7 @@ import {EmptyState} from '../../components/ui/EmptyState';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDateTime} from '../../lib/format';
+import {useDebouncedValue} from '../../hooks/useDebouncedValue';
 import {supabase} from '../../lib/supabase';
 import type {AuditLog} from '../../types';
 
@@ -68,6 +69,7 @@ export function ManagementAuditPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [entityFilter, setEntityFilter] = useState('all');
   const [actionFilter, setActionFilter] = useState('all');
 
@@ -95,7 +97,7 @@ export function ManagementAuditPage() {
 
   if (loading) return <Spinner label="Loading the audit log" />;
 
-  const query = search.trim().toLowerCase();
+  const query = debouncedSearch.trim().toLowerCase();
   const actions = Array.from(new Set(rows.map((row) => row.action))).sort();
   const visible = rows.filter((row) => {
     if (entityFilter !== 'all' && row.entity !== entityFilter) return false;

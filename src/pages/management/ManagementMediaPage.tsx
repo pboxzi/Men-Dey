@@ -9,6 +9,7 @@ import {EmptyState} from '../../components/ui/EmptyState';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
+import {useDebouncedValue} from '../../hooks/useDebouncedValue';
 import {supabase} from '../../lib/supabase';
 import type {MediaAsset} from '../../types';
 
@@ -61,6 +62,7 @@ export function ManagementMediaPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [kindFilter, setKindFilter] = useState<'all' | Kind>('all');
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -182,7 +184,7 @@ export function ManagementMediaPage() {
 
   if (loading) return <Spinner label="Loading media library" />;
 
-  const query = search.trim().toLowerCase();
+  const query = debouncedSearch.trim().toLowerCase();
   const visible = assets.filter((asset) => {
     if (kindFilter !== 'all' && asset.kind !== kindFilter) return false;
     if (query && !asset.title.toLowerCase().includes(query)) return false;

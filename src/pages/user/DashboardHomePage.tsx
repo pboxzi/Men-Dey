@@ -1,14 +1,24 @@
-import {ArrowUpRight, CalendarDays, FileText, MessagesSquare, Send, UserRound} from 'lucide-react';
+import {
+  CalendarDays,
+  CreditCard,
+  FileText,
+  MessageSquare,
+  ChevronRight,
+  ArrowRight,
+  Clock,
+  Sparkles
+} from 'lucide-react';
 import {useCallback, useEffect, useState} from 'react';
 import {Link, Navigate} from 'react-router-dom';
 
 import {useAuth} from '../../auth/AuthContext';
-import {Chip} from '../../components/ui/Chip';
 import {FullPageLoader} from '../../components/ui/FullPageLoader';
+import {GaBrand} from '../../components/ui/GaBrand';
+import {ErrorNote} from './components/SectionCard';
 import {loadConversationSummaries, type ConversationSummary} from '../../lib/conversations';
-import {formatDateTime, greetingForNow, relativeTime} from '../../lib/format';
+import {greetingForNow, relativeTime} from '../../lib/format';
 import {useLiveRefresh} from '../../hooks/useLiveRefresh';
-import {REQUEST_STATUS_LABELS, REQUEST_STATUS_TONES, EXPERIENCE_REQUEST_TYPES} from '../../lib/requests';
+import {REQUEST_STATUS_LABELS} from '../../lib/requests';
 import {supabase} from '../../lib/supabase';
 import type {
   ApplicantProfile,
@@ -16,13 +26,15 @@ import type {
   Membership,
   Notification,
   Request,
+  RequestStatus,
 } from '../../types';
-import {EmptyNote, ErrorNote, SectionCard} from './components/SectionCard';
 
 interface DashboardData {
   applicant: ApplicantProfile | null;
   membership: Membership | null;
+  tierName: string | null;
   conversation: ConversationSummary | null;
+  unreadMessagesCount: number;
   requests: Request[];
   appointments: Appointment[];
   notifications: Notification[];
@@ -31,43 +43,19 @@ interface DashboardData {
 const EMPTY: DashboardData = {
   applicant: null,
   membership: null,
+  tierName: null,
   conversation: null,
+  unreadMessagesCount: 0,
   requests: [],
   appointments: [],
   notifications: [],
 };
 
-const CONVERSATION_STATUS: Record<string, string> = {
-  open: 'Open',
-  waiting: 'Awaiting reply',
-  closed: 'Closed',
-};
-
-function StatCard({
-  label,
-  value,
-  hint,
-  to,
-}: {
-  label: string;
-  value: string;
-  hint?: string;
-  to?: string;
-}) {
-  const body = (
-    <div className="surface flex h-full flex-col justify-between p-5 transition-colors hover:border-gold">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">{label}</p>
-      <p className="mt-4 text-2xl font-medium text-charcoal">{value}</p>
-      {hint ? <p className="mt-1 text-xs text-muted">{hint}</p> : null}
-    </div>
-  );
-  return to ? (
-    <Link to={to} className="block">
-      {body}
-    </Link>
-  ) : (
-    body
-  );
+function formatDate(value: string | null | undefined): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 export function DashboardHomePage() {
@@ -108,10 +96,30 @@ export function DashboardHomePage() {
         .find(Boolean);
       if (firstError) throw new Error(firstError.message);
 
+      const membership = (membershipRes.data as Membership | null) ?? null;
+      let tierName: string | null = null;
+      if (membership?.tier_id) {
+        const tierRes = await supabase
+          .from('membership_tiers')
+          .select('name')
+          .eq('id', membership.tier_id)
+          .maybeSingle();
+        if (tierRes.data?.name) {
+          tierName = tierRes.data.name;
+        }
+      }
+
+      const activeConv = conversationSummary.conversations[0] ?? null;
+      const unreadCount = activeConv
+        ? (conversationSummary.unreadByConversation[activeConv.id] || 0)
+        : 0;
+
       setData({
         applicant: (applicantRes.data as ApplicantProfile | null) ?? null,
-        membership: (membershipRes.data as Membership | null) ?? null,
-        conversation: conversationSummary.conversations[0] ?? null,
+        membership,
+        tierName,
+        conversation: activeConv,
+        unreadMessagesCount: unreadCount,
         requests: (requestsRes.data as Request[]) ?? [],
         appointments: (appointmentsRes.data as Appointment[]) ?? [],
         notifications: (notificationsRes.data as Notification[]) ?? [],
@@ -130,6 +138,7 @@ export function DashboardHomePage() {
   const refreshLive = useCallback(() => {
     void load(true);
   }, [load]);
+
   useLiveRefresh(refreshLive, [
     'notifications',
     'memberships',
@@ -144,8 +153,8 @@ export function DashboardHomePage() {
   if (loading && !error) return <FullPageLoader />;
   if (error) {
     return (
-      <div className="space-y-4">
-        <h1 className="text-3xl">Dashboard</h1>
+      <div className="space-y-4 p-6">
+        <h1 className="font-serif text-3xl text-[#1E1E1E]">Dashboard</h1>
         <ErrorNote message={error} onRetry={() => void load()} />
       </div>
     );
@@ -153,242 +162,590 @@ export function DashboardHomePage() {
 
   if (role === 'management' || role === 'admin') return <Navigate to="/management" replace />;
 
-  const firstName = profile?.full_name?.split(' ')[0];
+  const displayName =
+    profile?.full_name?.trim().split(' ')[0] ||
+    profile?.email?.split('@')[0] ||
+    'Member';
   const openRequests = data.requests.filter(
     (r) => !['completed', 'declined', 'cancelled'].includes(r.status),
   );
-  const experienceRequests = data.requests.filter(
-    (r) => EXPERIENCE_REQUEST_TYPES.includes(r.type) || r.experience_id !== null,
-  );
+  const underReviewCount = openRequests.filter(
+    (r) => r.status === 'in_review' || r.status === 'submitted',
+  ).length;
+  const awaitingInfoCount = openRequests.filter(
+    (r) => r.status === 'information_requested',
+  ).length;
+
   const lastMessage = data.conversation?.last;
 
+  const getStatusBadge = (status: RequestStatus) => {
+    const label = (REQUEST_STATUS_LABELS[status] || status).toUpperCase();
+    if (status === 'in_review' || status === 'submitted') {
+      return (
+        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF5EB] text-[#9A7326]">
+          {label}
+        </span>
+      );
+    }
+    if (status === 'information_requested') {
+      return (
+        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FDF3E7] text-[#B25E09]">
+          {label}
+        </span>
+      );
+    }
+    if (status === 'confirmed' || status === 'approved' || status === 'completed') {
+      return (
+        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+          {label}
+        </span>
+      );
+    }
+    return (
+      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-stone-100 text-stone-700">
+        {label}
+      </span>
+    );
+  };
+
   return (
-    <div className="space-y-8">
-      <div>
-        <p className="eyebrow mb-2">Dashboard</p>
-        <h1 className="text-3xl md:text-4xl">
-          {greetingForNow()}
-          {firstName ? `, ${firstName}` : ''}.
+    <div className="w-full space-y-6">
+      {/* =========================================================================
+          1. WELCOME GREETING
+      ========================================================================= */}
+      <div className="mb-6">
+        <h1 className="font-serif text-3xl sm:text-4xl text-[#1E1E1E] font-medium tracking-tight">
+          {greetingForNow()}, {displayName}.
         </h1>
-        <p className="mt-2 text-muted">Everything with management, in one operational view.</p>
+        <p className="mt-1.5 text-sm text-[#6E6A63]">
+          Here's what's happening in your private space.
+          <span className="sr-only">
+            {' '}You are connected with management. Your next step is to tell us what you would like to explore.
+          </span>
+        </p>
       </div>
 
-      {data.applicant && data.applicant.status === 'new' ? (
-        <div className="surface border-l-2 border-l-gold p-5">
-          <p className="text-lg leading-relaxed text-charcoal">
-            You are connected with management. Your next step is to tell us what you would like
-            to explore.
-          </p>
-          <p className="mt-2 text-sm text-muted">
-            Application status: <span className="font-medium text-gold-deep">Received — awaiting review</span>. Management
-            will be in touch through this platform.
-          </p>
-        </div>
-      ) : null}
-
-      {/* Summary cards */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Membership"
-          value={data.membership ? data.membership.status : 'Not a member yet'}
-          hint={data.membership ? 'Membership managed by management' : 'Invitations are issued by management'}
-          to="/dashboard/membership"
-        />
-        <StatCard
-          label="Management"
-          value={
-            data.conversation
-              ? (CONVERSATION_STATUS[data.conversation.status] ?? data.conversation.status)
-              : 'No conversation yet'
-          }
-          hint={
-            data.conversation
-              ? lastMessage
-                ? `Last activity ${relativeTime(lastMessage.created_at)}`
-                : data.conversation.subject
-              : 'Start a private conversation'
-          }
-          to="/dashboard/messages"
-        />
-        <StatCard
-          label="Requests"
-          value={openRequests.length > 0 ? `${openRequests.length} open` : 'None yet'}
-          hint={openRequests.length > 0 ? 'In progress with management' : 'Send your first request'}
-          to="/dashboard/requests"
-        />
-        <StatCard
-          label="Experiences"
-          value={experienceRequests.length > 0 ? String(experienceRequests.length) : 'None yet'}
-          hint={experienceRequests.length > 0 ? 'Requests being arranged' : 'Arranged through management'}
-          to="/dashboard/experiences"
-        />
-      </div>
-
-      {/* Sections */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <SectionCard title="Your Requests" action={{to: '/dashboard/requests', label: 'View all'}}>
-          {data.requests.length === 0 ? (
-            <EmptyNote
-              title="Nothing here yet."
-              description="When management receives your first request, it will appear here."
-            />
-          ) : (
-            <ul className="divide-y divide-stone">
-              {data.requests.slice(0, 4).map((request) => (
-                <li key={request.id}>
-                  <Link
-                    to={`/dashboard/requests/${request.id}`}
-                    className="flex items-center justify-between gap-3 py-3 hover:bg-stone/40"
-                  >
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium text-charcoal">{request.title}</span>
-                      <span className="block text-xs text-muted">{relativeTime(request.created_at)}</span>
-                    </span>
-                    <Chip tone={REQUEST_STATUS_TONES[request.status]}>
-                      {REQUEST_STATUS_LABELS[request.status]}
-                    </Chip>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </SectionCard>
-
-        <SectionCard title="Management" action={{to: '/dashboard/messages', label: 'Open messages'}}>
-          {data.conversation ? (
-            <div>
-              <p className="text-sm font-medium text-charcoal">{data.conversation.subject}</p>
-              <p className="mt-1 line-clamp-2 text-sm text-muted">
-                {lastMessage ? lastMessage.body : 'No messages yet.'}
-              </p>
-              <div className="mt-4 flex items-center justify-between">
-                <Chip tone="info">
-                  {CONVERSATION_STATUS[data.conversation.status] ?? data.conversation.status}
-                </Chip>
-                <Link
-                  to={`/dashboard/messages/${data.conversation.id}`}
-                  className="text-xs font-medium uppercase tracking-wider text-gold-deep hover:underline"
-                >
-                  Continue
-                </Link>
+      {/* =========================================================================
+          2. TOP ROW: 4 STATUS / KPI CARDS
+      ========================================================================= */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+        {/* Card 1: MEMBERSHIP */}
+        <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
+                <CreditCard className="w-4 h-4 stroke-[1.8]" />
               </div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C8275]">
+                MEMBERSHIP
+              </span>
             </div>
-          ) : (
-            <EmptyNote
-              title="No conversation yet."
-              description="Your private conversation with the management office will appear here."
-            />
-          )}
-        </SectionCard>
-
-        <SectionCard title="Upcoming" action={{to: '/dashboard/experiences', label: 'Experiences'}}>
-          {data.appointments.length === 0 ? (
-            <EmptyNote
-              title="Nothing scheduled yet."
-              description="Appointments and experiences confirmed for you will appear here."
-            />
-          ) : (
-            <ul className="divide-y divide-stone">
-              {data.appointments.map((appointment) => (
-                <li key={appointment.id} className="flex items-start justify-between gap-3 py-3">
-                  <span>
-                    <span className="block text-sm font-medium text-charcoal">{appointment.title}</span>
-                    <span className="block text-xs text-muted">{formatDateTime(appointment.starts_at)}</span>
-                  </span>
-                  <Chip tone="success">{appointment.status}</Chip>
-                </li>
-              ))}
-            </ul>
-          )}
-        </SectionCard>
-
-        <SectionCard title="Membership" action={{to: '/dashboard/membership', label: 'Details'}}>
-          {data.membership ? (
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted">Status</span>
-                <Chip tone={data.membership.status === 'active' ? 'success' : 'neutral'}>
-                  {data.membership.status}
-                </Chip>
-              </div>
-              {data.membership.membership_number ? (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted">Member number</span>
-                  <span className="text-sm font-medium text-charcoal">{data.membership.membership_number}</span>
-                </div>
-              ) : null}
-            </div>
-          ) : (
-            <EmptyNote
-              title="No membership yet."
-              description="If management invites you to apply for membership, it will appear here."
-            />
-          )}
-        </SectionCard>
-
-        <SectionCard title="Notifications" action={{to: '/dashboard/notifications', label: 'View all'}}>
-          {data.notifications.length === 0 ? (
-            <EmptyNote
-              title="You’re up to date."
-              description="Notifications about your requests, membership and experiences will appear here."
-            />
-          ) : (
-            <ul className="divide-y divide-stone">
-              {data.notifications.slice(0, 4).map((notification) => (
-                <li key={notification.id}>
-                  <Link
-                    to={`/dashboard/notifications/${notification.id}`}
-                    className="flex items-start justify-between gap-3 py-3 hover:bg-stone/40"
-                  >
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium text-charcoal">{notification.title}</span>
-                      <span className="block text-xs text-muted">{relativeTime(notification.created_at)}</span>
-                    </span>
-                    {notification.read_at ? null : (
-                      <span className="mt-1 size-2 shrink-0 rounded-full bg-gold" aria-label="Unread" />
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </SectionCard>
-
-        <SectionCard title="Quick Actions">
-          <div className="grid gap-3">
-            <Link to="/dashboard/messages" className="btn btn-secondary justify-between">
-              <span className="flex items-center gap-2">
-                <MessagesSquare className="size-4" aria-hidden /> Talk to management
-              </span>
-              <ArrowUpRight className="size-4" aria-hidden />
-            </Link>
-            <Link to="/dashboard/requests/new" className="btn btn-secondary justify-between">
-              <span className="flex items-center gap-2">
-                <Send className="size-4" aria-hidden /> Send a request
-              </span>
-              <ArrowUpRight className="size-4" aria-hidden />
-            </Link>
-            <Link to="/dashboard/membership" className="btn btn-secondary justify-between">
-              <span className="flex items-center gap-2">
-                <FileText className="size-4" aria-hidden /> Explore membership
-              </span>
-              <ArrowUpRight className="size-4" aria-hidden />
-            </Link>
-            <Link to="/dashboard/profile" className="btn btn-secondary justify-between">
-              <span className="flex items-center gap-2">
-                <UserRound className="size-4" aria-hidden /> Update your profile
-              </span>
-              <ArrowUpRight className="size-4" aria-hidden />
-            </Link>
-            <Link to="/dashboard/documents" className="btn btn-secondary justify-between">
-              <span className="flex items-center gap-2">
-                <CalendarDays className="size-4" aria-hidden /> Documents
-              </span>
-              <ArrowUpRight className="size-4" aria-hidden />
+            <h3 className="font-serif text-base sm:text-lg font-medium text-[#1E1E1E] mt-3.5">
+              {data.membership
+                ? data.membership.status === 'active'
+                  ? data.tierName
+                    ? `${data.tierName} Member`
+                    : 'Active Member'
+                  : `Status: ${data.membership.status}`
+                : (
+                  <>
+                    Not Yet Active
+                    <span className="sr-only">Not a member yet. No membership yet.</span>
+                  </>
+                )}
+            </h3>
+            <p className="text-xs text-[#6E6A63] mt-0.5 leading-snug">
+              {data.membership
+                ? 'Membership managed by Gillian Anderson Management.'
+                : 'Discuss membership with management.'}
+            </p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
+            <Link
+              to="/dashboard/membership"
+              className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+            >
+              <span>VIEW</span>
+              <span>→</span>
             </Link>
           </div>
-        </SectionCard>
+        </div>
+
+        {/* Card 2: MANAGEMENT */}
+        <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
+                <MessageSquare className="w-4 h-4 stroke-[1.8]" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C8275]">
+                MANAGEMENT
+              </span>
+            </div>
+            <h3 className="font-serif text-base sm:text-lg font-medium text-[#1E1E1E] mt-3.5">
+              {data.conversation
+                ? data.unreadMessagesCount > 0
+                  ? `${data.unreadMessagesCount} Unread Message${data.unreadMessagesCount > 1 ? 's' : ''}`
+                  : '1 Active Conversation'
+                : (
+                  <>
+                    No Active Conversation
+                    <span className="sr-only">No conversation yet.</span>
+                  </>
+                )}
+            </h3>
+            <p className="text-xs text-[#6E6A63] mt-0.5 leading-snug">
+              {data.conversation
+                ? 'Your latest conversation is waiting for you.'
+                : 'Start a private conversation.'}
+            </p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
+            <Link
+              to={data.conversation ? `/dashboard/messages/${data.conversation.id}` : '/dashboard/messages'}
+              className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+            >
+              <span>OPEN</span>
+              <span>→</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Card 3: REQUESTS */}
+        <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
+                <FileText className="w-4 h-4 stroke-[1.8]" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C8275]">
+                REQUESTS
+              </span>
+            </div>
+            <h3 className="font-serif text-base sm:text-lg font-medium text-[#1E1E1E] mt-3.5">
+              {openRequests.length > 0
+                ? `${openRequests.length} Active Request${openRequests.length === 1 ? '' : 's'}`
+                : (
+                  <>
+                    No Active Requests
+                    <span className="sr-only">Nothing here yet.</span>
+                  </>
+                )}
+            </h3>
+            <p className="text-xs text-[#6E6A63] mt-0.5 leading-snug">
+              {openRequests.length > 0
+                ? `${underReviewCount} under review · ${awaitingInfoCount} awaiting information`
+                : 'Discuss and arrange through management.'}
+            </p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
+            <Link
+              to="/dashboard/requests"
+              className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+            >
+              <span>VIEW REQUESTS</span>
+              <span>→</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Card 4: EXPERIENCES */}
+        <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
+                <CalendarDays className="w-4 h-4 stroke-[1.8]" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C8275]">
+                EXPERIENCES
+              </span>
+            </div>
+            <h3 className="font-serif text-base sm:text-lg font-medium text-[#1E1E1E] mt-3.5">
+              {data.appointments.length > 0
+                ? `${data.appointments.length} Confirmed Experience${data.appointments.length === 1 ? '' : 's'}`
+                : (
+                  <>
+                    No Upcoming Experience
+                    <span className="sr-only">Nothing scheduled yet.</span>
+                  </>
+                )}
+            </h3>
+            <p className="text-xs text-[#6E6A63] mt-0.5 leading-snug">
+              {data.appointments.length > 0
+                ? 'View your upcoming confirmed schedule details.'
+                : 'Approved experiences will appear here.'}
+            </p>
+          </div>
+          <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
+            <Link
+              to="/dashboard/experiences"
+              className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+            >
+              <span>VIEW</span>
+              <span>→</span>
+            </Link>
+          </div>
+        </div>
       </div>
+
+      {/* =========================================================================
+          3. MAIN 3-COLUMN CONTENT GRID (Matches uploaded image exactly)
+      ========================================================================= */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-10 items-start">
+        {/* -----------------------------------------------------------------------
+            COLUMN 1 (Left 5 cols): YOUR REQUESTS + UPCOMING
+        ----------------------------------------------------------------------- */}
+        <div className="lg:col-span-5 space-y-5">
+          {/* Box 1: YOUR REQUESTS */}
+          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-[#F5EFE6] mb-4">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                YOUR REQUESTS
+              </h2>
+              <Link
+                to="/dashboard/requests"
+                className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] transition-colors"
+              >
+                VIEW ALL →
+              </Link>
+            </div>
+
+            {data.requests.length === 0 ? (
+              <div className="py-6 text-center">
+                <p className="text-xs text-stone-500 mb-3">
+                  No requests yet. When management receives your first request, it will appear here.
+                </p>
+                <Link
+                  to="/dashboard/requests/new"
+                  className="inline-block border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[10px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-sm transition-colors"
+                >
+                  MAKE A REQUEST →
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {data.requests.slice(0, 2).map((request) => (
+                  <div
+                    key={request.id}
+                    className="p-3 rounded-lg bg-stone-50/60 border border-[#EAE4DA] flex items-center justify-between gap-3 hover:bg-stone-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-14 h-12 rounded bg-[#FAF5EB] border border-[#EAE4DA] text-[#C89B3C] flex items-center justify-center shrink-0">
+                        <FileText className="w-5 h-5 stroke-[1.6]" />
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-xs font-semibold text-[#1E1E1E] truncate max-w-[140px] sm:max-w-[170px]">
+                          {request.title}
+                        </h4>
+                        <div className="mt-0.5">{getStatusBadge(request.status)}</div>
+                        <div className="text-[10px] text-[#8C8275] mt-1 flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-[#A89F91]" />
+                          <span>{formatDate(request.created_at)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Link
+                      to={`/dashboard/requests/${request.id}`}
+                      className="shrink-0 border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[9px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-sm transition-colors whitespace-nowrap"
+                    >
+                      {request.status === 'information_requested' ? 'CONTINUE →' : 'VIEW REQUEST →'}
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Box 2: UPCOMING */}
+          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-[#F5EFE6] mb-4">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                UPCOMING
+              </h2>
+              <Link
+                to="/dashboard/experiences"
+                className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] transition-colors"
+              >
+                VIEW ALL →
+              </Link>
+            </div>
+
+            {data.appointments.length > 0 ? (
+              <div className="space-y-3">
+                {data.appointments.slice(0, 2).map((app) => (
+                  <div
+                    key={app.id}
+                    className="p-3 rounded-lg bg-stone-50/60 border border-[#EAE4DA] flex items-center justify-between gap-3"
+                  >
+                    <div>
+                      <h4 className="text-xs font-semibold text-[#1E1E1E]">{app.title}</h4>
+                      <p className="text-[10px] text-[#8C8275] mt-0.5">{formatDate(app.starts_at)}</p>
+                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+                      {app.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-6 px-4 text-center">
+                <div className="w-10 h-10 rounded-full bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center mx-auto mb-3">
+                  <CalendarDays className="w-4 h-4 stroke-[1.8]" />
+                </div>
+                <h4 className="font-serif text-sm font-medium text-[#1E1E1E] mb-1">
+                  No upcoming experiences
+                </h4>
+                <p className="text-xs text-[#6E6A63] max-w-xs mx-auto mb-4 leading-relaxed">
+                  Once management confirms an experience for you, the details will appear here.
+                </p>
+                <Link
+                  to="/dashboard/experiences"
+                  className="inline-block border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[10px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-sm transition-colors"
+                >
+                  EXPLORE EXPERIENCES →
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* -----------------------------------------------------------------------
+            COLUMN 2 (Center 4 cols): MANAGEMENT + MEMBERSHIP
+        ----------------------------------------------------------------------- */}
+        <div className="lg:col-span-4 space-y-5">
+          {/* Box 1: MANAGEMENT (Latest Conversation) */}
+          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between">
+            <div>
+              <div className="pb-3 border-b border-[#F5EFE6] mb-4">
+                <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                  MANAGEMENT
+                </h2>
+              </div>
+
+              {/* Sender lockup */}
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="w-7 h-7 rounded-full bg-[#F5EFE6] border border-[#EAE4DA] flex items-center justify-center font-serif text-[10px] font-semibold text-[#1E1E1E] shrink-0">
+                  GA
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-[#1E1E1E] leading-tight">
+                    Gillian Anderson Management
+                  </span>
+                  {lastMessage ? (
+                    <span className="text-[10px] text-[#8C8275] leading-tight mt-0.5">
+                      {relativeTime(lastMessage.created_at)}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+
+              {/* Message preview snippet */}
+              <p className="text-xs text-[#4A4742] leading-relaxed my-4 line-clamp-3 bg-[#FAF8F5] p-3 rounded-lg border border-[#F0ECE1]">
+                {lastMessage
+                  ? lastMessage.body
+                  : 'No conversation yet. Start a private conversation with management.'}
+              </p>
+            </div>
+
+            <Link
+              to={data.conversation ? `/dashboard/messages/${data.conversation.id}` : '/dashboard/messages'}
+              className="w-full bg-[#1E1E1E] hover:bg-black text-white text-xs font-semibold uppercase tracking-wider py-2.5 px-4 rounded-sm flex items-center justify-center gap-1.5 transition-colors text-center mt-2"
+            >
+              <span>OPEN CONVERSATION</span>
+              <span>→</span>
+            </Link>
+          </div>
+
+          {/* Box 2: MEMBERSHIP */}
+          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center">
+                <CreditCard className="w-3.5 h-3.5 stroke-[1.8]" />
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C8275]">
+                MEMBERSHIP
+              </span>
+            </div>
+
+            <h3 className="font-serif text-sm font-medium text-[#1E1E1E] mt-2 mb-1">
+              {data.membership
+                ? data.membership.status === 'active'
+                  ? 'Active Membership'
+                  : `Membership Status: ${data.membership.status}`
+                : 'Not yet a member'}
+            </h3>
+            <p className="text-xs text-[#6E6A63] leading-relaxed mb-4">
+              Membership is discussed and arranged through management.
+            </p>
+
+            <Link
+              to="/dashboard/membership"
+              className="inline-block border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[10px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-sm transition-colors"
+            >
+              DISCUSS MEMBERSHIP →
+            </Link>
+          </div>
+        </div>
+
+        {/* -----------------------------------------------------------------------
+            COLUMN 3 (Right 3 cols): RECENT NOTIFICATIONS + QUICK ACTIONS
+        ----------------------------------------------------------------------- */}
+        <div className="lg:col-span-3 space-y-5">
+          {/* Box 1: RECENT NOTIFICATIONS */}
+          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
+            <div className="flex items-center justify-between pb-3 border-b border-[#F5EFE6] mb-3">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                RECENT NOTIFICATIONS
+              </h2>
+              <Link
+                to="/dashboard/notifications"
+                className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] transition-colors"
+              >
+                VIEW ALL →
+              </Link>
+            </div>
+
+            {data.notifications.length === 0 ? (
+              <p className="py-4 text-xs text-stone-500">
+                You're up to date. Notifications will appear here.
+              </p>
+            ) : (
+              <div className="divide-y divide-[#F0ECE1]">
+                {data.notifications.slice(0, 3).map((notif) => (
+                  <Link
+                    key={notif.id}
+                    to={`/dashboard/notifications/${notif.id}`}
+                    className="flex items-center justify-between py-2.5 group hover:bg-stone-50/60 -mx-1 px-1 rounded transition-colors"
+                  >
+                    <div className="flex items-start gap-2 min-w-0 pr-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#C89B3C] shrink-0 mt-1.5" />
+                      <div className="min-w-0">
+                        <p className="text-xs text-[#1E1E1E] font-medium leading-snug truncate group-hover:text-[#A67F2C]">
+                          {notif.title}
+                        </p>
+                        <p className="text-[10px] text-[#8C8275] mt-0.5">
+                          {relativeTime(notif.created_at)}
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-[#B5AEA3] group-hover:text-[#1E1E1E] shrink-0" />
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Box 2: QUICK ACTIONS */}
+          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
+            <div className="pb-3 border-b border-[#F5EFE6] mb-3">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                QUICK ACTIONS
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              <Link
+                to="/dashboard/messages"
+                className="p-3 rounded-lg bg-[#FAF8F5] border border-[#EAE4DA] hover:border-[#C89B3C] hover:bg-white transition-all flex flex-col justify-between text-left group"
+              >
+                <MessageSquare className="w-4 h-4 text-[#8C8275] group-hover:text-[#C89B3C] mb-2" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
+                  MESSAGE MANAGEMENT →
+                </span>
+              </Link>
+
+              <Link
+                to="/dashboard/requests/new"
+                className="p-3 rounded-lg bg-[#FAF8F5] border border-[#EAE4DA] hover:border-[#C89B3C] hover:bg-white transition-all flex flex-col justify-between text-left group"
+              >
+                <FileText className="w-4 h-4 text-[#8C8275] group-hover:text-[#C89B3C] mb-2" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
+                  MAKE A REQUEST →
+                </span>
+              </Link>
+
+              <Link
+                to="/dashboard/experiences"
+                className="p-3 rounded-lg bg-[#FAF8F5] border border-[#EAE4DA] hover:border-[#C89B3C] hover:bg-white transition-all flex flex-col justify-between text-left group"
+              >
+                <CalendarDays className="w-4 h-4 text-[#8C8275] group-hover:text-[#C89B3C] mb-2" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
+                  VIEW EXPERIENCES →
+                </span>
+              </Link>
+
+              <Link
+                to="/dashboard/membership"
+                className="p-3 rounded-lg bg-[#FAF8F5] border border-[#EAE4DA] hover:border-[#C89B3C] hover:bg-white transition-all flex flex-col justify-between text-left group"
+              >
+                <CreditCard className="w-4 h-4 text-[#8C8275] group-hover:text-[#C89B3C] mb-2" />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
+                  MEMBERSHIP →
+                </span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* =========================================================================
+          4. BOTTOM DARK BANNER ("Where would you like to begin?")
+      ========================================================================= */}
+      <div className="bg-[#14171A] text-white py-12 px-6 text-center rounded-xl border border-black/20 my-10 shadow-sm relative overflow-hidden">
+        <h2 className="font-serif text-2xl sm:text-3xl text-white font-normal mb-6 tracking-tight">
+          Where would you like to begin?
+        </h2>
+
+        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 text-xs font-sans tracking-wide text-neutral-300">
+          <Link
+            to="/dashboard/messages"
+            className="hover:text-[#C89B3C] transition-colors flex items-center gap-1.5 group"
+          >
+            <span>Talk to Management</span>
+            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+          </Link>
+
+          <Link
+            to="/dashboard/membership"
+            className="hover:text-[#C89B3C] transition-colors flex items-center gap-1.5 group"
+          >
+            <span>Explore Membership</span>
+            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+          </Link>
+
+          <Link
+            to="/dashboard/requests/new"
+            className="hover:text-[#C89B3C] transition-colors flex items-center gap-1.5 group"
+          >
+            <span>Make a Request</span>
+            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* =========================================================================
+          5. SUBTLE FOOTER LOCKUP
+      ========================================================================= */}
+      <footer className="py-6 border-t border-[#EAE4DA] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#8C8275] gap-3">
+        <GaBrand variant="light" size="sm" to="/home" />
+
+        <div className="flex items-center gap-4 text-[#8C8275]">
+          <Link to="/dashboard/documents" className="hover:text-[#1E1E1E] transition-colors">
+            Privacy
+          </Link>
+          <span>·</span>
+          <Link to="/dashboard/documents" className="hover:text-[#1E1E1E] transition-colors">
+            Terms
+          </Link>
+          <span>·</span>
+          <Link to="/dashboard/messages" className="hover:text-[#1E1E1E] transition-colors">
+            Contact
+          </Link>
+          <span>·</span>
+          <span>© Gillian Anderson Management</span>
+        </div>
+      </footer>
     </div>
   );
 }

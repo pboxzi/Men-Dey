@@ -69,9 +69,7 @@ describe('sign in', () => {
 
   it('does not show the acknowledgement on the sign-in page', async () => {
     renderApp('/sign-in');
-    expect(
-      await screen.findByRole('heading', {name: 'Your exclusive access awaits'}),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', {name: 'Sign in'})).toBeInTheDocument();
     expect(screen.queryByText(/acknowledgement/i)).not.toBeInTheDocument();
   });
 });

@@ -5,16 +5,23 @@ interface FieldProps {
   children: (props: {id: string; 'aria-describedby': string}) => ReactNode;
   hint?: string;
   error?: string;
+  labelClassName?: string;
 }
 
-export function Field({label, children, hint, error}: FieldProps) {
+export function Field({label, children, hint, error, labelClassName}: FieldProps) {
   const id = useId();
   const messageId = `${id}-message`;
   const message = error ?? hint;
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-xs font-medium uppercase tracking-wider text-muted">
+      <label
+        htmlFor={id}
+        className={
+          labelClassName ??
+          'text-xs font-medium uppercase tracking-wider text-muted'
+        }
+      >
         {label}
       </label>
       {children({id, 'aria-describedby': message ? messageId : ''})}

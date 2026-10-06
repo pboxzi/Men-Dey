@@ -175,7 +175,6 @@ export function AppRoutes() {
 
             <Route element={<RedirectIfAuthed />}>
               <Route path="/acknowledgement" element={<AcknowledgementPage />} />
-              <Route path="/sign-in" element={<SignInPage />} />
             </Route>
 
             {/* New-account application: acknowledgement first, then the wizard. */}
@@ -195,6 +194,11 @@ export function AppRoutes() {
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/forbidden" element={<ForbiddenPage />} />
+          </Route>
+
+          {/* Standalone full-bleed auth screen (no public chrome). */}
+          <Route element={<RedirectIfAuthed />}>
+            <Route path="/sign-in" element={<SignInPage />} />
           </Route>
 
           <Route element={<RequireAuth />}>

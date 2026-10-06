@@ -46,7 +46,7 @@ export function relativeTime(iso: string | null | undefined): string {
     }
     prev = limit;
   }
-  return fmt.format(Math.round(-seconds / divisor), unit);
+  return fmt.format(Math.round(seconds / divisor), unit);
 }
 
 export function greetingForNow(): string {

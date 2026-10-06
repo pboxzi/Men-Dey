@@ -629,6 +629,35 @@ begin
 end $$;
 
 -- ------------------------------------------------------------
+-- 15. One active conversation per member: stale tabs cannot duplicate
+-- ------------------------------------------------------------
+do $$
+declare
+  uid_a uuid := 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+  first_id uuid;
+begin
+  insert into public.management_conversations (user_id, subject, status)
+  values (uid_a, 'Probe conversation', 'open')
+  returning id into first_id;
+
+  begin
+    insert into public.management_conversations (user_id, subject, status)
+    values (uid_a, 'Second active probe conversation', 'open');
+    raise exception 'PROBE FAIL: a second active conversation was accepted';
+  exception
+    when unique_violation then null;
+  end;
+
+  update public.management_conversations
+     set status = 'closed' where id = first_id;
+
+  insert into public.management_conversations (user_id, subject, status)
+  values (uid_a, 'Follow-up probe conversation', 'open');
+
+  insert into probe_results values ('one active conversation per member: duplicate refused', 'PASS');
+end $$;
+
+-- ------------------------------------------------------------
 -- Result
 -- ------------------------------------------------------------
 select name, result from probe_results order by name;

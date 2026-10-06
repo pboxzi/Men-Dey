@@ -4,11 +4,17 @@ import {Link, useNavigate} from 'react-router-dom';
 
 import {useAuth} from '../../../auth/AuthContext';
 import {Spinner} from '../../../components/ui/Spinner';
+import {Chip} from '../../../components/ui/Chip';
 import {loadConversationSummaries, type ConversationSummary} from '../../../lib/conversations';
 import {relativeTime} from '../../../lib/format';
 import {useLiveRefresh} from '../../../hooks/useLiveRefresh';
 import {supabase} from '../../../lib/supabase';
 import {EmptyNote, ErrorNote, SectionCard} from '../components/SectionCard';
+
+const CONVERSATION_STATUS_LABELS: Record<string, string> = {
+  waiting: 'Waiting',
+  closed: 'Closed',
+};
 
 export function MessagesListPage() {
   const {session, profile} = useAuth();
@@ -45,14 +51,28 @@ export function MessagesListPage() {
   }, [load]);
   useLiveRefresh(refreshLive, ['management_messages', 'management_conversations', 'notifications']);
 
+  const findActiveConversation = useCallback(async (): Promise<string | null> => {
+    if (!me) return null;
+    const {data, error} = await supabase
+      .from('management_conversations')
+      .select('id')
+      .eq('user_id', me)
+      .neq('status', 'closed')
+      .order('created_at', {ascending: false})
+      .limit(1)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return (data as {id: string} | null)?.id ?? null;
+  }, [me]);
+
   const startConversation = useCallback(async () => {
     if (!me) return;
     setStarting(true);
     setStartError(null);
     try {
-      const existing = rows.find((r) => r.status !== 'closed');
-      if (existing) {
-        navigate(`/dashboard/messages/${existing.id}`);
+      const activeId = await findActiveConversation();
+      if (activeId) {
+        navigate(`/dashboard/messages/${activeId}`);
         return;
       }
       const {data, error: insertError} = await supabase
@@ -66,14 +86,23 @@ export function MessagesListPage() {
         })
         .select('id')
         .single();
-      if (insertError) throw new Error(insertError.message);
+      if (insertError) {
+        if (insertError.code === '23505') {
+          const raceId = await findActiveConversation();
+          if (raceId) {
+            navigate(`/dashboard/messages/${raceId}`);
+            return;
+          }
+        }
+        throw new Error(insertError.message);
+      }
       navigate(`/dashboard/messages/${data.id}`);
     } catch (e) {
       setStartError(e instanceof Error ? e.message : 'Could not start a conversation.');
     } finally {
       setStarting(false);
     }
-  }, [me, navigate, profile, rows]);
+  }, [me, navigate, profile, findActiveConversation]);
 
   if (loading) return <Spinner />;
 
@@ -119,6 +148,11 @@ export function MessagesListPage() {
                       <span className="flex items-center gap-2">
                         <MessageSquare className="size-4 shrink-0 text-gold-deep" aria-hidden />
                         <span className="truncate text-sm font-semibold text-charcoal">{row.subject}</span>
+                        {CONVERSATION_STATUS_LABELS[row.status] ? (
+                          <Chip tone={row.status === 'closed' ? 'neutral' : 'gold'}>
+                            {CONVERSATION_STATUS_LABELS[row.status]}
+                          </Chip>
+                        ) : null}
                       </span>
                       <span className="mt-1 block truncate text-sm text-muted">
                         {last

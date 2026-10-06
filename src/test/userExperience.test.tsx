@@ -316,6 +316,51 @@ describe('messaging', () => {
       expect(screen.getByTestId('location')).toHaveTextContent('/dashboard/messages/'),
     );
   });
+
+  it('reuses the active conversation instead of opening a second one', async () => {
+    seedConversation();
+    const user = userEvent.setup();
+    renderApp('/dashboard/messages');
+
+    expect(
+      await screen.findByText('Conversation with management — Test Person'),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole('button', {name: /Talk to management/}));
+
+    await waitFor(() =>
+      expect(screen.getByTestId('location')).toHaveTextContent('/dashboard/messages/conv-1'),
+    );
+    expect(mockData['management_conversations']).toHaveLength(1);
+  });
+
+  it('keeps closed threads below active ones and labels them', async () => {
+    mockData['management_conversations'] = [
+      {
+        id: 'conv-closed',
+        user_id: 'user-1',
+        subject: 'Archived thread',
+        status: 'closed',
+        assigned_to: null,
+        created_at: T1,
+        updated_at: '2026-10-05T10:00:00.000Z',
+      },
+      {
+        id: 'conv-open',
+        user_id: 'user-1',
+        subject: 'Active thread',
+        status: 'open',
+        assigned_to: null,
+        created_at: T1,
+        updated_at: T2,
+      },
+    ];
+    renderApp('/dashboard/messages');
+
+    expect(await screen.findByText('Active thread')).toBeInTheDocument();
+    const headings = screen.getAllByText(/thread$/).map((node) => node.textContent);
+    expect(headings[0]).toBe('Active thread');
+    expect(screen.getByText('Closed')).toBeInTheDocument();
+  });
 });
 
 describe('requests', () => {

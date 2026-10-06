@@ -22,9 +22,16 @@ function activityKey(row: ConversationSummary): number {
   return Math.max(updated, last);
 }
 
+function sortSummaries(a: ConversationSummary, b: ConversationSummary): number {
+  const aClosed = a.status === 'closed' ? 1 : 0;
+  const bClosed = b.status === 'closed' ? 1 : 0;
+  if (aClosed !== bClosed) return aClosed - bClosed;
+  return activityKey(b) - activityKey(a);
+}
+
 // PostgREST rejects order/limit directives inside a select embed, so the
 // conversation rows and their messages are fetched separately and joined here.
-// The list is sorted by real activity: max(conversation.updated_at, last message).
+// Active threads sort first, then by real activity: max(updated_at, last message).
 export async function loadConversationSummaries(
   me: string | null,
   limit = 100,
@@ -70,6 +77,6 @@ export async function loadConversationSummaries(
     ...c,
     last: lastByConversation[c.id] ?? null,
   }));
-  summaries.sort((a, b) => activityKey(b) - activityKey(a));
+  summaries.sort(sortSummaries);
   return {conversations: summaries, unreadByConversation};
 }

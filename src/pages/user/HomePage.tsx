@@ -110,16 +110,19 @@ export function HomePage() {
             </div>
           </div>
 
+          {/* Mobile scrim so the words stay crisp over the photo */}
+          <div className="absolute inset-0 bg-[#FAF8F5]/72 sm:hidden" aria-hidden="true" />
+
           {/* Left Hero Content */}
           <div className="relative z-10 w-full lg:w-[50%] px-6 sm:px-10 py-6 sm:py-7 lg:py-8 space-y-3.5">
-            <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 sm:flex">
               <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8C8275]">
                 WELCOME TO YOUR PRIVATE SPACE.
               </span>
               <span className="w-8 h-[1px] bg-[#C89B3C]/70" />
             </div>
 
-            <h1 className="font-serif text-2xl sm:text-3xl lg:text-[38px] text-[#1E1E1E] leading-[1.14] tracking-tight font-normal">
+            <h1 className="font-serif text-[27px] sm:text-3xl lg:text-[38px] text-[#1E1E1E] leading-[1.14] tracking-tight font-normal">
               Gillian Anderson
               <br />
               Management
@@ -167,9 +170,9 @@ export function HomePage() {
       {/* =========================================================================
           2. YOUR JOURNEY SECTION (Clean horizontal step progression)
       ========================================================================= */}
-      <section className="py-14 sm:py-20 border-b border-[#EAE4DA] bg-white">
+      <section className="py-10 sm:py-20 border-b border-[#EAE4DA] bg-white">
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10">
-          <div className="mb-10 sm:mb-14">
+          <div className="mb-7 sm:mb-14">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8C8275]">
                 YOUR JOURNEY
@@ -204,7 +207,7 @@ export function HomePage() {
       {/* =========================================================================
           3. FEATURE CARDS GRID (3 image cards + 1 From Management card)
       ========================================================================= */}
-      <section className="py-14 sm:py-20 border-b border-[#EAE4DA] bg-[#FAF8F5]">
+      <section className="py-10 sm:py-20 border-b border-[#EAE4DA] bg-[#FAF8F5]">
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Card 1: TALK TO MANAGEMENT */}
@@ -363,7 +366,7 @@ export function HomePage() {
           4. CLEAN SOLID DARK BANNER ("Where would you like to begin?")
              (No duplicate text texture, pure luxury obsidian)
       ========================================================================= */}
-      <section className="bg-[#14171A] text-white py-14 px-6 sm:px-10 border-t border-white/5">
+      <section className="bg-[#14171A] text-white py-10 sm:py-14 px-6 sm:px-10 border-t border-white/5">
         <div className="max-w-4xl mx-auto text-center space-y-5">
           <h3 className="font-serif text-2xl sm:text-3xl text-stone-100 font-light tracking-wide">
             Where would you like to begin?

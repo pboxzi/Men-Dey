@@ -6,7 +6,7 @@ import {useAuth} from '../../../auth/AuthContext';
 import {Spinner} from '../../../components/ui/Spinner';
 import {loadConversationSummaries, type ConversationSummary} from '../../../lib/conversations';
 import {relativeTime} from '../../../lib/format';
-import {onRowInserted} from '../../../lib/realtime';
+import {useLiveRefresh} from '../../../hooks/useLiveRefresh';
 import {supabase} from '../../../lib/supabase';
 import {EmptyNote, ErrorNote, SectionCard} from '../components/SectionCard';
 
@@ -22,8 +22,8 @@ export function MessagesListPage() {
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const {conversations, unreadByConversation: counts} = await loadConversationSummaries(me);
@@ -40,7 +40,10 @@ export function MessagesListPage() {
     void load();
   }, [load]);
 
-  useEffect(() => onRowInserted('management_messages', () => void load()), [load]);
+  const refreshLive = useCallback(() => {
+    void load(true);
+  }, [load]);
+  useLiveRefresh(refreshLive, ['management_messages', 'management_conversations', 'notifications']);
 
   const startConversation = useCallback(async () => {
     if (!me) return;

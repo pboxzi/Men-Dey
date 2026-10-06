@@ -34,9 +34,9 @@ export function ConversationPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (silent = false) => {
     if (!conversationId) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const [convRes, msgRes] = await Promise.all([
@@ -76,13 +76,17 @@ export function ConversationPage() {
   }, [load]);
 
   useEffect(() => {
-    const stopInsert = onRowInserted('management_messages', () => void load());
+    const stopInsert = onRowInserted('management_messages', () => void load(true));
     const stopUpdate = onRowUpdated('management_messages', `conversation_id=eq.${conversationId}`, () =>
-      void load(),
+      void load(true),
+    );
+    const stopConv = onRowUpdated('management_conversations', `id=eq.${conversationId}`, () =>
+      void load(true),
     );
     return () => {
       stopInsert();
       stopUpdate();
+      stopConv();
     };
   }, [load, conversationId]);
 

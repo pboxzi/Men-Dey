@@ -124,7 +124,20 @@ export function AuthProvider({children}: {children: ReactNode}) {
       },
     });
     if (error) throw error;
-    return {needsVerification: data.session === null};
+    const needsVerification = data.session === null;
+    try {
+      const {error: fnError} = await supabase.functions.invoke('send-email', {
+        body: {
+          mode: 'auth',
+          template: needsVerification ? 'verification' : 'welcome',
+          email: input.email.trim().toLowerCase(),
+        },
+      });
+      if (fnError) throw fnError;
+    } catch {
+      // account already created; a failed email must not block sign-up
+    }
+    return {needsVerification};
   }, []);
 
   const signOut = useCallback(async () => {

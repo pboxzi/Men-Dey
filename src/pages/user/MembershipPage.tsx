@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import {Chip} from '../../components/ui/Chip';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
+import {useLiveRefresh} from '../../hooks/useLiveRefresh';
 import {
   MEMBERSHIP_STATUS_LABELS,
   MEMBERSHIP_STATUS_TONES,
@@ -46,8 +47,8 @@ export function MembershipPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const [membershipRes, offersRes, tiersRes, settingsRes] = await Promise.all([
@@ -104,6 +105,16 @@ export function MembershipPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const refreshLive = useCallback(() => {
+    void load(true);
+  }, [load]);
+  useLiveRefresh(refreshLive, [
+    'memberships',
+    'membership_offers',
+    'membership_payments',
+    'membership_cards',
+  ]);
 
   if (loading) return <Spinner />;
 

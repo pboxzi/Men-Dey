@@ -1,11 +1,13 @@
-import {ArrowLeft, CircleCheck, Clock} from 'lucide-react';
-import {useCallback, useEffect, useState} from 'react';
+import {ArrowLeft, CircleCheck, Clock, Send} from 'lucide-react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
 
+import {useAuth} from '../../../auth/AuthContext';
 import {Alert} from '../../../components/ui/Alert';
 import {Button} from '../../../components/ui/Button';
 import {Chip} from '../../../components/ui/Chip';
 import {FullPageLoader} from '../../../components/ui/FullPageLoader';
+import {reportError} from '../../../lib/errors';
 import {formatDate, formatDateTime} from '../../../lib/format';
 import {formatPrice} from '../../../lib/membership';
 import {
@@ -15,7 +17,7 @@ import {
   paymentMethodLabel,
   type PaymentSettings,
 } from '../../../lib/payments';
-import {onRowInserted} from '../../../lib/realtime';
+import {onRowInserted, onRowUpdated} from '../../../lib/realtime';
 import {
   CONTACT_METHOD_LABELS,
   PROPOSAL_STATUS_LABELS,
@@ -33,6 +35,7 @@ import type {
   ExperienceRequirement,
   Request,
   RequestEvent,
+  RequestMessage,
 } from '../../../types';
 import {ErrorNote} from '../components/SectionCard';
 
@@ -54,8 +57,11 @@ function proposalExpired(proposal: ExperienceProposal): boolean {
 
 export function RequestDetailPage() {
   const {id = ''} = useParams();
+  const {session} = useAuth();
+  const me = session?.user.id ?? null;
   const [request, setRequest] = useState<Request | null>(null);
   const [events, setEvents] = useState<RequestEvent[]>([]);
+  const [messages, setMessages] = useState<RequestMessage[]>([]);
   const [proposals, setProposals] = useState<ExperienceProposal[]>([]);
   const [requirements, setRequirements] = useState<ExperienceRequirement[]>([]);
   const [payments, setPayments] = useState<ExperiencePayment[]>([]);
@@ -70,17 +76,24 @@ export function RequestDetailPage() {
   const [confirmDeclineProposal, setConfirmDeclineProposal] = useState<string | null>(null);
   const [requirementDrafts, setRequirementDrafts] = useState<Record<string, string>>({});
   const [savingRequirement, setSavingRequirement] = useState<string | null>(null);
+  const [messageDraft, setMessageDraft] = useState('');
+  const [sendingMessage, setSendingMessage] = useState(false);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (silent = false) => {
     if (!id) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     setError(null);
     try {
-      const [requestRes, eventsRes, proposalsRes, requirementsRes, paymentsRes, appointmentRes, settingsRes] =
+      const [requestRes, eventsRes, messagesRes, proposalsRes, requirementsRes, paymentsRes, appointmentRes, settingsRes] =
         await Promise.all([
           supabase.from('requests').select('*').eq('id', id).maybeSingle(),
           supabase
             .from('request_events')
+            .select('*')
+            .eq('request_id', id)
+            .order('created_at', {ascending: true}),
+          supabase
+            .from('request_messages')
             .select('*')
             .eq('request_id', id)
             .order('created_at', {ascending: true}),
@@ -110,36 +123,86 @@ export function RequestDetailPage() {
         ]);
       if (requestRes.error) throw new Error(requestRes.error.message);
       if (eventsRes.error) throw new Error(eventsRes.error.message);
+      if (messagesRes.error) throw new Error(messagesRes.error.message);
       if (proposalsRes.error) throw new Error(proposalsRes.error.message);
       if (requirementsRes.error) throw new Error(requirementsRes.error.message);
       if (paymentsRes.error) throw new Error(paymentsRes.error.message);
       if (appointmentRes.error) throw new Error(appointmentRes.error.message);
       if (!requestRes.data) throw new Error('This request could not be found.');
 
+      const messageRows = (messagesRes.data as RequestMessage[]) ?? [];
+      const unreadIncoming = messageRows.filter(
+        (m) => m.sender_id !== me && m.sender_id !== null && !m.read_at,
+      );
+      if (unreadIncoming.length > 0) {
+        await supabase
+          .from('request_messages')
+          .update({read_at: new Date().toISOString()})
+          .in(
+            'id',
+            unreadIncoming.map((m) => m.id),
+          );
+        for (const m of unreadIncoming) m.read_at = new Date().toISOString();
+      }
+
       setRequest(requestRes.data as Request);
       setEvents((eventsRes.data as RequestEvent[]) ?? []);
+      setMessages(messageRows);
       const proposalRows = (proposalsRes.data as ExperienceProposal[]) ?? [];
       setProposals(proposalRows);
       setRequirements((requirementsRes.data as ExperienceRequirement[]) ?? []);
       setPayments((paymentsRes.data as ExperiencePayment[]) ?? []);
       setAppointment((appointmentRes.data as Appointment | null) ?? null);
       setSettings(settingsRes.settings);
-      setRequirementDrafts({});
+      if (!silent) setRequirementDrafts({});
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not load this request.');
+      setError(await reportError('request-detail.load', e));
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, me]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  useEffect(() => {
-    const stop = onRowInserted('request_events', () => void load());
-    return stop;
+  const refreshLive = useCallback(() => {
+    void load(true);
   }, [load]);
+
+  useEffect(() => {
+    const stops = [
+      onRowInserted('request_events', refreshLive),
+      onRowInserted('request_messages', refreshLive),
+      onRowUpdated('requests', `id=eq.${id}`, refreshLive),
+      onRowUpdated('experience_proposals', `request_id=eq.${id}`, refreshLive),
+    ];
+    return () => {
+      for (const stop of stops) stop();
+    };
+  }, [id, refreshLive]);
+
+  const sendMessage = useCallback(async () => {
+    const body = messageDraft.trim();
+    if (!body || !me || !id) return;
+    setSendingMessage(true);
+    setActionError(null);
+    try {
+      const {data, error: insertError} = await supabase
+        .from('request_messages')
+        .insert({request_id: id, sender_id: me, body, is_internal: false})
+        .select('*')
+        .single();
+      if (insertError) throw new Error(insertError.message);
+      setMessages((rows) => [...rows, data as RequestMessage]);
+      setMessageDraft('');
+      await load(true);
+    } catch (e) {
+      setActionError(await reportError('request-detail.message', e));
+    } finally {
+      setSendingMessage(false);
+    }
+  }, [id, load, me, messageDraft]);
 
   const withdraw = useCallback(async () => {
     if (!request) return;
@@ -269,6 +332,64 @@ export function RequestDetailPage() {
                 <p className="whitespace-pre-line text-sm leading-relaxed text-ink">{request.additional_requirements}</p>
               </>
             ) : null}
+          </section>
+
+          <section className="surface p-6">
+            <h2 className="mb-3 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
+              Conversation
+            </h2>
+            {messages.length === 0 ? (
+              <p className="text-sm text-muted">
+                No messages on this request yet. Management will reply here.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {messages.map((message) => {
+                  const mine = message.sender_id !== null && message.sender_id === me;
+                  return (
+                    <li key={message.id} className={mine ? 'flex justify-end' : ''}>
+                      <div
+                        className={
+                          mine
+                            ? 'max-w-[85%] rounded-sm border border-gold/40 bg-gold/10 p-3'
+                            : 'max-w-[85%] rounded-sm border border-stone bg-stone/40 p-3'
+                        }
+                      >
+                        <p className="text-xs uppercase tracking-wider text-muted">
+                          {mine ? 'You' : 'Management'} · {formatDateTime(message.created_at)}
+                        </p>
+                        <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-ink">
+                          {message.body}
+                        </p>
+                        {mine ? (
+                          <p className="mt-1 text-right text-[11px] uppercase tracking-wider text-stone">
+                            {message.read_at ? 'Read' : 'Sent'}
+                          </p>
+                        ) : null}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            <div className="mt-4 border-t border-stone pt-4">
+              <label className="block text-sm">
+                <span className="mb-1 block text-xs uppercase tracking-wider text-muted">
+                  Message management about this request
+                </span>
+                <textarea
+                  className="field-input min-h-20 resize-y"
+                  rows={3}
+                  value={messageDraft}
+                  onChange={(event) => setMessageDraft(event.target.value)}
+                />
+              </label>
+              <div className="mt-2 flex justify-end">
+                <Button onClick={() => void sendMessage()} loading={sendingMessage} disabled={!messageDraft.trim()}>
+                  <Send className="size-4" aria-hidden /> Send
+                </Button>
+              </div>
+            </div>
           </section>
 
           {latestProposal ? (

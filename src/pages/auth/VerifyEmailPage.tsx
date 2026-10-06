@@ -7,7 +7,7 @@ import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
 import {Card} from '../../components/ui/Card';
 import {Spinner} from '../../components/ui/Spinner';
-import {toFriendlyMessage} from '../../lib/errors';
+import {toFriendlyMessage, toFunctionErrorMessage} from '../../lib/errors';
 import {supabase} from '../../lib/supabase';
 
 export function VerifyEmailPage() {
@@ -85,16 +85,16 @@ export function VerifyEmailPage() {
       return;
     }
     setResending(true);
-    const {error} = await supabase.auth.resend({
-      type: 'signup',
-      email,
-      options: {emailRedirectTo: `${window.location.origin}/verify-email`},
-    });
-    setResending(false);
-    if (error) {
-      setMessage(toFriendlyMessage(error));
-    } else {
+    try {
+      const {error: fnError} = await supabase.functions.invoke('send-email', {
+        body: {mode: 'auth', template: 'verification', email: email.trim().toLowerCase()},
+      });
+      if (fnError) throw fnError;
       setResent(true);
+    } catch (e) {
+      setMessage(await toFunctionErrorMessage(e));
+    } finally {
+      setResending(false);
     }
   };
 

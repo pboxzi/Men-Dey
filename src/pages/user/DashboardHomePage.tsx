@@ -7,6 +7,7 @@ import {Chip} from '../../components/ui/Chip';
 import {FullPageLoader} from '../../components/ui/FullPageLoader';
 import {loadConversationSummaries, type ConversationSummary} from '../../lib/conversations';
 import {formatDateTime, greetingForNow, relativeTime} from '../../lib/format';
+import {useLiveRefresh} from '../../hooks/useLiveRefresh';
 import {REQUEST_STATUS_LABELS, REQUEST_STATUS_TONES, EXPERIENCE_REQUEST_TYPES} from '../../lib/requests';
 import {supabase} from '../../lib/supabase';
 import type {
@@ -76,8 +77,8 @@ export function DashboardHomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const [
@@ -125,6 +126,20 @@ export function DashboardHomePage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const refreshLive = useCallback(() => {
+    void load(true);
+  }, [load]);
+  useLiveRefresh(refreshLive, [
+    'notifications',
+    'memberships',
+    'membership_cards',
+    'membership_offers',
+    'requests',
+    'appointments',
+    'management_messages',
+    'management_conversations',
+  ]);
 
   if (loading && !error) return <FullPageLoader />;
   if (error) {

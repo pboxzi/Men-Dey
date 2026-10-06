@@ -1,4 +1,4 @@
-import {CheckCheck} from 'lucide-react';
+import {CheckCheck, Megaphone, Send} from 'lucide-react';
 import {useCallback, useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 
@@ -10,18 +10,35 @@ import {EmptyState} from '../../components/ui/EmptyState';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDateTime} from '../../lib/format';
+import {reportError} from '../../lib/errors';
+import {notificationTypeLabel} from '../../lib/notification';
+import {onRowInserted} from '../../lib/realtime';
 import {supabase} from '../../lib/supabase';
 import type {Notification} from '../../types';
 
 type TypeTone = 'neutral' | 'info' | 'success' | 'danger' | 'gold';
 
 const TYPE_TONES: Record<Notification['type'], TypeTone> = {
+  new_message: 'info',
+  request_update: 'gold',
+  information_required: 'gold',
+  membership_offer: 'gold',
+  membership_accepted: 'success',
+  payment_requested: 'gold',
+  payment_received: 'success',
+  membership_activated: 'success',
+  experience_proposal: 'info',
+  experience_confirmed: 'success',
+  experience_scheduled: 'info',
+  experience_cancelled: 'danger',
+  document_uploaded: 'info',
+  management_announcement: 'gold',
+  system: 'neutral',
   info: 'info',
   request: 'gold',
   membership: 'gold',
   experience: 'success',
   account: 'neutral',
-  system: 'neutral',
 };
 
 export function ManagementNotificationsPage() {
@@ -36,10 +53,16 @@ export function ManagementNotificationsPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   const [busy, setBusy] = useState(false);
+  const [announceTitle, setAnnounceTitle] = useState('');
+  const [announceBody, setAnnounceBody] = useState('');
+  const [announceLink, setAnnounceLink] = useState('');
+  const [sendingAnnouncement, setSendingAnnouncement] = useState(false);
+  const [announcementError, setAnnouncementError] = useState<string | null>(null);
+  const [announcementNotice, setAnnouncementNotice] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (silent = false) => {
     if (!me) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const {data, error: resError} = await supabase
@@ -60,6 +83,44 @@ export function ManagementNotificationsPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const refreshLive = useCallback(() => {
+    void load(true);
+  }, [load]);
+
+  useEffect(() => {
+    const stop = onRowInserted('notifications', refreshLive);
+    return stop;
+  }, [refreshLive]);
+
+  const sendAnnouncement = useCallback(async () => {
+    const title = announceTitle.trim();
+    const body = announceBody.trim();
+    if (!title || !body) return;
+    setSendingAnnouncement(true);
+    setAnnouncementError(null);
+    setAnnouncementNotice(null);
+    try {
+      const {data, error: rpcError} = await supabase.rpc('send_announcement', {
+        p_title: title,
+        p_body: body,
+        p_link: announceLink.trim() || null,
+      });
+      if (rpcError) throw new Error(rpcError.message);
+      const count = typeof data === 'number' ? data : 0;
+      setAnnounceTitle('');
+      setAnnounceBody('');
+      setAnnounceLink('');
+      setAnnouncementNotice(
+        `Announcement sent to ${count} ${count === 1 ? 'member' : 'members'}.`,
+      );
+      await load();
+    } catch (e) {
+      setAnnouncementError(await reportError('management.announcement', e));
+    } finally {
+      setSendingAnnouncement(false);
+    }
+  }, [announceBody, announceLink, announceTitle, load]);
 
   const markRead = useCallback(
     async (notification: Notification) => {
@@ -162,7 +223,9 @@ export function ManagementNotificationsPage() {
                     <span className="truncate text-sm font-medium text-charcoal">
                       {notification.title}
                     </span>
-                    <Chip tone={TYPE_TONES[notification.type]}>{notification.type}</Chip>
+                    <Chip tone={TYPE_TONES[notification.type]}>
+                      {notificationTypeLabel(notification.type)}
+                    </Chip>
                   </span>
                   {notification.body ? (
                     <span className="mt-0.5 block truncate text-xs text-muted">
@@ -192,6 +255,63 @@ export function ManagementNotificationsPage() {
             })}
           </ul>
         )}
+      </section>
+
+      <section className="surface p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <Megaphone className="size-4 text-gold-deep" aria-hidden />
+          <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
+            Send an announcement
+          </h2>
+        </div>
+        <p className="mb-4 text-sm text-muted">
+          Delivers a platform notification to every active member of the platform. Members see it
+          on their notifications page and dashboard immediately.
+        </p>
+        <div className="space-y-4">
+          <label className="block text-sm">
+            <span className="mb-1 block text-xs uppercase tracking-wider text-muted">Title</span>
+            <input
+              type="text"
+              className="field-input"
+              maxLength={140}
+              value={announceTitle}
+              onChange={(event) => setAnnounceTitle(event.target.value)}
+            />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-1 block text-xs uppercase tracking-wider text-muted">Message</span>
+            <textarea
+              className="field-input min-h-24 resize-y"
+              rows={4}
+              value={announceBody}
+              onChange={(event) => setAnnounceBody(event.target.value)}
+            />
+          </label>
+          <label className="block text-sm">
+            <span className="mb-1 block text-xs uppercase tracking-wider text-muted">
+              Link (optional)
+            </span>
+            <input
+              type="text"
+              className="field-input"
+              placeholder="/dashboard/membership"
+              value={announceLink}
+              onChange={(event) => setAnnounceLink(event.target.value)}
+            />
+          </label>
+          {announcementError ? <Alert tone="error">{announcementError}</Alert> : null}
+          {announcementNotice ? <Alert tone="success">{announcementNotice}</Alert> : null}
+          <div className="flex justify-end">
+            <Button
+              onClick={() => void sendAnnouncement()}
+              loading={sendingAnnouncement}
+              disabled={!announceTitle.trim() || !announceBody.trim()}
+            >
+              <Send className="size-4" aria-hidden /> Send announcement
+            </Button>
+          </div>
+        </div>
       </section>
 
       <p className="text-xs text-muted">

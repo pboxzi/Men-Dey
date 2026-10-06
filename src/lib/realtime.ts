@@ -31,3 +31,22 @@ export function onRowUpdated(table: string, filter: string | undefined, cb: () =
     void supabase.removeChannel(channel);
   };
 }
+
+/**
+ * Subscribe to INSERTs and UPDATEs across several tables on a single channel
+ * (RLS-scoped for the current user). Returns a cleanup function.
+ */
+export function onRowsChanged(tables: string[], cb: () => void): () => void {
+  if (tables.length === 0) return () => undefined;
+  const suffix = Math.random().toString(36).slice(2);
+  let channel = supabase.channel(`changes-${suffix}`);
+  for (const table of tables) {
+    channel = channel
+      .on('postgres_changes', {event: 'INSERT', schema: 'public', table}, cb)
+      .on('postgres_changes', {event: 'UPDATE', schema: 'public', table}, cb);
+  }
+  channel.subscribe();
+  return () => {
+    void supabase.removeChannel(channel);
+  };
+}

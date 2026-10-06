@@ -208,11 +208,12 @@ begin
   end;
   perform set_config('role', 'authenticated', true);
 
-  -- A cannot see B's notifications, but sees own
-  select count(*) into n from public.notifications;
+  -- A cannot see anyone else's notifications (own may exist: the seeded
+  -- management reply legitimately notifies A through the engine)
+  select count(*) into n from public.notifications where user_id <> uid_a::uuid;
   if n <> 0 then
     perform set_config('role', 'postgres', true);
-    raise exception 'PROBE FAIL: user A sees % notifications (expected own only, seeded by management)', n;
+    raise exception 'PROBE FAIL: user A sees % notifications belonging to other users', n;
   end if;
 
   -- A cannot see internal conversation messages

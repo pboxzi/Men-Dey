@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom';
 import {notificationIcon} from '../../../lib/notification';
 import {Spinner} from '../../../components/ui/Spinner';
 import {relativeTime} from '../../../lib/format';
-import {onRowInserted} from '../../../lib/realtime';
+import {useLiveRefresh} from '../../../hooks/useLiveRefresh';
 import {supabase} from '../../../lib/supabase';
 import type {Notification} from '../../../types';
 import {EmptyNote, ErrorNote, SectionCard} from '../components/SectionCard';
@@ -18,8 +18,8 @@ export function NotificationsListPage() {
   const [marking, setMarking] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const {data, error: resError} = await supabase
@@ -40,7 +40,10 @@ export function NotificationsListPage() {
     void load();
   }, [load]);
 
-  useEffect(() => onRowInserted('notifications', () => void load()), [load]);
+  const refreshLive = useCallback(() => {
+    void load(true);
+  }, [load]);
+  useLiveRefresh(refreshLive, ['notifications']);
 
   const markAllRead = useCallback(async () => {
     setMarking(true);

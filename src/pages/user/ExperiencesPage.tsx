@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import {Chip} from '../../components/ui/Chip';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate, formatDateTime} from '../../lib/format';
+import {useLiveRefresh} from '../../hooks/useLiveRefresh';
 import {formatPrice} from '../../lib/membership';
 import {
   EXPERIENCE_REQUEST_TYPES,
@@ -26,8 +27,8 @@ export function ExperiencesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const [catalogRes, requestsRes] = await Promise.all([
@@ -58,6 +59,17 @@ export function ExperiencesPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const refreshLive = useCallback(() => {
+    void load(true);
+  }, [load]);
+  useLiveRefresh(refreshLive, [
+    'requests',
+    'experience_proposals',
+    'appointments',
+    'experience_schedules',
+    'request_events',
+  ]);
 
   return (
     <div className="space-y-6">

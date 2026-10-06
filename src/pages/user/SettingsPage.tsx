@@ -8,6 +8,7 @@ import {Button} from '../../components/ui/Button';
 import {Field} from '../../components/ui/Field';
 import {FullPageLoader} from '../../components/ui/FullPageLoader';
 import {Spinner} from '../../components/ui/Spinner';
+import {reportError} from '../../lib/errors';
 import {supabase} from '../../lib/supabase';
 import type {ApplicantProfile, Request} from '../../types';
 import {SectionCard} from './components/SectionCard';
@@ -16,6 +17,7 @@ interface EmailPrefs {
   notify_requests: boolean;
   notify_membership: boolean;
   notify_experiences: boolean;
+  notify_messages: boolean;
 }
 
 interface CommPrefs {
@@ -37,6 +39,7 @@ export function SettingsPage() {
     notify_requests: true,
     notify_membership: true,
     notify_experiences: true,
+    notify_messages: true,
   });
   const [commPrefs, setCommPrefs] = useState<CommPrefs>({
     contact_email_ok: true,
@@ -107,6 +110,7 @@ export function SettingsPage() {
       notify_requests: profile.notify_requests,
       notify_membership: profile.notify_membership,
       notify_experiences: profile.notify_experiences,
+      notify_messages: profile.notify_messages,
     });
   }, [profile]);
 
@@ -120,7 +124,7 @@ export function SettingsPage() {
       await refreshProfile();
       setEmailMessage({tone: 'success', text: 'Email preferences saved.'});
     } catch (e) {
-      setEmailMessage({tone: 'error', text: e instanceof Error ? e.message : 'Could not save preferences.'});
+      setEmailMessage({tone: 'error', text: await reportError('settings.email-prefs', e)});
     } finally {
       setSavingEmail(false);
     }
@@ -304,6 +308,7 @@ export function SettingsPage() {
                   {key: 'notify_requests', label: 'Request updates'},
                   {key: 'notify_membership', label: 'Membership updates'},
                   {key: 'notify_experiences', label: 'Experience updates'},
+                  {key: 'notify_messages', label: 'Messages from management'},
                 ] as Array<{key: keyof EmailPrefs; label: string}>
               ).map((option) => (
                 <label key={option.key} className="flex items-start gap-3 text-sm text-ink">

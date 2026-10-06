@@ -96,15 +96,19 @@ describe('email verification', () => {
     expect(screen.getByRole('button', {name: /resend verification email/i})).toBeInTheDocument();
   });
 
-  it('resends the verification email', async () => {
-    mockCtl.resend.mockResolvedValue({error: null});
+  it('resends the verification email through the send-email function', async () => {
+    mockCtl.invoke.mockResolvedValue({data: null, error: null});
 
     renderApp('/verify-email?email=applicant@example.com');
     const user = userEvent.setup();
 
     await user.click(await screen.findByRole('button', {name: /resend verification email/i}));
 
-    await waitFor(() => expect(mockCtl.resend).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(mockCtl.invoke).toHaveBeenCalledWith('send-email', {
+        body: {mode: 'auth', template: 'verification', email: 'applicant@example.com'},
+      }),
+    );
     expect(await screen.findByText(/a new confirmation email has been sent/i)).toBeInTheDocument();
   });
 
@@ -116,5 +120,47 @@ describe('email verification', () => {
 
     renderApp('/verify-email');
     expect(await screen.findByRole('heading', {name: 'Email verified'})).toBeInTheDocument();
+  });
+});
+
+describe('password recovery', () => {
+  it('requests a reset link through the send-email function', async () => {
+    mockCtl.invoke.mockResolvedValue({data: null, error: null});
+
+    renderApp('/forgot-password');
+    const user = userEvent.setup();
+
+    await user.type(await screen.findByLabelText('Email'), 'applicant@example.com');
+    await user.click(screen.getByRole('button', {name: /send reset link/i}));
+
+    await waitFor(() =>
+      expect(mockCtl.invoke).toHaveBeenCalledWith('send-email', {
+        body: {mode: 'auth', template: 'password_reset', email: 'applicant@example.com'},
+      }),
+    );
+    expect(
+      await screen.findByText(/a reset link is on its way/i),
+    ).toBeInTheDocument();
+  });
+
+  it('surfaces rate limiting from the function as a friendly message', async () => {
+    const body = JSON.stringify({
+      error: {code: 'rate_limited', message: 'Too many emails requested. Please wait.'},
+    });
+    const context = new Response(body, {status: 429});
+    mockCtl.invoke.mockResolvedValue({
+      data: null,
+      error: Object.assign(new Error('Edge Function returned a non-2xx status code'), {context}),
+    });
+
+    renderApp('/forgot-password');
+    const user = userEvent.setup();
+
+    await user.type(await screen.findByLabelText('Email'), 'applicant@example.com');
+    await user.click(screen.getByRole('button', {name: /send reset link/i}));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Too many attempts. Please wait a moment and try again.',
+    );
   });
 });

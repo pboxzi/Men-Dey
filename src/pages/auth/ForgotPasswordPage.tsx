@@ -5,7 +5,7 @@ import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
 import {Card} from '../../components/ui/Card';
 import {Field} from '../../components/ui/Field';
-import {toFriendlyMessage} from '../../lib/errors';
+import {reportError} from '../../lib/errors';
 import {supabase} from '../../lib/supabase';
 
 export function ForgotPasswordPage() {
@@ -18,14 +18,20 @@ export function ForgotPasswordPage() {
     event.preventDefault();
     setError(null);
     setSubmitting(true);
-    const {error: resetError} = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    setSubmitting(false);
-    if (resetError) {
-      setError(toFriendlyMessage(resetError));
-    } else {
+    try {
+      const {error: fnError} = await supabase.functions.invoke('send-email', {
+        body: {
+          mode: 'auth',
+          template: 'password_reset',
+          email: email.trim().toLowerCase(),
+        },
+      });
+      if (fnError) throw fnError;
       setSent(true);
+    } catch (e) {
+      setError(await reportError('forgot-password', e));
+    } finally {
+      setSubmitting(false);
     }
   };
 

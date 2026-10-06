@@ -2,7 +2,7 @@ import {ArrowLeft, ArrowUpRight} from 'lucide-react';
 import {useCallback, useEffect, useState} from 'react';
 import {Link, useNavigate, useParams} from 'react-router-dom';
 
-import {notificationIcon} from '../../../lib/notification';
+import {notificationIcon, notificationTypeLabel} from '../../../lib/notification';
 import {Chip} from '../../../components/ui/Chip';
 import {FullPageLoader} from '../../../components/ui/FullPageLoader';
 import {formatDateTime} from '../../../lib/format';
@@ -10,15 +10,6 @@ import {onRowInserted} from '../../../lib/realtime';
 import {supabase} from '../../../lib/supabase';
 import type {Notification} from '../../../types';
 import {ErrorNote} from '../components/SectionCard';
-
-const TYPE_LABELS: Record<Notification['type'], string> = {
-  info: 'Information',
-  request: 'Request',
-  membership: 'Membership',
-  experience: 'Experience',
-  account: 'Account',
-  system: 'Platform',
-};
 
 export function NotificationDetailPage() {
   const {id = ''} = useParams();
@@ -85,7 +76,7 @@ export function NotificationDetailPage() {
           <span className="flex size-11 items-center justify-center rounded-full bg-gold/15 text-gold-deep">
             {notificationIcon(notification.type)}
           </span>
-          <Chip tone="neutral">{TYPE_LABELS[notification.type]}</Chip>
+          <Chip tone="neutral">{notificationTypeLabel(notification.type)}</Chip>
         </div>
         <h1 className="text-2xl md:text-3xl">{notification.title}</h1>
         <p className="mt-1 text-sm text-muted">{formatDateTime(notification.created_at)}</p>

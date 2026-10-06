@@ -74,6 +74,7 @@ export interface Profile {
   notify_requests: boolean;
   notify_membership: boolean;
   notify_experiences: boolean;
+  notify_messages: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -230,6 +231,7 @@ export interface RequestMessage {
   sender_id: string | null;
   body: string;
   is_internal: boolean;
+  read_at: string | null;
   created_at: string;
 }
 
@@ -489,12 +491,34 @@ export interface DocumentRow {
   updated_at: string;
 }
 
+export type NotificationType =
+  | 'new_message'
+  | 'request_update'
+  | 'information_required'
+  | 'membership_offer'
+  | 'membership_accepted'
+  | 'payment_requested'
+  | 'payment_received'
+  | 'membership_activated'
+  | 'experience_proposal'
+  | 'experience_confirmed'
+  | 'experience_scheduled'
+  | 'experience_cancelled'
+  | 'document_uploaded'
+  | 'management_announcement'
+  | 'system'
+  | 'info'
+  | 'request'
+  | 'membership'
+  | 'experience'
+  | 'account';
+
 export interface Notification {
   id: string;
   user_id: string;
   title: string;
   body: string | null;
-  type: 'info' | 'request' | 'membership' | 'experience' | 'account' | 'system';
+  type: NotificationType;
   link: string | null;
   read_at: string | null;
   created_at: string;

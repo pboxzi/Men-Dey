@@ -5,6 +5,7 @@ import {Link} from 'react-router-dom';
 import {Chip} from '../../../components/ui/Chip';
 import {Spinner} from '../../../components/ui/Spinner';
 import {formatDate, relativeTime} from '../../../lib/format';
+import {useLiveRefresh} from '../../../hooks/useLiveRefresh';
 import {REQUEST_STATUS_LABELS, REQUEST_STATUS_TONES, requestCategoryLabel} from '../../../lib/requests';
 import {supabase} from '../../../lib/supabase';
 import type {Request, RequestStatus} from '../../../types';
@@ -29,8 +30,8 @@ export function RequestsListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const {data, error: resError} = await supabase
@@ -50,6 +51,11 @@ export function RequestsListPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const refreshLive = useCallback(() => {
+    void load(true);
+  }, [load]);
+  useLiveRefresh(refreshLive, ['requests', 'request_events']);
 
   const visible = filter === 'all' ? rows : rows.filter((row) => row.status === filter);
 

@@ -1,5 +1,5 @@
-import {ArrowLeft, Send} from 'lucide-react';
-import {useCallback, useEffect, useState} from 'react';
+import {ArrowLeft, Loader2, Paperclip, Send} from 'lucide-react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {Link, useParams} from 'react-router-dom';
 
 import {useAuth} from '../../auth/AuthContext';
@@ -11,11 +11,12 @@ import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {loadConversationSummaries} from '../../lib/conversations';
 import type {ConversationSummary} from '../../lib/conversations';
+import {reportError} from '../../lib/errors';
 import {formatDateTime, relativeTime} from '../../lib/format';
-import {onRowInserted} from '../../lib/realtime';
+import {onRowInserted, onRowUpdated} from '../../lib/realtime';
 import {supabase} from '../../lib/supabase';
 import {CONVERSATION_STATUS_LABELS, CONVERSATION_STATUS_TONES} from './shared';
-import type {ManagementMessage} from '../../types';
+import type {ManagementMessage, MessageAttachment} from '../../types';
 
 function first<T>(value: T[] | T | null | undefined): T | null {
   if (value == null) return null;
@@ -52,9 +53,13 @@ export function ManagementMessagesPage() {
   const [sending, setSending] = useState(false);
   const [busy, setBusy] = useState(false);
   const [confirmingClose, setConfirmingClose] = useState(false);
+  const [pending, setPending] = useState<MessageAttachment[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [attachError, setAttachError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
 
-  const loadList = useCallback(async () => {
-    setListLoading(true);
+  const loadList = useCallback(async (silent = false) => {
+    if (!silent) setListLoading(true);
     setError(null);
     try {
       const result = await loadConversationSummaries(me || null);
@@ -82,13 +87,13 @@ export function ManagementMessagesPage() {
     }
   }, [me]);
 
-  const loadThread = useCallback(async () => {
+  const loadThread = useCallback(async (silent = false) => {
     if (!conversationId) {
       setMessages([]);
       setActive(null);
       return;
     }
-    setThreadLoading(true);
+    if (!silent) setThreadLoading(true);
     setError(null);
     try {
       const [conversationRes, messagesRes] = await Promise.all([
@@ -111,9 +116,13 @@ export function ManagementMessagesPage() {
       const rows = (messagesRes.data as ManagementMessage[]) ?? [];
       setActive(conversation);
       setMessages(rows);
-      setBody('');
-      setInternal(false);
-      setConfirmingClose(false);
+      if (!silent) {
+        setBody('');
+        setInternal(false);
+        setConfirmingClose(false);
+        setPending([]);
+        setAttachError(null);
+      }
       const hasIncomingUnread = rows.some((row) => row.sender_id !== me && !row.read_at);
       if (hasIncomingUnread) {
         const {error: readError} = await supabase
@@ -141,16 +150,25 @@ export function ManagementMessagesPage() {
   }, [loadThread]);
 
   useEffect(() => {
-    const stop = onRowInserted('management_messages', () => {
-      void loadThread();
-      void loadList();
-    });
-    return stop;
+    const stops = [
+      onRowInserted('management_messages', () => {
+        void loadThread(true);
+        void loadList(true);
+      }),
+      onRowUpdated('management_conversations', undefined, () => {
+        void loadThread(true);
+        void loadList(true);
+      }),
+    ];
+    return () => {
+      for (const stop of stops) stop();
+    };
   }, [loadList, loadThread]);
 
   const send = useCallback(async () => {
     const trimmed = body.trim();
-    if (!trimmed || !conversationId) return;
+    if (!conversationId) return;
+    if (!trimmed && pending.length === 0) return;
     setSending(true);
     setActionError(null);
     setNotice(null);
@@ -160,6 +178,7 @@ export function ManagementMessagesPage() {
         sender_id: me,
         body: trimmed,
         is_internal: internal,
+        attachments: pending,
       });
       if (insertError) throw new Error(insertError.message);
       const {error: touchError} = await supabase
@@ -169,13 +188,58 @@ export function ManagementMessagesPage() {
         .select('id')
         .maybeSingle();
       if (touchError) throw new Error(touchError.message);
+      setBody('');
+      setPending([]);
       await Promise.all([loadThread(), loadList()]);
     } catch (e) {
-      setActionError(e instanceof Error ? e.message : 'Could not send the message.');
+      setActionError(await reportError('management.messages.send', e));
     } finally {
       setSending(false);
     }
-  }, [body, conversationId, internal, loadList, loadThread, me]);
+  }, [body, conversationId, internal, loadList, loadThread, me, pending]);
+
+  const uploadAttachment = useCallback(
+    async (file: File) => {
+      const ownerId = active?.user_id;
+      if (!ownerId || !conversationId) return;
+      setAttachError(null);
+      if (file.size > 10 * 1024 * 1024) {
+        setAttachError('Attachments must be 10 MB or smaller.');
+        return;
+      }
+      setUploading(true);
+      try {
+        const safe = file.name.replace(/[^\w.-]+/g, '_');
+        const path = `${ownerId}/messages/${conversationId}/${crypto.randomUUID()}-${safe}`;
+        const {error: upError} = await supabase.storage.from('documents').upload(path, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+        if (upError) throw new Error(upError.message);
+        setPending((prev) => [
+          ...prev,
+          {name: file.name, path, size: file.size, mime: file.type || undefined},
+        ]);
+      } catch (e) {
+        setAttachError(e instanceof Error ? e.message : 'Could not upload the attachment.');
+      } finally {
+        setUploading(false);
+      }
+    },
+    [active, conversationId],
+  );
+
+  const openAttachment = useCallback(async (attachment: MessageAttachment) => {
+    try {
+      const {data, error: signError} = await supabase.storage
+        .from('documents')
+        .createSignedUrl(attachment.path, 60);
+      if (signError) throw new Error(signError.message);
+      window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+    } catch (e) {
+      setAttachError(e instanceof Error ? e.message : 'Could not open the attachment.');
+    }
+  }, []);
 
   const changeStatus = useCallback(
     async (next: 'open' | 'waiting' | 'closed') => {
@@ -345,8 +409,14 @@ export function ManagementMessagesPage() {
                       {message.attachments.length > 0 ? (
                         <ul className="mt-2 space-y-1">
                           {message.attachments.map((attachment) => (
-                            <li key={attachment.path} className="text-xs underline">
-                              {attachment.name}
+                            <li key={attachment.path}>
+                              <button
+                                type="button"
+                                className="block text-left text-xs underline"
+                                onClick={() => void openAttachment(attachment)}
+                              >
+                                {attachment.name}
+                              </button>
                             </li>
                           ))}
                         </ul>
@@ -375,16 +445,71 @@ export function ManagementMessagesPage() {
                 onChange={(event) => setBody(event.target.value)}
               />
             </label>
+            {pending.length > 0 ? (
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                {pending.map((attachment, index) => (
+                  <span
+                    key={attachment.path}
+                    className="inline-flex items-center gap-2 rounded-full border border-stone bg-white px-3 py-1 text-xs text-charcoal"
+                  >
+                    <Paperclip className="size-3" aria-hidden />
+                    {attachment.name}
+                    <button
+                      type="button"
+                      aria-label={`Remove ${attachment.name}`}
+                      className="text-muted hover:text-danger"
+                      onClick={() => setPending((prev) => prev.filter((_, i) => i !== index))}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            {attachError ? (
+              <div className="mt-2">
+                <Alert tone="error">{attachError}</Alert>
+              </div>
+            ) : null}
             <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-              <label className="flex items-center gap-2 text-xs text-muted">
+              <div className="flex items-center gap-3">
                 <input
-                  type="checkbox"
-                  checked={internal}
-                  onChange={(event) => setInternal(event.target.checked)}
+                  ref={fileRef}
+                  type="file"
+                  className="hidden"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (file) void uploadAttachment(file);
+                    event.target.value = '';
+                  }}
                 />
-                Internal note — never shown to the fan
-              </label>
-              <Button onClick={() => void send()} loading={sending} disabled={!body.trim()}>
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  aria-label="Attach a file"
+                  disabled={uploading}
+                  onClick={() => fileRef.current?.click()}
+                >
+                  {uploading ? (
+                    <Loader2 className="size-4 animate-spin" aria-hidden />
+                  ) : (
+                    <Paperclip className="size-4" aria-hidden />
+                  )}
+                </button>
+                <label className="flex items-center gap-2 text-xs text-muted">
+                  <input
+                    type="checkbox"
+                    checked={internal}
+                    onChange={(event) => setInternal(event.target.checked)}
+                  />
+                  Internal note — never shown to the fan
+                </label>
+              </div>
+              <Button
+                onClick={() => void send()}
+                loading={sending}
+                disabled={uploading || (!body.trim() && pending.length === 0)}
+              >
                 <Send className="size-4" aria-hidden /> Send
               </Button>
             </div>

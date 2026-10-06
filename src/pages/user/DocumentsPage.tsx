@@ -4,6 +4,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {Chip} from '../../components/ui/Chip';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
+import {useLiveRefresh} from '../../hooks/useLiveRefresh';
 import {supabase} from '../../lib/supabase';
 import type {DocumentRow} from '../../types';
 import {EmptyNote, ErrorNote, SectionCard} from './components/SectionCard';
@@ -21,8 +22,8 @@ export function DocumentsPage() {
   const [error, setError] = useState<string | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const {data, error: resError} = await supabase
@@ -42,6 +43,11 @@ export function DocumentsPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const refreshLive = useCallback(() => {
+    void load(true);
+  }, [load]);
+  useLiveRefresh(refreshLive, ['documents']);
 
   const download = useCallback(async (document: DocumentRow) => {
     setDownloadError(null);

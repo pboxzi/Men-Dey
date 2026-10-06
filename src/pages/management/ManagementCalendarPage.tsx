@@ -9,6 +9,7 @@ import {EmptyState} from '../../components/ui/EmptyState';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate, formatDateTime} from '../../lib/format';
+import {useLiveRefresh} from '../../hooks/useLiveRefresh';
 import {supabase} from '../../lib/supabase';
 import type {Appointment, AvailabilityBlock, ExperienceSchedule} from '../../types';
 
@@ -103,8 +104,8 @@ export function ManagementCalendarPage() {
   const [nowMs, setNowMs] = useState(() => Date.now());
   const tz = timezoneLabel();
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const [blocksRes, schedulesRes, appointmentsRes] = await Promise.all([
@@ -130,6 +131,11 @@ export function ManagementCalendarPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const refreshLive = useCallback(() => {
+    void load(true);
+  }, [load]);
+  useLiveRefresh(refreshLive, ['experience_schedules', 'appointments']);
 
   const run = useCallback(
     async (fn: () => Promise<string | void>) => {

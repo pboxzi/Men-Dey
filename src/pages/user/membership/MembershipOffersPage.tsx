@@ -7,6 +7,7 @@ import {Button} from '../../../components/ui/Button';
 import {Chip} from '../../../components/ui/Chip';
 import {Spinner} from '../../../components/ui/Spinner';
 import {formatDate} from '../../../lib/format';
+import {useLiveRefresh} from '../../../hooks/useLiveRefresh';
 import {
   OFFER_STATUS_LABELS,
   OFFER_STATUS_TONES,
@@ -33,8 +34,8 @@ export function MembershipOffersPage() {
   const [responding, setResponding] = useState<string | null>(null);
   const [confirmDeclineId, setConfirmDeclineId] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const {data, error: resError} = await supabase
@@ -75,6 +76,11 @@ export function MembershipOffersPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const refreshLive = useCallback(() => {
+    void load(true);
+  }, [load]);
+  useLiveRefresh(refreshLive, ['membership_offers', 'memberships']);
 
   const respond = useCallback(
     async (offer: OfferRow, next: 'accepted' | 'declined') => {

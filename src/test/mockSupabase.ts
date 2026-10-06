@@ -25,6 +25,7 @@ export interface MockControl {
   resetPasswordForEmail: ReturnType<typeof vi.fn>;
   updateUser: ReturnType<typeof vi.fn>;
   exchangeCodeForSession: ReturnType<typeof vi.fn>;
+  invoke: ReturnType<typeof vi.fn>;
 }
 
 export const mockCtl: MockControl = {
@@ -40,6 +41,7 @@ export const mockCtl: MockControl = {
   resetPasswordForEmail: vi.fn(),
   updateUser: vi.fn(),
   exchangeCodeForSession: vi.fn(),
+  invoke: vi.fn(async () => ({data: null, error: null})),
 };
 
 /** Per-table fixture rows the generic query builder reads and writes. */
@@ -58,6 +60,8 @@ export function resetMockCtl() {
   mockCtl.resetPasswordForEmail.mockReset();
   mockCtl.updateUser.mockReset();
   mockCtl.exchangeCodeForSession.mockReset();
+  mockCtl.invoke.mockReset();
+  mockCtl.invoke.mockResolvedValue({data: null, error: null});
   resetMockData();
 }
 
@@ -618,6 +622,7 @@ export function makeProfile(userId: string, role: Profile['role']): Profile {
     notify_requests: true,
     notify_membership: true,
     notify_experiences: true,
+    notify_messages: true,
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-01-01T00:00:00Z',
   };
@@ -817,6 +822,9 @@ export function buildSupabaseMock() {
       resetPasswordForEmail: mockCtl.resetPasswordForEmail,
       updateUser: mockCtl.updateUser,
       exchangeCodeForSession: mockCtl.exchangeCodeForSession,
+    },
+    functions: {
+      invoke: mockCtl.invoke,
     },
     from: vi.fn((table: string) => new MockBuilder(table)),
     rpc: vi.fn((name: string, params: Record<string, unknown> = {}) => ({

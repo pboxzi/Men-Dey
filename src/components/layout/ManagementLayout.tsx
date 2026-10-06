@@ -145,11 +145,11 @@ export function ManagementLayout() {
               <X className="size-4" aria-hidden />
             </button>
           </div>
-          <nav className="flex gap-4 overflow-x-auto lg:flex-col lg:gap-6 lg:overflow-visible" aria-label="Management">
+          <nav className="flex flex-col gap-5" aria-label="Management">
             {NAV_SECTIONS.map((section) => (
-              <div key={section.title} className="min-w-40 lg:min-w-0">
+              <div key={section.title} className="min-w-0">
                 <p className="eyebrow mb-2">{section.title}</p>
-                <div className="flex gap-1 lg:flex-col">
+                <div className="flex flex-col gap-0.5">
                   {section.links.map((link) => (
                     <NavLink
                       key={link.to}

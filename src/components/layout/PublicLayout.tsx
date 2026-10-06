@@ -3,7 +3,7 @@ import {Link, NavLink, Outlet} from 'react-router-dom';
 import {useAuth} from '../../auth/AuthContext';
 
 function brandClass(isActive: boolean) {
-  return `text-sm font-semibold uppercase tracking-[0.22em] transition-colors ${
+  return `inline-block truncate text-xs font-medium uppercase tracking-[0.18em] transition-colors sm:text-sm ${
     isActive ? 'text-gold-deep' : 'text-charcoal hover:text-gold-deep'
   }`;
 }
@@ -14,11 +14,11 @@ export function PublicLayout() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-stone bg-alabaster/95 backdrop-blur">
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
-          <Link to="/" className={brandClass(false)}>
+        <div className="mx-auto flex h-14 w-full max-w-6xl min-w-0 items-center justify-between gap-3 px-4 sm:h-16 sm:px-6">
+          <Link to="/" className={`${brandClass(false)} min-w-0 max-w-[50vw]`}>
             Gillian Anderson Management
           </Link>
-          <nav className="flex items-center gap-1" aria-label="Primary">
+          <nav className="flex shrink-0 items-center gap-1" aria-label="Primary">
             <NavLink to="/" end className={({isActive}) => `nav-link ${isActive ? 'nav-link-active' : ''}`}>
               Home
             </NavLink>

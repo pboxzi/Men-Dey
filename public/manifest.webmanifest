@@ -1,0 +1,16 @@
+{
+  "name": "Gillian Anderson Management",
+  "short_name": "GA Management",
+  "description": "A private, gated management platform for requests, membership and approved experiences — routed through management.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#14171A",
+  "theme_color": "#FCFAF7",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

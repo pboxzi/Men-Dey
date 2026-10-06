@@ -90,51 +90,51 @@ export function HomePage() {
   return (
     <div className="w-full bg-[#FAF8F5] text-[#1E1E1E]">
       {/* =========================================================================
-          1. FULL-WIDTH HERO BANNER (Edge-to-edge, sleek, compact, matches reference image)
+          1. FULL-WIDTH HERO BANNER (Edge-to-edge, compact, seamless blend)
       ========================================================================= */}
       <section className="relative w-full overflow-hidden bg-[#FAF8F5] border-b border-[#EAE4DA]">
-        <div className="mx-auto w-full max-w-7xl min-h-[340px] sm:min-h-[380px] lg:min-h-[420px] relative flex items-center">
+        <div className="mx-auto w-full max-w-7xl min-h-[250px] sm:min-h-[280px] lg:min-h-[310px] relative flex items-center">
           {/* Background Right: Seamless Gillian Hero Portrait */}
-          <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[60%] pointer-events-none select-none overflow-hidden flex justify-end">
+          <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[65%] pointer-events-none select-none overflow-hidden flex justify-end">
             <div className="relative h-full w-full">
               <img
-                src="/assets/images/gillian_hero_compact.jpg"
+                src="/assets/images/gillian_hero_seamless.jpg"
                 alt="Gillian Anderson Management"
-                className="h-full w-full object-cover object-[center_top] lg:object-[left_center]"
+                className="h-full w-full object-cover object-[right_center] lg:object-[center_center]"
                 loading="eager"
               />
-              {/* Extra soft gradient for seamless blending into cream background */}
-              <div className="absolute inset-y-0 left-0 w-28 sm:w-44 bg-gradient-to-r from-[#FAF8F5] to-transparent" />
-              {/* Fade for mobile */}
-              <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#FAF8F5] to-transparent lg:hidden" />
+              {/* Soft horizontal gradient mask to ensure 100% invisible blend on the left */}
+              <div className="absolute inset-y-0 left-0 w-32 sm:w-48 bg-gradient-to-r from-[#FAF8F5] to-transparent" />
+              {/* Mobile bottom fade */}
+              <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#FAF8F5] to-transparent lg:hidden" />
             </div>
           </div>
 
           {/* Left Hero Content */}
-          <div className="relative z-10 w-full lg:w-[50%] px-6 sm:px-10 py-8 sm:py-10 lg:py-12 space-y-4">
+          <div className="relative z-10 w-full lg:w-[50%] px-6 sm:px-10 py-6 sm:py-7 lg:py-8 space-y-3.5">
             <div className="flex items-center gap-2">
-              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.22em] text-[#8C8275]">
+              <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8C8275]">
                 WELCOME TO YOUR PRIVATE SPACE.
               </span>
               <span className="w-8 h-[1px] bg-[#C89B3C]/70" />
             </div>
 
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-[44px] text-[#1E1E1E] leading-[1.12] tracking-tight font-normal">
+            <h1 className="font-serif text-2xl sm:text-3xl lg:text-[38px] text-[#1E1E1E] leading-[1.14] tracking-tight font-normal">
               Gillian Anderson
               <br />
               Management
             </h1>
 
-            <p className="text-xs sm:text-sm text-[#6E6A63] leading-relaxed max-w-md">
+            <p className="text-xs sm:text-[13px] text-[#6E6A63] leading-relaxed max-w-md">
               A place to connect with management, explore your options and follow the experiences
               being arranged for you.
             </p>
 
-            {/* 3 Action Pill Buttons */}
-            <div className="pt-2 flex flex-wrap items-center gap-2.5">
+            {/* 2 Action Pill Buttons (MY MEMBERSHIP removed per instruction) */}
+            <div className="pt-1.5 flex flex-wrap items-center gap-2.5">
               <Link
                 to="/dashboard/messages"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#1E1E1E] hover:bg-black text-white text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.16em] transition-all shadow-xs"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1E1E1E] hover:bg-black text-white text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.16em] transition-all shadow-xs"
               >
                 <MessageSquare className="w-3.5 h-3.5 stroke-[2]" />
                 <span>TALK TO MANAGEMENT</span>
@@ -143,30 +143,21 @@ export function HomePage() {
 
               <Link
                 to="/dashboard/requests"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/90 hover:bg-white text-[#1E1E1E] border border-[#EAE4DA] hover:border-[#C89B3C] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.16em] transition-all shadow-xs backdrop-blur-xs"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 hover:bg-white text-[#1E1E1E] border border-[#EAE4DA] hover:border-[#C89B3C] text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.16em] transition-all shadow-xs backdrop-blur-xs"
               >
                 <FileText className="w-3.5 h-3.5 text-[#8C8275]" />
                 <span>MY REQUESTS</span>
-                <ChevronRight className="w-3 h-3 ml-0.5 text-[#8C8275]" />
-              </Link>
-
-              <Link
-                to="/dashboard/membership"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/90 hover:bg-white text-[#1E1E1E] border border-[#EAE4DA] hover:border-[#C89B3C] text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.16em] transition-all shadow-xs backdrop-blur-xs"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-[#C89B3C]" />
-                <span>MY MEMBERSHIP</span>
                 <ChevronRight className="w-3 h-3 ml-0.5 text-[#8C8275]" />
               </Link>
             </div>
           </div>
 
           {/* Floating Quote on the far right (matches reference image) */}
-          <div className="hidden lg:block absolute bottom-6 right-8 z-10 max-w-[240px] text-right pointer-events-none">
+          <div className="hidden lg:block absolute bottom-5 right-8 z-10 max-w-[240px] text-right pointer-events-none">
             <p className="font-serif italic text-[11px] text-stone-700 leading-relaxed drop-shadow-xs">
               “Meaningful connections create the most extraordinary opportunities.”
             </p>
-            <p className="text-[8px] font-bold uppercase tracking-[0.24em] text-[#9A7326] mt-1.5">
+            <p className="text-[8px] font-semibold uppercase tracking-[0.24em] text-[#9A7326] mt-1.5">
               — GILLIAN ANDERSON
             </p>
           </div>
@@ -180,7 +171,7 @@ export function HomePage() {
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10">
           <div className="mb-10 sm:mb-14">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#8C8275]">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8C8275]">
                 YOUR JOURNEY
               </span>
               <span className="w-6 h-[1px] bg-[#C89B3C]/70" />
@@ -198,7 +189,7 @@ export function HomePage() {
                   {item.step}
                 </div>
 
-                <h3 className="font-sans text-xs font-bold uppercase tracking-[0.18em] text-[#1E1E1E] mb-1.5">
+                <h3 className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-[#1E1E1E] mb-1.5">
                   {item.title}
                 </h3>
                 <p className="text-xs text-[#6E6A63] leading-relaxed max-w-xs">
@@ -231,7 +222,7 @@ export function HomePage() {
                 </div>
 
                 <div className="p-5">
-                  <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                     TALK TO MANAGEMENT
                   </h3>
                   <p className="text-xs text-[#6E6A63] mt-2 leading-relaxed">
@@ -243,7 +234,7 @@ export function HomePage() {
               <div className="p-5 pt-0">
                 <Link
                   to="/dashboard/messages"
-                  className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+                  className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
                 >
                   <span>OPEN MESSAGES</span>
                   <span>→</span>
@@ -266,7 +257,7 @@ export function HomePage() {
                 </div>
 
                 <div className="p-5">
-                  <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                     REQUEST SOMETHING PERSONAL
                   </h3>
                   <p className="text-xs text-[#6E6A63] mt-2 leading-relaxed">
@@ -279,7 +270,7 @@ export function HomePage() {
               <div className="p-5 pt-0">
                 <Link
                   to="/dashboard/requests/new"
-                  className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+                  className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
                 >
                   <span>MAKE A REQUEST</span>
                   <span>→</span>
@@ -302,7 +293,7 @@ export function HomePage() {
                 </div>
 
                 <div className="p-5">
-                  <h3 className="text-xs font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                     EXPLORE MEMBERSHIP
                   </h3>
                   <p className="text-xs text-[#6E6A63] mt-2 leading-relaxed">
@@ -314,7 +305,7 @@ export function HomePage() {
               <div className="p-5 pt-0">
                 <Link
                   to="/dashboard/membership"
-                  className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+                  className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
                 >
                   <span>VIEW MEMBERSHIP</span>
                   <span>→</span>
@@ -326,7 +317,7 @@ export function HomePage() {
             <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors">
               <div>
                 <div className="pb-3 border-b border-[#F5EFE6] mb-3">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8C8275]">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8C8275]">
                     FROM MANAGEMENT
                   </span>
                 </div>
@@ -357,7 +348,7 @@ export function HomePage() {
               <div className="pt-4">
                 <Link
                   to="/dashboard/messages"
-                  className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+                  className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
                 >
                   <span>VIEW MESSAGES</span>
                   <span>→</span>

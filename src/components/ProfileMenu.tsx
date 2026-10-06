@@ -1,4 +1,4 @@
-import {LogOut, Settings, UserRound} from 'lucide-react';
+import {ChevronDown, LogOut, Settings, UserRound} from 'lucide-react';
 import {useEffect, useRef, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 
@@ -26,19 +26,36 @@ export function ProfileMenu() {
     };
   }, [open]);
 
-  const label = profile?.full_name || profile?.email || 'Account';
+  const displayName = profile?.full_name || 'Alex Morgan';
+  const initials = displayName
+    .split(' ')
+    .filter(Boolean)
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase() || 'AM';
 
   return (
     <div className="relative" ref={ref}>
       <button
         type="button"
-        className="btn btn-ghost"
+        className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-2 hover:bg-stone-200/50 transition-colors focus:outline-hidden cursor-pointer"
         aria-haspopup="menu"
         aria-expanded={open}
+        aria-label={displayName}
         onClick={() => setOpen((v) => !v)}
       >
-        <UserRound className="size-4" aria-hidden />
-        <span className="max-w-36 truncate">{label}</span>
+        <div className="flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#1E1E1E] text-[#FAF8F5] text-xs font-semibold tracking-wider shadow-xs shrink-0">
+          {initials}
+        </div>
+        <span className="text-xs sm:text-[13px] font-medium text-[#1E1E1E] max-w-36 truncate tracking-tight">
+          {displayName}
+        </span>
+        <ChevronDown
+          className="w-3.5 h-3.5 text-stone-500 stroke-[2] transition-transform duration-200"
+          style={{transform: open ? 'rotate(180deg)' : 'none'}}
+          aria-hidden
+        />
       </button>
       {open ? (
         <div

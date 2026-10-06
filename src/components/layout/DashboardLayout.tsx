@@ -109,7 +109,7 @@ export function DashboardLayout() {
           <span>{link.label}</span>
         </div>
         {link.badge ? (
-          <span className="inline-flex min-w-4.5 justify-center items-center rounded-full bg-[#C89B3C] px-1.5 py-0.2 text-[10px] font-bold text-[#14171A]">
+          <span className="inline-flex min-w-4.5 justify-center items-center rounded-full bg-[#C89B3C] px-1.5 py-0.2 text-[10px] font-semibold text-[#14171A]">
             {link.badge}
           </span>
         ) : null}
@@ -158,7 +158,7 @@ export function DashboardLayout() {
                 className="h-10 w-auto object-contain mb-1"
                 loading="eager"
               />
-              <span className="text-[10px] font-bold tracking-[0.22em] text-white uppercase leading-tight">
+              <span className="text-[10px] font-semibold tracking-[0.22em] text-white uppercase leading-tight">
                 GILLIAN ANDERSON
               </span>
               <span className="text-[8px] font-semibold tracking-[0.28em] text-[#C89B3C] uppercase">
@@ -170,7 +170,7 @@ export function DashboardLayout() {
           {/* Navigation Links */}
           <nav className="p-4 space-y-6 flex-1" aria-label="Dashboard">
             <div>
-              <p className="px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500 mb-2">
+              <p className="px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-500 mb-2">
                 <span className="sr-only">Overview</span>
                 <span aria-hidden="true">MAIN</span>
               </p>
@@ -178,7 +178,7 @@ export function DashboardLayout() {
             </div>
 
             <div className="pt-2 border-t border-white/5">
-              <p className="px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-500 mb-2">
+              <p className="px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-500 mb-2">
                 <span className="sr-only">Personal</span>
                 <span aria-hidden="true">PERSONAL</span>
               </p>
@@ -228,7 +228,7 @@ export function DashboardLayout() {
       ========================================================================= */}
       <div className="flex-1 flex flex-col min-w-0 bg-[#FAF8F5]">
         {/* Top Navbar */}
-        <header className="h-16 px-6 sm:px-10 flex items-center justify-between lg:justify-end sticky top-0 z-30 bg-[#FAF8F5]/90 backdrop-blur-sm border-b border-[#EAE4DA]/60">
+        <header className="h-14 px-4 sm:h-16 sm:px-6 lg:px-10 flex items-center justify-between lg:justify-end sticky top-0 z-30 bg-[#FAF8F5]/90 backdrop-blur-sm border-b border-[#EAE4DA]/60">
           {/* Mobile hamburger */}
           <div className="flex items-center gap-3 lg:hidden">
             <button

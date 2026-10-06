@@ -2,6 +2,7 @@ import {useEffect} from 'react';
 import {useLocation} from 'react-router-dom';
 
 import {AuthProvider} from './auth/AuthContext';
+import {InstallPrompt} from './components/InstallPrompt';
 import {AppRoutes} from './routes';
 
 function RobotsMeta() {
@@ -21,6 +22,7 @@ export function App() {
     <AuthProvider>
       <RobotsMeta />
       <AppRoutes />
+      <InstallPrompt />
     </AuthProvider>
   );
 }

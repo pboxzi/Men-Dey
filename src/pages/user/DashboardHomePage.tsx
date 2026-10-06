@@ -182,27 +182,27 @@ export function DashboardHomePage() {
     const label = (REQUEST_STATUS_LABELS[status] || status).toUpperCase();
     if (status === 'in_review' || status === 'submitted') {
       return (
-        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF5EB] text-[#9A7326]">
+        <span className="text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FAF5EB] text-[#9A7326]">
           {label}
         </span>
       );
     }
     if (status === 'information_requested') {
       return (
-        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FDF3E7] text-[#B25E09]">
+        <span className="text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FDF3E7] text-[#B25E09]">
           {label}
         </span>
       );
     }
     if (status === 'confirmed' || status === 'approved' || status === 'completed') {
       return (
-        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+        <span className="text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
           {label}
         </span>
       );
     }
     return (
-      <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-stone-100 text-stone-700">
+      <span className="text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-stone-100 text-stone-700">
         {label}
       </span>
     );
@@ -236,7 +236,7 @@ export function DashboardHomePage() {
               <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
                 <CreditCard className="w-4 h-4 stroke-[1.8]" />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C8275]">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8C8275]">
                 MEMBERSHIP
               </span>
             </div>
@@ -263,7 +263,7 @@ export function DashboardHomePage() {
           <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
             <Link
               to="/dashboard/membership"
-              className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+              className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
             >
               <span>VIEW</span>
               <span>→</span>
@@ -278,7 +278,7 @@ export function DashboardHomePage() {
               <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
                 <MessageSquare className="w-4 h-4 stroke-[1.8]" />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C8275]">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8C8275]">
                 MANAGEMENT
               </span>
             </div>
@@ -303,7 +303,7 @@ export function DashboardHomePage() {
           <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
             <Link
               to={data.conversation ? `/dashboard/messages/${data.conversation.id}` : '/dashboard/messages'}
-              className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+              className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
             >
               <span>OPEN</span>
               <span>→</span>
@@ -318,7 +318,7 @@ export function DashboardHomePage() {
               <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
                 <FileText className="w-4 h-4 stroke-[1.8]" />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C8275]">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8C8275]">
                 REQUESTS
               </span>
             </div>
@@ -341,7 +341,7 @@ export function DashboardHomePage() {
           <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
             <Link
               to="/dashboard/requests"
-              className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+              className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
             >
               <span>VIEW REQUESTS</span>
               <span>→</span>
@@ -356,7 +356,7 @@ export function DashboardHomePage() {
               <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
                 <CalendarDays className="w-4 h-4 stroke-[1.8]" />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C8275]">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8C8275]">
                 EXPERIENCES
               </span>
             </div>
@@ -379,7 +379,7 @@ export function DashboardHomePage() {
           <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
             <Link
               to="/dashboard/experiences"
-              className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+              className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
             >
               <span>VIEW</span>
               <span>→</span>
@@ -399,12 +399,12 @@ export function DashboardHomePage() {
           {/* Box 1: YOUR REQUESTS */}
           <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-[#F5EFE6] mb-4">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                 YOUR REQUESTS
               </h2>
               <Link
                 to="/dashboard/requests"
-                className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] transition-colors"
+                className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] transition-colors"
               >
                 VIEW ALL →
               </Link>
@@ -417,7 +417,7 @@ export function DashboardHomePage() {
                 </p>
                 <Link
                   to="/dashboard/requests/new"
-                  className="inline-block border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[10px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-sm transition-colors"
+                  className="inline-block border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[10px] font-semibold uppercase tracking-wider px-3.5 py-1.5 rounded-sm transition-colors"
                 >
                   MAKE A REQUEST →
                 </Link>
@@ -447,7 +447,7 @@ export function DashboardHomePage() {
 
                     <Link
                       to={`/dashboard/requests/${request.id}`}
-                      className="shrink-0 border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[9px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-sm transition-colors whitespace-nowrap"
+                      className="shrink-0 border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1.5 rounded-sm transition-colors whitespace-nowrap"
                     >
                       {request.status === 'information_requested' ? 'CONTINUE →' : 'VIEW REQUEST →'}
                     </Link>
@@ -460,12 +460,12 @@ export function DashboardHomePage() {
           {/* Box 2: UPCOMING */}
           <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-[#F5EFE6] mb-4">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                 UPCOMING
               </h2>
               <Link
                 to="/dashboard/experiences"
-                className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] transition-colors"
+                className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] transition-colors"
               >
                 VIEW ALL →
               </Link>
@@ -482,7 +482,7 @@ export function DashboardHomePage() {
                       <h4 className="text-xs font-semibold text-[#1E1E1E]">{app.title}</h4>
                       <p className="text-[10px] text-[#8C8275] mt-0.5">{formatDate(app.starts_at)}</p>
                     </div>
-                    <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+                    <span className="text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
                       {app.status}
                     </span>
                   </div>
@@ -501,7 +501,7 @@ export function DashboardHomePage() {
                 </p>
                 <Link
                   to="/dashboard/experiences"
-                  className="inline-block border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[10px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-sm transition-colors"
+                  className="inline-block border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[10px] font-semibold uppercase tracking-wider px-3.5 py-1.5 rounded-sm transition-colors"
                 >
                   EXPLORE EXPERIENCES →
                 </Link>
@@ -518,7 +518,7 @@ export function DashboardHomePage() {
           <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between">
             <div>
               <div className="pb-3 border-b border-[#F5EFE6] mb-4">
-                <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                   MANAGEMENT
                 </h2>
               </div>
@@ -563,7 +563,7 @@ export function DashboardHomePage() {
               <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center">
                 <CreditCard className="w-3.5 h-3.5 stroke-[1.8]" />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8C8275]">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8C8275]">
                 MEMBERSHIP
               </span>
             </div>
@@ -581,7 +581,7 @@ export function DashboardHomePage() {
 
             <Link
               to="/dashboard/membership"
-              className="inline-block border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[10px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-sm transition-colors"
+              className="inline-block border border-[#D9D1C3] hover:border-[#C89B3C] text-[#1E1E1E] hover:text-[#C89B3C] text-[10px] font-semibold uppercase tracking-wider px-3.5 py-1.5 rounded-sm transition-colors"
             >
               DISCUSS MEMBERSHIP →
             </Link>
@@ -595,12 +595,12 @@ export function DashboardHomePage() {
           {/* Box 1: RECENT NOTIFICATIONS */}
           <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
             <div className="flex items-center justify-between pb-3 border-b border-[#F5EFE6] mb-3">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                 RECENT NOTIFICATIONS
               </h2>
               <Link
                 to="/dashboard/notifications"
-                className="text-[10px] font-bold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] transition-colors"
+                className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] transition-colors"
               >
                 VIEW ALL →
               </Link>
@@ -639,7 +639,7 @@ export function DashboardHomePage() {
           {/* Box 2: QUICK ACTIONS */}
           <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
             <div className="pb-3 border-b border-[#F5EFE6] mb-3">
-              <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#1E1E1E]">
+              <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                 QUICK ACTIONS
               </h2>
             </div>
@@ -650,7 +650,7 @@ export function DashboardHomePage() {
                 className="p-3 rounded-lg bg-[#FAF8F5] border border-[#EAE4DA] hover:border-[#C89B3C] hover:bg-white transition-all flex flex-col justify-between text-left group"
               >
                 <MessageSquare className="w-4 h-4 text-[#8C8275] group-hover:text-[#C89B3C] mb-2" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
                   MESSAGE MANAGEMENT →
                 </span>
               </Link>
@@ -660,7 +660,7 @@ export function DashboardHomePage() {
                 className="p-3 rounded-lg bg-[#FAF8F5] border border-[#EAE4DA] hover:border-[#C89B3C] hover:bg-white transition-all flex flex-col justify-between text-left group"
               >
                 <FileText className="w-4 h-4 text-[#8C8275] group-hover:text-[#C89B3C] mb-2" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
                   MAKE A REQUEST →
                 </span>
               </Link>
@@ -670,7 +670,7 @@ export function DashboardHomePage() {
                 className="p-3 rounded-lg bg-[#FAF8F5] border border-[#EAE4DA] hover:border-[#C89B3C] hover:bg-white transition-all flex flex-col justify-between text-left group"
               >
                 <CalendarDays className="w-4 h-4 text-[#8C8275] group-hover:text-[#C89B3C] mb-2" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
                   VIEW EXPERIENCES →
                 </span>
               </Link>
@@ -680,7 +680,7 @@ export function DashboardHomePage() {
                 className="p-3 rounded-lg bg-[#FAF8F5] border border-[#EAE4DA] hover:border-[#C89B3C] hover:bg-white transition-all flex flex-col justify-between text-left group"
               >
                 <CreditCard className="w-4 h-4 text-[#8C8275] group-hover:text-[#C89B3C] mb-2" />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#1E1E1E] group-hover:text-[#A67F2C] leading-snug">
                   MEMBERSHIP →
                 </span>
               </Link>

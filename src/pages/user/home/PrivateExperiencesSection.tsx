@@ -26,9 +26,9 @@ export function PrivateExperiencesSection() {
 
         <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
-            <h2 className="break-words font-display text-[26px] font-medium leading-[1.1] text-[#1E1E1E] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
-              <span className="block">PRIVATE</span>
-              <span className="block">EXPERIENCES.</span>
+            <span className="block h-px w-10 bg-[#C89B3C]" aria-hidden />
+            <h2 className="mt-4 break-words font-sans text-[12px] font-semibold uppercase leading-[1.7] tracking-[0.26em] text-[#1E1E1E] sm:text-[13px]">
+              Private experiences
             </h2>
 
             <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#A67F2C] sm:text-[11px]">

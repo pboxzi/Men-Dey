@@ -1,4 +1,4 @@
-import {EditorialCta, EditorialImage, Reveal} from './editorial';
+import {EditorialImage, Reveal} from './editorial';
 import {homepageImages} from './homepageImages';
 
 export function ManagementOfficeSection() {
@@ -7,10 +7,9 @@ export function ManagementOfficeSection() {
       <div className="mx-auto grid w-full max-w-[1500px] items-stretch gap-0 lg:grid-cols-[1.02fr_0.98fr]">
         <div className="order-2 flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:order-1 lg:px-16 lg:py-24">
           <Reveal>
-            <h2 className="break-words font-display text-[26px] font-medium leading-[1.1] text-[#1E1E1E] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
-              <span className="block">THE</span>
-              <span className="block">MANAGEMENT</span>
-              <span className="block">OFFICE.</span>
+            <span className="block h-px w-10 bg-[#C89B3C]" aria-hidden />
+            <h2 className="mt-4 break-words font-sans text-[12px] font-semibold uppercase leading-[1.7] tracking-[0.26em] text-[#1E1E1E] sm:text-[13px]">
+              The management office
             </h2>
 
             <p className="mt-5 max-w-[26rem] break-words font-display text-[19px] italic leading-[1.5] text-[#1E1E1E] lg:text-[23px]">
@@ -21,10 +20,6 @@ export function ManagementOfficeSection() {
               Management is the private point of contact for personal requests, experiences and
               professional enquiries.
             </p>
-
-            <div className="mt-6">
-              <EditorialCta to="/dashboard/messages">Meet the management</EditorialCta>
-            </div>
           </Reveal>
         </div>
 

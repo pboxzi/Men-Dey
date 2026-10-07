@@ -1,4 +1,4 @@
-import {EditorialCta, EditorialImage, Reveal} from './editorial';
+import {EditorialImage, Reveal} from './editorial';
 import {homepageImages} from './homepageImages';
 
 export function ClosingSection() {
@@ -18,18 +18,14 @@ export function ClosingSection() {
 
       <div className="mx-auto w-full max-w-[1500px] px-6 pb-16 pt-10 sm:px-10 lg:px-16 lg:pb-24 lg:pt-12">
         <Reveal className="max-w-[34rem]">
-          <h2 className="break-words font-display text-[26px] font-medium leading-[1.15] text-[#1E1E1E] sm:text-[32px] lg:text-[36px]">
-            <span className="block">PRIVATE RELATIONSHIPS.</span>
-            <span className="block">CONSIDERED EXPERIENCES.</span>
+          <span className="block h-px w-10 bg-[#C89B3C]" aria-hidden />
+          <h2 className="mt-4 break-words font-sans text-[12px] font-semibold uppercase leading-[1.7] tracking-[0.26em] text-[#1E1E1E] sm:text-[13px]">
+            Private relationships. Considered experiences.
           </h2>
 
           <p className="mt-4 text-sm leading-[1.85] text-[#77716A]">
             Every relationship begins with a conversation.
           </p>
-
-          <div className="mt-6">
-            <EditorialCta to="/dashboard/messages">Begin a conversation</EditorialCta>
-          </div>
         </Reveal>
       </div>
     </section>

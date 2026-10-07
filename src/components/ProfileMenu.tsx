@@ -26,15 +26,6 @@ export function ProfileMenu() {
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!open) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [open]);
-
   const displayName = profile?.full_name || profile?.email || 'Account';
   const initials =
     (profile?.full_name || profile?.email || '')
@@ -64,7 +55,7 @@ export function ProfileMenu() {
           {initials || <UserRound className="size-4" aria-hidden />}
         </span>
         <ChevronDown
-          className="hidden h-3.5 w-3.5 text-stone-500 transition-transform duration-200 group-hover:text-[#1E1E1E] sm:block"
+          className="h-3.5 w-3.5 text-stone-500 transition-transform duration-200 group-hover:text-[#1E1E1E]"
           style={{transform: open ? 'rotate(180deg)' : 'none'}}
           aria-hidden
         />
@@ -73,15 +64,9 @@ export function ProfileMenu() {
       {open ? (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] lg:hidden"
-            onClick={close}
-            aria-hidden="true"
-          />
-          <div
             role="menu"
             aria-label="Account"
-            className="fixed inset-x-0 bottom-0 z-50 border-t border-[#EAE4DA] bg-[#FCFAF7] p-2 shadow-[0_-16px_40px_-20px_rgba(30,30,30,0.35)] lg:absolute lg:inset-x-auto lg:right-0 lg:bottom-auto lg:top-full lg:mt-2 lg:w-60 lg:rounded-lg lg:border lg:shadow-lg"
-            style={{paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))'}}
+            className="absolute right-0 top-full z-50 mt-2 w-60 border border-[#EAE4DA] bg-[#FCFAF7] p-2 shadow-lg"
           >
             <div className="border-b border-stone px-3 pb-2.5 pt-2 lg:pb-2">
               <p className="truncate text-xs font-medium text-ink">{displayName}</p>

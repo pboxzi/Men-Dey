@@ -14,9 +14,9 @@ export function JourneySection() {
       <div className="mx-auto grid w-full max-w-[1500px] items-stretch gap-0 lg:grid-cols-[1.02fr_1fr]">
         <div className="order-2 flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:order-1 lg:px-16 lg:py-24">
           <Reveal>
-            <h2 className="break-words font-display text-[26px] font-medium leading-[1.1] text-[#1E1E1E] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
-              <span className="block">YOUR</span>
-              <span className="block">JOURNEY.</span>
+            <span className="block h-px w-10 bg-[#C89B3C]" aria-hidden />
+            <h2 className="mt-4 break-words font-sans text-[12px] font-semibold uppercase leading-[1.7] tracking-[0.26em] text-[#1E1E1E] sm:text-[13px]">
+              Your journey
             </h2>
 
             <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#77716A] sm:text-[11px]">

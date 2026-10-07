@@ -25,7 +25,7 @@ export function HomeFooter() {
   return (
     <footer className="bg-[#111111] text-[#E8E1D7]">
       <div className="mx-auto w-full max-w-[1500px] px-6 py-12 sm:px-10 lg:px-16 lg:py-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="grid gap-8 sm:gap-10 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="min-w-0">
             <p className="font-display text-[26px] font-medium leading-none tracking-[0.08em] text-[#C89B3C]">
               GA
@@ -36,6 +36,7 @@ export function HomeFooter() {
             </p>
           </div>
 
+          <div className="grid grid-cols-3 gap-4 sm:gap-6 lg:contents">
           <nav aria-label="Footer navigation" className="min-w-0">
             <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#8F887E]">
               Navigation
@@ -98,6 +99,7 @@ export function HomeFooter() {
               ))}
             </ul>
           </nav>
+          </div>
         </div>
 
         <div className="mt-12 border-t border-white/10 pt-7">

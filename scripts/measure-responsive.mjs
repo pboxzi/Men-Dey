@@ -13,8 +13,17 @@ const CHROME =
 const BASE = process.argv[2] || 'http://localhost:5173';
 
 const WIDTHS = [320, 360, 375, 390, 412, 430, 768];
-const HEIGHTS = [640, 740, 844, 900];
-const ROUTES = ['/'];
+const HEIGHTS = [640, 740, 844];
+const ROUTES = [
+  '/',
+  '/sign-in',
+  '/acknowledgement',
+  '/create-account/personal',
+  '/forgot-password',
+  '/verify-email',
+  '/forbidden',
+  '/this-route-does-not-exist',
+];
 
 const probe = () => {
   const doc = document.documentElement;
@@ -48,6 +57,18 @@ const probe = () => {
     textSizeAdjust: getComputedStyle(doc).webkitTextSizeAdjust || getComputedStyle(doc).textSizeAdjust,
     offenders: offenders.slice(0, 8),
     offenderCount: offenders.length,
+    // vertical fit: is the page content taller than the visible viewport
+    // (the gate shells use overflow-hidden, so extra height is silently lost)?
+    contentBottom: (() => {
+      let max = 0;
+      for (const el of document.querySelectorAll('body *')) {
+        const r = el.getBoundingClientRect();
+        if (r.height > 0) max = Math.max(max, r.bottom);
+      }
+      return Math.round(max);
+    })(),
+    viewportBottom: Math.round(window.innerHeight),
+    scrollHeight: document.documentElement.scrollHeight,
   };
 };
 
@@ -59,7 +80,7 @@ const browser = await puppeteer.launch({
 
 const results = [];
 
-for (const mobile of [true, false]) {
+for (const mobile of [true]) {
   const page = await browser.newPage();
   for (const width of WIDTHS) {
     for (const height of HEIGHTS) {
@@ -82,7 +103,8 @@ const fmt = (r) =>
   `${r.mobile ? 'mobile' : 'desktop'} ${r.width}x${r.height} ${r.route} | ` +
   `scrollW=${r.scrollWidth} clientW=${r.clientWidth} inner=${r.innerWidth} ` +
   `overflow=${r.scrollWidth > r.clientWidth ? 'YES' : 'no'} (${r.offenderCount} el) | ` +
-  `title=${r.titleFont} lede=${r.ledeFont} root=${r.rootFont} tsa=${r.textSizeAdjust}`;
+  `title=${r.titleFont} lede=${r.ledeFont} root=${r.rootFont} tsa=${r.textSizeAdjust} ` +
+  `contentBottom=${r.contentBottom}/${r.viewportBottom}`;
 
 for (const r of results) {
   console.log(fmt(r));

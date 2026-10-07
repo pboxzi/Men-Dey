@@ -4,7 +4,7 @@ import {homepageImages} from './homepageImages';
 export function ClosingSection() {
   return (
     <section className="bg-[#FCFAF7]">
-      <div className="relative mx-6 h-[66vw] max-h-[380px] overflow-hidden border border-[#E8E1D7] sm:mx-10 sm:max-h-[440px] lg:mx-0 lg:h-[64vh] lg:border-0">
+      <div className="relative h-[66vw] max-h-[380px] w-full overflow-hidden sm:max-h-[440px] lg:h-[64vh]">
         <EditorialImage
           src={homepageImages.session6}
           alt="Studio portrait of Gillian Anderson"

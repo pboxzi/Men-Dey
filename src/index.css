@@ -496,6 +496,17 @@
 /* ---------------------------------------------------------------------------
    Viewport fit: the landing block must end inside the fold at every size, so
    short viewports tighten instead of reserving more portrait above it.
+
+   Type here is resolved by two independent rules:
+     • below 640px the *width* decides every size — fluid and identical in
+       every browser on the same device;
+     • at 640px and above a short *height* may compress the desktop scale
+       (landscape laptops, short tablets, wide phones on their side).
+   Height must never decide phone typography: Chrome and Firefox reserve
+   different amounts of screen for their own UI, so one phone reports two
+   different viewport heights — and a height-driven heading then rendered at
+   2.3rem in one browser while the other stayed on the intended 1.55rem,
+   which is what made the page look "zoomed" in Chrome only.
    --------------------------------------------------------------------------- */
 .gate-copy-block {
   width: 100%;
@@ -524,38 +535,15 @@
   margin-top: 2.5rem;
 }
 
-@media (max-width: 639px) {
-  .gate-title {
-    margin-top: 1.1rem;
-    font-size: 1.55rem;
-    line-height: 1.3;
-  }
-
-  .gate-lede {
-    margin-top: 1.1rem;
-    font-size: 0.84375rem;
-    line-height: 1.85;
-  }
-
-  .gate-actions {
-    margin-top: 1.5rem;
-    gap: 0.75rem;
-  }
-
-  .gate-statement {
-    margin-top: 1.9rem;
-  }
-}
-
-/* Landscape laptops and short tablets. */
-@media (max-height: 820px) {
+/* Landscape laptops and short tablets: 640px and wider only, so these rules
+   can never reach a portrait phone. */
+@media (min-width: 640px) and (max-height: 820px) {
   .gate-title {
     font-size: 2.3rem;
   }
 }
 
-/* Phones held one-handed: compress the whole rhythm. */
-@media (max-height: 700px) {
+@media (min-width: 640px) and (max-height: 700px) {
   .gate-title {
     margin-top: 0.8rem;
     font-size: 1.4rem;
@@ -584,10 +572,37 @@
   }
 }
 
-/* Very short screens (320×568): the statement and CTAs outrank the lede. */
-@media (max-height: 620px) {
+/* Very short wide screens: the statement and CTAs outrank the lede. */
+@media (min-width: 640px) and (max-height: 620px) {
   .gate-lede {
     display: none;
+  }
+}
+
+/* Phones, portrait: width-only and fluid. The values track the established
+   mobile scale — the heading resolves to ~1.55rem at 390px, ~1.49rem at
+   320px and grows to 1.75rem by 640px, so no breakpoint jump and no
+   browser- or toolbar-dependent sizing. */
+@media (max-width: 639px) {
+  .gate-title {
+    margin-top: 1.1rem;
+    font-size: clamp(1.45rem, calc(1.3vw + 1.23rem), 1.75rem);
+    line-height: 1.3;
+  }
+
+  .gate-lede {
+    margin-top: 1.1rem;
+    font-size: clamp(0.8125rem, calc(0.25vw + 0.78rem), 0.875rem);
+    line-height: 1.85;
+  }
+
+  .gate-actions {
+    margin-top: 1.5rem;
+    gap: 0.75rem;
+  }
+
+  .gate-statement {
+    margin-top: 1.9rem;
   }
 }
 
@@ -598,6 +613,29 @@
   }
 }
 
+/* One sizing context for the whole document: the document, the body and the
+   React root all occupy exactly the viewport width, and every box is sized
+   inside-out so padding and borders never add to a width. Tailwind's
+   preflight already sets border-box; it is restated unlayered here so the
+   guarantee does not depend on the utility layer. */
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Chrome/Android text autosizing (font boosting) must never inflate this
+   layout: every mobile size is authored explicitly, so no browser needs to
+   compensate for a desktop-sized column. */
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;

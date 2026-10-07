@@ -38,7 +38,7 @@ export function JourneySection() {
           </Reveal>
         </div>
 
-        <div className="relative order-1 mx-6 h-[64vw] max-h-[360px] overflow-hidden border border-[#E8E1D7] sm:mx-10 sm:max-h-[420px] lg:order-2 lg:mx-0 lg:h-auto lg:max-h-none lg:min-h-[78vh] lg:border-0">
+        <div className="relative order-1 h-[64vw] max-h-[360px] w-full overflow-hidden sm:max-h-[420px] lg:order-2 lg:h-auto lg:max-h-none lg:min-h-[78vh]">
           <EditorialImage
             src={homepageImages.session4}
             alt="An open notebook and warm lamp on a dark wooden desk"

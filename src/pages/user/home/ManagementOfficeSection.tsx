@@ -28,7 +28,7 @@ export function ManagementOfficeSection() {
           </Reveal>
         </div>
 
-        <div className="relative order-1 mx-6 h-[78vw] max-h-[440px] overflow-hidden border border-[#E8E1D7] sm:mx-10 sm:max-h-[500px] lg:order-2 lg:mx-0 lg:h-auto lg:max-h-none lg:min-h-[76vh] lg:border-0">
+        <div className="relative order-1 h-[78vw] max-h-[440px] w-full overflow-hidden sm:max-h-[500px] lg:order-2 lg:h-auto lg:max-h-none lg:min-h-[76vh]">
           <EditorialImage
             src={homepageImages.session2}
             alt="Gillian Anderson reviewing papers at her desk in a calm interior"

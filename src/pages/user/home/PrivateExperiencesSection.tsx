@@ -12,7 +12,7 @@ export function PrivateExperiencesSection() {
   return (
     <section className="border-b border-[#E8E1D7] bg-[#FCFAF7]">
       <div className="mx-auto grid w-full max-w-[1500px] items-stretch gap-0 lg:grid-cols-[1.1fr_1fr]">
-        <div className="relative mx-6 h-[64vw] max-h-[360px] overflow-hidden border border-[#E8E1D7] sm:mx-10 sm:max-h-[420px] lg:mx-0 lg:h-auto lg:max-h-none lg:min-h-[86vh] lg:border-0">
+        <div className="relative h-[64vw] max-h-[360px] w-full overflow-hidden sm:max-h-[420px] lg:h-auto lg:max-h-none lg:min-h-[86vh]">
           <EditorialImage
             src={homepageImages.session3}
             alt="A handwritten letter and fountain pen on a private writing desk"

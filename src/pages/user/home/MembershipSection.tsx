@@ -20,7 +20,7 @@ export function MembershipSection() {
   return (
     <section className="border-b border-black/20 bg-[#1E1E1E]">
       <div className="mx-auto grid w-full max-w-[1500px] items-stretch gap-0 lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="relative mx-6 h-[66vw] max-h-[380px] overflow-hidden border border-white/15 sm:mx-10 sm:max-h-[440px] lg:mx-0 lg:h-auto lg:max-h-none lg:min-h-[82vh] lg:border-0">
+        <div className="relative h-[66vw] max-h-[380px] w-full overflow-hidden sm:max-h-[440px] lg:h-auto lg:max-h-none lg:min-h-[82vh]">
           <EditorialImage
             src={homepageImages.session5}
             alt="A black membership card with the gold GA monogram resting on leather"

@@ -12,9 +12,12 @@ const CHROME =
   process.env.CHROME_PATH || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const BASE = process.argv[2] || 'http://localhost:5173';
 
-const WIDTHS = [320, 360, 375, 390, 412, 430, 768];
-const HEIGHTS = [640, 740, 844];
-const ROUTES = [
+const DESKTOP = process.env.DESKTOP === '1';
+const WIDTHS = DESKTOP ? [1024, 1280, 1440] : [320, 360, 375, 390, 412, 430, 768];
+const HEIGHTS = DESKTOP ? [768, 900] : [640, 740, 844];
+const ROUTES = DESKTOP
+  ? ['/', '/sign-in']
+  : [
   '/',
   '/sign-in',
   '/acknowledgement',
@@ -55,6 +58,10 @@ const probe = () => {
     ledeFont: lede ? getComputedStyle(lede).fontSize : null,
     rootFont: getComputedStyle(doc).fontSize,
     textSizeAdjust: getComputedStyle(doc).webkitTextSizeAdjust || getComputedStyle(doc).textSizeAdjust,
+    titleTsa: (() => {
+      const el = document.querySelector('.gate-title') || document.querySelector('h1') || document.body;
+      return getComputedStyle(el).webkitTextSizeAdjust || getComputedStyle(el).textSizeAdjust;
+    })(),
     offenders: offenders.slice(0, 8),
     offenderCount: offenders.length,
     // vertical fit: is the page content taller than the visible viewport
@@ -103,7 +110,7 @@ const fmt = (r) =>
   `${r.mobile ? 'mobile' : 'desktop'} ${r.width}x${r.height} ${r.route} | ` +
   `scrollW=${r.scrollWidth} clientW=${r.clientWidth} inner=${r.innerWidth} ` +
   `overflow=${r.scrollWidth > r.clientWidth ? 'YES' : 'no'} (${r.offenderCount} el) | ` +
-  `title=${r.titleFont} lede=${r.ledeFont} root=${r.rootFont} tsa=${r.textSizeAdjust} ` +
+  `title=${r.titleFont} lede=${r.ledeFont} root=${r.rootFont} tsa=${r.textSizeAdjust}/${r.titleTsa} ` +
   `contentBottom=${r.contentBottom}/${r.viewportBottom}`;
 
 for (const r of results) {

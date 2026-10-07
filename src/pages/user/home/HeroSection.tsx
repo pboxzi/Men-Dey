@@ -5,7 +5,7 @@ export function HeroSection() {
   return (
     <section className="border-b border-[#E8E1D7] bg-[#FCFAF7]">
       <div className="mx-auto grid w-full max-w-[1500px] items-stretch gap-0 lg:grid-cols-[1.05fr_1fr]">
-        <div className="relative mx-6 mt-6 h-[92vw] max-h-[480px] overflow-hidden border border-[#E8E1D7] sm:mx-10 sm:max-h-[540px] lg:mx-0 lg:mt-0 lg:h-auto lg:max-h-none lg:min-h-[80vh] lg:border-0">
+        <div className="relative h-[92vw] max-h-[480px] w-full overflow-hidden sm:max-h-[540px] lg:h-auto lg:max-h-none lg:min-h-[80vh]">
           <EditorialImage
             src={homepageImages.session1}
             alt="Portrait of Gillian Anderson at her desk"

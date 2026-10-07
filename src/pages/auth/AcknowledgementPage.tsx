@@ -7,6 +7,7 @@ import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
 import {Spinner} from '../../components/ui/Spinner';
 import {toFriendlyMessage} from '../../lib/errors';
+import {parseDocument} from '../../lib/document';
 import {supabase} from '../../lib/supabase';
 import type {AcknowledgementVersion} from '../../types';
 
@@ -88,6 +89,8 @@ export function AcknowledgementPage() {
     );
   }
 
+  const doc = parseDocument(version.content);
+
   return (
     <GateShell>
       <p className="eyebrow mb-3">Before you join us</p>
@@ -101,8 +104,16 @@ export function AcknowledgementPage() {
         })}
       </p>
 
-      <article className="gate-doc whitespace-pre-wrap p-5 text-sm leading-relaxed text-ink sm:p-6">
-        {version.content}
+      <article className="gate-doc p-5 text-sm leading-relaxed text-ink sm:p-6">
+        {doc.intro ? <p>{doc.intro}</p> : null}
+        {doc.sections.map((section) => (
+          <section key={section.number}>
+            <h2 className="eyebrow mt-5">
+              {section.number}. {section.title}
+            </h2>
+            <p className="mt-2">{section.body}</p>
+          </section>
+        ))}
       </article>
 
       <label className="mt-6 flex cursor-pointer items-start gap-3 text-sm">

@@ -3,9 +3,9 @@ import {homepageImages} from './homepageImages';
 
 export function ManagementOfficeSection() {
   return (
-    <section className="border-b border-[#E8E1D7] bg-[#FCFAF7]">
+    <section className="border-b border-[#E8E1D7] bg-[#FAF8F5]">
       <div className="mx-auto grid w-full max-w-[1500px] items-stretch gap-0 lg:grid-cols-[1.02fr_0.98fr]">
-        <div className="order-2 flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:order-1 lg:px-16 lg:py-24">
+        <div className="order-2 flex min-w-0 flex-col justify-center px-6 pt-7 pb-16 sm:px-10 lg:order-1 lg:px-16 lg:py-24">
           <Reveal>
             <h2 className="break-words font-display text-[26px] font-medium leading-[1.1] text-[#1E1E1E] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
               <span className="block">THE</span>

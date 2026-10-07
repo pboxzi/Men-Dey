@@ -28,7 +28,7 @@ export function MembershipSection() {
           />
         </div>
 
-        <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">
+        <div className="flex min-w-0 flex-col justify-center px-6 pt-7 pb-16 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
             <h2 className="break-words font-display text-[26px] font-medium leading-[1.1] text-[#FCFAF7] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
               <span className="block">MEMBERSHIP</span>

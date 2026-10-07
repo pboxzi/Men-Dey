@@ -16,7 +16,7 @@ export function ClosingSection() {
         />
       </div>
 
-      <div className="mx-auto w-full max-w-[1500px] px-6 pb-16 pt-10 sm:px-10 lg:px-16 lg:pb-24 lg:pt-12">
+      <div className="mx-auto w-full max-w-[1500px] px-6 pt-7 pb-16 sm:px-10 lg:px-16 lg:pt-10 lg:pb-24">
         <Reveal className="max-w-[34rem]">
           <h2 className="break-words font-display text-[26px] font-medium leading-[1.15] text-[#1E1E1E] sm:text-[32px] lg:text-[36px]">
             <span className="block">PRIVATE RELATIONSHIPS.</span>

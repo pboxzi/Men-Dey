@@ -14,7 +14,7 @@ export function HeroSection() {
           />
         </div>
 
-        <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">
+        <div className="flex min-w-0 flex-col justify-center px-6 pt-7 pb-16 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
             <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#77716A] sm:text-[11px]">
               Welcome to your private space.

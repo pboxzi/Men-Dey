@@ -28,11 +28,15 @@ export function ManagementOfficeSection() {
           </Reveal>
         </div>
 
-        <div className="relative order-1 h-[78vw] max-h-[440px] w-full overflow-hidden sm:max-h-[500px] lg:order-2 lg:h-auto lg:max-h-none lg:min-h-[76vh]">
+        <div className="relative order-1 h-[66vw] max-h-[380px] w-full overflow-hidden sm:max-h-[440px] lg:order-2 lg:h-auto lg:max-h-none lg:min-h-[76vh]">
           <EditorialImage
             src={homepageImages.session2}
             alt="Gillian Anderson reviewing papers at her desk in a calm interior"
             position="object-[center_32%]"
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#FCFAF7] to-transparent"
+            aria-hidden
           />
         </div>
       </div>

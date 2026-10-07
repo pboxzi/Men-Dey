@@ -26,6 +26,10 @@ export function MembershipSection() {
             alt="A black membership card with the gold GA monogram resting on leather"
             position="object-[center_48%]"
           />
+          <div
+            className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#1E1E1E] to-transparent"
+            aria-hidden
+          />
         </div>
 
         <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">

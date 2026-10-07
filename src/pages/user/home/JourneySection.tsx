@@ -38,11 +38,15 @@ export function JourneySection() {
           </Reveal>
         </div>
 
-        <div className="relative order-1 h-[64vw] max-h-[360px] w-full overflow-hidden sm:max-h-[420px] lg:order-2 lg:h-auto lg:max-h-none lg:min-h-[78vh]">
+        <div className="relative order-1 h-[66vw] max-h-[380px] w-full overflow-hidden sm:max-h-[440px] lg:order-2 lg:h-auto lg:max-h-none lg:min-h-[78vh]">
           <EditorialImage
             src={homepageImages.session4}
             alt="An open notebook and warm lamp on a dark wooden desk"
             position="object-[center_50%]"
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#FCFAF7] to-transparent"
+            aria-hidden
           />
         </div>
       </div>

@@ -12,11 +12,15 @@ export function PrivateExperiencesSection() {
   return (
     <section className="border-x border-b border-[#E8E1D7] bg-[#FCFAF7]">
       <div className="mx-auto grid w-full max-w-[1500px] items-stretch gap-0 lg:grid-cols-[1.1fr_1fr]">
-        <div className="relative h-[64vw] max-h-[360px] w-full overflow-hidden sm:max-h-[420px] lg:h-auto lg:max-h-none lg:min-h-[86vh]">
+        <div className="relative h-[66vw] max-h-[380px] w-full overflow-hidden sm:max-h-[440px] lg:h-auto lg:max-h-none lg:min-h-[86vh]">
           <EditorialImage
             src={homepageImages.session3}
             alt="A handwritten letter and fountain pen on a private writing desk"
             position="object-[center_55%]"
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#FCFAF7] to-transparent"
+            aria-hidden
           />
         </div>
 

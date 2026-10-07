@@ -161,36 +161,32 @@ beforeEach(() => {
 });
 
 describe('home page', () => {
-  it('renders the private home with hero, journey and from-management sections', async () => {
+  it('renders the private home with hero, six sessions and footer', async () => {
     renderApp('/home');
 
     expect(await screen.findByText(/welcome to your private space/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/A place to connect with management, explore your options/),
+      screen.getByText(/A private space for personal requests, carefully considered experiences/),
     ).toBeInTheDocument();
-    expect(screen.getByText('YOUR JOURNEY')).toBeInTheDocument();
-    expect(screen.getByText('01')).toBeInTheDocument();
-    expect(screen.getByText('CONNECT')).toBeInTheDocument();
-    expect(screen.getByText('DISCUSS')).toBeInTheDocument();
-    expect(screen.getByText('ARRANGE')).toBeInTheDocument();
-    expect(screen.getByText('EXPERIENCE')).toBeInTheDocument();
-    expect(screen.getByText('FROM MANAGEMENT')).toBeInTheDocument();
     expect(screen.getAllByText(/Gillian Anderson Management/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/0[1-6] \/ 06/).length).toBeGreaterThanOrEqual(6);
+    expect(screen.getByRole('heading', {name: /YOUR\s*JOURNEY/i})).toBeInTheDocument();
+    expect(screen.getByText('01')).toBeInTheDocument();
+    expect(screen.getByText('INTRODUCE')).toBeInTheDocument();
+    expect(screen.getByText('DISCUSS')).toBeInTheDocument();
+    expect(screen.getByText('CURATE')).toBeInTheDocument();
+    expect(screen.getByText('ARRANGE')).toBeInTheDocument();
+    expect(screen.getByText('PERSONAL')).toBeInTheDocument();
     expect(
-      await screen.findByText(
-        /Welcome to your private management space\. If there is something you would like to explore/,
-      ),
-    ).toBeInTheDocument();
-    expect(screen.getAllByRole('link', {name: /Talk to management/i}).length).toBeGreaterThan(0);
-    expect(
-      screen.getAllByRole('link', {name: /Make a request/i}).length,
+      screen.getAllByRole('link', {name: /Begin a conversation/i}).length,
     ).toBeGreaterThan(0);
     expect(
-      screen.getAllByRole('link', {name: /Explore membership/i}).length,
+      screen.getAllByRole('link', {name: /Explore experiences/i}).length,
     ).toBeGreaterThan(0);
     expect(
-      screen.getAllByText(/REQUEST SOMETHING PERSONAL/).length,
+      screen.getAllByRole('link', {name: /Discuss membership/i}).length,
     ).toBeGreaterThan(0);
+    expect(screen.getByText(/PRIVATE · DISCREET · BY ARRANGEMENT/i)).toBeInTheDocument();
     // home is not the dashboard
     expect(screen.queryByText(/Good (morning|afternoon|evening)/)).not.toBeInTheDocument();
     expect(screen.queryByText('Overview')).not.toBeInTheDocument();

@@ -1,3 +1,5 @@
+import {useEffect} from 'react';
+
 import {ArrowRight} from 'lucide-react';
 import {motion, useReducedMotion} from 'motion/react';
 import {Link} from 'react-router-dom';
@@ -6,8 +8,29 @@ import {GateBrand} from '../../components/auth/GateBrand';
 
 const EASE: [number, number, number, number] = [0.22, 0.61, 0.36, 1];
 
+const CRISP_WEBSITE_ID = '27e74bb1-7405-4ac9-86b0-57c81dcf93cd';
+
+type CrispWindow = Window & {$crisp?: unknown[]; CRISP_WEBSITE_ID?: string};
+
 export function LandingPage() {
   const reduce = useReducedMotion() === true;
+
+  useEffect(() => {
+    const w = window as CrispWindow;
+    if (!w.$crisp) {
+      w.$crisp = [];
+      w.CRISP_WEBSITE_ID = CRISP_WEBSITE_ID;
+      const script = document.createElement('script');
+      script.src = 'https://client.crisp.chat/l.js';
+      script.async = true;
+      document.head.appendChild(script);
+    } else {
+      w.$crisp.push(['do', 'chat:show']);
+    }
+    return () => {
+      w.$crisp?.push(['do', 'chat:hide']);
+    };
+  }, []);
 
   const rise = (delay: number) => ({
     initial: reduce ? {opacity: 1, y: 0} : {opacity: 0, y: 18},

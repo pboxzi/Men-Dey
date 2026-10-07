@@ -52,7 +52,7 @@ export function InterestsStep() {
               checked={draft.experienceInterests.includes(category.key)}
               onChange={() => toggle(category.key)}
             />
-            <span className="text-sm text-charcoal">{category.label}</span>
+            <span className="text-sm text-ink">{category.label}</span>
           </label>
         ))}
       </fieldset>

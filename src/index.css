@@ -31,6 +31,13 @@
     line-height: 1.6;
   }
 
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+  }
+
   h1,
   h2,
   h3 {
@@ -464,6 +471,16 @@
   border-color: rgba(200, 155, 60, 0.7);
 }
 
+/* Info alerts + option-tile borders are stone-tinted; on the gate they need
+   a dark base so the light copy stays readable. */
+.gate-flow .bg-stone\/60 {
+  background-color: rgba(12, 11, 10, 0.55);
+}
+
+.gate-flow .border-stone-deep {
+  border-color: rgba(234, 228, 218, 0.3);
+}
+
 /* Reading pane for long-form copy (acknowledgement) — flat band, not a card. */
 .gate-doc {
   background: linear-gradient(
@@ -585,13 +602,6 @@
   }
 }
 
-/* The private gate carries no third-party chat surface. */
-body.gate-mode .crisp-client,
-body.gate-mode #crisp-chatbox,
-body.gate-mode [data-crisp-messages] {
-  display: none !important;
-}
-
 /* Mobile feel: smooth scrolling, no tap flash, no double-tap zoom delay. */
 @media (prefers-reduced-motion: no-preference) {
   html {
@@ -601,6 +611,7 @@ body.gate-mode [data-crisp-messages] {
 
 html {
   -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -636,5 +647,63 @@ img {
 @media (max-width: 639px) {
   .field-input {
     font-size: 16px;
+  }
+}
+
+/* Touch devices: a tap must not leave a sticky hover state behind
+   (Chrome keeps :hover after the finger lifts, Firefox does not). */
+@media (hover: none) {
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-gold);
+    border-color: var(--color-gold);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    border-color: var(--color-stone-deep);
+    color: var(--color-charcoal);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    color: var(--color-muted);
+  }
+
+  .nav-link:hover {
+    color: var(--color-muted);
+  }
+
+  .gate-back:hover {
+    color: rgba(234, 228, 218, 0.78);
+  }
+
+  .gate-btn-primary:hover:not(:disabled) {
+    background: var(--color-gold);
+    border-color: var(--color-gold);
+    box-shadow: none;
+  }
+
+  .gate-btn-secondary:hover:not(:disabled) {
+    background: rgba(17, 16, 14, 0.5);
+    border-color: rgba(200, 155, 60, 0.55);
+    box-shadow: none;
+  }
+
+  .gate-flow .btn-primary:hover:not(:disabled) {
+    background: var(--color-gold);
+    border-color: var(--color-gold);
+    color: var(--color-charcoal);
+  }
+
+  .gate-flow .btn-secondary:hover:not(:disabled) {
+    background: rgba(17, 16, 14, 0.5);
+    border-color: rgba(200, 155, 60, 0.55);
+    color: var(--color-alabaster);
+  }
+
+  .gate-flow .btn-ghost:hover:not(:disabled) {
+    color: rgba(230, 224, 214, 0.78);
+  }
+
+  .gate-flow .hover\:border-stone-deep:hover {
+    border-color: rgba(234, 228, 218, 0.26);
   }
 }

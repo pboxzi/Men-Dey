@@ -112,12 +112,31 @@ export function ProfilePage() {
   if (loading || profileLoading) return <FullPageLoader />;
   if (!profile) return null;
 
+  const name = (profile.full_name ?? '').trim();
+  const initials =
+    name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() ?? '')
+      .join('') || (profile.email ?? '?').slice(0, 1).toUpperCase();
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="border-b border-stone pb-6">
-        <p className="eyebrow mb-2">Profile</p>
-        <h1 className="text-3xl md:text-4xl">Your details</h1>
-        <p className="mt-2 text-muted">
+        <div className="flex items-center gap-4">
+          <span
+            className="flex size-14 shrink-0 items-center justify-center rounded-full bg-charcoal text-lg font-medium text-gold"
+            aria-hidden
+          >
+            {initials}
+          </span>
+          <div className="min-w-0">
+            <p className="eyebrow mb-1">Profile</p>
+            <h1 className="break-words text-3xl md:text-4xl">Your details</h1>
+          </div>
+        </div>
+        <p className="mt-3 text-muted">
           Keep your details current so management can reach you properly. Role, membership and
           approval status are managed by management and cannot be edited here.
         </p>
@@ -247,8 +266,8 @@ export function ProfilePage() {
           </dl>
         </div>
 
-        <div className="flex justify-end">
-          <Button type="submit" loading={saving}>
+        <div className="flex justify-center sm:justify-end">
+          <Button type="submit" className="w-full sm:w-auto" loading={saving}>
             Save changes
           </Button>
         </div>

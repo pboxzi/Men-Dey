@@ -27,7 +27,7 @@ function ChannelToggle({
         onChange={(event) => onChange(event.target.checked)}
       />
       <span>
-        <span className="block text-sm font-medium text-charcoal">{label}</span>
+        <span className="block text-sm font-medium text-ink">{label}</span>
         {hint ? <span className="block text-xs text-muted">{hint}</span> : null}
       </span>
     </label>

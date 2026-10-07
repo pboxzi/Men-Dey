@@ -3,7 +3,7 @@ import {homepageImages} from './homepageImages';
 
 export function HeroSection() {
   return (
-    <section className="border-b border-[#E8E1D7] bg-[#FCFAF7]">
+    <section className="border-x border-b border-[#E8E1D7] bg-[#FCFAF7]">
       <div className="mx-auto grid w-full max-w-[1500px] items-stretch gap-0 lg:grid-cols-[1.05fr_1fr]">
         <div className="relative h-[92vw] max-h-[480px] w-full overflow-hidden sm:max-h-[540px] lg:h-auto lg:max-h-none lg:min-h-[80vh]">
           <EditorialImage
@@ -14,7 +14,7 @@ export function HeroSection() {
           />
         </div>
 
-        <div className="flex min-w-0 flex-col justify-center px-6 pt-7 pb-16 sm:px-10 lg:px-16 lg:py-24">
+        <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
             <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#77716A] sm:text-[11px]">
               Welcome to your private space.

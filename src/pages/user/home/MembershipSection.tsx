@@ -18,7 +18,7 @@ const MEMBERSHIP_STEPS = [
 
 export function MembershipSection() {
   return (
-    <section className="border-b border-black/20 bg-[#1E1E1E]">
+    <section className="border-x border-[#E8E1D7]/30 bg-[#1E1E1E]">
       <div className="mx-auto grid w-full max-w-[1500px] items-stretch gap-0 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="relative h-[66vw] max-h-[380px] w-full overflow-hidden sm:max-h-[440px] lg:h-auto lg:max-h-none lg:min-h-[82vh]">
           <EditorialImage
@@ -28,7 +28,7 @@ export function MembershipSection() {
           />
         </div>
 
-        <div className="flex min-w-0 flex-col justify-center px-6 pt-7 pb-16 sm:px-10 lg:px-16 lg:py-24">
+        <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
             <h2 className="break-words font-display text-[26px] font-medium leading-[1.1] text-[#FCFAF7] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
               <span className="block">MEMBERSHIP</span>

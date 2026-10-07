@@ -3,7 +3,7 @@ import {homepageImages} from './homepageImages';
 
 export function ClosingSection() {
   return (
-    <section className="bg-[#FCFAF7]">
+    <section className="border-x border-b border-[#E8E1D7] bg-[#FCFAF7]">
       <div className="relative h-[66vw] max-h-[380px] w-full overflow-hidden sm:max-h-[440px] lg:h-[64vh]">
         <EditorialImage
           src={homepageImages.session6}
@@ -16,7 +16,7 @@ export function ClosingSection() {
         />
       </div>
 
-      <div className="mx-auto w-full max-w-[1500px] px-6 pt-7 pb-16 sm:px-10 lg:px-16 lg:pt-10 lg:pb-24">
+      <div className="mx-auto w-full max-w-[1500px] px-6 pb-16 pt-10 sm:px-10 lg:px-16 lg:pb-24 lg:pt-12">
         <Reveal className="max-w-[34rem]">
           <h2 className="break-words font-display text-[26px] font-medium leading-[1.15] text-[#1E1E1E] sm:text-[32px] lg:text-[36px]">
             <span className="block">PRIVATE RELATIONSHIPS.</span>

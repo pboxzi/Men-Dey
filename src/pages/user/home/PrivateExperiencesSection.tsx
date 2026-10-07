@@ -10,7 +10,7 @@ const EXPERIENCE_KINDS = [
 
 export function PrivateExperiencesSection() {
   return (
-    <section className="border-b border-[#E8E1D7] bg-[#FCFAF7]">
+    <section className="border-x border-b border-[#E8E1D7] bg-[#FCFAF7]">
       <div className="mx-auto grid w-full max-w-[1500px] items-stretch gap-0 lg:grid-cols-[1.1fr_1fr]">
         <div className="relative h-[64vw] max-h-[360px] w-full overflow-hidden sm:max-h-[420px] lg:h-auto lg:max-h-none lg:min-h-[86vh]">
           <EditorialImage
@@ -20,7 +20,7 @@ export function PrivateExperiencesSection() {
           />
         </div>
 
-        <div className="flex min-w-0 flex-col justify-center px-6 pt-7 pb-16 sm:px-10 lg:px-16 lg:py-24">
+        <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
             <h2 className="break-words font-display text-[26px] font-medium leading-[1.1] text-[#1E1E1E] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
               <span className="block">PRIVATE</span>

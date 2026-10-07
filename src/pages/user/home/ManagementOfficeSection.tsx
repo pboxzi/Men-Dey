@@ -1,4 +1,4 @@
-import {EditorialCta, EditorialImage, Reveal, SessionLabel} from './editorial';
+import {EditorialCta, EditorialImage, Reveal} from './editorial';
 import {homepageImages} from './homepageImages';
 
 export function ManagementOfficeSection() {
@@ -7,9 +7,7 @@ export function ManagementOfficeSection() {
       <div className="mx-auto grid w-full max-w-[1500px] items-stretch gap-0 lg:grid-cols-[1.02fr_0.98fr]">
         <div className="flex min-w-0 flex-col justify-center px-6 pb-14 pt-10 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
-            <SessionLabel label="02 / 06" />
-
-            <h2 className="mt-4 break-words font-display text-[26px] font-medium leading-[1.1] text-[#1E1E1E] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
+            <h2 className="break-words font-display text-[26px] font-medium leading-[1.1] text-[#1E1E1E] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
               <span className="block">THE</span>
               <span className="block">MANAGEMENT</span>
               <span className="block">OFFICE.</span>

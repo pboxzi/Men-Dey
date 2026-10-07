@@ -169,9 +169,7 @@ describe('home page', () => {
       screen.getByText(/A private space for personal requests, carefully considered experiences/),
     ).toBeInTheDocument();
     expect(screen.getAllByText(/Gillian Anderson Management/).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/0[1-6] \/ 06/).length).toBeGreaterThanOrEqual(6);
     expect(screen.getByRole('heading', {name: /YOUR\s*JOURNEY/i})).toBeInTheDocument();
-    expect(screen.getByText('01')).toBeInTheDocument();
     expect(screen.getByText('INTRODUCE')).toBeInTheDocument();
     expect(screen.getByText('DISCUSS')).toBeInTheDocument();
     expect(screen.getByText('CURATE')).toBeInTheDocument();

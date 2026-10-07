@@ -1,4 +1,4 @@
-import {EditorialCta, EditorialImage, Reveal, SessionLabel} from './editorial';
+import {EditorialCta, EditorialImage, Reveal} from './editorial';
 import {homepageImages} from './homepageImages';
 
 const MEMBERSHIP_STEPS = [
@@ -30,9 +30,7 @@ export function MembershipSection() {
 
         <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
-            <SessionLabel label="05 / 06" tone="dark" />
-
-            <h2 className="mt-4 break-words font-display text-[26px] font-medium leading-[1.1] text-[#FCFAF7] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
+            <h2 className="break-words font-display text-[26px] font-medium leading-[1.1] text-[#FCFAF7] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
               <span className="block">MEMBERSHIP</span>
               <span className="block">IS PERSONAL.</span>
             </h2>
@@ -46,14 +44,10 @@ export function MembershipSection() {
             <ol className="mt-6 max-w-[34rem]">
               {MEMBERSHIP_STEPS.map((item) => (
                 <li key={item.title} className="border-t border-white/12 py-4 last:border-b">
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-                    <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#FCFAF7]">
-                      {item.title}
-                    </span>
-                    <span className="text-[13px] leading-relaxed text-[#B5AEA3] sm:text-right">
-                      {item.copy}
-                    </span>
-                  </div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#FCFAF7]">
+                    {item.title}
+                  </p>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-[#B5AEA3]">{item.copy}</p>
                 </li>
               ))}
             </ol>

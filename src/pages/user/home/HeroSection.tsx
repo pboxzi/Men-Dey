@@ -1,4 +1,4 @@
-import {EditorialCta, EditorialImage, Reveal, SessionLabel} from './editorial';
+import {EditorialCta, EditorialImage, Reveal} from './editorial';
 import {homepageImages} from './homepageImages';
 
 export function HeroSection() {
@@ -16,13 +16,11 @@ export function HeroSection() {
 
         <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
-            <SessionLabel label="01 / 06" />
-
-            <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.28em] text-[#77716A] sm:text-[11px]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#77716A] sm:text-[11px]">
               Welcome to your private space.
             </p>
 
-            <h1 className="mt-4 break-words font-display text-[30px] font-medium leading-[1.1] text-[#1E1E1E] sm:text-[38px] lg:text-[42px] xl:text-[48px]">
+            <h1 className="mt-5 break-words font-display text-[30px] font-medium leading-[1.1] text-[#1E1E1E] sm:text-[38px] lg:text-[42px] xl:text-[48px]">
               <span className="block">WELCOME TO</span>
               <span className="block">GILLIAN ANDERSON</span>
               <span className="block">MANAGEMENT.</span>

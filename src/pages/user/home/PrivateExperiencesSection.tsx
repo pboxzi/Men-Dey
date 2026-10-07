@@ -1,4 +1,4 @@
-import {EditorialCta, EditorialImage, Reveal, SessionLabel} from './editorial';
+import {EditorialCta, EditorialImage, Reveal} from './editorial';
 import {homepageImages} from './homepageImages';
 
 const EXPERIENCE_KINDS = [
@@ -22,9 +22,7 @@ export function PrivateExperiencesSection() {
 
         <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
-            <SessionLabel label="03 / 06" />
-
-            <h2 className="mt-4 break-words font-display text-[26px] font-medium leading-[1.1] text-[#1E1E1E] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
+            <h2 className="break-words font-display text-[26px] font-medium leading-[1.1] text-[#1E1E1E] sm:text-[32px] lg:text-[36px] xl:text-[40px]">
               <span className="block">PRIVATE</span>
               <span className="block">EXPERIENCES.</span>
             </h2>
@@ -43,14 +41,10 @@ export function PrivateExperiencesSection() {
             <ul className="mt-6 max-w-[30rem]">
               {EXPERIENCE_KINDS.map((kind) => (
                 <li key={kind.title} className="border-t border-[#E8E1D7] py-4 last:border-b">
-                  <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
-                    <span className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#1E1E1E]">
-                      {kind.title}
-                    </span>
-                    <span className="text-[13px] leading-relaxed text-[#77716A] sm:text-right">
-                      {kind.copy}
-                    </span>
-                  </div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#1E1E1E]">
+                    {kind.title}
+                  </p>
+                  <p className="mt-1.5 text-[13px] leading-relaxed text-[#77716A]">{kind.copy}</p>
                 </li>
               ))}
             </ul>

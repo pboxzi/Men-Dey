@@ -53,22 +53,6 @@ export function Reveal({
   );
 }
 
-export function SessionLabel({label, tone = 'light'}: {label: string; tone?: 'light' | 'dark'}) {
-  return (
-    <p
-      className={`flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.3em] ${
-        tone === 'dark' ? 'text-[#B5AEA3]' : 'text-[#77716A]'
-      }`}
-    >
-      <span
-        className={`h-px w-8 shrink-0 ${tone === 'dark' ? 'bg-[#C89B3C]/90' : 'bg-[#C89B3C]/70'}`}
-        aria-hidden
-      />
-      {label}
-    </p>
-  );
-}
-
 export function EditorialCta({
   to,
   tone = 'light',

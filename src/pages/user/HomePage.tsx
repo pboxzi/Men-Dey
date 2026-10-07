@@ -37,6 +37,37 @@ const JOURNEY = [
   },
 ];
 
+const FEATURES = [
+  {
+    image: '/assets/images/feature_talk_management.jpg',
+    alt: 'Talk to Management desk',
+    icon: <MessageSquare className="h-3.5 w-3.5 stroke-[1.8] text-[#1E1E1E]" />,
+    title: 'TALK TO MANAGEMENT',
+    description: 'Start a private conversation with the management team.',
+    href: '/dashboard/messages',
+    cta: 'OPEN MESSAGES',
+  },
+  {
+    image: '/assets/images/feature_request_personal.jpg',
+    alt: 'Request stationery',
+    icon: <FileText className="h-3.5 w-3.5 stroke-[1.8] text-[#1E1E1E]" />,
+    title: 'REQUEST SOMETHING PERSONAL',
+    description:
+      "Tell management what you would like to explore and we'll guide you through the appropriate process.",
+    href: '/dashboard/requests/new',
+    cta: 'MAKE A REQUEST',
+  },
+  {
+    image: '/assets/images/feature_explore_membership.jpg',
+    alt: 'Membership card',
+    icon: <Crown className="h-3.5 w-3.5 stroke-[1.8] text-[#C89B3C]" />,
+    title: 'EXPLORE MEMBERSHIP',
+    description: 'Learn how membership works and discuss your options with management.',
+    href: '/dashboard/membership',
+    cta: 'VIEW MEMBERSHIP',
+  },
+];
+
 interface FromManagement {
   title: string | null;
   message: string | null;
@@ -230,118 +261,47 @@ export function HomePage() {
       ========================================================================= */}
       <section className="py-10 sm:py-20 border-b border-[#EAE4DA] bg-[#FAF8F5]">
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {/* Card 1: TALK TO MANAGEMENT */}
-            <div className="bg-white rounded-lg border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
-              <div>
-                <div className="relative h-36 w-full overflow-hidden bg-stone-100 sm:h-32">
-                  <img
-                    src="/assets/images/feature_talk_management.jpg"
-                    alt="Talk to Management desk"
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center text-[#1E1E1E] shadow-xs">
-                    <MessageSquare className="w-3.5 h-3.5 stroke-[1.8]" />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
+            {FEATURES.map((feature) => (
+              <article
+                key={feature.title}
+                className="group relative flex flex-col justify-between overflow-hidden rounded-lg border border-[#EAE4DA] bg-white shadow-xs transition-colors hover:border-[#C89B3C]/60"
+              >
+                <div>
+                  <div className="relative h-44 w-full overflow-hidden bg-stone-100 sm:h-36 lg:h-32">
+                    <img
+                      src={feature.image}
+                      alt={feature.alt}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-xs backdrop-blur-xs">
+                      {feature.icon}
+                    </div>
+                  </div>
+
+                  <div className="p-5">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
+                      {feature.title}
+                    </h3>
+                    <p className="mt-2 text-xs leading-relaxed text-[#6E6A63]">
+                      {feature.description}
+                    </p>
                   </div>
                 </div>
 
-                <div className="p-5">
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
-                    TALK TO MANAGEMENT
-                  </h3>
-                  <p className="text-xs text-[#6E6A63] mt-2 leading-relaxed">
-                    Start a private conversation with the management team.
-                  </p>
+                <div className="px-5 pb-5">
+                  <Link
+                    to={feature.href}
+                    className="after:absolute after:inset-0 after:content-[''] inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-[#C89B3C]/45 px-4 text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] transition-colors hover:border-[#C89B3C] hover:text-[#8C6519] sm:w-auto"
+                  >
+                    <span>{feature.cta}</span>
+                    <span aria-hidden>→</span>
+                  </Link>
                 </div>
-              </div>
-
-              <div className="p-5 pt-0">
-                <Link
-                  to="/dashboard/messages"
-                  className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
-                >
-                  <span>OPEN MESSAGES</span>
-                  <span>→</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Card 2: REQUEST SOMETHING PERSONAL */}
-            <div className="bg-white rounded-lg border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
-              <div>
-                <div className="relative h-36 w-full overflow-hidden bg-stone-100 sm:h-32">
-                  <img
-                    src="/assets/images/feature_request_personal.jpg"
-                    alt="Request stationery"
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center text-[#1E1E1E] shadow-xs">
-                    <FileText className="w-3.5 h-3.5 stroke-[1.8]" />
-                  </div>
-                </div>
-
-                <div className="p-5">
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
-                    REQUEST SOMETHING PERSONAL
-                  </h3>
-                  <p className="text-xs text-[#6E6A63] mt-2 leading-relaxed">
-                    Tell management what you would like to explore and we'll guide you through
-                    the appropriate process.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-5 pt-0">
-                <Link
-                  to="/dashboard/requests/new"
-                  className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
-                >
-                  <span>MAKE A REQUEST</span>
-                  <span>→</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Card 3: EXPLORE MEMBERSHIP */}
-            <div className="bg-white rounded-lg border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
-              <div>
-                <div className="relative h-36 w-full overflow-hidden bg-stone-100 sm:h-32">
-                  <img
-                    src="/assets/images/feature_explore_membership.jpg"
-                    alt="Membership card"
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center text-[#C89B3C] shadow-xs">
-                    <Crown className="w-3.5 h-3.5 stroke-[1.8]" />
-                  </div>
-                </div>
-
-                <div className="p-5">
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
-                    EXPLORE MEMBERSHIP
-                  </h3>
-                  <p className="text-xs text-[#6E6A63] mt-2 leading-relaxed">
-                    Learn how membership works and discuss your options with management.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-5 pt-0">
-                <Link
-                  to="/dashboard/membership"
-                  className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
-                >
-                  <span>VIEW MEMBERSHIP</span>
-                  <span>→</span>
-                </Link>
-              </div>
-            </div>
+              </article>
+            ))}
 
             {/* Card 4: FROM MANAGEMENT */}
             <div className="bg-white rounded-lg border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors">
@@ -378,10 +338,10 @@ export function HomePage() {
               <div className="pt-4">
                 <Link
                   to="/dashboard/messages"
-                  className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
+                  className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-[#C89B3C]/45 px-4 text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] transition-colors hover:border-[#C89B3C] hover:text-[#8C6519]"
                 >
                   <span>VIEW MESSAGES</span>
-                  <span>→</span>
+                  <span aria-hidden>→</span>
                 </Link>
               </div>
             </div>
@@ -402,7 +362,7 @@ export function HomePage() {
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-1 text-[11px] sm:text-xs font-semibold tracking-wider uppercase">
             <Link
               to="/dashboard/messages"
-              className="text-[#C89B3C] hover:text-[#E0B85C] transition-colors inline-flex items-center gap-1"
+              className="inline-flex min-h-11 items-center gap-1 text-[#C89B3C] transition-colors hover:text-[#E0B85C]"
             >
               <span>Talk to Management</span>
               <span>→</span>
@@ -410,7 +370,7 @@ export function HomePage() {
             <span className="text-stone-700 hidden sm:inline">|</span>
             <Link
               to="/dashboard/membership"
-              className="text-stone-300 hover:text-white transition-colors inline-flex items-center gap-1"
+              className="inline-flex min-h-11 items-center gap-1 text-stone-300 transition-colors hover:text-white"
             >
               <span>Explore Membership</span>
               <span>→</span>
@@ -418,7 +378,7 @@ export function HomePage() {
             <span className="text-stone-700 hidden sm:inline">|</span>
             <Link
               to="/dashboard/requests/new"
-              className="text-stone-300 hover:text-white transition-colors inline-flex items-center gap-1"
+              className="inline-flex min-h-11 items-center gap-1 text-stone-300 transition-colors hover:text-white"
             >
               <span>Make a Request</span>
               <span>→</span>

@@ -17,6 +17,11 @@ export const INTEREST_CATEGORIES: InterestCategory[] = [
   {key: 'meet_greet', label: 'Meet & Greet'},
   {key: 'business_request', label: 'Business / Professional Request'},
   {key: 'special_occasion', label: 'Special Occasion Request'},
+  {key: 'signed_memorabilia', label: 'Signed Photo & Memorabilia'},
+  {key: 'charity_request', label: 'Charity / Fundraising Request'},
+  {key: 'event_appearance', label: 'Event Appearance'},
+  {key: 'group_experience', label: 'Group Experience'},
+  {key: 'phone_call', label: 'Live Phone Call'},
   {key: 'other', label: 'Other'},
 ];
 

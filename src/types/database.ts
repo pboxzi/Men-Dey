@@ -10,6 +10,11 @@ export type RequestType =
   | 'meet_greet'
   | 'business_professional'
   | 'special_occasion'
+  | 'signed_memorabilia'
+  | 'charity_request'
+  | 'event_appearance'
+  | 'group_experience'
+  | 'phone_call'
   | 'other';
 
 export type RequestStatus =
@@ -50,6 +55,11 @@ export type ExperienceInterestKey =
   | 'meet_greet'
   | 'business_request'
   | 'special_occasion'
+  | 'signed_memorabilia'
+  | 'charity_request'
+  | 'event_appearance'
+  | 'group_experience'
+  | 'phone_call'
   | 'other';
 
 export type ConversationStatus = 'open' | 'waiting' | 'closed';

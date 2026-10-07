@@ -14,6 +14,11 @@ export const REQUEST_CATEGORIES: ReadonlyArray<{key: RequestType; label: string}
   {key: 'meet_greet', label: 'Meet & Greet'},
   {key: 'business_professional', label: 'Business / Professional'},
   {key: 'special_occasion', label: 'Special Occasion'},
+  {key: 'signed_memorabilia', label: 'Signed Photo & Memorabilia'},
+  {key: 'charity_request', label: 'Charity / Fundraising'},
+  {key: 'event_appearance', label: 'Event Appearance'},
+  {key: 'group_experience', label: 'Group Experience'},
+  {key: 'phone_call', label: 'Live Phone Call'},
   {key: 'other', label: 'Other'},
 ];
 
@@ -68,6 +73,10 @@ export const EXPERIENCE_REQUEST_TYPES: ReadonlyArray<RequestType> = [
   'meet_greet',
   'business_professional',
   'special_occasion',
+  'signed_memorabilia',
+  'charity_request',
+  'event_appearance',
+  'group_experience',
 ];
 
 export const PROPOSAL_STATUS_LABELS: Record<ExperienceProposalStatus, string> = {

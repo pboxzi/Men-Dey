@@ -11,6 +11,7 @@ import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate, formatDateTime} from '../../lib/format';
 import {supabase} from '../../lib/supabase';
+import {INTEREST_LABELS} from '../auth/application/interests';
 import {APPLICANT_STATUS_LABELS, APPLICANT_STATUS_TONES} from './shared';
 import type {ApplicantProfile, Profile} from '../../types';
 
@@ -20,18 +21,6 @@ interface ApplicantData {
 }
 
 const EMPTY: ApplicantData = {applicant: null, user: null};
-
-const INTEREST_LABELS: Record<string, string> = {
-  personal_experience: 'Personal experience',
-  video_communication: 'Video communication',
-  voice_message: 'Voice message',
-  text_communication: 'Text communication',
-  virtual_meeting: 'Virtual meeting',
-  meet_greet: 'Meet and greet',
-  business_request: 'Business request',
-  special_occasion: 'Special occasion',
-  other: 'Other',
-};
 
 export function ManagementApplicantDetailPage() {
   const {id = ''} = useParams();

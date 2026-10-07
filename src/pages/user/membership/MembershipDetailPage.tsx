@@ -207,7 +207,7 @@ export function MembershipDetailPage() {
               <p className="font-mono text-lg tracking-widest text-charcoal">{card.card_serial}</p>
               <p className="mt-1 text-xs text-muted">Issued {formatDate(card.issued_at)}</p>
             </div>
-            <Link to="/dashboard/membership/card" className="btn btn-secondary">
+            <Link to="/dashboard/membership/card" className="btn btn-secondary w-full justify-center sm:w-auto">
               <CreditCard className="size-4" aria-hidden /> View card
             </Link>
           </div>

@@ -155,12 +155,16 @@ export function ManagementPaymentsPage() {
   });
   const visible = tab === 'memberships' ? visibleMemberships : visibleExperiences;
 
-  const renderActions = (table: 'membership_payments' | 'experience_payments', payment: {id: string; status: PaymentStatus}) => {
+  const renderActions = (
+    table: 'membership_payments' | 'experience_payments',
+    payment: {id: string; status: PaymentStatus},
+    className = '',
+  ) => {
     if (payment.status !== 'pending' && payment.status !== 'processing') return null;
     const verifyLabel =
       table === 'membership_payments' ? 'Verify payment (membership)' : 'Verify payment';
     return confirmId === payment.id ? (
-      <span className="flex gap-2">
+      <span className={`flex gap-2 ${className}`.trim()}>
         <Button variant="ghost" onClick={() => setConfirmId(null)}>
           Back
         </Button>
@@ -180,7 +184,7 @@ export function ManagementPaymentsPage() {
         </Button>
       </span>
     ) : (
-      <span className="flex gap-2">
+      <span className={`flex gap-2 ${className}`.trim()}>
         <Button variant="secondary" onClick={() => setConfirmId(payment.id)}>
           {verifyLabel}
         </Button>
@@ -214,17 +218,17 @@ export function ManagementPaymentsPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row">
         <button
           type="button"
-          className={`btn ${tab === 'memberships' ? 'btn-primary' : 'btn-ghost'}`}
+          className={`btn w-full sm:w-auto ${tab === 'memberships' ? 'btn-primary' : 'btn-ghost'}`}
           onClick={() => setTab('memberships')}
         >
           Membership payments
         </button>
         <button
           type="button"
-          className={`btn ${tab === 'experiences' ? 'btn-primary' : 'btn-ghost'}`}
+          className={`btn w-full sm:w-auto ${tab === 'experiences' ? 'btn-primary' : 'btn-ghost'}`}
           onClick={() => setTab('experiences')}
         >
           Experience payments
@@ -265,70 +269,157 @@ export function ManagementPaymentsPage() {
             description="Payments appear here as soon as a membership or experience reaches the payment stage."
           />
         ) : (
-          <ul className="divide-y divide-stone">
-            {tab === 'memberships'
-              ? visibleMemberships.map((payment) => {
-                  const membership = first(payment.membership);
-                  const person = first(membership?.user);
-                  return (
-                    <li
-                      key={payment.id}
-                      className="flex flex-wrap items-center justify-between gap-3 py-3"
-                    >
-                      <div className="min-w-0">
+          <>
+            <div className="hidden md:block">
+              <ul className="divide-y divide-stone">
+                {tab === 'memberships'
+                  ? visibleMemberships.map((payment) => {
+                      const membership = first(payment.membership);
+                      const person = first(membership?.user);
+                      return (
+                        <li
+                          key={payment.id}
+                          className="flex flex-wrap items-center justify-between gap-3 py-3"
+                        >
+                          <div className="min-w-0">
+                            <Link
+                              to={`/management/memberships/${payment.membership_id}`}
+                              className="block truncate text-sm font-medium text-charcoal hover:underline"
+                            >
+                              {formatPrice(payment.amount_cents, payment.currency)}
+                            </Link>
+                            <p className="truncate text-xs text-muted">
+                              {person?.email ?? membership?.membership_number ?? 'Member'} ·{' '}
+                              {PAYMENT_PROVIDER_LABELS[payment.provider ?? ''] ?? payment.provider ?? 'Provider not set'}{' '}
+                              · ref {payment.reference || '—'} · created {formatDate(payment.created_at)}
+                              {payment.paid_at ? ` · paid ${formatDate(payment.paid_at)}` : ''}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
+                              {PAYMENT_STATUS_LABELS[payment.status]}
+                            </Chip>
+                            {renderActions('membership_payments', payment)}
+                          </div>
+                        </li>
+                      );
+                    })
+                  : visibleExperiences.map((payment) => {
+                      const request = first(payment.request);
+                      return (
+                        <li
+                          key={payment.id}
+                          className="flex flex-wrap items-center justify-between gap-3 py-3"
+                        >
+                          <div className="min-w-0">
+                            <Link
+                              to={`/management/requests/${payment.request_id}`}
+                              className="block truncate text-sm font-medium text-charcoal hover:underline"
+                            >
+                              {formatPrice(payment.amount_cents, payment.currency)} —{' '}
+                              {request?.title ?? 'Request'}
+                            </Link>
+                            <p className="truncate text-xs text-muted">
+                              {PAYMENT_PROVIDER_LABELS[payment.provider ?? ''] ?? payment.provider ?? 'Provider not set'}{' '}
+                              · ref {payment.reference || '—'} · created {formatDate(payment.created_at)}
+                              {payment.paid_at ? ` · paid ${formatDate(payment.paid_at)}` : ''}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
+                              {PAYMENT_STATUS_LABELS[payment.status]}
+                            </Chip>
+                            {renderActions('experience_payments', payment)}
+                          </div>
+                        </li>
+                      );
+                    })}
+              </ul>
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              {tab === 'memberships'
+                ? visibleMemberships.map((payment) => {
+                    const membership = first(payment.membership);
+                    const person = first(membership?.user);
+                    const actions = renderActions('membership_payments', payment, 'flex-wrap');
+                    return (
+                      <div
+                        key={payment.id}
+                        className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="min-w-0 break-words text-sm font-medium text-charcoal">
+                            {formatPrice(payment.amount_cents, payment.currency)}
+                          </span>
+                          <span className="shrink-0">
+                            <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
+                              {PAYMENT_STATUS_LABELS[payment.status]}
+                            </Chip>
+                          </span>
+                        </div>
+                        <p className="break-words text-xs text-muted">
+                          {person?.email ?? membership?.membership_number ?? 'Member'}
+                        </p>
+                        <p className="break-words text-xs text-muted">
+                          {PAYMENT_PROVIDER_LABELS[payment.provider ?? ''] ?? payment.provider ?? 'Provider not set'}{' '}
+                          · ref {payment.reference || '—'}
+                        </p>
+                        <p className="break-words text-xs text-muted">
+                          created {formatDate(payment.created_at)}
+                          {payment.paid_at ? ` · paid ${formatDate(payment.paid_at)}` : ''}
+                        </p>
+                        {actions ? <div className="pt-1">{actions}</div> : null}
                         <Link
                           to={`/management/memberships/${payment.membership_id}`}
-                          className="block truncate text-sm font-medium text-charcoal hover:underline"
+                          className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
                         >
-                          {formatPrice(payment.amount_cents, payment.currency)}
+                          <span>View membership</span>
+                          <span aria-hidden="true">→</span>
                         </Link>
-                        <p className="truncate text-xs text-muted">
-                          {person?.email ?? membership?.membership_number ?? 'Member'} ·{' '}
+                      </div>
+                    );
+                  })
+                : visibleExperiences.map((payment) => {
+                    const request = first(payment.request);
+                    const actions = renderActions('experience_payments', payment, 'flex-wrap');
+                    return (
+                      <div
+                        key={payment.id}
+                        className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="min-w-0 break-words text-sm font-medium text-charcoal">
+                            {formatPrice(payment.amount_cents, payment.currency)} —{' '}
+                            {request?.title ?? 'Request'}
+                          </span>
+                          <span className="shrink-0">
+                            <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
+                              {PAYMENT_STATUS_LABELS[payment.status]}
+                            </Chip>
+                          </span>
+                        </div>
+                        <p className="break-words text-xs text-muted">
                           {PAYMENT_PROVIDER_LABELS[payment.provider ?? ''] ?? payment.provider ?? 'Provider not set'}{' '}
-                          · ref {payment.reference || '—'} · created {formatDate(payment.created_at)}
+                          · ref {payment.reference || '—'}
+                        </p>
+                        <p className="break-words text-xs text-muted">
+                          created {formatDate(payment.created_at)}
                           {payment.paid_at ? ` · paid ${formatDate(payment.paid_at)}` : ''}
                         </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
-                          {PAYMENT_STATUS_LABELS[payment.status]}
-                        </Chip>
-                        {renderActions('membership_payments', payment)}
-                      </div>
-                    </li>
-                  );
-                })
-              : visibleExperiences.map((payment) => {
-                  const request = first(payment.request);
-                  return (
-                    <li
-                      key={payment.id}
-                      className="flex flex-wrap items-center justify-between gap-3 py-3"
-                    >
-                      <div className="min-w-0">
+                        {actions ? <div className="pt-1">{actions}</div> : null}
                         <Link
                           to={`/management/requests/${payment.request_id}`}
-                          className="block truncate text-sm font-medium text-charcoal hover:underline"
+                          className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
                         >
-                          {formatPrice(payment.amount_cents, payment.currency)} —{' '}
-                          {request?.title ?? 'Request'}
+                          <span>View request</span>
+                          <span aria-hidden="true">→</span>
                         </Link>
-                        <p className="truncate text-xs text-muted">
-                          {PAYMENT_PROVIDER_LABELS[payment.provider ?? ''] ?? payment.provider ?? 'Provider not set'}{' '}
-                          · ref {payment.reference || '—'} · created {formatDate(payment.created_at)}
-                          {payment.paid_at ? ` · paid ${formatDate(payment.paid_at)}` : ''}
-                        </p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
-                          {PAYMENT_STATUS_LABELS[payment.status]}
-                        </Chip>
-                        {renderActions('experience_payments', payment)}
-                      </div>
-                    </li>
-                  );
-                })}
-          </ul>
+                    );
+                  })}
+            </div>
+          </>
         )}
       </section>
     </div>

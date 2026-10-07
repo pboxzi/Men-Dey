@@ -537,8 +537,9 @@ export function ManagementRequestDetailPage() {
                   onChange={(event) => setMemberMessage(event.target.value)}
                 />
               </label>
-              <div className="flex justify-end">
+              <div className="flex justify-center sm:justify-end">
                 <Button
+                  className="w-full sm:w-auto"
                   onClick={() => void sendMessage(false)}
                   loading={sending}
                   disabled={!memberMessage.trim()}
@@ -557,9 +558,10 @@ export function ManagementRequestDetailPage() {
                   onChange={(event) => setInternalMessage(event.target.value)}
                 />
               </label>
-              <div className="flex justify-end">
+              <div className="flex justify-center sm:justify-end">
                 <Button
                   variant="secondary"
+                  className="w-full sm:w-auto"
                   onClick={() => void sendMessage(true)}
                   loading={sending}
                   disabled={!internalMessage.trim()}

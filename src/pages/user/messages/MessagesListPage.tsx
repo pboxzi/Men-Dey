@@ -117,7 +117,7 @@ export function MessagesListPage() {
             office.
           </p>
         </div>
-        <button type="button" className="btn btn-primary" onClick={() => void startConversation()} disabled={starting}>
+        <button type="button" className="btn btn-primary w-full justify-center sm:w-auto" onClick={() => void startConversation()} disabled={starting}>
           {starting ? <Spinner /> : <PenLine className="size-4" aria-hidden />}
           Talk to management
         </button>
@@ -144,14 +144,16 @@ export function MessagesListPage() {
                     to={`/dashboard/messages/${row.id}`}
                     className="flex items-start justify-between gap-4 py-4 transition-colors hover:bg-stone/40"
                   >
-                    <span className="min-w-0">
-                      <span className="flex items-center gap-2">
+                    <span className="min-w-0 flex-1">
+                      <span className="flex min-w-0 items-center gap-2">
                         <MessageSquare className="size-4 shrink-0 text-gold-deep" aria-hidden />
-                        <span className="truncate text-sm font-semibold text-charcoal">{row.subject}</span>
+                        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-charcoal">{row.subject}</span>
                         {CONVERSATION_STATUS_LABELS[row.status] ? (
-                          <Chip tone={row.status === 'closed' ? 'neutral' : 'gold'}>
-                            {CONVERSATION_STATUS_LABELS[row.status]}
-                          </Chip>
+                          <span className="shrink-0">
+                            <Chip tone={row.status === 'closed' ? 'neutral' : 'gold'}>
+                              {CONVERSATION_STATUS_LABELS[row.status]}
+                            </Chip>
+                          </span>
                         ) : null}
                       </span>
                       <span className="mt-1 block truncate text-sm text-muted">

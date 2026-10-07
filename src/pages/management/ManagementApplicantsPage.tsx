@@ -139,34 +139,81 @@ export function ManagementApplicantsPage() {
             }
           />
         ) : (
-          <ul className="divide-y divide-stone">
-            {visible.map((applicant) => (
-              <li key={applicant.id}>
-                <Link
-                  to={`/management/applicants/${applicant.id}`}
-                  className="flex items-center justify-between gap-4 py-3.5 hover:bg-stone/40"
-                >
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium text-charcoal">
-                      {applicantName(applicant)}
-                    </span>
-                    <span className="block truncate text-xs text-muted">
-                      {applicant.headline ? `${applicant.headline} · ` : ''}
+          <>
+            <div className="hidden md:block">
+              <ul className="divide-y divide-stone">
+                {visible.map((applicant) => (
+                  <li key={applicant.id}>
+                    <Link
+                      to={`/management/applicants/${applicant.id}`}
+                      className="flex items-center justify-between gap-4 py-3.5 hover:bg-stone/40"
+                    >
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-medium text-charcoal">
+                          {applicantName(applicant)}
+                        </span>
+                        <span className="block truncate text-xs text-muted">
+                          {applicant.headline ? `${applicant.headline} · ` : ''}
+                          {applicant.submitted_at
+                            ? `submitted ${relativeTime(applicant.submitted_at)}`
+                            : `started ${relativeTime(applicant.created_at)}`}
+                        </span>
+                      </span>
+                      <span className="flex shrink-0 items-center gap-3">
+                        <Chip tone={APPLICANT_STATUS_TONES[applicant.status]}>
+                          {APPLICANT_STATUS_LABELS[applicant.status]}
+                        </Chip>
+                        <ArrowRight className="size-4 text-muted" aria-hidden />
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              {visible.map((applicant) => {
+                const person = first(applicant.user);
+                return (
+                  <div
+                    key={applicant.id}
+                    className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 break-words text-sm font-medium text-charcoal">
+                        {applicantName(applicant)}
+                      </span>
+                      <span className="shrink-0">
+                        <Chip tone={APPLICANT_STATUS_TONES[applicant.status]}>
+                          {APPLICANT_STATUS_LABELS[applicant.status]}
+                        </Chip>
+                      </span>
+                    </div>
+                    <p className="break-words text-xs text-muted">
+                      {applicant.headline ?? 'No headline'}
+                    </p>
+                    {person?.full_name ? (
+                      <p className="break-words text-xs text-muted">
+                        {person.email ?? 'Email not on file'}
+                      </p>
+                    ) : null}
+                    <p className="text-xs text-muted">
                       {applicant.submitted_at
                         ? `submitted ${relativeTime(applicant.submitted_at)}`
                         : `started ${relativeTime(applicant.created_at)}`}
-                    </span>
-                  </span>
-                  <span className="flex shrink-0 items-center gap-3">
-                    <Chip tone={APPLICANT_STATUS_TONES[applicant.status]}>
-                      {APPLICANT_STATUS_LABELS[applicant.status]}
-                    </Chip>
-                    <ArrowRight className="size-4 text-muted" aria-hidden />
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                    </p>
+                    <Link
+                      to={`/management/applicants/${applicant.id}`}
+                      className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                    >
+                      <span>View</span>
+                      <span aria-hidden="true">→</span>
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </section>
     </div>

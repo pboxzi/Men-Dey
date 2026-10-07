@@ -142,7 +142,7 @@ export function MembershipPage() {
               Review the benefits and terms, then accept or decline it yourself.
             </p>
           </div>
-          <Link to="/dashboard/membership/offers" className="btn btn-primary">
+          <Link to="/dashboard/membership/offers" className="btn btn-primary w-full justify-center sm:w-auto">
             Review {offers.length === 1 ? 'offer' : 'offers'} <ArrowUpRight className="size-4" aria-hidden />
           </Link>
         </div>

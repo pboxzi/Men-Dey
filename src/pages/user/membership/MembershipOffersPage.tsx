@@ -251,7 +251,7 @@ export function MembershipOffersPage() {
                     <p className="text-sm text-muted">
                       You accepted this offer. Continue to your membership to complete the payment.
                     </p>
-                    <Link to="/dashboard/membership" className="btn btn-secondary">
+                    <Link to="/dashboard/membership" className="btn btn-secondary w-full justify-center sm:w-auto">
                       Membership status <ArrowUpRight className="size-4" aria-hidden />
                     </Link>
                   </div>

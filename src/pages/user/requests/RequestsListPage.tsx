@@ -61,15 +61,18 @@ export function RequestsListPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-stone pb-6">
-        <div>
+      <div className="flex flex-col gap-4 border-b border-stone pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
           <p className="eyebrow mb-2">Requests</p>
-          <h1 className="text-3xl md:text-4xl">Your requests</h1>
+          <h1 className="break-words text-2xl sm:text-3xl">Your requests</h1>
           <p className="mt-2 max-w-xl text-muted">
             Every request is read and reviewed by management. Nothing is promised automatically.
           </p>
         </div>
-        <Link to="/dashboard/requests/new" className="btn btn-primary">
+        <Link
+          to="/dashboard/requests/new"
+          className="btn btn-primary w-full min-h-11 justify-center sm:w-auto"
+        >
           <Plus className="size-4" aria-hidden />
           New request
         </Link>
@@ -81,7 +84,7 @@ export function RequestsListPage() {
             key={option.key}
             type="button"
             onClick={() => setFilter(option.key)}
-            className={`rounded-full border px-3 py-1 text-xs font-medium tracking-wide transition-colors ${
+            className={`inline-flex min-h-11 items-center rounded-full border px-3.5 text-xs font-medium tracking-wide transition-colors ${
               filter === option.key
                 ? 'border-charcoal bg-charcoal text-alabaster'
                 : 'border-stone bg-white text-muted hover:border-gold'
@@ -109,22 +112,31 @@ export function RequestsListPage() {
         <ul className="space-y-3">
           {visible.map((request) => (
             <li key={request.id}>
-              <Link to={`/dashboard/requests/${request.id}`} className="surface block p-5 transition-colors hover:border-gold">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <span className="min-w-0">
-                    <span className="block truncate text-lg text-charcoal">{request.title}</span>
-                    <span className="mt-1 block text-xs text-muted">
-                      {requestCategoryLabel(request.type)} · Submitted {formatDate(request.submitted_at)} ·{' '}
-                      {relativeTime(request.created_at)}
-                    </span>
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <Chip tone={REQUEST_STATUS_TONES[request.status]}>{REQUEST_STATUS_LABELS[request.status]}</Chip>
-                  </span>
-                </div>
+              <Link
+                to={`/dashboard/requests/${request.id}`}
+                className="block space-y-1.5 rounded-lg border border-[#EAE4DA] bg-white p-4 transition-colors hover:border-gold sm:p-5"
+              >
+                <span className="block break-words text-base text-charcoal sm:text-lg">
+                  {request.title}
+                </span>
+                <span className="flex flex-wrap items-center gap-2">
+                  <Chip tone={REQUEST_STATUS_TONES[request.status]}>
+                    {REQUEST_STATUS_LABELS[request.status]}
+                  </Chip>
+                </span>
+                <span className="block break-words text-xs text-muted">
+                  {requestCategoryLabel(request.type)} · Submitted {formatDate(request.submitted_at)} ·{' '}
+                  {relativeTime(request.created_at)}
+                </span>
                 {request.description ? (
-                  <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-muted">{request.description}</p>
+                  <span className="line-clamp-2 text-sm leading-relaxed text-muted">
+                    {request.description}
+                  </span>
                 ) : null}
+                <span className="flex min-h-11 items-center justify-between border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep">
+                  <span>View</span>
+                  <span aria-hidden="true">→</span>
+                </span>
               </Link>
             </li>
           ))}

@@ -302,8 +302,9 @@ export function ManagementNotificationsPage() {
           </label>
           {announcementError ? <Alert tone="error">{announcementError}</Alert> : null}
           {announcementNotice ? <Alert tone="success">{announcementNotice}</Alert> : null}
-          <div className="flex justify-end">
+          <div className="flex justify-center sm:justify-end">
             <Button
+              className="w-full sm:w-auto"
               onClick={() => void sendAnnouncement()}
               loading={sendingAnnouncement}
               disabled={!announceTitle.trim() || !announceBody.trim()}

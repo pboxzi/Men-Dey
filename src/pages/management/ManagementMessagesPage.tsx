@@ -323,7 +323,7 @@ export function ManagementMessagesPage() {
             <div className="min-w-0">
               <Link
                 to="/management/messages"
-                className="mb-1 inline-flex items-center gap-1 text-xs text-muted hover:text-gold-deep lg:hidden"
+                className="mb-1 inline-flex min-h-11 items-center gap-1 text-xs text-muted hover:text-gold-deep lg:hidden"
               >
                 <ArrowLeft className="size-3" aria-hidden /> All conversations
               </Link>
@@ -433,7 +433,7 @@ export function ManagementMessagesPage() {
             )}
           </div>
 
-          <footer className="border-t border-stone p-5">
+          <footer className="sticky bottom-0 border-t border-stone bg-white p-4 sm:p-5 lg:static lg:bg-transparent">
             <label className="block text-sm">
               <span className="mb-1 block text-xs uppercase tracking-wider text-muted">
                 Reply to the member
@@ -506,6 +506,7 @@ export function ManagementMessagesPage() {
                 </label>
               </div>
               <Button
+                className="w-full sm:w-auto"
                 onClick={() => void send()}
                 loading={sending}
                 disabled={uploading || (!body.trim() && pending.length === 0)}
@@ -518,7 +519,7 @@ export function ManagementMessagesPage() {
       )}
     </div>
   ) : (
-    <div className="surface p-6">
+    <div className="surface hidden p-6 lg:block">
       <EmptyState
         title="No conversation selected."
         description="Choose a conversation from the list to read the thread and reply."
@@ -539,7 +540,7 @@ export function ManagementMessagesPage() {
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
       <div className="grid gap-6 lg:grid-cols-[22rem_1fr]">
-        <div className="surface p-4">
+        <div className={`surface p-4 ${conversationId ? 'hidden lg:block' : ''}`}>
           <div className="mb-3 flex flex-wrap gap-1.5">
             {(['all', 'open', 'waiting', 'closed'] as const).map((filter) => (
               <button
@@ -572,8 +573,8 @@ export function ManagementMessagesPage() {
                         conversationId === summary.id ? 'bg-stone/60' : ''
                       }`}
                     >
-                      <span className="flex items-center justify-between gap-2">
-                        <span className="truncate text-sm font-medium text-charcoal">
+                      <span className="flex min-w-0 items-center justify-between gap-2">
+                        <span className="min-w-0 truncate text-sm font-medium text-charcoal">
                           {summary.subject}
                         </span>
                         {count > 0 ? (
@@ -583,7 +584,7 @@ export function ManagementMessagesPage() {
                         ) : null}
                       </span>
                       <span className="mt-0.5 flex items-center justify-between gap-2">
-                        <span className="truncate text-xs text-muted">
+                        <span className="min-w-0 truncate text-xs text-muted">
                           {personName(people[summary.user_id])} ·{' '}
                           {CONVERSATION_STATUS_LABELS[summary.status] ?? summary.status}
                         </span>

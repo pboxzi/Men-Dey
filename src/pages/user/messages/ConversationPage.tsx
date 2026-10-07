@@ -168,8 +168,8 @@ export function ConversationPage() {
 
   if (error) {
     return (
-      <div className="space-y-4">
-        <Link to="/dashboard/messages" className="nav-link inline-flex items-center gap-1">
+      <div className="space-y-4 p-4 lg:p-0">
+        <Link to="/dashboard/messages" className="nav-link inline-flex min-h-11 items-center gap-1">
           <ArrowLeft className="size-4" aria-hidden /> Back to conversations
         </Link>
         <ErrorNote message={error} onRetry={() => void load()} />
@@ -178,25 +178,25 @@ export function ConversationPage() {
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="mb-6 flex flex-wrap items-start justify-between gap-4 border-b border-stone pb-5">
+    <div className="flex h-[calc(100dvh-3.5rem)] flex-col sm:h-[calc(100dvh-4rem)] lg:h-auto">
+      <div className="flex shrink-0 flex-wrap items-start justify-between gap-x-4 gap-y-2 border-b border-stone py-4 sm:py-5">
         <div className="min-w-0">
-          <Link to="/dashboard/messages" className="nav-link mb-2 inline-flex items-center gap-1">
+          <Link to="/dashboard/messages" className="nav-link mb-1 inline-flex min-h-11 items-center gap-1 py-1.5 sm:mb-2">
             <ArrowLeft className="size-4" aria-hidden /> Conversations
           </Link>
-          <h1 className="truncate text-2xl md:text-3xl">{conversation?.subject}</h1>
-          <p className="mt-1 text-sm text-muted">
+          <h1 className="break-words text-xl sm:text-2xl md:text-3xl">{conversation?.subject}</h1>
+          <p className="mt-1 hidden text-sm text-muted sm:block">
             Private conversation · Management responds through this platform.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Chip tone={conversation?.status === 'closed' ? 'neutral' : 'info'}>
             {STATUS_LABELS[conversation?.status ?? 'open'] ?? conversation?.status}
           </Chip>
         </div>
       </div>
 
-      <div className="surface flex max-h-[58vh] min-h-72 flex-col gap-4 overflow-y-auto p-5">
+      <div className="surface my-4 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 lg:my-0 lg:max-h-[58vh] lg:min-h-72 lg:flex-none lg:p-5">
         {messages.length === 0 ? (
           <EmptyNote
             title="No messages yet."
@@ -251,9 +251,9 @@ export function ConversationPage() {
         <div ref={bottomRef} />
       </div>
 
-      {attachError ? <div className="mt-3"><ErrorNote message={attachError} /></div> : null}
+      {attachError ? <div className="shrink-0 pb-2"><ErrorNote message={attachError} /></div> : null}
 
-      <div className="mt-4">
+      <div className="shrink-0 border-t border-stone bg-[#FCFAF7] pt-3 pb-[env(safe-area-inset-bottom)] lg:border-t-0 lg:bg-transparent lg:pt-4 lg:pb-0">
         {pending.length > 0 ? (
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {pending.map((attachment, index) => (
@@ -266,7 +266,7 @@ export function ConversationPage() {
                 <button
                   type="button"
                   aria-label={`Remove ${attachment.name}`}
-                  className="text-muted hover:text-danger"
+                  className="-mr-1 flex h-7 w-7 items-center justify-center text-muted hover:text-danger"
                   onClick={() => setPending((prev) => prev.filter((_, i) => i !== index))}
                 >
                   ×
@@ -289,7 +289,7 @@ export function ConversationPage() {
           />
           <button
             type="button"
-            className="btn btn-secondary"
+            className="btn btn-secondary shrink-0 px-3 sm:px-3.5"
             aria-label="Attach a file"
             disabled={uploading}
             onClick={() => fileRef.current?.click()}
@@ -315,7 +315,7 @@ export function ConversationPage() {
           />
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary shrink-0 px-3 sm:px-3.5"
             disabled={sending || uploading || (!draft.trim() && pending.length === 0)}
             onClick={() => void send()}
           >

@@ -1,8 +1,11 @@
+import {Bell, LogOut, Menu, ShieldCheck, X} from 'lucide-react';
+import {Link, NavLink, Outlet, useLocation} from 'react-router-dom';
 import {useEffect, useState} from 'react';
-import {LogOut, Menu, ShieldCheck, X} from 'lucide-react';
-import {Link, NavLink, Outlet} from 'react-router-dom';
 
+import {ProfileMenu} from '../ProfileMenu';
 import {useAuth} from '../../auth/AuthContext';
+import {useUnreadCounts} from '../../hooks/useUnreadCounts';
+import {readIsDesktop} from '../../lib/isDesktop';
 
 interface NavSection {
   title: string;
@@ -66,9 +69,32 @@ const NAV_SECTIONS: NavSection[] = [
   },
 ];
 
+const ALL_LINKS = NAV_SECTIONS.flatMap((section) => section.links);
+
+function pageTitleFor(pathname: string): string {
+  const match = ALL_LINKS.filter((link) =>
+    link.to === '/management'
+      ? pathname === '/management'
+      : pathname === link.to || pathname.startsWith(`${link.to}/`),
+  ).sort((a, b) => b.to.length - a.to.length)[0];
+  return match?.label ?? 'Dashboard';
+}
+
 export function ManagementLayout() {
   const {profile, role, signOut} = useAuth();
+  const {notifications} = useUnreadCounts();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() => readIsDesktop());
+  const {pathname} = useLocation();
+  const pageTitle = pageTitleFor(pathname);
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const onChange = (event: MediaQueryListEvent) => setIsDesktop(event.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -76,44 +102,96 @@ export function ManagementLayout() {
       if (event.key === 'Escape') setMenuOpen(false);
     };
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [menuOpen]);
 
+  const userName = profile?.full_name || profile?.email || 'Management';
+  const userInitials =
+    (profile?.full_name || profile?.email || '')
+      .split(/[\s@.]+/)
+      .filter(Boolean)
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase() || 'GA';
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="border-b border-stone bg-charcoal text-alabaster">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
-            <button
-              type="button"
-              className="rounded-md p-1.5 text-stone hover:text-alabaster focus-visible:outline focus-visible:outline-gold lg:hidden"
-              onClick={() => setMenuOpen(true)}
-              aria-label="Open navigation menu"
-              aria-expanded={menuOpen}
-              aria-controls="management-sidebar"
-            >
-              <Menu className="size-5" aria-hidden />
-            </button>
+    <div className="flex min-h-screen flex-col bg-alabaster">
+      <header className="sticky top-0 z-40 border-b border-stone bg-charcoal text-alabaster">
+        <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-2 px-3 sm:h-16 sm:px-6">
+          {/* Mobile: hamburger + monogram + page title */}
+          <button
+            type="button"
+            className="-ml-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-stone hover:text-alabaster focus-visible:outline focus-visible:outline-gold lg:hidden"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Open navigation menu"
+            aria-expanded={menuOpen}
+            aria-controls="management-sidebar"
+          >
+            <Menu className="size-5" aria-hidden />
+          </button>
+
+          <Link
+            to="/management"
+            aria-label="Management dashboard"
+            className="flex h-11 w-11 shrink-0 items-center justify-center lg:hidden"
+          >
+            <img
+              src="/assets/images/ga-monogram-brushed-gold.png"
+              alt=""
+              className="h-7 w-auto object-contain"
+              loading="eager"
+            />
+          </Link>
+
+          <span className="min-w-0 flex-1 truncate text-[13px] font-semibold uppercase tracking-[0.18em] lg:hidden">
+            {pageTitle}
+          </span>
+
+          {/* Desktop: console lockup */}
+          <Link
+            to="/management"
+            className="hidden truncate text-sm font-semibold uppercase tracking-[0.22em] lg:block"
+          >
+            GA Management · Console
+          </Link>
+
+          {/* Right side */}
+          <div className="flex shrink-0 items-center gap-1 sm:gap-3">
             <Link
-              to="/management"
-              className="truncate text-sm font-semibold uppercase tracking-[0.22em]"
+              to="/management/notifications"
+              aria-label="Notifications"
+              className="relative flex h-11 w-11 items-center justify-center rounded-full text-stone transition-colors hover:bg-white/5 hover:text-alabaster lg:hidden"
             >
-              GA Management · Console
+              <Bell className="size-5" aria-hidden />
+              {notifications > 0 ? (
+                <span className="absolute top-1.5 right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[10px] font-semibold leading-none text-charcoal">
+                  {notifications}
+                </span>
+              ) : null}
             </Link>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden items-center gap-2 text-xs uppercase tracking-widest text-stone sm:flex">
+
+            <span className="hidden items-center gap-2 text-xs uppercase tracking-widest text-stone lg:flex">
               <ShieldCheck className="size-4" aria-hidden />
               {role === 'admin' ? 'Administrator' : 'Management'} · {profile?.full_name || profile?.email}
             </span>
             <button
               type="button"
-              className="btn btn-ghost text-stone hover:text-alabaster"
+              className="btn btn-ghost hidden text-stone hover:text-alabaster lg:inline-flex"
               onClick={() => void signOut()}
             >
               <LogOut className="size-4" aria-hidden />
               Sign out
             </button>
+
+            <span className="lg:hidden">
+              <ProfileMenu />
+            </span>
           </div>
         </div>
       </header>
@@ -122,29 +200,65 @@ export function ManagementLayout() {
         <div
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={() => setMenuOpen(false)}
+          aria-hidden="true"
         />
       )}
 
-      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 lg:flex-row">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 sm:px-6 lg:flex-row">
         <aside
           id="management-sidebar"
-          className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] overflow-y-auto border-r border-stone bg-charcoal p-4 transform transition-transform duration-200 ease-in-out lg:static lg:z-auto lg:w-60 lg:max-w-none lg:shrink-0 lg:translate-x-0 lg:border-r lg:p-0 lg:py-6 lg:pr-6 lg:bg-transparent ${
-            menuOpen ? 'translate-x-0 visible' : '-translate-x-full invisible lg:visible'
+          aria-hidden={!isDesktop && !menuOpen ? true : undefined}
+          inert={!isDesktop && !menuOpen ? true : undefined}
+          className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-stone bg-charcoal p-4 transform transition-transform duration-300 ease-in-out lg:static lg:z-auto lg:w-60 lg:max-w-none lg:shrink-0 lg:translate-x-0 lg:border-r lg:p-0 lg:py-6 lg:pr-6 lg:bg-transparent ${
+            menuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
         >
-          <div className="mb-4 flex items-center justify-between lg:hidden">
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-stone">
-              Navigation
-            </span>
-            <button
-              type="button"
-              className="rounded-md p-1.5 text-stone hover:text-alabaster focus-visible:outline focus-visible:outline-gold"
-              onClick={() => setMenuOpen(false)}
-              aria-label="Close navigation menu"
-            >
-              <X className="size-4" aria-hidden />
-            </button>
+          {/* Drawer identity block (mobile drawer only) */}
+          <div className="mb-5 border-b border-white/10 pb-4 lg:hidden">
+            <div className="flex items-start justify-between gap-2">
+              <Link
+                to="/management"
+                onClick={() => setMenuOpen(false)}
+                className="flex flex-col items-start gap-1 text-left"
+              >
+                <img
+                  src="/assets/images/ga-monogram-brushed-gold.png"
+                  alt="GA Monogram"
+                  className="mb-1 h-9 w-auto object-contain"
+                  loading="eager"
+                />
+                <span className="text-[10px] font-semibold uppercase leading-tight tracking-[0.22em] text-alabaster">
+                  Gillian Anderson
+                </span>
+                <span className="text-[8px] font-semibold uppercase tracking-[0.28em] text-gold">
+                  Management
+                </span>
+              </Link>
+              <button
+                type="button"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-stone hover:text-alabaster focus-visible:outline focus-visible:outline-gold"
+                onClick={() => setMenuOpen(false)}
+                aria-label="Close navigation menu"
+              >
+                <X className="size-5" aria-hidden />
+              </button>
+            </div>
+
+            <div className="mt-4 flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2.5">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#2A2318] font-serif text-[11px] tracking-wider text-[#E6C27A] ring-1 ring-gold/50">
+                {userInitials}
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-xs font-medium text-alabaster">
+                  {userName}
+                </span>
+                <span className="block truncate text-[10px] text-stone/70">
+                  {role === 'admin' ? 'Administrator' : 'Management'}
+                </span>
+              </span>
+            </div>
           </div>
+
           <nav className="flex flex-col gap-5" aria-label="Management">
             {NAV_SECTIONS.map((section) => (
               <div key={section.title} className="min-w-0">
@@ -157,7 +271,7 @@ export function ManagementLayout() {
                       end={link.to === '/management'}
                       onClick={() => setMenuOpen(false)}
                       className={({isActive}) =>
-                        `nav-link whitespace-nowrap ${isActive ? 'nav-link-active' : ''}`
+                        `nav-link min-h-11 whitespace-nowrap py-2.5 ${isActive ? 'nav-link-active' : ''}`
                       }
                     >
                       {link.label}
@@ -167,9 +281,19 @@ export function ManagementLayout() {
               </div>
             ))}
           </nav>
+
+          {/* Drawer sign out (mobile) */}
+          <button
+            type="button"
+            className="mt-5 flex min-h-11 items-center gap-2 border-t border-white/10 pt-4 text-xs font-semibold uppercase tracking-[0.18em] text-stone hover:text-gold lg:hidden"
+            onClick={() => void signOut()}
+          >
+            <LogOut className="size-4" aria-hidden />
+            Sign out
+          </button>
         </aside>
 
-        <main className="min-w-0 flex-1 py-10 lg:pl-8">
+        <main className="min-w-0 flex-1 py-6 sm:py-10 lg:pl-8">
           <Outlet />
         </main>
       </div>

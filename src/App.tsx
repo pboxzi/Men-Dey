@@ -5,6 +5,24 @@ import {AuthProvider} from './auth/AuthContext';
 import {InstallPrompt} from './components/InstallPrompt';
 import {AppRoutes} from './routes';
 
+// The private gate and its auth flow stay free of floating install/chat chrome.
+const PUBLIC_PREFIXES = [
+  '/sign-in',
+  '/acknowledgement',
+  '/create-account',
+  '/verify-email',
+  '/forgot-password',
+  '/reset-password',
+  '/forbidden',
+];
+
+function isPublicSurface(pathname: string): boolean {
+  return (
+    pathname === '/' ||
+    PUBLIC_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
+  );
+}
+
 function RobotsMeta() {
   const {pathname} = useLocation();
   const indexable = pathname === '/';
@@ -17,12 +35,18 @@ function RobotsMeta() {
   return null;
 }
 
+function InstallGate() {
+  const {pathname} = useLocation();
+  if (isPublicSurface(pathname)) return null;
+  return <InstallPrompt />;
+}
+
 export function App() {
   return (
     <AuthProvider>
       <RobotsMeta />
       <AppRoutes />
-      <InstallPrompt />
+      <InstallGate />
     </AuthProvider>
   );
 }

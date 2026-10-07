@@ -138,43 +138,84 @@ export function ManagementFansPage() {
             }
           />
         ) : (
-          <ul className="divide-y divide-stone">
-            {visible.map((fan) => (
-              <li key={fan.id}>
-                <Link
-                  to={`/management/fans/${fan.id}`}
-                  className="flex items-center justify-between gap-4 py-3 hover:bg-stone/40"
+          <>
+            <div className="hidden md:block">
+              <ul className="divide-y divide-stone">
+                {visible.map((fan) => (
+                  <li key={fan.id}>
+                    <Link
+                      to={`/management/fans/${fan.id}`}
+                      className="flex items-center justify-between gap-4 py-3 hover:bg-stone/40"
+                    >
+                      <span className="flex min-w-0 items-center gap-3">
+                        {fan.profile_photo ? (
+                          <img
+                            src={fan.profile_photo}
+                            alt=""
+                            className="size-9 shrink-0 rounded-full object-cover"
+                          />
+                        ) : (
+                          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-stone text-xs font-medium text-gold-deep">
+                            {initialsFor(fan)}
+                          </span>
+                        )}
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-medium text-charcoal">
+                            {displayName(fan)}
+                          </span>
+                          <span className="block truncate text-xs text-muted">
+                            {fan.occupation ? `${fan.occupation} · ` : ''}
+                            {fan.country || fan.city ? [fan.city, fan.country].filter(Boolean).join(', ') : 'Location not set'}{' '}
+                            · joined {formatDate(fan.created_at)}
+                          </span>
+                        </span>
+                      </span>
+                      <Chip tone={PROFILE_STATUS_TONES[fan.status]}>
+                        {PROFILE_STATUS_LABELS[fan.status]}
+                      </Chip>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              {visible.map((fan) => (
+                <div
+                  key={fan.id}
+                  className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                 >
-                  <span className="flex min-w-0 items-center gap-3">
-                    {fan.profile_photo ? (
-                      <img
-                        src={fan.profile_photo}
-                        alt=""
-                        className="size-9 shrink-0 rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-stone text-xs font-medium text-gold-deep">
-                        {initialsFor(fan)}
-                      </span>
-                    )}
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium text-charcoal">
-                        {displayName(fan)}
-                      </span>
-                      <span className="block truncate text-xs text-muted">
-                        {fan.occupation ? `${fan.occupation} · ` : ''}
-                        {fan.country || fan.city ? [fan.city, fan.country].filter(Boolean).join(', ') : 'Location not set'}{' '}
-                        · joined {formatDate(fan.created_at)}
-                      </span>
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 break-words text-sm font-medium text-charcoal">
+                      {displayName(fan)}
                     </span>
-                  </span>
-                  <Chip tone={PROFILE_STATUS_TONES[fan.status]}>
-                    {PROFILE_STATUS_LABELS[fan.status]}
-                  </Chip>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                    <span className="shrink-0">
+                      <Chip tone={PROFILE_STATUS_TONES[fan.status]}>
+                        {PROFILE_STATUS_LABELS[fan.status]}
+                      </Chip>
+                    </span>
+                  </div>
+                  {fan.full_name ? (
+                    <p className="break-words text-xs text-muted">{fan.email ?? 'Email not on file'}</p>
+                  ) : null}
+                  <p className="break-words text-xs text-muted">
+                    {fan.occupation ? `${fan.occupation} · ` : ''}
+                    {fan.country || fan.city
+                      ? [fan.city, fan.country].filter(Boolean).join(', ')
+                      : 'Location not set'}
+                  </p>
+                  <p className="text-xs text-muted">joined {formatDate(fan.created_at)}</p>
+                  <Link
+                    to={`/management/fans/${fan.id}`}
+                    className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                  >
+                    <span>View</span>
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </section>
     </div>

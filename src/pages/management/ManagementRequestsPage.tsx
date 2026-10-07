@@ -134,38 +134,77 @@ export function ManagementRequestsPage() {
             }
           />
         ) : (
-          <ul className="divide-y divide-stone">
-            {visible.map((request) => {
-              const person = first(request.user);
-              return (
-                <li key={request.id}>
-                  <Link
-                    to={`/management/requests/${request.id}`}
-                    className="flex items-center justify-between gap-4 py-3.5 hover:bg-stone/40"
+          <>
+            <div className="hidden md:block">
+              <ul className="divide-y divide-stone">
+                {visible.map((request) => {
+                  const person = first(request.user);
+                  return (
+                    <li key={request.id}>
+                      <Link
+                        to={`/management/requests/${request.id}`}
+                        className="flex items-center justify-between gap-4 py-3.5 hover:bg-stone/40"
+                      >
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-medium text-charcoal">
+                            {request.title}
+                          </span>
+                          <span className="block truncate text-xs text-muted">
+                            {person?.full_name || person?.email || 'Account'} ·{' '}
+                            {requestCategoryLabel(request.type)} · {formatDate(request.submitted_at)}
+                          </span>
+                        </span>
+                        <span className="flex shrink-0 items-center gap-2">
+                          <Chip tone={PRIORITY_TONES[request.priority] ?? 'neutral'}>
+                            {PRIORITY_LABELS[request.priority] ?? request.priority}
+                          </Chip>
+                          <Chip tone={REQUEST_STATUS_TONES[request.status]}>
+                            {REQUEST_STATUS_LABELS[request.status]}
+                          </Chip>
+                          <ArrowRight className="size-4 text-muted" aria-hidden />
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              {visible.map((request) => {
+                const person = first(request.user);
+                return (
+                  <div
+                    key={request.id}
+                    className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                   >
-                    <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium text-charcoal">
-                        {request.title}
-                      </span>
-                      <span className="block truncate text-xs text-muted">
-                        {person?.full_name || person?.email || 'Account'} ·{' '}
-                        {requestCategoryLabel(request.type)} · {formatDate(request.submitted_at)}
-                      </span>
-                    </span>
-                    <span className="flex shrink-0 items-center gap-2">
+                    <p className="break-words text-sm font-medium text-charcoal">{request.title}</p>
+                    <div className="flex flex-wrap items-center gap-2">
                       <Chip tone={PRIORITY_TONES[request.priority] ?? 'neutral'}>
                         {PRIORITY_LABELS[request.priority] ?? request.priority}
                       </Chip>
                       <Chip tone={REQUEST_STATUS_TONES[request.status]}>
                         {REQUEST_STATUS_LABELS[request.status]}
                       </Chip>
-                      <ArrowRight className="size-4 text-muted" aria-hidden />
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+                    </div>
+                    <p className="break-words text-xs text-muted">
+                      {person?.full_name || person?.email || 'Account'}
+                    </p>
+                    <p className="break-words text-xs text-muted">
+                      {requestCategoryLabel(request.type)} · {formatDate(request.submitted_at)}
+                    </p>
+                    <Link
+                      to={`/management/requests/${request.id}`}
+                      className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                    >
+                      <span>View</span>
+                      <span aria-hidden="true">→</span>
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </section>
     </div>

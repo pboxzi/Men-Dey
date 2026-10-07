@@ -100,7 +100,7 @@ export function NotificationsListPage() {
             key={String(option.key)}
             type="button"
             onClick={() => setShowUnread(option.key)}
-            className={`rounded-full border px-3 py-1 text-xs font-medium tracking-wide ${
+            className={`inline-flex min-h-11 items-center rounded-full border px-3.5 text-xs font-medium tracking-wide ${
               showUnread === option.key
                 ? 'border-charcoal bg-charcoal text-alabaster'
                 : 'border-stone bg-white text-muted hover:border-gold'

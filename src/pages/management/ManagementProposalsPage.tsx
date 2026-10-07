@@ -147,6 +147,74 @@ export function ManagementProposalsPage() {
 
   if (loading) return <Spinner label="Loading proposals" />;
 
+  const renderProposalActions = (proposal: ProposalRow) => (
+    <>
+      {proposal.status === 'draft' ? (
+        <Button
+          variant="secondary"
+          loading={busyId === proposal.id}
+          onClick={() => void proposalAction(proposal, 'sent')}
+        >
+          Send
+        </Button>
+      ) : null}
+      {['draft', 'sent', 'viewed'].includes(proposal.status) ? (
+        confirmId === proposal.id ? (
+          <>
+            <Button variant="ghost" onClick={() => setConfirmId(null)}>
+              Keep
+            </Button>
+            <Button
+              variant="secondary"
+              loading={busyId === proposal.id}
+              onClick={() => void proposalAction(proposal, 'cancelled')}
+            >
+              Confirm cancel
+            </Button>
+          </>
+        ) : (
+          <Button variant="secondary" onClick={() => setConfirmId(proposal.id)}>
+            Cancel
+          </Button>
+        )
+      ) : null}
+    </>
+  );
+
+  const renderOfferActions = (offer: OfferRow) => (
+    <>
+      {offer.status === 'draft' ? (
+        <Button
+          variant="secondary"
+          loading={busyId === offer.id}
+          onClick={() => void offerAction(offer, 'sent')}
+        >
+          Send
+        </Button>
+      ) : null}
+      {['draft', 'sent', 'viewed'].includes(offer.status) ? (
+        confirmId === offer.id ? (
+          <>
+            <Button variant="ghost" onClick={() => setConfirmId(null)}>
+              Keep
+            </Button>
+            <Button
+              variant="secondary"
+              loading={busyId === offer.id}
+              onClick={() => void offerAction(offer, 'cancelled')}
+            >
+              Confirm cancel
+            </Button>
+          </>
+        ) : (
+          <Button variant="secondary" onClick={() => setConfirmId(offer.id)}>
+            Cancel
+          </Button>
+        )
+      ) : null}
+    </>
+  );
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -159,17 +227,17 @@ export function ManagementProposalsPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row">
         <button
           type="button"
-          className={`btn ${tab === 'experiences' ? 'btn-primary' : 'btn-ghost'}`}
+          className={`btn w-full sm:w-auto ${tab === 'experiences' ? 'btn-primary' : 'btn-ghost'}`}
           onClick={() => setTab('experiences')}
         >
           Experience proposals
         </button>
         <button
           type="button"
-          className={`btn ${tab === 'memberships' ? 'btn-primary' : 'btn-ghost'}`}
+          className={`btn w-full sm:w-auto ${tab === 'memberships' ? 'btn-primary' : 'btn-ghost'}`}
           onClick={() => setTab('memberships')}
         >
           Membership offers
@@ -190,65 +258,87 @@ export function ManagementProposalsPage() {
               description="Proposals are created from a request once you are ready to offer dates and terms."
             />
           ) : (
-            <ul className="divide-y divide-stone">
-              {proposals.map((proposal) => {
-                const request = first(proposal.request);
-                const requester = first(request?.user);
-                return (
-                  <li key={proposal.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                    <div className="min-w-0">
-                      <Link
-                        to={`/management/requests/${proposal.request_id}`}
-                        className="block truncate text-sm font-medium text-charcoal hover:underline"
+            <>
+              <div className="hidden md:block">
+                <ul className="divide-y divide-stone">
+                  {proposals.map((proposal) => {
+                    const request = first(proposal.request);
+                    const requester = first(request?.user);
+                    return (
+                      <li
+                        key={proposal.id}
+                        className="flex flex-wrap items-center justify-between gap-3 py-3"
                       >
-                        {request?.title ?? 'Request'} · v{proposal.version}
-                      </Link>
-                      <p className="truncate text-xs text-muted">
-                        {requester?.full_name || requester?.email || 'Account'} ·{' '}
+                        <div className="min-w-0">
+                          <Link
+                            to={`/management/requests/${proposal.request_id}`}
+                            className="block truncate text-sm font-medium text-charcoal hover:underline"
+                          >
+                            {request?.title ?? 'Request'} · v{proposal.version}
+                          </Link>
+                          <p className="truncate text-xs text-muted">
+                            {requester?.full_name || requester?.email || 'Account'} ·{' '}
+                            {formatDate(proposal.created_at)}
+                            {proposal.amount_cents !== null
+                              ? ` · ${formatPrice(proposal.amount_cents, proposal.currency)}`
+                              : ''}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Chip tone={PROPOSAL_STATUS_TONES[proposal.status]}>
+                            {PROPOSAL_STATUS_LABELS[proposal.status]}
+                          </Chip>
+                          {renderProposalActions(proposal)}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              <div className="space-y-3 md:hidden">
+                {proposals.map((proposal) => {
+                  const request = first(proposal.request);
+                  const requester = first(request?.user);
+                  return (
+                    <div
+                      key={proposal.id}
+                      className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="min-w-0 break-words text-sm font-medium text-charcoal">
+                          {request?.title ?? 'Request'} · v{proposal.version}
+                        </span>
+                        <span className="shrink-0">
+                          <Chip tone={PROPOSAL_STATUS_TONES[proposal.status]}>
+                            {PROPOSAL_STATUS_LABELS[proposal.status]}
+                          </Chip>
+                        </span>
+                      </div>
+                      <p className="break-words text-xs text-muted">
+                        {requester?.full_name || requester?.email || 'Account'}
+                      </p>
+                      <p className="break-words text-xs text-muted">
                         {formatDate(proposal.created_at)}
                         {proposal.amount_cents !== null
                           ? ` · ${formatPrice(proposal.amount_cents, proposal.currency)}`
                           : ''}
                       </p>
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {renderProposalActions(proposal)}
+                      </div>
+                      <Link
+                        to={`/management/requests/${proposal.request_id}`}
+                        className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                      >
+                        <span>View request</span>
+                        <span aria-hidden="true">→</span>
+                      </Link>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Chip tone={PROPOSAL_STATUS_TONES[proposal.status]}>
-                        {PROPOSAL_STATUS_LABELS[proposal.status]}
-                      </Chip>
-                      {proposal.status === 'draft' ? (
-                        <Button
-                          variant="secondary"
-                          loading={busyId === proposal.id}
-                          onClick={() => void proposalAction(proposal, 'sent')}
-                        >
-                          Send
-                        </Button>
-                      ) : null}
-                      {['draft', 'sent', 'viewed'].includes(proposal.status) ? (
-                        confirmId === proposal.id ? (
-                          <span className="flex gap-2">
-                            <Button variant="ghost" onClick={() => setConfirmId(null)}>
-                              Keep
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              loading={busyId === proposal.id}
-                              onClick={() => void proposalAction(proposal, 'cancelled')}
-                            >
-                              Confirm cancel
-                            </Button>
-                          </span>
-                        ) : (
-                          <Button variant="secondary" onClick={() => setConfirmId(proposal.id)}>
-                            Cancel
-                          </Button>
-                        )
-                      ) : null}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+                  );
+                })}
+              </div>
+            </>
           )}
         </section>
       ) : (
@@ -265,65 +355,83 @@ export function ManagementProposalsPage() {
               description="Membership offers are created from the memberships console and sent to a member."
             />
           ) : (
-            <ul className="divide-y divide-stone">
-              {offers.map((offer) => {
-                const person = first(offer.user);
-                const tier = first(offer.tier);
-                return (
-                  <li key={offer.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                    <div className="min-w-0">
-                      <Link
-                        to={`/management/fans/${offer.user_id}`}
-                        className="block truncate text-sm font-medium text-charcoal hover:underline"
+            <>
+              <div className="hidden md:block">
+                <ul className="divide-y divide-stone">
+                  {offers.map((offer) => {
+                    const person = first(offer.user);
+                    const tier = first(offer.tier);
+                    return (
+                      <li
+                        key={offer.id}
+                        className="flex flex-wrap items-center justify-between gap-3 py-3"
                       >
-                        {person?.full_name || person?.email || 'Member'}
-                      </Link>
-                      <p className="truncate text-xs text-muted">
-                        {tier?.name ?? 'Tier'} ·{' '}
+                        <div className="min-w-0">
+                          <Link
+                            to={`/management/fans/${offer.user_id}`}
+                            className="block truncate text-sm font-medium text-charcoal hover:underline"
+                          >
+                            {person?.full_name || person?.email || 'Member'}
+                          </Link>
+                          <p className="truncate text-xs text-muted">
+                            {tier?.name ?? 'Tier'} ·{' '}
+                            {offer.price_cents !== null
+                              ? formatPrice(offer.price_cents, offer.currency)
+                              : 'tier price'}{' '}
+                            · offered {formatDate(offer.offered_at)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Chip tone={OFFER_STATUS_TONES[offer.status]}>
+                            {OFFER_STATUS_LABELS[offer.status]}
+                          </Chip>
+                          {renderOfferActions(offer)}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              <div className="space-y-3 md:hidden">
+                {offers.map((offer) => {
+                  const person = first(offer.user);
+                  const tier = first(offer.tier);
+                  return (
+                    <div
+                      key={offer.id}
+                      className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="min-w-0 break-words text-sm font-medium text-charcoal">
+                          {person?.full_name || person?.email || 'Member'}
+                        </span>
+                        <span className="shrink-0">
+                          <Chip tone={OFFER_STATUS_TONES[offer.status]}>
+                            {OFFER_STATUS_LABELS[offer.status]}
+                          </Chip>
+                        </span>
+                      </div>
+                      <p className="break-words text-xs text-muted">{tier?.name ?? 'Tier'}</p>
+                      <p className="break-words text-xs text-muted">
                         {offer.price_cents !== null
                           ? formatPrice(offer.price_cents, offer.currency)
                           : 'tier price'}{' '}
                         · offered {formatDate(offer.offered_at)}
                       </p>
+                      <div className="flex flex-wrap gap-2 pt-1">{renderOfferActions(offer)}</div>
+                      <Link
+                        to={`/management/fans/${offer.user_id}`}
+                        className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                      >
+                        <span>View member</span>
+                        <span aria-hidden="true">→</span>
+                      </Link>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Chip tone={OFFER_STATUS_TONES[offer.status]}>
-                        {OFFER_STATUS_LABELS[offer.status]}
-                      </Chip>
-                      {offer.status === 'draft' ? (
-                        <Button
-                          variant="secondary"
-                          loading={busyId === offer.id}
-                          onClick={() => void offerAction(offer, 'sent')}
-                        >
-                          Send
-                        </Button>
-                      ) : null}
-                      {['draft', 'sent', 'viewed'].includes(offer.status) ? (
-                        confirmId === offer.id ? (
-                          <span className="flex gap-2">
-                            <Button variant="ghost" onClick={() => setConfirmId(null)}>
-                              Keep
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              loading={busyId === offer.id}
-                              onClick={() => void offerAction(offer, 'cancelled')}
-                            >
-                              Confirm cancel
-                            </Button>
-                          </span>
-                        ) : (
-                          <Button variant="secondary" onClick={() => setConfirmId(offer.id)}>
-                            Cancel
-                          </Button>
-                        )
-                      ) : null}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+                  );
+                })}
+              </div>
+            </>
           )}
         </section>
       )}

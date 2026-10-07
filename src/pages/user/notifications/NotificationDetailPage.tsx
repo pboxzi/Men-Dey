@@ -90,12 +90,12 @@ export function NotificationDetailPage() {
 
       <div className="flex flex-wrap gap-3">
         {notification.link ? (
-          <button type="button" className="btn btn-primary" onClick={() => navigate(notification.link!)}>
+          <button type="button" className="btn btn-primary w-full justify-center sm:w-auto" onClick={() => navigate(notification.link!)}>
             Open related page
             <ArrowUpRight className="size-4" aria-hidden />
           </button>
         ) : null}
-        <Link to="/dashboard/notifications" className="btn btn-secondary">
+        <Link to="/dashboard/notifications" className="btn btn-secondary w-full justify-center sm:w-auto">
           Back to notifications
         </Link>
       </div>

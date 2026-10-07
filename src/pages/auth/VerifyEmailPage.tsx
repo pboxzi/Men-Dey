@@ -3,9 +3,9 @@ import {useEffect, useState} from 'react';
 import {Link, useSearchParams} from 'react-router-dom';
 
 import {useAuth} from '../../auth/AuthContext';
+import {GateHeader} from '../../components/auth/GateHeader';
 import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
-import {Card} from '../../components/ui/Card';
 import {Spinner} from '../../components/ui/Spinner';
 import {toFriendlyMessage, toFunctionErrorMessage} from '../../lib/errors';
 import {supabase} from '../../lib/supabase';
@@ -100,7 +100,7 @@ export function VerifyEmailPage() {
 
   if (status === 'working') {
     return (
-      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-4 px-6 py-24">
+      <div className="gate-flow flex min-h-[100svh] w-full flex-col items-center justify-center gap-4 px-6">
         <Spinner label="Verifying" />
         <p className="text-sm text-muted">Confirming your email address…</p>
       </div>
@@ -109,44 +109,48 @@ export function VerifyEmailPage() {
 
   if (status === 'verified') {
     return (
-      <div className="mx-auto w-full max-w-md px-6 py-24">
-        <Card className="text-center">
+      <div className="gate-flow min-h-[100svh] w-full px-6 pb-12 pt-8 sm:px-10 sm:pt-10 lg:px-16 lg:pt-14">
+        <GateHeader />
+        <div className="mx-auto mt-12 w-full max-w-md text-center sm:mt-16">
           <CircleCheck className="mx-auto mb-4 size-10 text-success" aria-hidden />
           <p className="eyebrow mb-2">Account created</p>
           <h1 className="mb-2 text-2xl">Email verified</h1>
-          <p className="mb-6 text-sm text-muted">
+          <p className="mb-7 text-sm text-muted">
             Your account is confirmed and your application is with management.
           </p>
           <Link to="/home" className="btn btn-primary">
             Continue to your home
           </Link>
-        </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-md px-6 py-16">
-      <p className="eyebrow mb-3">Almost there</p>
-      <h1 className="mb-2 text-3xl">Check your email</h1>
-      <p className="mb-8 text-sm text-muted">
-        We sent a confirmation link{email ? ` to ${email}` : ''}. Your account must be
-        verified before you can sign in — open the link to finish.
-      </p>
+    <div className="gate-flow min-h-[100svh] w-full px-6 pb-12 pt-8 sm:px-10 sm:pt-10 lg:px-16 lg:pt-14">
+      <GateHeader />
+      <div className="mx-auto mt-8 w-full max-w-md sm:mt-10">
+        <p className="eyebrow mb-3">Almost there</p>
+        <h1 className="mb-2 text-3xl">Check your email</h1>
+        <p className="mb-7 text-sm text-muted">
+          We sent a confirmation link{email ? ` to ${email}` : ''}. Your account must be
+          verified before you can sign in — open the link to finish.
+        </p>
 
-      <Card className="flex flex-col gap-4">
-        {status === 'error' ? <Alert tone="error">{message}</Alert> : null}
-        {resent ? <Alert tone="success">A new confirmation email has been sent.</Alert> : null}
-        {message && status !== 'error' ? <Alert tone="info">{message}</Alert> : null}
+        <div className="flex flex-col gap-4">
+          {status === 'error' ? <Alert tone="error">{message}</Alert> : null}
+          {resent ? <Alert tone="success">A new confirmation email has been sent.</Alert> : null}
+          {message && status !== 'error' ? <Alert tone="info">{message}</Alert> : null}
 
-        <Button variant="secondary" loading={resending} onClick={() => void handleResend()}>
-          Resend verification email
-        </Button>
+          <Button variant="secondary" loading={resending} onClick={() => void handleResend()}>
+            Resend verification email
+          </Button>
 
-        <Link to="/sign-in" className="btn btn-ghost">
-          Back to sign in
-        </Link>
-      </Card>
+          <Link to="/sign-in" className="btn btn-ghost">
+            Back to sign in
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

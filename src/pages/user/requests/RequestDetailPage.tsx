@@ -663,7 +663,7 @@ export function RequestDetailPage() {
                   href={appointment.virtual_link}
                   target="_blank"
                   rel="noreferrer"
-                  className="btn btn-secondary mt-4 inline-flex"
+                  className="btn btn-secondary mt-4 inline-flex w-full justify-center sm:w-auto"
                 >
                   Open meeting link
                 </a>

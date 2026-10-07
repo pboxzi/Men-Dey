@@ -82,6 +82,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    min-height: 2.75rem;
     border-radius: 2px;
     padding: 0.625rem 1.25rem;
     font-size: 0.875rem;
@@ -147,7 +148,9 @@
   }
 
   .nav-link {
-    display: block;
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
     padding: 0.5rem 0.75rem;
     border-radius: 2px;
     font-size: 0.875rem;
@@ -164,6 +167,429 @@
     color: var(--color-charcoal);
     font-weight: 500;
   }
+
+  /* ------------------------------------------------------------------
+     Private gate / cinematic authentication surface.
+     A single editorial portrait fills the viewport; two restrained warm
+     scrims guarantee contrast for the light type without flattening it.
+     ------------------------------------------------------------------ */
+  .gate-hero {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 68% center;
+  }
+
+  .gate-scrim-a {
+    background-image: linear-gradient(
+      155deg,
+      rgba(16, 14, 12, 0.74) 0%,
+      rgba(18, 15, 13, 0.58) 28%,
+      rgba(20, 17, 14, 0.38) 54%,
+      rgba(20, 17, 14, 0.2) 80%,
+      rgba(20, 17, 14, 0.14) 100%
+    );
+  }
+
+  .gate-scrim-b {
+    background-image: linear-gradient(
+      180deg,
+      rgba(13, 12, 11, 0.6) 0%,
+      rgba(13, 12, 11, 0.3) 15%,
+      rgba(13, 12, 11, 0.2) 32%,
+      rgba(12, 11, 10, 0.34) 46%,
+      rgba(11, 10, 9, 0.66) 56%,
+      rgba(10, 9, 8, 0.87) 70%,
+      rgba(10, 9, 8, 0.93) 100%
+    );
+  }
+
+  /* Elastic clearance: fills the leftover height so the message block always
+     bottoms out inside the viewport instead of being pushed past it. */
+  .gate-spacer {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .gate-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 40px;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(234, 228, 218, 0.78);
+    transition: color 160ms ease;
+  }
+
+  .gate-back:hover {
+    color: var(--color-gold);
+  }
+
+  .gate-btn-primary,
+  .gate-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 52px;
+    padding: 0 1.75rem;
+    border-radius: 2px;
+    font-size: 0.71875rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: pointer;
+    transition:
+      background-color 200ms ease,
+      border-color 200ms ease,
+      box-shadow 250ms ease,
+      transform 120ms ease;
+  }
+
+  .gate-btn-primary {
+    background: var(--color-gold);
+    border: 1px solid var(--color-gold);
+    color: var(--color-charcoal);
+  }
+
+  .gate-btn-primary:hover:not(:disabled) {
+    background: #b58a31;
+    border-color: #b58a31;
+    box-shadow: 0 18px 38px -20px rgba(200, 155, 60, 0.95);
+  }
+
+  .gate-btn-secondary {
+    background: rgba(17, 16, 14, 0.5);
+    border: 1px solid rgba(200, 155, 60, 0.55);
+    color: var(--color-alabaster);
+    backdrop-filter: blur(3px);
+  }
+
+  .gate-btn-secondary:hover:not(:disabled) {
+    background: rgba(17, 16, 14, 0.74);
+    border-color: rgba(200, 155, 60, 0.95);
+    box-shadow: 0 18px 38px -22px rgba(0, 0, 0, 0.9);
+  }
+
+  .gate-btn-primary:active:not(:disabled),
+  .gate-btn-secondary:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: none;
+  }
+
+  .gate-btn-primary:disabled,
+  .gate-btn-secondary:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  .gate-btn-primary:focus-visible {
+    outline: 2px solid var(--color-alabaster);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 639px) {
+    .gate-btn-primary,
+    .gate-btn-secondary {
+      width: 100%;
+    }
+  }
+
+}
+
+@media (min-width: 1024px) {
+  .gate-hero {
+    background-position: 58% center;
+  }
+
+  .gate-scrim-a {
+    background-image: linear-gradient(
+      100deg,
+      rgba(16, 14, 12, 0.91) 0%,
+      rgba(18, 15, 13, 0.89) 45%,
+      rgba(20, 17, 14, 0.86) 58%,
+      rgba(20, 17, 14, 0.34) 70%,
+      rgba(20, 17, 14, 0.12) 82%,
+      rgba(20, 17, 14, 0.06) 100%
+    );
+  }
+
+  .gate-scrim-b {
+    background-image: linear-gradient(
+      180deg,
+      rgba(13, 12, 11, 0.5) 0%,
+      rgba(13, 12, 11, 0.16) 26%,
+      rgba(13, 12, 11, 0.1) 50%,
+      rgba(12, 11, 10, 0.32) 78%,
+      rgba(11, 10, 9, 0.62) 100%
+    );
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Cardless public flows. Every screen behind the gate — sign in, the account
+   application, recovery and verification — sits directly on the portrait and
+   shares one control language: light editorial type, gold rules, dark fields.
+   Unlayered on purpose so these overrides beat the utility layer.
+   --------------------------------------------------------------------------- */
+.gate-flow {
+  color: #e6e0d6;
+}
+
+.gate-flow h1,
+.gate-flow h2,
+.gate-flow h3 {
+  color: var(--color-alabaster);
+}
+
+.gate-flow .eyebrow {
+  color: var(--color-gold);
+}
+
+.gate-flow .text-muted {
+  color: rgba(230, 224, 214, 0.76);
+}
+
+.gate-flow .text-ink {
+  color: #f1ede6;
+}
+
+.gate-flow .text-danger {
+  color: #f2b3a9;
+}
+
+.gate-flow .bg-danger\/5 {
+  background-color: rgba(155, 61, 47, 0.3);
+}
+
+.gate-flow .border-danger\/30 {
+  border-color: rgba(242, 179, 169, 0.42);
+}
+
+.gate-flow .text-success {
+  color: #b6d7bb;
+}
+
+.gate-flow .bg-success\/5 {
+  background-color: rgba(63, 107, 69, 0.34);
+}
+
+.gate-flow .border-success\/30 {
+  border-color: rgba(182, 215, 187, 0.4);
+}
+
+/* Field labels + hints read on the darkened photograph. */
+.gate-flow label {
+  color: rgba(234, 228, 218, 0.9);
+}
+
+.gate-flow .field-input {
+  background: rgba(12, 11, 10, 0.55);
+  border-color: rgba(234, 228, 218, 0.26);
+  color: var(--color-alabaster);
+  min-height: 50px;
+}
+
+.gate-flow .field-input::placeholder {
+  color: rgba(230, 224, 214, 0.42);
+}
+
+.gate-flow .field-input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.2);
+}
+
+.gate-flow .field-input:disabled {
+  background: rgba(234, 228, 218, 0.1);
+  color: rgba(230, 224, 214, 0.55);
+}
+
+/* Buttons inherit the gate's proportions and palette. */
+.gate-flow .btn {
+  min-height: 52px;
+  padding: 0 1.75rem;
+  font-size: 0.71875rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+}
+
+.gate-flow .btn-primary {
+  background: var(--color-gold);
+  border-color: var(--color-gold);
+  color: var(--color-charcoal);
+}
+
+.gate-flow .btn-primary:hover:not(:disabled) {
+  background: #b58a31;
+  border-color: #b58a31;
+  color: var(--color-charcoal);
+}
+
+.gate-flow .btn-secondary {
+  background: rgba(17, 16, 14, 0.5);
+  border-color: rgba(200, 155, 60, 0.55);
+  color: var(--color-alabaster);
+  backdrop-filter: blur(3px);
+}
+
+.gate-flow .btn-secondary:hover:not(:disabled) {
+  background: rgba(17, 16, 14, 0.74);
+  border-color: rgba(200, 155, 60, 0.95);
+  color: var(--color-gold);
+}
+
+.gate-flow .btn-ghost {
+  color: rgba(230, 224, 214, 0.78);
+}
+
+.gate-flow .btn-ghost:hover:not(:disabled) {
+  color: var(--color-gold);
+}
+
+/* Wizard progress track: quiet on the photograph. */
+.gate-flow .bg-stone {
+  background-color: rgba(234, 228, 218, 0.22);
+}
+
+/* Option tiles and review rules are drawn with the light palette — soften
+   them so they read as hairlines on the darkened portrait. */
+.gate-flow .border-stone {
+  border-color: rgba(234, 228, 218, 0.26);
+}
+
+.gate-flow .hover\:border-stone-deep:hover {
+  border-color: rgba(200, 155, 60, 0.7);
+}
+
+/* Reading pane for long-form copy (acknowledgement) — flat band, not a card. */
+.gate-doc {
+  background: linear-gradient(
+    180deg,
+    rgba(12, 11, 10, 0.72) 0%,
+    rgba(12, 11, 10, 0.78) 100%
+  );
+  border-left: 2px solid rgba(200, 155, 60, 0.75);
+  max-height: min(24rem, 46svh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 155, 60, 0.55) transparent;
+}
+
+.gate-doc::-webkit-scrollbar {
+  width: 6px;
+}
+
+.gate-doc::-webkit-scrollbar-thumb {
+  background: rgba(200, 155, 60, 0.55);
+}
+
+/* ---------------------------------------------------------------------------
+   Viewport fit: the landing block must end inside the fold at every size, so
+   short viewports tighten instead of reserving more portrait above it.
+   --------------------------------------------------------------------------- */
+.gate-copy-block {
+  width: 100%;
+  max-width: 33rem;
+}
+
+.gate-title {
+  margin-top: 1.75rem;
+  font-size: 2.9rem;
+  line-height: 1.24;
+  letter-spacing: 0.004em;
+}
+
+.gate-lede {
+  margin-top: 1.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.95;
+}
+
+.gate-actions {
+  margin-top: 2.25rem;
+  gap: 1rem;
+}
+
+.gate-statement {
+  margin-top: 2.5rem;
+}
+
+@media (max-width: 639px) {
+  .gate-title {
+    margin-top: 1.1rem;
+    font-size: 1.55rem;
+    line-height: 1.3;
+  }
+
+  .gate-lede {
+    margin-top: 1.1rem;
+    font-size: 0.84375rem;
+    line-height: 1.85;
+  }
+
+  .gate-actions {
+    margin-top: 1.5rem;
+    gap: 0.75rem;
+  }
+
+  .gate-statement {
+    margin-top: 1.9rem;
+  }
+}
+
+/* Landscape laptops and short tablets. */
+@media (max-height: 820px) {
+  .gate-title {
+    font-size: 2.3rem;
+  }
+}
+
+/* Phones held one-handed: compress the whole rhythm. */
+@media (max-height: 700px) {
+  .gate-title {
+    margin-top: 0.8rem;
+    font-size: 1.4rem;
+    line-height: 1.24;
+  }
+
+  .gate-lede {
+    margin-top: 0.8rem;
+    font-size: 0.78125rem;
+    line-height: 1.7;
+  }
+
+  .gate-actions {
+    margin-top: 1.1rem;
+    gap: 0.6rem;
+  }
+
+  .gate-statement {
+    margin-top: 1.35rem;
+  }
+
+  .gate-flow .btn,
+  .gate-btn-primary,
+  .gate-btn-secondary {
+    min-height: 46px;
+  }
+}
+
+/* Very short screens (320×568): the statement and CTAs outrank the lede. */
+@media (max-height: 620px) {
+  .gate-lede {
+    display: none;
+  }
+}
+
+/* The private gate carries no third-party chat surface. */
+body.gate-mode .crisp-client,
+body.gate-mode #crisp-chatbox,
+body.gate-mode [data-crisp-messages] {
+  display: none !important;
 }
 
 /* Mobile feel: smooth scrolling, no tap flash, no double-tap zoom delay. */
@@ -204,5 +630,11 @@ img {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .field-input {
+    font-size: 16px;
   }
 }

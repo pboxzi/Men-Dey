@@ -1,89 +1,77 @@
 import {ArrowRight} from 'lucide-react';
+import {motion, useReducedMotion} from 'motion/react';
 import {Link} from 'react-router-dom';
 
-function BrandGate() {
-  return (
-    <div className="flex flex-col items-center text-center">
-      <span
-        className="flex size-20 items-center justify-center border border-gold/60 text-4xl text-charcoal"
-        aria-hidden
-      >
-        <span style={{fontFamily: "'Playfair Display', Georgia, serif"}}>GA</span>
-      </span>
-      <p className="mt-5 text-xs font-semibold uppercase tracking-[0.4em] text-charcoal">
-        Gillian
-      </p>
-      <p className="text-xs font-semibold uppercase tracking-[0.4em] text-charcoal">
-        Anderson
-      </p>
-      <p className="mt-2 text-xs uppercase tracking-[0.5em] text-gold-deep">Management</p>
-    </div>
-  );
-}
+import {GateBrand} from '../../components/auth/GateBrand';
+
+const EASE: [number, number, number, number] = [0.22, 0.61, 0.36, 1];
 
 export function LandingPage() {
-  return (
-    <div>
-      <section className="mx-auto w-full max-w-3xl px-6 py-20 md:py-28">
-        <BrandGate />
+  const reduce = useReducedMotion() === true;
 
-        <div className="mt-12 text-center">
-          <p className="eyebrow mb-4">A private gate</p>
-          <h1 className="mx-auto max-w-2xl text-3xl md:text-5xl">
-            Access is managed, personal and by application only.
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted">
-            This is the private office of Gillian Anderson Management — a professional,
-            exclusive channel where every introduction, request and membership conversation
-            passes through the management team.
+  const rise = (delay: number) => ({
+    initial: reduce ? {opacity: 1, y: 0} : {opacity: 0, y: 18},
+    animate: {opacity: 1, y: 0},
+    transition: {
+      duration: reduce ? 0 : 0.7,
+      delay: reduce ? 0 : delay,
+      ease: EASE,
+    },
+  });
+
+  return (
+    <div className="relative flex min-h-[100svh] w-full flex-col px-6 pb-9 pt-8 sm:px-10 sm:pb-11 sm:pt-10 lg:px-16 lg:pb-14 lg:pt-14">
+      <motion.div {...rise(0.12)}>
+        <GateBrand />
+      </motion.div>
+
+      <div className="gate-spacer" aria-hidden />
+
+      <motion.div {...rise(0.34)} className="gate-copy-block">
+        <div className="flex items-center gap-4 sm:gap-5">
+          <span className="h-px w-10 shrink-0 bg-[#C89B3C]/85 sm:w-14" aria-hidden />
+          <p className="text-[0.5625rem] font-semibold uppercase leading-none tracking-[0.34em] text-[#C89B3C] sm:text-[0.66rem] sm:tracking-[0.4em]">
+            Welcome to the official office
           </p>
         </div>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <Link to="/sign-in" className="btn btn-primary">
-            Sign in
-            <ArrowRight className="size-4" aria-hidden />
-          </Link>
-          <Link to="/acknowledgement" className="btn btn-secondary">
-            Create account
-          </Link>
-        </div>
+        <h1 className="gate-title font-display font-normal text-[#FCFAF7]">
+          So glad you&rsquo;re here.
+          <br />
+          Let&rsquo;s begin something
+          <br />
+          personal together.
+        </h1>
 
-        <p className="mt-10 text-center text-[0.65rem] uppercase tracking-[0.3em] text-muted">
-          Private · Managed · Exclusive · Personal · Professional
+        <p className="gate-lede max-w-[30rem] text-[#E6E0D6]">
+          This is the official office of Gillian Anderson Management &mdash; a warm,
+          considered place where every introduction, request and membership conversation is
+          read by the team itself. Take your time; we&rsquo;ll look after the rest.
         </p>
-      </section>
 
-      <section className="border-t border-stone bg-white/60">
-        <div className="mx-auto grid w-full max-w-4xl gap-10 px-6 py-14 md:grid-cols-3">
-          <div>
-            <p className="eyebrow mb-3">01 · Acknowledge</p>
-            <h2 className="mb-2 text-xl">Read before you join</h2>
-            <p className="text-sm leading-relaxed text-muted">
-              Account creation begins with an explicit acknowledgement of the platform's
-              purpose, privacy expectations and availability disclaimer. Nothing is accepted
-              on your behalf.
-            </p>
-          </div>
-          <div>
-            <p className="eyebrow mb-3">02 · Apply</p>
-            <h2 className="mb-2 text-xl">Introduce yourself</h2>
-            <p className="text-sm leading-relaxed text-muted">
-              A short application tells management who you are and what you would like to
-              explore. Membership is never purchased during account creation.
-            </p>
-          </div>
-          <div>
-            <p className="eyebrow mb-3">03 · Reviewed by management</p>
-            <h2 className="mb-2 text-xl">The bridge stays in place</h2>
-            <p className="text-sm leading-relaxed text-muted">
-              Management reviews every application and coordinates every next step —
-              membership, requests and experiences are always proposed and confirmed
-              individually.
-            </p>
-          </div>
+        <div className="gate-actions flex flex-col sm:flex-row">
+          <Link to="/sign-in" className="gate-btn-primary group">
+            Sign in
+            <ArrowRight className="size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+          </Link>
+          <Link to="/acknowledgement" className="gate-btn-secondary group">
+            Create account
+            <ArrowRight className="size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+          </Link>
         </div>
-      </section>
+
+        <p className="gate-statement flex flex-wrap items-center gap-x-3 gap-y-2 text-[0.5625rem] uppercase leading-none tracking-[0.3em] text-[#EAE4DA]/75 sm:gap-x-5 sm:text-[0.625rem] sm:tracking-[0.34em]">
+          <span>Personal</span>
+          <span aria-hidden className="text-[#C89B3C]">
+            &middot;
+          </span>
+          <span>Welcomed</span>
+          <span aria-hidden className="text-[#C89B3C]">
+            &middot;
+          </span>
+          <span>Cared for</span>
+        </p>
+      </motion.div>
     </div>
   );
 }

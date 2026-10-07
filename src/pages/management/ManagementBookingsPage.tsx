@@ -123,6 +123,68 @@ export function ManagementBookingsPage() {
 
   if (loading) return <Spinner />;
 
+  const renderStatusActions = (row: AppointmentRow) => (
+    <>
+      {row.status === 'scheduled' ? (
+        <Button
+          variant="secondary"
+          loading={busy}
+          onClick={() => setStatus(row, 'confirmed', 'Appointment confirmed.')}
+        >
+          Confirm
+        </Button>
+      ) : null}
+      {row.status === 'scheduled' || row.status === 'confirmed' ? (
+        <Button
+          variant="secondary"
+          loading={busy}
+          onClick={() => setStatus(row, 'completed', 'Appointment completed.')}
+        >
+          Complete
+        </Button>
+      ) : null}
+      {row.status === 'scheduled' || row.status === 'confirmed' ? (
+        <Button
+          variant="ghost"
+          disabled={busy}
+          onClick={() => setConfirmId(confirmId === row.id ? null : row.id)}
+        >
+          Cancel
+        </Button>
+      ) : null}
+      {row.status === 'scheduled' || row.status === 'confirmed' ? (
+        <Button
+          variant="ghost"
+          loading={busy}
+          onClick={() => setStatus(row, 'no_show', 'Marked as no show.')}
+        >
+          No show
+        </Button>
+      ) : null}
+    </>
+  );
+
+  const renderCancelConfirm = (row: AppointmentRow) =>
+    confirmId === row.id ? (
+      <div className="mt-3 rounded-sm border border-danger/30 bg-danger/5 p-3 text-sm">
+        <p className="text-danger">
+          Cancel “{row.title}”? The member is notified of the cancellation.
+        </p>
+        <div className="mt-2 flex gap-2">
+          <Button variant="ghost" disabled={busy} onClick={() => setConfirmId(null)}>
+            Keep booking
+          </Button>
+          <Button
+            variant="secondary"
+            loading={busy}
+            onClick={() => setStatus(row, 'cancelled', 'Appointment cancelled.')}
+          >
+            Yes, cancel booking
+          </Button>
+        </div>
+      </div>
+    ) : null;
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -161,100 +223,97 @@ export function ManagementBookingsPage() {
             description="Appointments appear when management schedules a confirmed experience."
           />
         ) : (
-          <ul className="divide-y divide-stone">
-            {rows.map((row) => (
-              <li key={row.id} className="py-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-charcoal">{row.title}</p>
-                    <p className="mt-0.5 text-xs text-muted">
-                      {memberLabel(row)}
-                      {row.request?.title ? ` · ${row.request.title}` : ''}
-                    </p>
-                    <p className="mt-1 text-xs text-muted">
-                      {formatDateTime(row.starts_at)} – {formatDateTime(row.ends_at)}
-                      {row.timezone ? ` (${row.timezone})` : ''} · {relativeTime(row.starts_at)}
-                    </p>
-                    {row.location || row.virtual_link ? (
-                      <p className="mt-1 text-xs text-muted">
-                        {row.location ?? ''}
-                        {row.location && row.virtual_link ? ' · ' : ''}
-                        {row.virtual_link ?? ''}
-                      </p>
-                    ) : null}
-                    {row.request_id ? (
-                      <Link
-                        to={`/management/experiences/${row.request_id}`}
-                        className="mt-1 inline-block text-xs font-medium text-gold-deep underline underline-offset-2"
-                      >
-                        Open request
-                      </Link>
-                    ) : null}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Chip tone={APPOINTMENT_STATUS_TONES[row.status]}>
-                      {APPOINTMENT_STATUS_LABELS[row.status]}
-                    </Chip>
-                    {row.status === 'scheduled' ? (
-                      <Button
-                        variant="secondary"
-                        loading={busy}
-                        onClick={() => setStatus(row, 'confirmed', 'Appointment confirmed.')}
-                      >
-                        Confirm
-                      </Button>
-                    ) : null}
-                    {row.status === 'scheduled' || row.status === 'confirmed' ? (
-                      <Button
-                        variant="secondary"
-                        loading={busy}
-                        onClick={() => setStatus(row, 'completed', 'Appointment completed.')}
-                      >
-                        Complete
-                      </Button>
-                    ) : null}
-                    {row.status === 'scheduled' || row.status === 'confirmed' ? (
-                      <Button
-                        variant="ghost"
-                        disabled={busy}
-                        onClick={() => setConfirmId(confirmId === row.id ? null : row.id)}
-                      >
-                        Cancel
-                      </Button>
-                    ) : null}
-                    {row.status === 'scheduled' || row.status === 'confirmed' ? (
-                      <Button
-                        variant="ghost"
-                        loading={busy}
-                        onClick={() => setStatus(row, 'no_show', 'Marked as no show.')}
-                      >
-                        No show
-                      </Button>
-                    ) : null}
-                  </div>
-                </div>
-                {confirmId === row.id ? (
-                  <div className="mt-3 rounded-sm border border-danger/30 bg-danger/5 p-3 text-sm">
-                    <p className="text-danger">
-                      Cancel “{row.title}”? The member is notified of the cancellation.
-                    </p>
-                    <div className="mt-2 flex gap-2">
-                      <Button variant="ghost" disabled={busy} onClick={() => setConfirmId(null)}>
-                        Keep booking
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        loading={busy}
-                        onClick={() => setStatus(row, 'cancelled', 'Appointment cancelled.')}
-                      >
-                        Yes, cancel booking
-                      </Button>
+          <>
+            <div className="hidden md:block">
+              <ul className="divide-y divide-stone">
+                {rows.map((row) => (
+                  <li key={row.id} className="py-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-charcoal">{row.title}</p>
+                        <p className="mt-0.5 text-xs text-muted">
+                          {memberLabel(row)}
+                          {row.request?.title ? ` · ${row.request.title}` : ''}
+                        </p>
+                        <p className="mt-1 text-xs text-muted">
+                          {formatDateTime(row.starts_at)} – {formatDateTime(row.ends_at)}
+                          {row.timezone ? ` (${row.timezone})` : ''} · {relativeTime(row.starts_at)}
+                        </p>
+                        {row.location || row.virtual_link ? (
+                          <p className="mt-1 text-xs text-muted">
+                            {row.location ?? ''}
+                            {row.location && row.virtual_link ? ' · ' : ''}
+                            {row.virtual_link ?? ''}
+                          </p>
+                        ) : null}
+                        {row.request_id ? (
+                          <Link
+                            to={`/management/experiences/${row.request_id}`}
+                            className="mt-1 inline-block text-xs font-medium text-gold-deep underline underline-offset-2"
+                          >
+                            Open request
+                          </Link>
+                        ) : null}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Chip tone={APPOINTMENT_STATUS_TONES[row.status]}>
+                          {APPOINTMENT_STATUS_LABELS[row.status]}
+                        </Chip>
+                        {renderStatusActions(row)}
+                      </div>
                     </div>
+                    {renderCancelConfirm(row)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              {rows.map((row) => (
+                <div
+                  key={row.id}
+                  className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 break-words text-sm font-medium text-charcoal">
+                      {row.title}
+                    </span>
+                    <span className="shrink-0">
+                      <Chip tone={APPOINTMENT_STATUS_TONES[row.status]}>
+                        {APPOINTMENT_STATUS_LABELS[row.status]}
+                      </Chip>
+                    </span>
                   </div>
-                ) : null}
-              </li>
-            ))}
-          </ul>
+                  <p className="break-words text-xs text-muted">
+                    {memberLabel(row)}
+                    {row.request?.title ? ` · ${row.request.title}` : ''}
+                  </p>
+                  <p className="break-words text-xs text-muted">
+                    {formatDateTime(row.starts_at)} – {formatDateTime(row.ends_at)}
+                    {row.timezone ? ` (${row.timezone})` : ''} · {relativeTime(row.starts_at)}
+                  </p>
+                  {row.location || row.virtual_link ? (
+                    <p className="break-words text-xs text-muted">
+                      {row.location ?? ''}
+                      {row.location && row.virtual_link ? ' · ' : ''}
+                      {row.virtual_link ?? ''}
+                    </p>
+                  ) : null}
+                  <div className="flex flex-wrap gap-2 pt-1">{renderStatusActions(row)}</div>
+                  {renderCancelConfirm(row)}
+                  {row.request_id ? (
+                    <Link
+                      to={`/management/experiences/${row.request_id}`}
+                      className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                    >
+                      <span>Open request</span>
+                      <span aria-hidden="true">→</span>
+                    </Link>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </section>
     </div>

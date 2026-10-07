@@ -1,13 +1,23 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, type ReactNode} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 
 import {storeAck} from '../../auth/ack';
+import {GateHeader} from '../../components/auth/GateHeader';
 import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
 import {Spinner} from '../../components/ui/Spinner';
 import {toFriendlyMessage} from '../../lib/errors';
 import {supabase} from '../../lib/supabase';
 import type {AcknowledgementVersion} from '../../types';
+
+function GateShell({children}: {children: ReactNode}) {
+  return (
+    <div className="gate-flow min-h-[100svh] w-full px-6 pb-12 pt-8 sm:px-10 sm:pb-14 sm:pt-10 lg:px-16 lg:pt-14">
+      <GateHeader />
+      <div className="mx-auto mt-8 w-full max-w-2xl sm:mt-10">{children}</div>
+    </div>
+  );
+}
 
 export function AcknowledgementPage() {
   const navigate = useNavigate();
@@ -53,32 +63,36 @@ export function AcknowledgementPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto flex w-full max-w-3xl justify-center px-6 py-24">
-        <Spinner label="Loading acknowledgement" />
-      </div>
+      <GateShell>
+        <div className="flex justify-center py-20">
+          <Spinner label="Loading acknowledgement" />
+        </div>
+      </GateShell>
     );
   }
 
   if (loadError || !version) {
     return (
-      <div className="mx-auto w-full max-w-3xl px-6 py-24">
+      <GateShell>
+        <p className="eyebrow mb-3">Before you join us</p>
+        <h1 className="mb-3 text-3xl">A few things to know first</h1>
         <Alert tone="error">
           {loadError ?? 'No acknowledgement is currently published. Please check back soon.'}
         </Alert>
-        <div className="mt-4">
+        <div className="mt-6">
           <Link to="/" className="btn btn-secondary">
-            Back to home
+            Back to the welcome page
           </Link>
         </div>
-      </div>
+      </GateShell>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-6 py-16">
-      <p className="eyebrow mb-3">Before you create an account</p>
+    <GateShell>
+      <p className="eyebrow mb-3">Before you join us</p>
       <h1 className="mb-2 text-3xl md:text-4xl">{version.title}</h1>
-      <p className="mb-8 text-sm text-muted">
+      <p className="mb-6 text-sm text-muted">
         Version {version.version} · Published{' '}
         {new Date(version.published_at ?? version.created_at).toLocaleDateString(undefined, {
           year: 'numeric',
@@ -87,7 +101,7 @@ export function AcknowledgementPage() {
         })}
       </p>
 
-      <article className="surface max-h-[28rem] overflow-y-auto whitespace-pre-wrap p-6 text-sm leading-relaxed text-ink md:p-8">
+      <article className="gate-doc whitespace-pre-wrap p-5 text-sm leading-relaxed text-ink sm:p-6">
         {version.content}
       </article>
 
@@ -106,9 +120,9 @@ export function AcknowledgementPage() {
           Continue
         </Button>
         <Link to="/" className="btn btn-ghost">
-          Cancel
+          Not now
         </Link>
       </div>
-    </div>
+    </GateShell>
   );
 }

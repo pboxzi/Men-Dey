@@ -141,11 +141,14 @@ export function NewRequestPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="border-b border-stone pb-6">
-        <Link to="/dashboard/requests" className="nav-link mb-2 inline-flex items-center gap-1">
+        <Link
+          to="/dashboard/requests"
+          className="nav-link mb-2 inline-flex min-h-11 items-center gap-1"
+        >
           <ArrowLeft className="size-4" aria-hidden /> Requests
         </Link>
         <p className="eyebrow mb-2">New request</p>
-        <h1 className="text-3xl md:text-4xl">Request something personal</h1>
+        <h1 className="break-words text-2xl sm:text-3xl">Request something personal</h1>
         <p className="mt-2 text-muted">
           Tell management what you would like to explore. This is a request, not a booking —
           management reviews everything personally.
@@ -177,7 +180,7 @@ export function NewRequestPage() {
             <select
               id={id}
               aria-describedby={describedBy}
-              className="field-input"
+              className="field-input min-h-11 text-[16px] sm:text-sm"
               value={form.type}
               onChange={(event) => set('type', event.target.value as RequestType | '')}
             >
@@ -196,7 +199,7 @@ export function NewRequestPage() {
             <input
               id={id}
               aria-describedby={describedBy}
-              className="field-input"
+              className="field-input min-h-11 text-[16px] sm:text-sm"
               value={form.title}
               placeholder="A handwritten note for a birthday"
               onChange={(event) => set('title', event.target.value)}
@@ -209,7 +212,7 @@ export function NewRequestPage() {
             <textarea
               id={id}
               aria-describedby={describedBy}
-              className="field-input min-h-32 resize-y"
+              className="field-input min-h-32 resize-y text-[16px] sm:text-sm"
               rows={5}
               value={form.description}
               onChange={(event) => set('description', event.target.value)}
@@ -217,14 +220,14 @@ export function NewRequestPage() {
           )}
         </Field>
 
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Field label="Preferred date" hint="Optional.">
             {({id, 'aria-describedby': describedBy}) => (
               <input
                 id={id}
                 aria-describedby={describedBy}
                 type="date"
-                className="field-input"
+                className="field-input min-h-11 text-[16px] sm:text-sm"
                 value={form.preferred_date}
                 onChange={(event) => set('preferred_date', event.target.value)}
               />
@@ -236,7 +239,7 @@ export function NewRequestPage() {
                 id={id}
                 aria-describedby={describedBy}
                 type="time"
-                className="field-input"
+                className="field-input min-h-11 text-[16px] sm:text-sm"
                 value={form.preferred_time}
                 onChange={(event) => set('preferred_time', event.target.value)}
               />
@@ -244,13 +247,13 @@ export function NewRequestPage() {
           </Field>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <Field label="Location" hint="Where relevant — a city, venue or “online”.">
             {({id, 'aria-describedby': describedBy}) => (
               <input
                 id={id}
                 aria-describedby={describedBy}
-                className="field-input"
+                className="field-input min-h-11 text-[16px] sm:text-sm"
                 value={form.location}
                 onChange={(event) => set('location', event.target.value)}
               />
@@ -261,7 +264,7 @@ export function NewRequestPage() {
               <input
                 id={id}
                 aria-describedby={describedBy}
-                className="field-input"
+                className="field-input min-h-11 text-[16px] sm:text-sm"
                 value={form.participants}
                 onChange={(event) => set('participants', event.target.value)}
               />
@@ -274,7 +277,7 @@ export function NewRequestPage() {
             <select
               id={id}
               aria-describedby={describedBy}
-              className="field-input"
+              className="field-input min-h-11 text-[16px] sm:text-sm"
               value={form.contact_method}
               onChange={(event) => set('contact_method', event.target.value)}
             >
@@ -292,7 +295,7 @@ export function NewRequestPage() {
             <textarea
               id={id}
               aria-describedby={describedBy}
-              className="field-input min-h-24 resize-y"
+              className="field-input min-h-24 resize-y text-[16px] sm:text-sm"
               rows={3}
               value={form.additional_requirements}
               onChange={(event) => set('additional_requirements', event.target.value)}

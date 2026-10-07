@@ -336,6 +336,65 @@ export function ManagementMembershipsPage() {
 
   if (loading) return <Spinner />;
 
+  const renderOfferActions = (offer: OfferRow) => (
+    <>
+      {offer.status === 'draft' ? (
+        <Button
+          variant="secondary"
+          loading={busyId === offer.id}
+          onClick={() => void offerAction(offer, 'sent')}
+        >
+          Send
+        </Button>
+      ) : null}
+      {offer.status === 'sent' || offer.status === 'viewed' ? (
+        confirmId === offer.id ? (
+          <>
+            <Button variant="ghost" onClick={() => setConfirmId(null)}>
+              Keep
+            </Button>
+            <Button
+              variant="secondary"
+              loading={busyId === offer.id}
+              onClick={() => void offerAction(offer, 'cancelled')}
+            >
+              Confirm cancel
+            </Button>
+          </>
+        ) : (
+          <Button variant="secondary" onClick={() => setConfirmId(offer.id)}>
+            Cancel
+          </Button>
+        )
+      ) : null}
+    </>
+  );
+
+  const renderPaymentActions = (payment: PaymentRow) => (
+    <>
+      {payment.status === 'pending' || payment.status === 'processing' ? (
+        confirmId === payment.id ? (
+          <>
+            <Button variant="ghost" onClick={() => setConfirmId(null)}>
+              Back
+            </Button>
+            <Button
+              variant="secondary"
+              loading={busyId === payment.id}
+              onClick={() => void markPaid(payment)}
+            >
+              Confirm paid
+            </Button>
+          </>
+        ) : (
+          <Button variant="secondary" onClick={() => setConfirmId(payment.id)}>
+            Mark paid
+          </Button>
+        )
+      ) : null}
+    </>
+  );
+
   return (
     <div className="space-y-10">
       <PageHeader
@@ -365,33 +424,76 @@ export function ManagementMembershipsPage() {
             description="Create the first membership tier below. Members only see tiers with active status."
           />
         ) : (
-          <ul className="divide-y divide-stone">
-            {tiers.map((tier) => (
-              <li key={tier.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-charcoal">
-                    {tier.name} <span className="text-xs text-muted">({tier.key})</span>
-                  </p>
-                  <p className="text-xs text-muted">
+          <>
+            <div className="hidden md:block">
+              <ul className="divide-y divide-stone">
+                {tiers.map((tier) => (
+                  <li key={tier.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-charcoal">
+                        {tier.name} <span className="text-xs text-muted">({tier.key})</span>
+                      </p>
+                      <p className="text-xs text-muted">
+                        {tier.price_cents > 0
+                          ? `${formatPrice(tier.price_cents, tier.currency)} ${TIER_INTERVAL_LABELS[tier.interval]}`
+                          : 'No price'}{' '}
+                        · {tier.benefits.length} benefits
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Chip
+                        tone={tier.status === 'active' ? 'success' : tier.status === 'draft' ? 'gold' : 'neutral'}
+                      >
+                        {tier.status}
+                      </Chip>
+                      <Button variant="secondary" onClick={() => editTier(tier)}>
+                        Edit
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              {tiers.map((tier) => (
+                <div
+                  key={tier.id}
+                  className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 break-words text-sm font-medium text-charcoal">
+                      {tier.name} <span className="text-xs text-muted">({tier.key})</span>
+                    </span>
+                    <span className="shrink-0">
+                      <Chip
+                        tone={
+                          tier.status === 'active'
+                            ? 'success'
+                            : tier.status === 'draft'
+                              ? 'gold'
+                              : 'neutral'
+                        }
+                      >
+                        {tier.status}
+                      </Chip>
+                    </span>
+                  </div>
+                  <p className="break-words text-xs text-muted">
                     {tier.price_cents > 0
                       ? `${formatPrice(tier.price_cents, tier.currency)} ${TIER_INTERVAL_LABELS[tier.interval]}`
                       : 'No price'}{' '}
                     · {tier.benefits.length} benefits
                   </p>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <Button variant="secondary" onClick={() => editTier(tier)}>
+                      Edit
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Chip
-                    tone={tier.status === 'active' ? 'success' : tier.status === 'draft' ? 'gold' : 'neutral'}
-                  >
-                    {tier.status}
-                  </Chip>
-                  <Button variant="secondary" onClick={() => editTier(tier)}>
-                    Edit
-                  </Button>
-                </div>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </div>
+          </>
         )}
 
         <div className="mt-6 grid gap-4 border-t border-stone pt-5 sm:grid-cols-2">
@@ -643,58 +745,62 @@ export function ManagementMembershipsPage() {
             description="Create a personalized membership offer above. It appears in the member’s account when you send it."
           />
         ) : (
-          <ul className="divide-y divide-stone">
-            {offers.map((offer) => (
-              <li key={offer.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-charcoal">
-                    {offer.user?.full_name || offer.user?.email || offer.user_id.slice(0, 8)}
-                  </p>
-                  <p className="text-xs text-muted">
-                    {offer.tier?.name ?? 'Tier'} ·{' '}
+          <>
+            <div className="hidden md:block">
+              <ul className="divide-y divide-stone">
+                {offers.map((offer) => (
+                  <li key={offer.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-charcoal">
+                        {offer.user?.full_name || offer.user?.email || offer.user_id.slice(0, 8)}
+                      </p>
+                      <p className="text-xs text-muted">
+                        {offer.tier?.name ?? 'Tier'} ·{' '}
+                        {offer.price_cents !== null && offer.price_cents !== undefined
+                          ? formatPrice(offer.price_cents, offer.currency)
+                          : 'tier price'}{' '}
+                        · {formatDate(offer.created_at)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Chip tone={OFFER_STATUS_TONES[offer.status]}>
+                        {OFFER_STATUS_LABELS[offer.status]}
+                      </Chip>
+                      {renderOfferActions(offer)}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              {offers.map((offer) => (
+                <div
+                  key={offer.id}
+                  className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 break-words text-sm font-medium text-charcoal">
+                      {offer.user?.full_name || offer.user?.email || offer.user_id.slice(0, 8)}
+                    </span>
+                    <span className="shrink-0">
+                      <Chip tone={OFFER_STATUS_TONES[offer.status]}>
+                        {OFFER_STATUS_LABELS[offer.status]}
+                      </Chip>
+                    </span>
+                  </div>
+                  <p className="break-words text-xs text-muted">{offer.tier?.name ?? 'Tier'}</p>
+                  <p className="break-words text-xs text-muted">
                     {offer.price_cents !== null && offer.price_cents !== undefined
                       ? formatPrice(offer.price_cents, offer.currency)
                       : 'tier price'}{' '}
                     · {formatDate(offer.created_at)}
                   </p>
+                  <div className="flex flex-wrap gap-2 pt-1">{renderOfferActions(offer)}</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Chip tone={OFFER_STATUS_TONES[offer.status]}>
-                    {OFFER_STATUS_LABELS[offer.status]}
-                  </Chip>
-                  {offer.status === 'draft' ? (
-                    <Button
-                      variant="secondary"
-                      loading={busyId === offer.id}
-                      onClick={() => void offerAction(offer, 'sent')}
-                    >
-                      Send
-                    </Button>
-                  ) : null}
-                  {offer.status === 'sent' || offer.status === 'viewed' ? (
-                    confirmId === offer.id ? (
-                      <span className="flex gap-2">
-                        <Button variant="ghost" onClick={() => setConfirmId(null)}>
-                          Keep
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          loading={busyId === offer.id}
-                          onClick={() => void offerAction(offer, 'cancelled')}
-                        >
-                          Confirm cancel
-                        </Button>
-                      </span>
-                    ) : (
-                      <Button variant="secondary" onClick={() => setConfirmId(offer.id)}>
-                        Cancel
-                      </Button>
-                    )
-                  ) : null}
-                </div>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </div>
+          </>
         )}
       </section>
 
@@ -712,29 +818,71 @@ export function ManagementMembershipsPage() {
             description="A membership row appears here the moment a member accepts one of your offers."
           />
         ) : (
-          <ul className="divide-y divide-stone">
-            {memberships.map((membership) => (
-              <li key={membership.id}>
-                <Link
-                  to={`/management/memberships/${membership.id}`}
-                  className="flex flex-wrap items-center justify-between gap-3 py-3 hover:bg-stone/40"
+          <>
+            <div className="hidden md:block">
+              <ul className="divide-y divide-stone">
+                {memberships.map((membership) => (
+                  <li key={membership.id}>
+                    <Link
+                      to={`/management/memberships/${membership.id}`}
+                      className="flex flex-wrap items-center justify-between gap-3 py-3 hover:bg-stone/40"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-charcoal">
+                          {membership.user?.full_name || membership.user?.email || membership.user_id.slice(0, 8)}
+                        </p>
+                        <p className="text-xs text-muted">
+                          {membership.tier?.name ?? 'Tier'} ·{' '}
+                          {membership.membership_number ?? 'no number yet'}
+                        </p>
+                      </div>
+                      <Chip tone={MEMBERSHIP_STATUS_TONES[membership.status]}>
+                        {MEMBERSHIP_STATUS_LABELS[membership.status]}
+                      </Chip>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              {memberships.map((membership) => (
+                <div
+                  key={membership.id}
+                  className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                 >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-charcoal">
-                      {membership.user?.full_name || membership.user?.email || membership.user_id.slice(0, 8)}
-                    </p>
-                    <p className="text-xs text-muted">
-                      {membership.tier?.name ?? 'Tier'} ·{' '}
-                      {membership.membership_number ?? 'no number yet'}
-                    </p>
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 break-words text-sm font-medium text-charcoal">
+                      {membership.user?.full_name ||
+                        membership.user?.email ||
+                        membership.user_id.slice(0, 8)}
+                    </span>
+                    <span className="shrink-0">
+                      <Chip tone={MEMBERSHIP_STATUS_TONES[membership.status]}>
+                        {MEMBERSHIP_STATUS_LABELS[membership.status]}
+                      </Chip>
+                    </span>
                   </div>
-                  <Chip tone={MEMBERSHIP_STATUS_TONES[membership.status]}>
-                    {MEMBERSHIP_STATUS_LABELS[membership.status]}
-                  </Chip>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                  {membership.user?.full_name ? (
+                    <p className="break-words text-xs text-muted">
+                      {membership.user.email ?? 'Email not on file'}
+                    </p>
+                  ) : null}
+                  <p className="break-words text-xs text-muted">
+                    {membership.tier?.name ?? 'Tier'} ·{' '}
+                    {membership.membership_number ?? 'no number yet'}
+                  </p>
+                  <Link
+                    to={`/management/memberships/${membership.id}`}
+                    className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                  >
+                    <span>View</span>
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </section>
 
@@ -752,47 +900,62 @@ export function ManagementMembershipsPage() {
             description="Payment records are created automatically when a member accepts a priced offer."
           />
         ) : (
-          <ul className="divide-y divide-stone">
-            {payments.map((payment) => (
-              <li key={payment.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-charcoal">
-                    {formatPrice(payment.amount_cents, payment.currency)}
+          <>
+            <div className="hidden md:block">
+              <ul className="divide-y divide-stone">
+                {payments.map((payment) => (
+                  <li key={payment.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-charcoal">
+                        {formatPrice(payment.amount_cents, payment.currency)}
+                      </p>
+                      <p className="text-xs text-muted">
+                        {payment.membership?.user?.email ?? payment.membership?.user_id?.slice(0, 8) ?? 'Member'} ·
+                        requested {formatDate(payment.created_at)}
+                        {payment.paid_at ? ` · paid ${formatDate(payment.paid_at)}` : ''}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
+                        {PAYMENT_STATUS_LABELS[payment.status]}
+                      </Chip>
+                      {renderPaymentActions(payment)}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              {payments.map((payment) => (
+                <div
+                  key={payment.id}
+                  className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="min-w-0 break-words text-sm font-medium text-charcoal">
+                      {formatPrice(payment.amount_cents, payment.currency)}
+                    </span>
+                    <span className="shrink-0">
+                      <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
+                        {PAYMENT_STATUS_LABELS[payment.status]}
+                      </Chip>
+                    </span>
+                  </div>
+                  <p className="break-words text-xs text-muted">
+                    {payment.membership?.user?.email ??
+                      payment.membership?.user_id?.slice(0, 8) ??
+                      'Member'}
                   </p>
-                  <p className="text-xs text-muted">
-                    {payment.membership?.user?.email ?? payment.membership?.user_id?.slice(0, 8) ?? 'Member'} ·
+                  <p className="break-words text-xs text-muted">
                     requested {formatDate(payment.created_at)}
                     {payment.paid_at ? ` · paid ${formatDate(payment.paid_at)}` : ''}
                   </p>
+                  <div className="flex flex-wrap gap-2 pt-1">{renderPaymentActions(payment)}</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
-                    {PAYMENT_STATUS_LABELS[payment.status]}
-                  </Chip>
-                  {payment.status === 'pending' || payment.status === 'processing' ? (
-                    confirmId === payment.id ? (
-                      <span className="flex gap-2">
-                        <Button variant="ghost" onClick={() => setConfirmId(null)}>
-                          Back
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          loading={busyId === payment.id}
-                          onClick={() => void markPaid(payment)}
-                        >
-                          Confirm paid
-                        </Button>
-                      </span>
-                    ) : (
-                      <Button variant="secondary" onClick={() => setConfirmId(payment.id)}>
-                        Mark paid
-                      </Button>
-                    )
-                  ) : null}
-                </div>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </div>
+          </>
         )}
       </section>
     </div>

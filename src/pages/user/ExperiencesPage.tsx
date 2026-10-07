@@ -82,7 +82,7 @@ export function ExperiencesPage() {
             management approves, takes payment and schedules it.
           </p>
         </div>
-        <Link to="/dashboard/requests/new" className="btn btn-primary">
+        <Link to="/dashboard/requests/new" className="btn btn-primary w-full justify-center sm:w-auto">
           Request an experience
         </Link>
       </div>
@@ -144,7 +144,7 @@ export function ExperiencesPage() {
                     </dl>
                     <Link
                       to={`/dashboard/requests/new?experience=${experience.id}`}
-                      className="btn btn-secondary mt-4 justify-center"
+                      className="btn btn-secondary mt-4 w-full justify-center sm:w-auto"
                     >
                       <Send className="size-4" aria-hidden /> Request this experience
                     </Link>

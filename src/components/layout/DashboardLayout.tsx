@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {Link, NavLink, Outlet, useNavigate} from 'react-router-dom';
+import {Link, NavLink, Outlet, useMatch} from 'react-router-dom';
 import {
   LayoutDashboard,
   Mail,
@@ -10,15 +10,15 @@ import {
   UserRound,
   FolderClosed,
   Settings,
-  LogOut,
-  ChevronDown,
   Menu,
   X
 } from 'lucide-react';
 
+import {MobileBottomNav} from './MobileBottomNav';
 import {ProfileMenu} from '../ProfileMenu';
 import {useAuth} from '../../auth/AuthContext';
 import {useUnreadCounts} from '../../hooks/useUnreadCounts';
+import {readIsDesktop} from '../../lib/isDesktop';
 import {supabase} from '../../lib/supabase';
 
 interface NavItem {
@@ -30,13 +30,22 @@ interface NavItem {
 }
 
 export function DashboardLayout() {
-  const {profile, session, signOut} = useAuth();
+  const {profile, session} = useAuth();
   const {messages, notifications} = useUnreadCounts();
   const [openRequestsCount, setOpenRequestsCount] = useState<number>(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const navigate = useNavigate();
+  const [isDesktop, setIsDesktop] = useState(() => readIsDesktop());
+  const inConversation = Boolean(useMatch('/dashboard/messages/:conversationId'));
 
   const me = session?.user.id;
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const onChange = (event: MediaQueryListEvent) => setIsDesktop(event.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   useEffect(() => {
     if (!me) return;
@@ -61,7 +70,12 @@ export function DashboardLayout() {
       if (event.key === 'Escape') setMobileOpen(false);
     };
     window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [mobileOpen]);
 
   const mainLinks: NavItem[] = [
@@ -97,7 +111,7 @@ export function DashboardLayout() {
         end={link.end}
         onClick={() => setMobileOpen(false)}
         className={({isActive}) =>
-          `flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-medium transition-all ${
+          `flex min-h-11 items-center justify-between px-3.5 py-3 rounded-lg text-xs font-medium transition-all ${
             isActive
               ? 'bg-[#2A2318] text-[#C89B3C] border border-[#4A3B24]'
               : 'text-stone-400 hover:text-white hover:bg-white/5'
@@ -132,7 +146,9 @@ export function DashboardLayout() {
       ========================================================================= */}
       <aside
         id="dashboard-sidebar"
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#14171A] text-stone-300 flex flex-col justify-between shrink-0 transform transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
+        aria-hidden={!isDesktop && !mobileOpen ? true : undefined}
+        inert={!isDesktop && !mobileOpen ? true : undefined}
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#14171A] text-stone-300 flex flex-col justify-between shrink-0 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -140,13 +156,13 @@ export function DashboardLayout() {
           type="button"
           onClick={() => setMobileOpen(false)}
           aria-label="Close sidebar menu"
-          className="absolute top-4 right-4 p-1.5 text-stone-400 hover:text-white rounded-md hover:bg-white/10 lg:hidden"
+          className="absolute top-3 right-3 flex h-11 w-11 items-center justify-center text-stone-400 hover:text-white rounded-md hover:bg-white/10 lg:hidden"
         >
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
         <div className="flex flex-col flex-1 overflow-y-auto">
           {/* Top Brand Monogram & Lockup */}
-          <div className="pt-7 pb-6 px-6 border-b border-white/5">
+          <div className="pt-7 pb-5 px-6 border-b border-white/5">
             <Link
               to="/home"
               aria-label="Gillian Anderson Management home"
@@ -165,6 +181,22 @@ export function DashboardLayout() {
                 MANAGEMENT
               </span>
             </Link>
+
+            <div className="mt-4 flex items-center gap-3 rounded-lg border border-white/5 bg-white/[0.03] px-3 py-2.5">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#2A2318] font-serif text-[11px] tracking-wider text-[#E6C27A] ring-1 ring-[#C89B3C]/50">
+                {userInitials}
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-xs font-medium text-white">
+                  {userName}
+                </span>
+                {profile?.email ? (
+                  <span className="block truncate text-[10px] text-stone-500">
+                    {profile.email}
+                  </span>
+                ) : null}
+              </span>
+            </div>
           </div>
 
           {/* Navigation Links */}
@@ -186,41 +218,6 @@ export function DashboardLayout() {
             </div>
           </nav>
         </div>
-
-        {/* Bottom Profile Lockup in Sidebar */}
-        <div className="p-4 border-t border-white/10 bg-[#0F1214]">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-stone-700/80 border border-stone-600 flex items-center justify-center text-xs font-semibold text-white overflow-hidden shrink-0">
-              <span>{userInitials}</span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-xs font-medium text-white truncate flex items-center gap-1">
-                <span>{userName}</span>
-                <ChevronDown className="w-3 h-3 text-stone-400 shrink-0" />
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col gap-1 pl-11 mt-1 text-[11px] text-stone-400">
-            <Link
-              to="/dashboard/profile"
-              onClick={() => setMobileOpen(false)}
-              className="hover:text-white transition-colors"
-            >
-              View Profile
-            </Link>
-            <button
-              type="button"
-              onClick={() => {
-                setMobileOpen(false);
-                void signOut().then(() => navigate('/sign-in', {replace: true}));
-              }}
-              className="flex items-center gap-1.5 text-stone-400 hover:text-rose-400 transition-colors text-left"
-            >
-              <LogOut className="w-3 h-3" />
-              <span>Sign Out</span>
-            </button>
-          </div>
-        </div>
       </aside>
 
       {/* =========================================================================
@@ -230,11 +227,11 @@ export function DashboardLayout() {
         {/* Top Navbar */}
         <header className="h-14 px-4 sm:h-16 sm:px-6 lg:px-10 flex items-center justify-between lg:justify-end sticky top-0 z-30 bg-[#FAF8F5]/90 backdrop-blur-sm border-b border-[#EAE4DA]/60">
           {/* Mobile hamburger */}
-          <div className="flex items-center gap-3 lg:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="p-1.5 text-stone-700 hover:text-stone-900 rounded-md hover:bg-stone-200/50"
+              className="-ml-2.5 flex h-11 w-11 items-center justify-center text-stone-700 hover:text-stone-900 rounded-md hover:bg-stone-200/50"
               aria-label="Open sidebar menu"
               aria-expanded={mobileOpen}
               aria-controls="dashboard-sidebar"
@@ -245,32 +242,37 @@ export function DashboardLayout() {
           </div>
 
           {/* Right Bell + Profile Lockup */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1 sm:gap-3">
             <Link
               to="/dashboard/notifications"
-              className="relative p-2 text-stone-600 hover:text-[#1E1E1E] transition-colors rounded-full hover:bg-stone-200/40"
+              className="relative flex h-11 w-11 items-center justify-center text-stone-700 hover:text-[#1E1E1E] transition-colors rounded-full hover:bg-stone-200/50"
               aria-label="View notifications"
             >
-              <Bell className="w-4 h-4" />
+              <Bell className="w-5 h-5 stroke-[1.8]" />
               {notifications > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#C89B3C]" />
+                <span className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#C89B3C] px-1 text-[10px] font-semibold text-white shadow-xs">
+                  {notifications}
+                </span>
               )}
             </Link>
 
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-[#EAE4DA] text-stone-800 flex items-center justify-center text-xs font-semibold overflow-hidden">
-                <span>{userInitials}</span>
-              </div>
-              <ProfileMenu />
-            </div>
+            <ProfileMenu />
           </div>
         </header>
 
         {/* Main Routed Content */}
-        <main className="flex-1 p-6 sm:p-10 max-w-7xl w-full mx-auto">
+        <main
+          className={
+            inConversation
+              ? 'flex-1 w-full max-w-7xl mx-auto lg:px-10 lg:py-10'
+              : 'flex-1 w-full max-w-7xl mx-auto px-4 py-5 sm:px-6 sm:py-8 lg:px-10 lg:py-10 pb-[calc(4.75rem+env(safe-area-inset-bottom))] lg:pb-10'
+          }
+        >
           <Outlet />
         </main>
       </div>
+
+      {!inConversation ? <MobileBottomNav messagesBadge={messages} /> : null}
     </div>
   );
 }

@@ -121,9 +121,9 @@ export function ManagementAuditPage() {
       {error ? <Alert tone="error">{error}</Alert> : null}
 
       <section className="surface p-6">
-        <div className="mb-4 flex flex-wrap items-center gap-3">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <select
-            className="field-input w-auto"
+            className="field-input w-full sm:w-auto"
             value={entityFilter}
             onChange={(event) => setEntityFilter(event.target.value)}
           >
@@ -135,7 +135,7 @@ export function ManagementAuditPage() {
             ))}
           </select>
           <select
-            className="field-input w-auto"
+            className="field-input w-full sm:w-auto"
             value={actionFilter}
             onChange={(event) => setActionFilter(event.target.value)}
           >
@@ -147,12 +147,12 @@ export function ManagementAuditPage() {
             ))}
           </select>
           <input
-            className="field-input max-w-56"
+            className="field-input w-full sm:max-w-56"
             value={search}
             placeholder="Search actor or action"
             onChange={(event) => setSearch(event.target.value)}
           />
-          <span className="ml-auto text-xs text-muted">
+          <span className="text-xs text-muted sm:ml-auto">
             {visible.length} of {rows.length} entries
           </span>
         </div>
@@ -163,40 +163,84 @@ export function ManagementAuditPage() {
             description="Entries appear here automatically whenever a privileged change happens."
           />
         ) : (
-          <ul className="divide-y divide-stone">
-            {visible.map((row) => {
-              const link = recordLink(row);
-              return (
-                <li key={row.id} className="py-3.5">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex min-w-0 flex-wrap items-center gap-2">
-                      <Chip tone={actionTone(row.action)}>{row.action}</Chip>
-                      <span className="text-sm text-charcoal">
+          <>
+            <div className="hidden md:block">
+              <ul className="divide-y divide-stone">
+                {visible.map((row) => {
+                  const link = recordLink(row);
+                  return (
+                    <li key={row.id} className="py-3.5">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex min-w-0 flex-wrap items-center gap-2">
+                          <Chip tone={actionTone(row.action)}>{row.action}</Chip>
+                          <span className="text-sm text-charcoal">
+                            {row.actor_label ?? 'System'}
+                          </span>
+                          <span className="text-xs text-muted">
+                            {row.entity}
+                            {row.entity_id ? ` · ${row.entity_id.slice(0, 8)}` : ''}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-muted">{formatDateTime(row.created_at)}</span>
+                          {link ? (
+                            <Link to={link.to} className="text-xs text-gold-deep hover:underline">
+                              {link.text}
+                            </Link>
+                          ) : null}
+                        </div>
+                      </div>
+                      {Object.keys(row.metadata ?? {}).length > 0 ? (
+                        <pre className="mt-2 overflow-x-auto rounded-sm bg-stone/50 p-2 text-[11px] leading-relaxed text-muted">
+                          {JSON.stringify(row.metadata, null, 2)}
+                        </pre>
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            <div className="space-y-3 md:hidden">
+              {visible.map((row) => {
+                const link = recordLink(row);
+                return (
+                  <div
+                    key={row.id}
+                    className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                         {row.actor_label ?? 'System'}
                       </span>
-                      <span className="text-xs text-muted">
-                        {row.entity}
-                        {row.entity_id ? ` · ${row.entity_id.slice(0, 8)}` : ''}
+                      <span className="shrink-0">
+                        <Chip tone={actionTone(row.action)}>{row.action}</Chip>
                       </span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs text-muted">{formatDateTime(row.created_at)}</span>
-                      {link ? (
-                        <Link to={link.to} className="text-xs text-gold-deep hover:underline">
-                          {link.text}
-                        </Link>
-                      ) : null}
-                    </div>
+                    <p className="break-words text-xs text-muted">
+                      {row.entity}
+                      {row.entity_id ? ` · ${row.entity_id.slice(0, 8)}` : ''}
+                    </p>
+                    <p className="text-xs text-muted">{formatDateTime(row.created_at)}</p>
+                    {Object.keys(row.metadata ?? {}).length > 0 ? (
+                      <pre className="overflow-x-auto rounded-sm bg-stone/50 p-2 text-[11px] leading-relaxed text-muted">
+                        {JSON.stringify(row.metadata, null, 2)}
+                      </pre>
+                    ) : null}
+                    {link ? (
+                      <Link
+                        to={link.to}
+                        className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                      >
+                        <span>{link.text}</span>
+                        <span aria-hidden="true">→</span>
+                      </Link>
+                    ) : null}
                   </div>
-                  {Object.keys(row.metadata ?? {}).length > 0 ? (
-                    <pre className="mt-2 overflow-x-auto rounded-sm bg-stone/50 p-2 text-[11px] leading-relaxed text-muted">
-                      {JSON.stringify(row.metadata, null, 2)}
-                    </pre>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ul>
+                );
+              })}
+            </div>
+          </>
         )}
       </section>
 

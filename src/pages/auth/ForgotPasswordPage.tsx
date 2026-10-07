@@ -1,9 +1,9 @@
 import {useState, type FormEvent} from 'react';
 import {Link} from 'react-router-dom';
 
+import {GateHeader} from '../../components/auth/GateHeader';
 import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
-import {Card} from '../../components/ui/Card';
 import {Field} from '../../components/ui/Field';
 import {reportError} from '../../lib/errors';
 import {supabase} from '../../lib/supabase';
@@ -36,14 +36,15 @@ export function ForgotPasswordPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-md px-6 py-16">
-      <p className="eyebrow mb-3">Account recovery</p>
-      <h1 className="mb-2 text-3xl">Reset your password</h1>
-      <p className="mb-8 text-sm text-muted">
-        Enter your account email and we will send a secure reset link.
-      </p>
+    <div className="gate-flow min-h-[100svh] w-full px-6 pb-12 pt-8 sm:px-10 sm:pt-10 lg:px-16 lg:pt-14">
+      <GateHeader />
+      <div className="mx-auto mt-8 w-full max-w-md sm:mt-10">
+        <p className="eyebrow mb-3">Account recovery</p>
+        <h1 className="mb-2 text-3xl">Reset your password</h1>
+        <p className="mb-7 text-sm text-muted">
+          Enter your account email and we will send a secure reset link.
+        </p>
 
-      <Card>
         {sent ? (
           <div className="flex flex-col gap-4">
             <Alert tone="success">
@@ -75,12 +76,15 @@ export function ForgotPasswordPage() {
               Send reset link
             </Button>
 
-            <Link to="/sign-in" className="text-center text-xs text-muted underline-offset-2 hover:text-gold-deep hover:underline">
+            <Link
+              to="/sign-in"
+              className="text-center text-xs text-muted underline-offset-2 hover:text-[#C89B3C] hover:underline sm:text-left"
+            >
               Back to sign in
             </Link>
           </form>
         )}
-      </Card>
+      </div>
     </div>
   );
 }

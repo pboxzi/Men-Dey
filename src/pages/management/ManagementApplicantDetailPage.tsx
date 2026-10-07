@@ -267,7 +267,7 @@ export function ManagementApplicantDetailPage() {
               {answers.map((row) => (
                 <div key={row.label}>
                   <dt className="text-xs uppercase tracking-wider text-muted">{row.label}</dt>
-                  <dd className="mt-1 whitespace-pre-wrap text-sm text-charcoal">{row.value}</dd>
+                  <dd className="mt-1 break-words whitespace-pre-wrap text-sm text-charcoal">{row.value}</dd>
                 </div>
               ))}
             </dl>
@@ -313,7 +313,7 @@ export function ManagementApplicantDetailPage() {
               {timeline.map((row) => (
                 <div key={row.label} className="flex items-baseline justify-between gap-3">
                   <dt className="text-xs uppercase tracking-wider text-muted">{row.label}</dt>
-                  <dd className="text-sm text-charcoal">{row.value}</dd>
+                  <dd className="break-words text-sm text-charcoal">{row.value}</dd>
                 </div>
               ))}
             </dl>

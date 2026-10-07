@@ -30,7 +30,7 @@ const SCHEDULE_STATUS_TONES: Record<
   completed: 'neutral',
 };
 
-type View = 'day' | 'week' | 'month';
+type View = 'day' | 'week' | 'month' | 'agenda';
 type Tone = 'info' | 'gold' | 'danger' | 'neutral';
 
 interface CalendarEntry {
@@ -84,6 +84,17 @@ function timezoneLabel(): string {
   }
 }
 
+function defaultView(): View {
+  try {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches) {
+      return 'agenda';
+    }
+  } catch {
+    return 'month';
+  }
+  return 'month';
+}
+
 export function ManagementCalendarPage() {
   const [blocks, setBlocks] = useState<AvailabilityBlock[]>([]);
   const [schedules, setSchedules] = useState<ExperienceSchedule[]>([]);
@@ -96,7 +107,7 @@ export function ManagementCalendarPage() {
   const [form, setForm] = useState({starts_at: '', ends_at: '', title: '', note: ''});
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
-  const [view, setView] = useState<View>('month');
+  const [view, setView] = useState<View>(defaultView);
   const [cursor, setCursor] = useState(() => {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -288,6 +299,13 @@ export function ManagementCalendarPage() {
     const weekStart = startOfWeek(cursor);
     for (let i = 0; i < 7; i += 1) weekDays.push(addDays(weekStart, i));
   }
+  const agendaDays: Date[] = [];
+  if (view === 'agenda') {
+    const firstOfMonth = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+    const daysInMonth = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0).getDate();
+    for (let i = 0; i < daysInMonth; i += 1) agendaDays.push(addDays(firstOfMonth, i));
+  }
+  const agendaFilled = agendaDays.filter((day) => (entriesByDay.get(localDayKey(day)) ?? []).length > 0);
 
   const heading =
     view === 'day'
@@ -383,7 +401,7 @@ export function ManagementCalendarPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
           Block availability
         </h2>
@@ -479,21 +497,27 @@ export function ManagementCalendarPage() {
         </div>
       </section>
 
-      <section className="surface p-6" aria-label="Schedule calendar">
+      <section className="surface p-4 sm:p-6" aria-label="Schedule calendar">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            {(['day', 'week', 'month'] as const).map((value) => (
-              <button
-                key={value}
-                type="button"
-                className={`btn ${view === value ? 'btn-primary' : 'btn-ghost'}`}
-                onClick={() => setView(value)}
-              >
-                {value === 'day' ? 'Day' : value === 'week' ? 'Week' : 'Month'}
-              </button>
-            ))}
-          </div>
-          <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {(['agenda', 'day', 'week', 'month'] as const).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={`btn ${view === value ? 'btn-primary' : 'btn-ghost'}`}
+                  onClick={() => setView(value)}
+                >
+                  {value === 'day'
+                    ? 'Day'
+                    : value === 'week'
+                      ? 'Week'
+                      : value === 'month'
+                        ? 'Month'
+                        : 'Agenda'}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:flex-nowrap">
             <Button variant="ghost" onClick={() => step(-1)} aria-label="Previous">
               <ChevronLeft className="size-4" aria-hidden />
             </Button>
@@ -562,6 +586,40 @@ export function ManagementCalendarPage() {
               </>
             )}
           </div>
+        ) : view === 'agenda' ? (
+          agendaFilled.length === 0 ? (
+            <EmptyState
+              title="Nothing scheduled."
+              description="Confirmed experiences are scheduled from the experience detail page."
+            />
+          ) : (
+            <div className="space-y-4">
+              {agendaFilled.map((day) => {
+                const key = localDayKey(day);
+                const isToday = key === todayKey;
+                return (
+                  <div
+                    key={key}
+                    className={`rounded-sm border p-4 ${
+                      isToday ? 'border-gold bg-stone/50' : 'border-stone'
+                    }`}
+                  >
+                    <p className="mb-2 text-xs uppercase tracking-wider text-muted">
+                      {day.toLocaleDateString('en-GB', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                      })}
+                      {isToday ? ' · today' : ''}
+                    </p>
+                    <ul className="divide-y divide-stone border-t border-stone">
+                      {dayEntries(key).map(entryRow)}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          )
         ) : view === 'week' ? (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-7">
             {weekDays.map((day) => {
@@ -617,7 +675,7 @@ export function ManagementCalendarPage() {
                   <button
                     key={key}
                     type="button"
-                    className={`min-h-24 rounded-sm border p-1.5 text-left transition-colors hover:bg-stone/50 ${
+                    className={`min-h-16 rounded-sm border p-1 text-left transition-colors hover:bg-stone/50 sm:min-h-24 sm:p-1.5 ${
                       isToday
                         ? 'border-gold bg-stone/50'
                         : inMonth

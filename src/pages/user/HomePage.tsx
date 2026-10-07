@@ -1,9 +1,9 @@
 import {
+  ArrowDown,
   ChevronRight,
   Crown,
   FileText,
   MessageSquare,
-  Sparkles,
 } from 'lucide-react';
 import {useEffect, useState} from 'react';
 import {Link, Navigate} from 'react-router-dom';
@@ -90,72 +90,76 @@ export function HomePage() {
   return (
     <div className="w-full bg-[#FAF8F5] text-[#1E1E1E]">
       {/* =========================================================================
-          1. FULL-WIDTH HERO BANNER (Edge-to-edge, compact, seamless blend)
+          1. HERO — vertical editorial stack on phones, portrait composition on desktop
       ========================================================================= */}
       <section className="relative w-full overflow-hidden bg-[#FAF8F5] border-b border-[#EAE4DA]">
-        <div className="mx-auto w-full max-w-7xl min-h-[250px] sm:min-h-[280px] lg:min-h-[310px] relative flex items-center">
-          {/* Background Right: Seamless Gillian Hero Portrait */}
-          <div className="absolute top-0 right-0 bottom-0 w-full lg:w-[65%] pointer-events-none select-none overflow-hidden flex justify-end">
-            <div className="relative h-full w-full">
-              <img
-                src="/assets/images/gillian_hero_seamless.jpg"
-                alt="Gillian Anderson Management"
-                className="h-full w-full object-cover object-[right_center] lg:object-[center_center]"
-                loading="eager"
-              />
-              {/* Soft horizontal gradient mask to ensure 100% invisible blend on the left */}
-              <div className="absolute inset-y-0 left-0 w-32 sm:w-48 bg-gradient-to-r from-[#FAF8F5] to-transparent" />
-              {/* Mobile bottom fade */}
-              <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[#FAF8F5] to-transparent lg:hidden" />
-            </div>
+        <div className="relative mx-auto flex w-full max-w-7xl flex-col lg:min-h-[310px] lg:flex-row lg:items-center">
+          {/* Portrait: static band on mobile, absolute right canvas on desktop */}
+          <div className="relative h-[58vw] max-h-72 w-full shrink-0 overflow-hidden sm:max-h-80 lg:absolute lg:inset-y-0 lg:right-0 lg:h-full lg:max-h-none lg:w-[65%]">
+            <img
+              src="/assets/images/gillian_hero_seamless.jpg"
+              alt="Gillian Anderson Management"
+              className="h-full w-full object-cover object-[68%_center] lg:object-[center_center]"
+              loading="eager"
+              decoding="async"
+            />
+            {/* Seamless left blend on desktop */}
+            <div className="absolute inset-y-0 left-0 hidden w-48 bg-gradient-to-r from-[#FAF8F5] to-transparent lg:block" />
+            {/* Soft fade into the page on mobile */}
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#FAF8F5] via-[#FAF8F5]/60 to-transparent lg:hidden" />
           </div>
 
-          {/* Mobile scrim so the words stay crisp over the photo */}
-          <div className="absolute inset-0 bg-[#FAF8F5]/72 sm:hidden" aria-hidden="true" />
-
-          {/* Left Hero Content */}
-          <div className="relative z-10 w-full lg:w-[50%] px-6 sm:px-10 py-6 sm:py-7 lg:py-8 space-y-3.5">
-            <div className="hidden items-center gap-2 sm:flex">
+          {/* Content */}
+          <div className="relative z-10 w-full space-y-4 px-6 py-7 sm:px-10 sm:py-8 lg:w-[50%] lg:py-8">
+            <div className="flex items-center gap-2">
               <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8C8275]">
                 WELCOME TO YOUR PRIVATE SPACE.
               </span>
               <span className="w-8 h-[1px] bg-[#C89B3C]/70" />
             </div>
 
-            <h1 className="font-serif text-[27px] sm:text-3xl lg:text-[38px] text-[#1E1E1E] leading-[1.14] tracking-tight font-normal">
+            <h1 className="font-serif text-[28px] leading-[1.14] tracking-tight font-normal text-[#1E1E1E] sm:text-3xl lg:text-[38px]">
               Gillian Anderson
               <br />
               Management
             </h1>
 
-            <p className="text-xs sm:text-[13px] text-[#6E6A63] leading-relaxed max-w-md">
+            <p className="max-w-md text-xs leading-relaxed text-[#6E6A63] sm:text-[13px]">
               A place to connect with management, explore your options and follow the experiences
               being arranged for you.
             </p>
 
-            {/* 2 Action Pill Buttons (MY MEMBERSHIP removed per instruction) */}
-            <div className="pt-1.5 flex flex-wrap items-center gap-2.5">
+            {/* Primary + secondary actions — stacked full width on phones */}
+            <div className="flex flex-col gap-2.5 pt-1 sm:flex-row sm:flex-wrap sm:items-center">
               <Link
                 to="/dashboard/messages"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1E1E1E] hover:bg-black text-white text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.16em] transition-all shadow-xs"
+                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1E1E1E] px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-white shadow-xs transition-all hover:bg-black sm:w-auto sm:py-2.5"
               >
-                <MessageSquare className="w-3.5 h-3.5 stroke-[2]" />
+                <MessageSquare className="h-4 w-4 stroke-[2]" aria-hidden="true" />
                 <span>TALK TO MANAGEMENT</span>
-                <ChevronRight className="w-3 h-3 ml-0.5 opacity-70" />
+                <ChevronRight className="h-3.5 w-3.5 opacity-70" aria-hidden="true" />
               </Link>
 
               <Link
                 to="/dashboard/requests"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/95 hover:bg-white text-[#1E1E1E] border border-[#EAE4DA] hover:border-[#C89B3C] text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.16em] transition-all shadow-xs backdrop-blur-xs"
+                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#EAE4DA] bg-white/95 px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1E1E1E] shadow-xs backdrop-blur-xs transition-all hover:border-[#C89B3C] hover:bg-white sm:w-auto sm:py-2.5"
               >
-                <FileText className="w-3.5 h-3.5 text-[#8C8275]" />
+                <FileText className="h-4 w-4 text-[#8C8275]" aria-hidden="true" />
                 <span>MY REQUESTS</span>
-                <ChevronRight className="w-3 h-3 ml-0.5 text-[#8C8275]" />
+                <ChevronRight className="h-3.5 w-3.5 text-[#8C8275]" aria-hidden="true" />
+              </Link>
+
+              <Link
+                to="/dashboard/membership"
+                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-[#C89B3C]/45 bg-transparent px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#A67F2C] transition-all hover:border-[#C89B3C] hover:text-[#8C6519] sm:w-auto sm:py-2.5"
+              >
+                <Crown className="h-4 w-4" aria-hidden="true" />
+                <span>MY MEMBERSHIP</span>
               </Link>
             </div>
           </div>
 
-          {/* Floating Quote on the far right (matches reference image) */}
+          {/* Floating Quote on the far right (desktop only) */}
           <div className="hidden lg:block absolute bottom-5 right-8 z-10 max-w-[240px] text-right pointer-events-none">
             <p className="font-serif italic text-[11px] text-stone-700 leading-relaxed drop-shadow-xs">
               “Meaningful connections create the most extraordinary opportunities.”
@@ -184,20 +188,37 @@ export function HomePage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-            {JOURNEY.map((item) => (
-              <div key={item.step} className="relative flex flex-col items-center sm:items-start text-center sm:text-left">
-                {/* Number Circle Badge */}
-                <div className="w-10 h-10 rounded-full border border-[#D9D1C3] bg-[#FAF8F5] text-[#8C8275] font-serif text-xs font-semibold flex items-center justify-center mb-4">
-                  {item.step}
+          {/* Mobile: vertical editorial timeline · Desktop: 4-step progression */}
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 relative">
+            {JOURNEY.map((item, index) => (
+              <div key={item.step} className="relative flex flex-col sm:block sm:text-left">
+                <div className="flex gap-4 sm:block">
+                  {/* Number badge */}
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#D9D1C3] bg-[#FAF8F5] font-serif text-xs font-semibold text-[#8C8275]">
+                    {item.step}
+                  </span>
+
+                  <div className="min-w-0 flex-1 sm:mt-4">
+                    <h3 className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-[#1E1E1E] mb-1.5">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-[#6E6A63] leading-relaxed max-w-xs">
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
 
-                <h3 className="font-sans text-xs font-semibold uppercase tracking-[0.18em] text-[#1E1E1E] mb-1.5">
-                  {item.title}
-                </h3>
-                <p className="text-xs text-[#6E6A63] leading-relaxed max-w-xs">
-                  {item.description}
-                </p>
+                {/* Mobile-only gold divider + downward flow into the next step */}
+                {index < JOURNEY.length - 1 ? (
+                  <div
+                    className="mt-6 flex items-center gap-3 sm:hidden"
+                    aria-hidden="true"
+                  >
+                    <span className="h-px flex-1 bg-gradient-to-r from-[#C89B3C]/55 to-[#C89B3C]/15" />
+                    <ArrowDown className="h-3.5 w-3.5 shrink-0 text-[#C89B3C]" />
+                    <span className="h-px w-6 bg-[#C89B3C]/15" />
+                  </div>
+                ) : null}
               </div>
             ))}
           </div>
@@ -211,13 +232,15 @@ export function HomePage() {
         <div className="mx-auto w-full max-w-7xl px-6 sm:px-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Card 1: TALK TO MANAGEMENT */}
-            <div className="bg-white rounded-xl border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
+            <div className="bg-white rounded-lg border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
               <div>
-                <div className="relative h-32 w-full overflow-hidden bg-stone-100">
+                <div className="relative h-36 w-full overflow-hidden bg-stone-100 sm:h-32">
                   <img
                     src="/assets/images/feature_talk_management.jpg"
                     alt="Talk to Management desk"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center text-[#1E1E1E] shadow-xs">
                     <MessageSquare className="w-3.5 h-3.5 stroke-[1.8]" />
@@ -246,13 +269,15 @@ export function HomePage() {
             </div>
 
             {/* Card 2: REQUEST SOMETHING PERSONAL */}
-            <div className="bg-white rounded-xl border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
+            <div className="bg-white rounded-lg border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
               <div>
-                <div className="relative h-32 w-full overflow-hidden bg-stone-100">
+                <div className="relative h-36 w-full overflow-hidden bg-stone-100 sm:h-32">
                   <img
                     src="/assets/images/feature_request_personal.jpg"
                     alt="Request stationery"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center text-[#1E1E1E] shadow-xs">
                     <FileText className="w-3.5 h-3.5 stroke-[1.8]" />
@@ -282,13 +307,15 @@ export function HomePage() {
             </div>
 
             {/* Card 3: EXPLORE MEMBERSHIP */}
-            <div className="bg-white rounded-xl border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
+            <div className="bg-white rounded-lg border border-[#EAE4DA] overflow-hidden shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors group">
               <div>
-                <div className="relative h-32 w-full overflow-hidden bg-stone-100">
+                <div className="relative h-36 w-full overflow-hidden bg-stone-100 sm:h-32">
                   <img
                     src="/assets/images/feature_explore_membership.jpg"
                     alt="Membership card"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center text-[#C89B3C] shadow-xs">
                     <Crown className="w-3.5 h-3.5 stroke-[1.8]" />
@@ -317,7 +344,7 @@ export function HomePage() {
             </div>
 
             {/* Card 4: FROM MANAGEMENT */}
-            <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors">
+            <div className="bg-white rounded-lg border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/60 transition-colors">
               <div>
                 <div className="pb-3 border-b border-[#F5EFE6] mb-3">
                   <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#8C8275]">

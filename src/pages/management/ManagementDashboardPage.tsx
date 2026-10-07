@@ -105,6 +105,16 @@ interface AttentionItem {
   chip?: {label: string; tone: ChipTone};
 }
 
+interface ScheduleRow {
+  key: string;
+  title: string;
+  when: string;
+  meta: string;
+  status: string;
+  tone: ChipTone;
+  href: string;
+}
+
 interface DashboardData {
   applicants: ApplicantHit[];
   requests: RequestHit[];
@@ -140,6 +150,15 @@ const OPEN_REQUEST_STATUSES = [
   'confirmed',
   'approved',
   'scheduled',
+];
+
+const QUICK_ACTIONS = [
+  {key: 'requests', label: 'Open requests', to: '/management/requests'},
+  {key: 'messages', label: 'Messages', to: '/management/messages'},
+  {key: 'applicants', label: 'Applicants', to: '/management/applicants'},
+  {key: 'calendar', label: 'Calendar', to: '/management/calendar'},
+  {key: 'memberships', label: 'Memberships', to: '/management/memberships'},
+  {key: 'bookings', label: 'Bookings', to: '/management/bookings'},
 ];
 
 function first<T>(value: T[] | T | null | undefined): T | null {
@@ -282,6 +301,29 @@ export function ManagementDashboardPage() {
     (payment) => first(payment.request)?.status === 'payment_required',
   );
   const upcomingAppointments = data.appointments.slice(0, 5);
+  const scheduleRows: ScheduleRow[] = [
+    ...upcomingAppointments.map((appointment) => ({
+      key: `appointment-${appointment.id}`,
+      title: appointment.title,
+      when: formatDateTime(appointment.starts_at),
+      meta: appointment.location ?? appointment.virtual_link ?? 'No location yet',
+      status: appointment.status,
+      tone: 'info' as ChipTone,
+      href: '/management/bookings',
+    })),
+    ...data.schedules.slice(0, 5 - upcomingAppointments.length).map((schedule) => ({
+      key: `schedule-${schedule.id}`,
+      title: schedule.title,
+      when: formatDateTime(schedule.starts_at),
+      meta: schedule.location ?? schedule.virtual_link ?? 'No location yet',
+      status: schedule.status,
+      tone: 'gold' as ChipTone,
+      href: '/management/calendar',
+    })),
+  ];
+  const unreadConversationIds = new Set(
+    data.unreadMessages.map((message) => message.conversation_id),
+  );
   const newestApplicant = data.applicants.find(
     (applicant) => applicant.status === 'new' || applicant.status === 'submitted',
   );
@@ -406,37 +448,22 @@ export function ManagementDashboardPage() {
   }
 
   return (
-    <div className="space-y-10">
-      <PageHeader
-        eyebrow="Overview"
-        title="Management home"
-        description="The bridge between every user and Gillian — everything that needs the team right now."
-      />
+    <div className="flex flex-col space-y-10">
+      <div className="order-1 lg:order-1">
+        <PageHeader
+          eyebrow="Overview"
+          title="Management home"
+          description="The bridge between every user and Gillian — everything that needs the team right now."
+        />
+      </div>
 
-      {error ? <Alert tone="error">{error}</Alert> : null}
-
-      <section aria-label="Key metrics">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {metrics.map((metric) => (
-            <Link
-              key={metric.key}
-              to={metric.to}
-              className="surface group flex items-center justify-between gap-3 p-5 transition-colors hover:bg-stone/50"
-            >
-              <div>
-                <p className="text-xs uppercase tracking-widest text-muted">{metric.label}</p>
-                <p className="mt-1 text-3xl font-light text-charcoal">{metric.value}</p>
-              </div>
-              <ArrowRight
-                className="size-5 text-muted transition-transform group-hover:translate-x-1 group-hover:text-gold-deep"
-                aria-hidden
-              />
-            </Link>
-          ))}
+      {error ? (
+        <div className="order-2 lg:order-2">
+          <Alert tone="error">{error}</Alert>
         </div>
-      </section>
+      ) : null}
 
-      <section className="surface p-6" aria-label="Priority attention">
+      <section className="surface order-3 p-4 sm:p-6 lg:order-4" aria-label="Priority attention">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Priority attention
@@ -454,14 +481,14 @@ export function ManagementDashboardPage() {
               <li key={item.key}>
                 <Link
                   to={item.to}
-                  className="flex items-center justify-between gap-4 py-3.5 hover:bg-stone/40"
+                  className="flex min-h-11 items-center justify-between gap-3 py-3.5 hover:bg-stone/40 sm:gap-4"
                 >
                   <span className="flex min-w-0 items-start gap-3">
                     <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-stone text-gold-deep">
                       {item.icon}
                     </span>
                     <span className="min-w-0">
-                      <span className="block text-sm font-medium text-charcoal">{item.title}</span>
+                      <span className="block break-words text-sm font-medium text-charcoal">{item.title}</span>
                       <span className="block truncate text-xs text-muted">{item.detail}</span>
                     </span>
                   </span>
@@ -476,7 +503,28 @@ export function ManagementDashboardPage() {
         )}
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <section className="order-4 lg:order-3" aria-label="Key metrics">
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+          {metrics.map((metric) => (
+            <Link
+              key={metric.key}
+              to={metric.to}
+              className="surface group flex min-h-11 items-center justify-between gap-3 p-4 transition-colors hover:bg-stone/50 sm:p-5"
+            >
+              <div className="min-w-0">
+                <p className="break-words text-xs uppercase tracking-widest text-muted">{metric.label}</p>
+                <p className="mt-1 text-3xl font-light text-charcoal">{metric.value}</p>
+              </div>
+              <ArrowRight
+                className="size-5 shrink-0 text-muted transition-transform group-hover:translate-x-1 group-hover:text-gold-deep"
+                aria-hidden
+              />
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <div className="order-5 grid gap-6 lg:grid-cols-3 lg:order-5">
         <section className="surface p-6" aria-label="Latest applicants">
           <div className="mb-4 flex items-center justify-between gap-3">
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
@@ -572,7 +620,7 @@ export function ManagementDashboardPage() {
                 <li key={appointment.id}>
                   <Link
                     to="/management/bookings"
-                    className="flex items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
+                    className="flex min-h-11 items-center justify-between gap-3 border-l-2 border-[#C89B3C]/45 py-3 pl-3.5 hover:bg-stone/40 lg:border-l-0 lg:pl-0 lg:py-2.5"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm text-charcoal">{appointment.title}</span>
@@ -588,7 +636,7 @@ export function ManagementDashboardPage() {
                 <li key={schedule.id}>
                   <Link
                     to="/management/calendar"
-                    className="flex items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
+                    className="flex min-h-11 items-center justify-between gap-3 border-l-2 border-[#C89B3C]/45 py-3 pl-3.5 hover:bg-stone/40 lg:border-l-0 lg:pl-0 lg:py-2.5"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm text-charcoal">{schedule.title}</span>
@@ -604,6 +652,24 @@ export function ManagementDashboardPage() {
           )}
         </section>
       </div>
+
+      <section className="order-6 lg:order-6" aria-label="Quick actions">
+        <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
+          Quick actions
+        </h2>
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-3 sm:grid-cols-3">
+          {QUICK_ACTIONS.map((action) => (
+            <Link
+              key={action.key}
+              to={action.to}
+              className="surface flex min-h-12 items-center justify-between gap-3 px-4 py-3 text-sm font-medium text-charcoal transition-colors hover:border-gold hover:text-gold-deep"
+            >
+              <span className="min-w-0 truncate">{action.label}</span>
+              <ArrowRight className="size-4 shrink-0 text-muted" aria-hidden />
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

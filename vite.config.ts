@@ -4,6 +4,9 @@ import {defineConfig} from 'vite';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  resolve: {
+    dedupe: ['react', 'react-dom', 'react-router', 'react-router-dom'],
+  },
   build: {
     chunkSizeWarningLimit: 700,
     rollupOptions: {

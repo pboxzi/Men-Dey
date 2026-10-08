@@ -868,6 +868,11 @@ body {
   border: 0 !important;
 }
 
+.goog-te-spinner,
+.goog-te-spinner-material {
+  display: none !important;
+}
+
 #ga-translate .skiptranslate {
   background: transparent !important;
 }

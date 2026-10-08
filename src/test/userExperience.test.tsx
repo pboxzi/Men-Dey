@@ -436,6 +436,44 @@ describe('requests', () => {
     expect(mockData.request_events.some((e) => e.event_type === 'cancelled')).toBe(true);
   });
 
+  it('shows the payment details management attached to the proposal', async () => {
+    seedRequest();
+    mockData.requests[0].status = 'payment_required';
+    mockData.experience_proposals = [
+      {
+        id: 'prop-1',
+        request_id: 'req-1',
+        version: 1,
+        summary: 'Private tea, forty-five minutes.',
+        terms: null,
+        amount_cents: 25000,
+        currency: 'GBP',
+        status: 'accepted',
+        proposed_date: '2026-11-20',
+        proposed_time: '15:00',
+        location: 'London',
+        duration_minutes: 45,
+        participants: '2',
+        notes: null,
+        payment_provider: 'bank_transfer',
+        payment_instructions: 'Transfer to GA Events, reference REQ1.',
+        sent_at: T1,
+        responded_at: T2,
+        viewed_at: T1,
+        expires_at: null,
+        created_at: T1,
+        updated_at: T1,
+      },
+    ];
+    renderApp('/dashboard/requests/req-1');
+
+    expect(await screen.findByText(/How to pay/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Transfer to GA Events/).length).toBeGreaterThan(0);
+    expect(
+      screen.queryByText(/Management will confirm the accepted payment method/),
+    ).not.toBeInTheDocument();
+  });
+
   it('lists requests with status filters', async () => {
     seedRequest();
     const user = userEvent.setup();

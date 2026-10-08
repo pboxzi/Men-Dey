@@ -44,6 +44,31 @@ export function paymentMethodLabel(settings: PaymentSettings): string {
   return PAYMENT_PROVIDER_LABELS[settings.provider] ?? settings.label ?? 'Managed payment';
 }
 
+export const PAYMENT_PROVIDER_OPTIONS: {value: string; label: string}[] = [
+  {value: 'bank_transfer', label: 'Bank transfer'},
+  {value: 'paypal', label: 'PayPal'},
+  {value: 'stripe', label: 'Card via Stripe'},
+  {value: 'manual', label: 'Managed payment'},
+];
+
+export interface PerCasePayment {
+  payment_provider?: string | null;
+  payment_instructions?: string | null;
+}
+
+export function resolvePaymentDetails(
+  row: PerCasePayment | null | undefined,
+  fallback: PaymentSettings | null,
+): PaymentSettings {
+  return {
+    provider: row?.payment_provider ? row.payment_provider : (fallback?.provider ?? DEFAULT_PAYMENT_SETTINGS.provider),
+    label: fallback?.label ?? null,
+    instructions: row?.payment_instructions
+      ? row.payment_instructions
+      : (fallback?.instructions ?? null),
+  };
+}
+
 export async function fetchPaymentSettings(): Promise<
   {settings: PaymentSettings; error: string | null}
 > {

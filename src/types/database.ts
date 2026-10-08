@@ -294,6 +294,8 @@ export interface MembershipOffer {
   message: string | null;
   benefits: string[];
   terms: string | null;
+  payment_provider: string | null;
+  payment_instructions: string | null;
   offered_at: string;
   expires_at: string | null;
   responded_at: string | null;
@@ -414,6 +416,8 @@ export interface ExperienceProposal {
   duration_minutes: number | null;
   participants: string | null;
   notes: string | null;
+  payment_provider: string | null;
+  payment_instructions: string | null;
   sent_at: string | null;
   responded_at: string | null;
   viewed_at: string | null;

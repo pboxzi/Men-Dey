@@ -10,10 +10,12 @@ import {Spinner} from '../../components/ui/Spinner';
 import {formatDate, formatDateTime, relativeTime} from '../../lib/format';
 import {formatPrice} from '../../lib/membership';
 import {
+  PAYMENT_PROVIDER_OPTIONS,
   PAYMENT_STATUS_LABELS,
   PAYMENT_STATUS_TONES,
   fetchPaymentSettings,
   paymentMethodLabel,
+  resolvePaymentDetails,
   type PaymentSettings,
 } from '../../lib/payments';
 import {
@@ -95,6 +97,8 @@ export function ManagementExperienceDetailPage() {
     terms: '',
     notes: '',
     expires: '',
+    paymentProvider: '',
+    paymentInstructions: '',
   });
   const [scheduleForm, setScheduleForm] = useState({
     title: '',
@@ -244,6 +248,8 @@ export function ManagementExperienceDetailPage() {
             duration_minutes: proposalForm.duration.trim() === '' ? null : Number(proposalForm.duration),
             participants: proposalForm.participants.trim() || null,
             notes: proposalForm.notes.trim() || null,
+            payment_provider: proposalForm.paymentProvider || null,
+            payment_instructions: proposalForm.paymentInstructions.trim() || null,
             expires_at: proposalForm.expires
               ? new Date(`${proposalForm.expires}T23:59:59`).toISOString()
               : null,
@@ -272,6 +278,8 @@ export function ManagementExperienceDetailPage() {
           terms: '',
           notes: '',
           expires: '',
+          paymentProvider: '',
+          paymentInstructions: '',
         });
         return send
           ? `Proposal v${version} sent to ${userName ?? 'the member'}. The request now awaits their response.`
@@ -321,6 +329,14 @@ export function ManagementExperienceDetailPage() {
   useEffect(() => {
     void fetchPaymentSettings().then((result) => setPaySettings(result.settings));
   }, []);
+
+  const proposalPreview = resolvePaymentDetails(
+    {
+      payment_provider: proposalForm.paymentProvider || null,
+      payment_instructions: proposalForm.paymentInstructions.trim() || null,
+    },
+    paySettings,
+  );
 
   if (loading) return <Spinner />;
 
@@ -755,12 +771,52 @@ export function ManagementExperienceDetailPage() {
                   }
                 />
               </label>
+              <label className="block text-sm">
+                <span className="mb-1 block text-xs uppercase tracking-wider text-muted">
+                  Payment method
+                </span>
+                <select
+                  className="field-input"
+                  value={proposalForm.paymentProvider}
+                  onChange={(event) =>
+                    setProposalForm((prev) => ({...prev, paymentProvider: event.target.value}))
+                  }
+                >
+                  <option value="">
+                    Account default —{' '}
+                    {paySettings ? paymentMethodLabel(paySettings) : 'Managed payment'}
+                  </option>
+                  {PAYMENT_PROVIDER_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block text-sm">
+                <span className="mb-1 block text-xs uppercase tracking-wider text-muted">
+                  Payment instructions (blank = account default)
+                </span>
+                <textarea
+                  className="field-input min-h-16 resize-y"
+                  rows={2}
+                  placeholder={
+                    paySettings?.instructions ??
+                    'Leave empty to send your account default instructions.'
+                  }
+                  value={proposalForm.paymentInstructions}
+                  onChange={(event) =>
+                    setProposalForm((prev) => ({...prev, paymentInstructions: event.target.value}))
+                  }
+                />
+              </label>
               <div className="rounded-sm border border-gold/40 bg-gold/5 p-3 text-xs leading-relaxed text-muted">
                 <span className="font-medium text-charcoal">
                   Payment instructions the member will see with this proposal:
                 </span>{' '}
-                {paySettings ? paymentMethodLabel(paySettings) : 'Managed payment'} —{' '}
-                {paySettings?.instructions ?? 'Management will confirm the accepted payment method.'}
+                {paymentMethodLabel(proposalPreview)} —{' '}
+                {proposalPreview.instructions ??
+                  'Management will confirm the accepted payment method.'}
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button onClick={() => void createProposal(true)} loading={busy}>

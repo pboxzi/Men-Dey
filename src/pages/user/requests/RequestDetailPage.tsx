@@ -15,6 +15,7 @@ import {
   PAYMENT_STATUS_TONES,
   fetchPaymentSettings,
   paymentMethodLabel,
+  resolvePaymentDetails,
   type PaymentSettings,
 } from '../../../lib/payments';
 import {onRowInserted, onRowUpdated} from '../../../lib/realtime';
@@ -309,13 +310,14 @@ export function RequestDetailPage() {
     (latestProposal.status === 'sent' || latestProposal.status === 'viewed') &&
     !proposalExpired(latestProposal);
   const unansweredRequirements = requirements.filter((requirement) => !requirement.responded_at);
+  const memberPaySettings = resolvePaymentDetails(latestProposal, settings);
   const paymentGuide = (
     <div className="mt-5 rounded-sm border border-gold/40 bg-gold/5 p-4">
       <p className="text-sm font-medium text-charcoal">
-        How to pay — {settings ? paymentMethodLabel(settings) : 'Managed payment'}
+        How to pay — {paymentMethodLabel(memberPaySettings)}
       </p>
       <p className="mt-1 text-sm leading-relaxed text-muted">
-        {settings?.instructions ??
+        {memberPaySettings.instructions ??
           'Management will confirm the accepted payment method for your experience.'}
       </p>
     </div>
@@ -633,10 +635,10 @@ export function RequestDetailPage() {
                   </p>
                   <div className="rounded-sm border border-gold/40 bg-gold/5 p-4">
                     <p className="text-sm font-medium text-charcoal">
-                      {settings ? paymentMethodLabel(settings) : 'Managed payment'}
+                      {paymentMethodLabel(memberPaySettings)}
                     </p>
                     <p className="mt-1 text-sm leading-relaxed text-muted">
-                      {settings?.instructions ??
+                      {memberPaySettings.instructions ??
                         'Management will confirm the accepted payment method for your experience.'}
                     </p>
                     <p className="mt-2 text-xs text-muted">

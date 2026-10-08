@@ -18,6 +18,7 @@ import {
   PAYMENT_STATUS_TONES,
   fetchPaymentSettings,
   paymentMethodLabel,
+  resolvePaymentDetails,
   type PaymentSettings,
 } from '../../lib/payments';
 import {supabase} from '../../lib/supabase';
@@ -43,6 +44,7 @@ export function MembershipPage() {
   const [membership, setMembership] = useState<MembershipRow | null>(null);
   const [payments, setPayments] = useState<MembershipPayment[]>([]);
   const [offers, setOffers] = useState<OfferRow[]>([]);
+  const [linkedOffer, setLinkedOffer] = useState<OfferRow | null>(null);
   const [tiers, setTiers] = useState<MembershipTier[]>([]);
   const [settings, setSettings] = useState<PaymentSettings | null>(null);
   const [loading, setLoading] = useState(true);
@@ -89,10 +91,20 @@ export function MembershipPage() {
         if (paymentsRes.error) throw new Error(paymentsRes.error.message);
         loadedPayments = (paymentsRes.data as MembershipPayment[]) ?? [];
       }
+      let loadedOffer: OfferRow | null = null;
+      if (loaded?.offer_id) {
+        const offerRes = await supabase
+          .from('membership_offers')
+          .select('*, tier:membership_tiers(name)')
+          .eq('id', loaded.offer_id)
+          .maybeSingle();
+        if (!offerRes.error) loadedOffer = (offerRes.data as OfferRow | null) ?? null;
+      }
 
       setMembership(loaded);
       setPayments(loadedPayments);
       setOffers((offersRes.data as OfferRow[]) ?? []);
+      setLinkedOffer(loadedOffer);
       setTiers((tiersRes.data as MembershipTier[]) ?? []);
       setSettings(settingsRes.settings);
       if (settingsRes.error) {
@@ -142,6 +154,7 @@ export function MembershipPage() {
 
   const latestPayment = payments[0] ?? null;
   const pendingPayment = payments.find((p) => p.status === 'pending' || p.status === 'processing') ?? null;
+  const memberPaySettings = resolvePaymentDetails(linkedOffer, settings);
 
   return (
     <div className="space-y-6">
@@ -235,8 +248,8 @@ export function MembershipPage() {
                       Payment of {formatPrice(pendingPayment.amount_cents, pendingPayment.currency)} required
                     </p>
                     <p className="mt-1 text-sm leading-relaxed text-muted">
-                      {settings ? paymentMethodLabel(settings) : 'Managed payment'} —{' '}
-                      {settings?.instructions ??
+                      {paymentMethodLabel(memberPaySettings)} —{' '}
+                      {memberPaySettings.instructions ??
                         'Management will confirm the accepted payment method for your membership.'}
                     </p>
                     <p className="mt-2 text-xs text-muted">

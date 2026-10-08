@@ -17,7 +17,15 @@ import {
   TIER_INTERVAL_LABELS,
   formatPrice,
 } from '../../lib/membership';
-import {PAYMENT_STATUS_LABELS, PAYMENT_STATUS_TONES} from '../../lib/payments';
+import {
+  PAYMENT_PROVIDER_OPTIONS,
+  PAYMENT_STATUS_LABELS,
+  PAYMENT_STATUS_TONES,
+  fetchPaymentSettings,
+  paymentMethodLabel,
+  resolvePaymentDetails,
+  type PaymentSettings,
+} from '../../lib/payments';
 import {supabase} from '../../lib/supabase';
 import type {
   Membership,
@@ -86,9 +94,24 @@ export function ManagementMembershipsPage() {
     benefits: '',
     terms: '',
     expires: '',
+    paymentProvider: '',
+    paymentInstructions: '',
   });
   const [foundUser, setFoundUser] = useState<Pick<Profile, 'id' | 'email' | 'full_name'> | null>(null);
   const [searchingUser, setSearchingUser] = useState(false);
+  const [paySettings, setPaySettings] = useState<PaymentSettings | null>(null);
+
+  useEffect(() => {
+    void fetchPaymentSettings().then((result) => setPaySettings(result.settings));
+  }, []);
+
+  const offerPreview = resolvePaymentDetails(
+    {
+      payment_provider: offerForm.paymentProvider || null,
+      payment_instructions: offerForm.paymentInstructions.trim() || null,
+    },
+    paySettings,
+  );
 
   const [confirmId, setConfirmId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -259,6 +282,8 @@ export function ManagementMembershipsPage() {
             message: offerForm.message.trim() || null,
             benefits: benefits.length > 0 ? benefits : (tier?.benefits ?? []),
             terms: offerForm.terms.trim() || null,
+            payment_provider: offerForm.paymentProvider || null,
+            payment_instructions: offerForm.paymentInstructions.trim() || null,
             expires_at: offerForm.expires ? new Date(`${offerForm.expires}T23:59:59`).toISOString() : null,
             status: 'draft',
           })
@@ -276,7 +301,7 @@ export function ManagementMembershipsPage() {
         } else {
           setNotice('Offer saved as a draft. Send it when you are ready.');
         }
-        setOfferForm({email: '', tier_id: '', price: '', message: '', benefits: '', terms: '', expires: ''});
+        setOfferForm({email: '', tier_id: '', price: '', message: '', benefits: '', terms: '', expires: '', paymentProvider: '', paymentInstructions: ''});
         setFoundUser(null);
         await load();
       } catch (e) {
@@ -718,6 +743,50 @@ export function ManagementMembershipsPage() {
               onChange={(event) => setOfferForm((prev) => ({...prev, terms: event.target.value}))}
             />
           </label>
+          <label className="block text-sm sm:col-span-2">
+            <span className="mb-1 block text-xs uppercase tracking-wider text-muted">
+              Payment method
+            </span>
+            <select
+              className="field-input"
+              value={offerForm.paymentProvider}
+              onChange={(event) =>
+                setOfferForm((prev) => ({...prev, paymentProvider: event.target.value}))
+              }
+            >
+              <option value="">
+                Account default — {paySettings ? paymentMethodLabel(paySettings) : 'Managed payment'}
+              </option>
+              {PAYMENT_PROVIDER_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block text-sm sm:col-span-2">
+            <span className="mb-1 block text-xs uppercase tracking-wider text-muted">
+              Payment instructions (blank = account default)
+            </span>
+            <textarea
+              className="field-input min-h-16 resize-y"
+              rows={2}
+              placeholder={
+                paySettings?.instructions ?? 'Leave empty to send your account default instructions.'
+              }
+              value={offerForm.paymentInstructions}
+              onChange={(event) =>
+                setOfferForm((prev) => ({...prev, paymentInstructions: event.target.value}))
+              }
+            />
+          </label>
+          <div className="rounded-sm border border-gold/40 bg-gold/5 p-3 text-xs leading-relaxed text-muted sm:col-span-2">
+            <span className="font-medium text-charcoal">
+              Payment instructions the member will see when paying this offer:
+            </span>{' '}
+            {paymentMethodLabel(offerPreview)} —{' '}
+            {offerPreview.instructions ?? 'Management will confirm the accepted payment method.'}
+          </div>
           <label className="block text-sm">
             <span className="mb-1 block text-xs uppercase tracking-wider text-muted">
               Expires (optional)

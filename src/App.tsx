@@ -1,5 +1,5 @@
 import {useEffect} from 'react';
-import {useLocation} from 'react-router-dom';
+import {useLocation, useNavigationType} from 'react-router-dom';
 
 import {AuthProvider} from './auth/AuthContext';
 import {InstallPrompt} from './components/InstallPrompt';
@@ -40,6 +40,21 @@ function RobotsMeta() {
   return null;
 }
 
+function ScrollToTop() {
+  const {pathname} = useLocation();
+  const navigationType = useNavigationType();
+
+  // The document keeps its scroll offset across a client-side navigation, so a
+  // clicked page would open halfway down the screen. Every forward navigation
+  // opens at the top; browser back/forward keeps the browser's own restored
+  // position for the page the visitor is returning to.
+  useEffect(() => {
+    if (navigationType !== 'POP') window.scrollTo(0, 0);
+  }, [pathname, navigationType]);
+
+  return null;
+}
+
 function InstallGate() {
   const {pathname} = useLocation();
   if (isPublicSurface(pathname)) return null;
@@ -50,6 +65,7 @@ export function App() {
   return (
     <AuthProvider>
       <RobotsMeta />
+      <ScrollToTop />
       <AppRoutes />
       <InstallGate />
     </AuthProvider>

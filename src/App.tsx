@@ -3,6 +3,7 @@ import {useLocation, useNavigationType} from 'react-router-dom';
 
 import {AuthProvider} from './auth/AuthContext';
 import {DocumentMeta} from './components/DocumentMeta';
+import {GoogleTranslate} from './components/GoogleTranslate';
 import {InstallPrompt} from './components/InstallPrompt';
 import {AppRoutes} from './routes';
 
@@ -70,6 +71,7 @@ export function App() {
       <ScrollToTop />
       <AppRoutes />
       <InstallGate />
+      <GoogleTranslate />
     </AuthProvider>
   );
 }

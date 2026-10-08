@@ -855,3 +855,19 @@ img {
     border-color: rgba(234, 228, 218, 0.26);
   }
 }
+
+.goog-te-banner-frame {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+.goog-te-menu-frame {
+  border: 0 !important;
+}
+
+#ga-translate .skiptranslate {
+  background: transparent !important;
+}

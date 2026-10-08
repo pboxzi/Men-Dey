@@ -7,6 +7,7 @@ import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
 import {Chip} from '../../components/ui/Chip';
 import {EmptyState} from '../../components/ui/EmptyState';
+import {ListToolbar} from '../../components/ui/ListToolbar';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDateTime} from '../../lib/format';
@@ -193,21 +194,18 @@ export function ManagementNotificationsPage() {
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
       <section className="surface p-4 sm:p-6">
-        <div className="filter-row mb-4">
-          {(['all', 'unread'] as const).map((value) => (
-            <button
-              key={value}
-              type="button"
-              className={`filter-chip ${filter === value ? 'is-active' : ''}`}
-              onClick={() => setFilter(value)}
-            >
-              {value === 'all' ? 'All' : 'Unread'}
-            </button>
-          ))}
-          <span className="filter-meta text-[11px] text-muted">
-            {unreadCount} unread of {rows.length}
-          </span>
-        </div>
+        <ListToolbar
+          count={`${unreadCount} unread of ${rows.length}`}
+          filter={{
+            value: filter,
+            onChange: (value) => setFilter(value as typeof filter),
+            label: 'Notification status',
+            options: (['all', 'unread'] as const).map((value) => ({
+              value,
+              label: value === 'all' ? 'All notifications' : 'Unread only',
+            })),
+          }}
+        />
 
         {visible.length === 0 ? (
           <EmptyState

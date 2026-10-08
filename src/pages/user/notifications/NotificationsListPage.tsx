@@ -3,6 +3,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 
 import {notificationIcon} from '../../../lib/notification';
+import {ListToolbar} from '../../../components/ui/ListToolbar';
 import {Spinner} from '../../../components/ui/Spinner';
 import {relativeTime} from '../../../lib/format';
 import {useLiveRefresh} from '../../../hooks/useLiveRefresh';
@@ -91,25 +92,18 @@ export function NotificationsListPage() {
         </div>
       </div>
 
-      <div className="flex gap-1.5" role="group" aria-label="Filter notifications">
-        {[
-          {key: false, label: 'All'},
-          {key: true, label: 'Unread'},
-        ].map((option) => (
-          <button
-            key={String(option.key)}
-            type="button"
-            onClick={() => setShowUnread(option.key)}
-            className={`inline-flex min-h-11 items-center rounded-full border px-3.5 text-xs font-medium tracking-wide ${
-              showUnread === option.key
-                ? 'border-charcoal bg-charcoal text-alabaster'
-                : 'border-stone bg-white text-muted hover:border-gold'
-            }`}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
+      <ListToolbar
+        className=""
+        filter={{
+          value: String(showUnread),
+          onChange: (value) => setShowUnread(value === 'true'),
+          label: 'Notification status',
+          options: [
+            {value: 'false', label: 'All notifications'},
+            {value: 'true', label: 'Unread only'},
+          ],
+        }}
+      />
 
       {actionError ? <ErrorNote message={actionError} /> : null}
 

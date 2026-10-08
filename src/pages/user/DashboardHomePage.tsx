@@ -14,6 +14,7 @@ import {Link, Navigate} from 'react-router-dom';
 import {useAuth} from '../../auth/AuthContext';
 import {FullPageLoader} from '../../components/ui/FullPageLoader';
 import {GaBrand} from '../../components/ui/GaBrand';
+import {LEGAL_LINKS} from '../public/legal/legalNav';
 import {ErrorNote} from './components/SectionCard';
 import {loadConversationSummaries, type ConversationSummary} from '../../lib/conversations';
 import {greetingForNow, relativeTime} from '../../lib/format';
@@ -28,6 +29,9 @@ import type {
   Request,
   RequestStatus,
 } from '../../types';
+
+/** Footer row: the legal desk, then contact — same labels as every other footer. */
+const FOOTER_LINKS = [...LEGAL_LINKS, {label: 'Contact', to: '/dashboard/messages'}];
 
 interface DashboardData {
   applicant: ApplicantProfile | null;
@@ -206,7 +210,7 @@ export function DashboardHomePage() {
       {/* =========================================================================
           1. WELCOME GREETING
       ========================================================================= */}
-      <div className="mb-6">
+      <div className="sm:mb-6">
         <h1 className="font-serif text-3xl sm:text-4xl text-[#1E1E1E] font-medium tracking-tight">
           {greetingForNow()}, {displayName}.
         </h1>
@@ -221,7 +225,7 @@ export function DashboardHomePage() {
       {/* =========================================================================
           2. TOP ROW: 4 STATUS / KPI CARDS
       ========================================================================= */}
-      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 xl:grid-cols-4 mb-6 sm:mb-8">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 xl:grid-cols-4 sm:mb-8">
         {/* Card 1: MEMBERSHIP */}
         <div className="bg-white rounded-xl border border-[#EAE4DA] p-3.5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors sm:p-5">
           <div>
@@ -364,13 +368,13 @@ export function DashboardHomePage() {
       {/* =========================================================================
           3. MAIN 3-COLUMN CONTENT GRID (Matches uploaded image exactly)
       ========================================================================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-10 items-start">
+      <div className="grid grid-cols-1 gap-3 sm:gap-5 lg:grid-cols-12 mb-6 sm:mb-10 items-start">
         {/* -----------------------------------------------------------------------
             COLUMN 1 (Left 5 cols): YOUR REQUESTS + UPCOMING
         ----------------------------------------------------------------------- */}
-        <div className="lg:col-span-5 space-y-5">
+        <div className="contents lg:col-span-5 lg:block lg:space-y-5">
           {/* Box 1: YOUR REQUESTS */}
-          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
+          <div className="order-3 bg-white rounded-xl border border-[#EAE4DA] p-4 shadow-xs sm:p-5">
             <div className="flex items-center justify-between pb-3 border-b border-[#F5EFE6] mb-4">
               <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                 YOUR REQUESTS
@@ -403,7 +407,7 @@ export function DashboardHomePage() {
                     className="p-3 rounded-lg bg-stone-50/60 border border-[#EAE4DA] flex items-center justify-between gap-3 hover:bg-stone-50 transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-14 h-12 rounded bg-[#FAF5EB] border border-[#EAE4DA] text-[#C89B3C] flex items-center justify-center shrink-0">
+                      <div className="h-11 w-11 sm:h-12 sm:w-14 rounded bg-[#FAF5EB] border border-[#EAE4DA] text-[#C89B3C] flex items-center justify-center shrink-0">
                         <FileText className="w-5 h-5 stroke-[1.6]" />
                       </div>
                       <div className="min-w-0">
@@ -431,7 +435,7 @@ export function DashboardHomePage() {
           </div>
 
           {/* Box 2: UPCOMING */}
-          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
+          <div className="order-4 bg-white rounded-xl border border-[#EAE4DA] p-4 shadow-xs sm:p-5">
             <div className="flex items-center justify-between pb-3 border-b border-[#F5EFE6] mb-4">
               <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                 UPCOMING
@@ -486,9 +490,9 @@ export function DashboardHomePage() {
         {/* -----------------------------------------------------------------------
             COLUMN 2 (Center 4 cols): MANAGEMENT + MEMBERSHIP
         ----------------------------------------------------------------------- */}
-        <div className="lg:col-span-4 space-y-5">
+        <div className="contents lg:col-span-4 lg:block lg:space-y-5">
           {/* Box 1: MANAGEMENT (Latest Conversation) */}
-          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between">
+          <div className="order-1 bg-white rounded-xl border border-[#EAE4DA] p-4 shadow-xs flex flex-col justify-between sm:p-5">
             <div>
               <div className="pb-3 border-b border-[#F5EFE6] mb-4">
                 <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
@@ -531,7 +535,7 @@ export function DashboardHomePage() {
           </div>
 
           {/* Box 2: MEMBERSHIP */}
-          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
+          <div className="order-5 bg-white rounded-xl border border-[#EAE4DA] p-4 shadow-xs sm:p-5">
             <div className="flex items-center gap-2 mb-2">
               <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center">
                 <CreditCard className="w-3.5 h-3.5 stroke-[1.8]" />
@@ -564,9 +568,9 @@ export function DashboardHomePage() {
         {/* -----------------------------------------------------------------------
             COLUMN 3 (Right 3 cols): RECENT NOTIFICATIONS + QUICK ACTIONS
         ----------------------------------------------------------------------- */}
-        <div className="lg:col-span-3 space-y-5">
+        <div className="contents lg:col-span-3 lg:block lg:space-y-5">
           {/* Box 1: RECENT NOTIFICATIONS */}
-          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
+          <div className="order-6 bg-white rounded-xl border border-[#EAE4DA] p-4 shadow-xs sm:p-5">
             <div className="flex items-center justify-between pb-3 border-b border-[#F5EFE6] mb-3">
               <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                 RECENT NOTIFICATIONS
@@ -610,7 +614,7 @@ export function DashboardHomePage() {
           </div>
 
           {/* Box 2: QUICK ACTIONS */}
-          <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs">
+          <div className="order-2 bg-white rounded-xl border border-[#EAE4DA] p-4 shadow-xs sm:p-5">
             <div className="pb-3 border-b border-[#F5EFE6] mb-3">
               <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1E1E1E]">
                 QUICK ACTIONS
@@ -669,27 +673,22 @@ export function DashboardHomePage() {
         <GaBrand variant="light" size="sm" to="/home" />
 
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[#8C8275]">
-          <Link to="/legal" className="hover:text-[#1E1E1E] transition-colors">
-            Legal
-          </Link>
-          <span>·</span>
-          <Link to="/privacy" className="hover:text-[#1E1E1E] transition-colors">
-            Privacy
-          </Link>
-          <span>·</span>
-          <Link to="/terms" className="hover:text-[#1E1E1E] transition-colors">
-            Terms
-          </Link>
-          <span>·</span>
-          <Link to="/policies" className="hover:text-[#1E1E1E] transition-colors">
-            Policies
-          </Link>
-          <span>·</span>
-          <Link to="/dashboard/messages" className="hover:text-[#1E1E1E] transition-colors">
-            Contact
-          </Link>
-          <span>·</span>
-          <span>© Gillian Anderson Management</span>
+          {FOOTER_LINKS.map((item) => (
+            <span key={item.to} className="flex items-center">
+              <Link
+                to={item.to}
+                className="inline-flex min-h-10 items-center transition-colors hover:text-[#1E1E1E]"
+              >
+                {item.label}
+              </Link>
+              <span aria-hidden className="hidden text-[#C89B3C]/70 sm:inline">
+                ·
+              </span>
+            </span>
+          ))}
+          <span className="inline-flex min-h-10 items-center">
+            © Gillian Anderson Management
+          </span>
         </div>
       </footer>
     </div>

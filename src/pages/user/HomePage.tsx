@@ -15,7 +15,13 @@ export function HomePage() {
 
   if (loading || profileLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+        <img
+          src="/assets/images/ga_logo_horizontal_transparent.png"
+          alt="Gillian Anderson Management"
+          className="h-10 w-auto object-contain sm:h-12"
+          loading="eager"
+        />
         <Spinner />
       </div>
     );

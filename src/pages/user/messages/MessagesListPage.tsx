@@ -1,4 +1,4 @@
-import {MessageSquare, PenLine} from 'lucide-react';
+import {ChevronRight, MessageSquare, PenLine} from 'lucide-react';
 import {useCallback, useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 
@@ -104,7 +104,19 @@ export function MessagesListPage() {
     }
   }, [me, navigate, profile, findActiveConversation]);
 
-  if (loading) return <Spinner />;
+  if (loading) {
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
+        <img
+          src="/assets/images/ga_logo_horizontal_transparent.png"
+          alt="Gillian Anderson Management"
+          className="h-10 w-auto object-contain sm:h-12"
+          loading="eager"
+        />
+        <Spinner label="Loading conversations" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -142,7 +154,7 @@ export function MessagesListPage() {
                 <li key={row.id}>
                   <Link
                     to={`/dashboard/messages/${row.id}`}
-                    className="flex items-start justify-between gap-4 py-4 transition-colors hover:bg-stone/40"
+                    className="flex items-center justify-between gap-3 py-4 transition-colors hover:bg-stone/40"
                   >
                     <span className="min-w-0 flex-1">
                       <span className="flex min-w-0 items-center gap-2">
@@ -156,7 +168,11 @@ export function MessagesListPage() {
                           </span>
                         ) : null}
                       </span>
-                      <span className="mt-1 block truncate text-sm text-muted">
+                      <span
+                        className={`mt-1 block truncate text-sm ${
+                          unread > 0 ? 'font-medium text-charcoal' : 'text-muted'
+                        }`}
+                      >
                         {last
                           ? `${last.sender_id === me ? 'You: ' : 'Management: '}${last.body}`
                           : 'No messages yet.'}
@@ -172,6 +188,7 @@ export function MessagesListPage() {
                         </span>
                       ) : null}
                     </span>
+                    <ChevronRight className="size-4 shrink-0 text-stone-deep" aria-hidden />
                   </Link>
                 </li>
               );

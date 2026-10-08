@@ -4,7 +4,7 @@ import {Link, useParams} from 'react-router-dom';
 
 import {useAuth} from '../../../auth/AuthContext';
 import {Chip} from '../../../components/ui/Chip';
-import {FullPageLoader} from '../../../components/ui/FullPageLoader';
+import {Spinner} from '../../../components/ui/Spinner';
 import {formatDateTime} from '../../../lib/format';
 import {onRowInserted, onRowUpdated} from '../../../lib/realtime';
 import {supabase} from '../../../lib/supabase';
@@ -164,7 +164,19 @@ export function ConversationPage() {
     }
   }, []);
 
-  if (loading) return <FullPageLoader />;
+  if (loading) {
+    return (
+      <div className="flex h-[calc(100dvh-3.5rem)] flex-col items-center justify-center gap-4 sm:h-[calc(100dvh-4rem)] lg:h-auto lg:min-h-[50vh]">
+        <img
+          src="/assets/images/ga_logo_horizontal_transparent.png"
+          alt="Gillian Anderson Management"
+          className="h-10 w-auto object-contain sm:h-12"
+          loading="eager"
+        />
+        <Spinner label="Loading conversation" />
+      </div>
+    );
+  }
 
   if (error) {
     return (
@@ -179,24 +191,26 @@ export function ConversationPage() {
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] flex-col sm:h-[calc(100dvh-4rem)] lg:h-auto">
-      <div className="flex shrink-0 flex-wrap items-start justify-between gap-x-4 gap-y-2 border-b border-stone py-4 sm:py-5">
-        <div className="min-w-0">
-          <Link to="/dashboard/messages" className="nav-link mb-1 inline-flex min-h-11 items-center gap-1 py-1.5 sm:mb-2">
-            <ArrowLeft className="size-4" aria-hidden /> Conversations
-          </Link>
-          <h1 className="break-words text-xl sm:text-2xl md:text-3xl">{conversation?.subject}</h1>
-          <p className="mt-1 hidden text-sm text-muted sm:block">
-            Private conversation · Management responds through this platform.
-          </p>
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
+      <header className="flex shrink-0 items-center gap-1 border-b border-stone px-4 py-2 sm:gap-2 sm:py-3 lg:px-0 lg:py-4">
+        <Link
+          to="/dashboard/messages"
+          aria-label="Back to conversations"
+          className="-ml-2 flex h-11 shrink-0 items-center gap-1.5 rounded-md px-2 text-muted transition-colors hover:bg-stone/50 hover:text-charcoal"
+        >
+          <ArrowLeft className="size-5 shrink-0" aria-hidden />
+          <span className="hidden text-sm sm:inline">Conversations</span>
+        </Link>
+        <h1 className="min-w-0 flex-1 truncate text-base font-semibold text-charcoal sm:text-lg md:text-2xl">
+          {conversation?.subject}
+        </h1>
+        <span className="shrink-0">
           <Chip tone={conversation?.status === 'closed' ? 'neutral' : 'info'}>
             {STATUS_LABELS[conversation?.status ?? 'open'] ?? conversation?.status}
           </Chip>
-        </div>
-      </div>
+        </span>
+      </header>
 
-      <div className="surface my-4 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 lg:my-0 lg:max-h-[58vh] lg:min-h-72 lg:flex-none lg:p-5">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 py-4 sm:px-6 lg:my-4 lg:max-h-[58vh] lg:min-h-72 lg:flex-none lg:rounded-sm lg:border lg:border-stone lg:bg-white lg:p-5">
         {messages.length === 0 ? (
           <EmptyNote
             title="No messages yet."
@@ -251,9 +265,13 @@ export function ConversationPage() {
         <div ref={bottomRef} />
       </div>
 
-      {attachError ? <div className="shrink-0 pb-2"><ErrorNote message={attachError} /></div> : null}
+      {attachError ? (
+        <div className="shrink-0 px-4 pb-2 sm:px-6 lg:px-0">
+          <ErrorNote message={attachError} />
+        </div>
+      ) : null}
 
-      <div className="shrink-0 border-t border-stone bg-[#FCFAF7] pt-3 pb-[env(safe-area-inset-bottom)] lg:border-t-0 lg:bg-transparent lg:pt-4 lg:pb-0">
+      <div className="shrink-0 border-t border-stone bg-[#FCFAF7] px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-6 lg:border-t-0 lg:bg-transparent lg:px-0 lg:pt-4 lg:pb-0">
         {pending.length > 0 ? (
           <div className="mb-3 flex flex-wrap items-center gap-2">
             {pending.map((attachment, index) => (
@@ -289,7 +307,7 @@ export function ConversationPage() {
           />
           <button
             type="button"
-            className="btn btn-secondary shrink-0 px-3 sm:px-3.5"
+            className="btn btn-secondary h-11 w-11 shrink-0 px-0"
             aria-label="Attach a file"
             disabled={uploading}
             onClick={() => fileRef.current?.click()}
@@ -301,7 +319,7 @@ export function ConversationPage() {
           </label>
           <textarea
             id="message-draft"
-            className="field-input min-h-12 flex-1 resize-y"
+            className="field-input min-h-11 min-w-0 flex-1 resize-none sm:min-h-12 sm:resize-y"
             rows={2}
             placeholder="Write to management…"
             value={draft}
@@ -315,12 +333,12 @@ export function ConversationPage() {
           />
           <button
             type="button"
-            className="btn btn-primary shrink-0 px-3 sm:px-3.5"
+            className="btn btn-primary h-11 w-11 shrink-0 px-0"
+            aria-label="Send"
             disabled={sending || uploading || (!draft.trim() && pending.length === 0)}
             onClick={() => void send()}
           >
             {sending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Send className="size-4" aria-hidden />}
-            Send
           </button>
         </div>
       </div>

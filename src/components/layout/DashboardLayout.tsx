@@ -30,7 +30,7 @@ interface NavItem {
 }
 
 export function DashboardLayout() {
-  const {profile, session} = useAuth();
+  const {session} = useAuth();
   const {messages, notifications} = useUnreadCounts();
   const [openRequestsCount, setOpenRequestsCount] = useState<number>(0);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -92,15 +92,6 @@ export function DashboardLayout() {
     {to: '/dashboard/documents', label: 'Documents', icon: FolderClosed},
     {to: '/dashboard/settings', label: 'Settings', icon: Settings},
   ];
-
-  const userName =
-    profile?.full_name || profile?.email?.split('@')[0] || 'Member';
-  const userInitials = userName
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
 
   const renderLink = (link: NavItem) => {
     const Icon = link.icon;
@@ -181,22 +172,6 @@ export function DashboardLayout() {
                 MANAGEMENT
               </span>
             </Link>
-
-            <div className="mt-4 flex items-center gap-3 rounded-lg border border-white/5 bg-white/[0.03] px-3 py-2.5">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#2A2318] font-serif text-[11px] tracking-wider text-[#E6C27A] ring-1 ring-[#C89B3C]/50">
-                {userInitials}
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-xs font-medium text-white">
-                  {userName}
-                </span>
-                {profile?.email ? (
-                  <span className="block truncate text-[10px] text-stone-500">
-                    {profile.email}
-                  </span>
-                ) : null}
-              </span>
-            </div>
           </div>
 
           {/* Navigation Links */}

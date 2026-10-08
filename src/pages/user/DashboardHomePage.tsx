@@ -169,13 +169,6 @@ export function DashboardHomePage() {
   const openRequests = data.requests.filter(
     (r) => !['completed', 'declined', 'cancelled'].includes(r.status),
   );
-  const underReviewCount = openRequests.filter(
-    (r) => r.status === 'in_review' || r.status === 'submitted',
-  ).length;
-  const awaitingInfoCount = openRequests.filter(
-    (r) => r.status === 'information_requested',
-  ).length;
-
   const lastMessage = data.conversation?.last;
 
   const getStatusBadge = (status: RequestStatus) => {
@@ -228,19 +221,19 @@ export function DashboardHomePage() {
       {/* =========================================================================
           2. TOP ROW: 4 STATUS / KPI CARDS
       ========================================================================= */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4 xl:grid-cols-4 mb-6 sm:mb-8">
         {/* Card 1: MEMBERSHIP */}
-        <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors">
+        <div className="bg-white rounded-xl border border-[#EAE4DA] p-3.5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors sm:p-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0 sm:h-8 sm:w-8">
                 <CreditCard className="w-4 h-4 stroke-[1.8]" />
               </div>
-              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8C8275]">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8C8275] sm:text-[10px]">
                 MEMBERSHIP
               </span>
             </div>
-            <h3 className="font-serif text-base sm:text-lg font-medium text-[#1E1E1E] mt-3.5">
+            <h3 className="font-serif text-sm sm:text-lg font-medium text-[#1E1E1E] mt-2.5 sm:mt-3.5">
               {data.membership
                 ? data.membership.status === 'active'
                   ? data.tierName
@@ -254,13 +247,8 @@ export function DashboardHomePage() {
                   </>
                 )}
             </h3>
-            <p className="text-xs text-[#6E6A63] mt-0.5 leading-snug">
-              {data.membership
-                ? 'Membership managed by Gillian Anderson Management.'
-                : 'Discuss membership with management.'}
-            </p>
           </div>
-          <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
+          <div className="mt-3 border-t border-[#F5EFE6] pt-2.5 sm:mt-4 sm:pt-3">
             <Link
               to="/dashboard/membership"
               className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
@@ -272,17 +260,17 @@ export function DashboardHomePage() {
         </div>
 
         {/* Card 2: MANAGEMENT */}
-        <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors">
+        <div className="bg-white rounded-xl border border-[#EAE4DA] p-3.5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors sm:p-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0 sm:h-8 sm:w-8">
                 <MessageSquare className="w-4 h-4 stroke-[1.8]" />
               </div>
-              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8C8275]">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8C8275] sm:text-[10px]">
                 MANAGEMENT
               </span>
             </div>
-            <h3 className="font-serif text-base sm:text-lg font-medium text-[#1E1E1E] mt-3.5">
+            <h3 className="font-serif text-sm sm:text-lg font-medium text-[#1E1E1E] mt-2.5 sm:mt-3.5">
               {data.conversation
                 ? data.unreadMessagesCount > 0
                   ? `${data.unreadMessagesCount} Unread Message${data.unreadMessagesCount > 1 ? 's' : ''}`
@@ -294,13 +282,8 @@ export function DashboardHomePage() {
                   </>
                 )}
             </h3>
-            <p className="text-xs text-[#6E6A63] mt-0.5 leading-snug">
-              {data.conversation
-                ? 'Your latest conversation is waiting for you.'
-                : 'Start a private conversation.'}
-            </p>
           </div>
-          <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
+          <div className="mt-3 border-t border-[#F5EFE6] pt-2.5 sm:mt-4 sm:pt-3">
             <Link
               to={data.conversation ? `/dashboard/messages/${data.conversation.id}` : '/dashboard/messages'}
               className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
@@ -312,17 +295,17 @@ export function DashboardHomePage() {
         </div>
 
         {/* Card 3: REQUESTS */}
-        <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors">
+        <div className="bg-white rounded-xl border border-[#EAE4DA] p-3.5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors sm:p-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0 sm:h-8 sm:w-8">
                 <FileText className="w-4 h-4 stroke-[1.8]" />
               </div>
-              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8C8275]">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8C8275] sm:text-[10px]">
                 REQUESTS
               </span>
             </div>
-            <h3 className="font-serif text-base sm:text-lg font-medium text-[#1E1E1E] mt-3.5">
+            <h3 className="font-serif text-sm sm:text-lg font-medium text-[#1E1E1E] mt-2.5 sm:mt-3.5">
               {openRequests.length > 0
                 ? `${openRequests.length} Active Request${openRequests.length === 1 ? '' : 's'}`
                 : (
@@ -332,35 +315,30 @@ export function DashboardHomePage() {
                   </>
                 )}
             </h3>
-            <p className="text-xs text-[#6E6A63] mt-0.5 leading-snug">
-              {openRequests.length > 0
-                ? `${underReviewCount} under review · ${awaitingInfoCount} awaiting information`
-                : 'Discuss and arrange through management.'}
-            </p>
           </div>
-          <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
+          <div className="mt-3 border-t border-[#F5EFE6] pt-2.5 sm:mt-4 sm:pt-3">
             <Link
               to="/dashboard/requests"
               className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"
             >
-              <span>VIEW REQUESTS</span>
+              <span>VIEW</span>
               <span>→</span>
             </Link>
           </div>
         </div>
 
         {/* Card 4: EXPERIENCES */}
-        <div className="bg-white rounded-xl border border-[#EAE4DA] p-5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors">
+        <div className="bg-white rounded-xl border border-[#EAE4DA] p-3.5 shadow-xs flex flex-col justify-between hover:border-[#C89B3C]/50 transition-colors sm:p-5">
           <div>
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0">
+              <div className="w-7 h-7 rounded-lg bg-[#FAF5EB] text-[#C89B3C] flex items-center justify-center shrink-0 sm:h-8 sm:w-8">
                 <CalendarDays className="w-4 h-4 stroke-[1.8]" />
               </div>
-              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8C8275]">
+              <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#8C8275] sm:text-[10px]">
                 EXPERIENCES
               </span>
             </div>
-            <h3 className="font-serif text-base sm:text-lg font-medium text-[#1E1E1E] mt-3.5">
+            <h3 className="font-serif text-sm sm:text-lg font-medium text-[#1E1E1E] mt-2.5 sm:mt-3.5">
               {data.appointments.length > 0
                 ? `${data.appointments.length} Confirmed Experience${data.appointments.length === 1 ? '' : 's'}`
                 : (
@@ -370,13 +348,8 @@ export function DashboardHomePage() {
                   </>
                 )}
             </h3>
-            <p className="text-xs text-[#6E6A63] mt-0.5 leading-snug">
-              {data.appointments.length > 0
-                ? 'View your upcoming confirmed schedule details.'
-                : 'Approved experiences will appear here.'}
-            </p>
           </div>
-          <div className="mt-4 pt-3 border-t border-[#F5EFE6]">
+          <div className="mt-3 border-t border-[#F5EFE6] pt-2.5 sm:mt-4 sm:pt-3">
             <Link
               to="/dashboard/experiences"
               className="text-[10px] font-semibold uppercase tracking-wider text-[#A67F2C] hover:text-[#C89B3C] inline-flex items-center gap-1 transition-colors"

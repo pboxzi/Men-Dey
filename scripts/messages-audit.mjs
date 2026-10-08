@@ -177,8 +177,12 @@ const json = (body, extra = {}) => ({
 let activeRole = 'user';
 
 function routeSupabase(req) {
-  const path = new URL(req.url()).pathname;
-  const wantsObject = String(req.headers()['accept'] || '').includes('vnd.pgrst.object');
+  const url = new URL(req.url());
+  const path = url.pathname;
+  // postgrest-js 2.110 sends `accept: */*` even for .maybeSingle(), and a
+  // multi-row array makes it resolve to the raw array (role ends up undefined
+  // -> 403). Answer single-record lookups (`.eq('id', …)`) with one object.
+  const single = url.search.includes('id=eq.');
   const isHead = req.method() === 'HEAD';
   const activeProfile = activeRole === 'user' ? memberProfile : managerProfile;
   const activeSession = sessionFor(activeRole);
@@ -198,9 +202,9 @@ function routeSupabase(req) {
   if (path.startsWith('/auth/v1/token')) return json(activeSession);
   if (path.startsWith('/auth/v1/user')) return json(activeSession.user);
   if (path.startsWith('/rest/v1/profiles'))
-    return json(wantsObject ? activeProfile : [activeProfile, memberProfile, managerProfile]);
+    return json(single ? activeProfile : [activeProfile, memberProfile, managerProfile]);
   if (path.startsWith('/rest/v1/management_conversations'))
-    return json(wantsObject ? conversations[0] : conversations);
+    return json(single ? conversations[0] : conversations);
   if (path.startsWith('/rest/v1/management_messages')) {
     if (isHead) return {status: 200, headers: {...CORS, 'content-range': '*/3'}, body: ''};
     return json(messages);
@@ -225,7 +229,10 @@ const probe = () => {
   for (const el of document.querySelectorAll('body *')) {
     const r = el.getBoundingClientRect();
     if (r.width === 0 && r.height === 0) continue;
-    if (r.right > cw + 1 || r.left < -1) {
+    // Only the right edge can widen the document in LTR. A left-side element
+    // (closed off-canvas drawer at translateX(-100%)) never creates a
+    // scrollbar, so it is not counted here — d.scrollWidth covers real overflow.
+    if (r.right > cw + 1) {
       offenders.push(
         `${el.tagName.toLowerCase()}.${String(el.className || '').slice(0, 70)} ` +
           `[${Math.round(r.left)}..${Math.round(r.right)}] "${(el.textContent || '').trim().slice(0, 30)}"`
@@ -354,7 +361,7 @@ for (const route of ROUTES) {
         `${m.composerOffscreen ? ' COMPOSER-BLOCKED' : ''}` +
         `${horizontalFail ? ' FAIL' : ' ok'}`
     );
-    for (const o of m.offenders) console.log('    ! ' + o);
+    for (const o of m.offenders.slice(0, 6)) console.log('    ! ' + o);
     if (m.head) console.log('    > ' + m.head);
 
     if (SHOT_SIZES.has(`${w}x${h}`)) {

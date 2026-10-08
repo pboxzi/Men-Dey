@@ -7,8 +7,8 @@ const SITE_NAME = 'Gillian Anderson Management';
 const SHARE_IMAGE = `${SITE_URL}/assets/images/gillian_banner_1920.jpg`;
 
 const HOME_DESCRIPTION =
-  'A private, gated management platform. Users and applicants communicate only through management for membership, requests and approved experiences.';
-const DEFAULT_DESCRIPTION = `Private platform of ${SITE_NAME}.`;
+  'Come closer to Gillian Anderson — apply for membership, send your requests, discover experiences, and reach Gillian through her management.';
+const DEFAULT_DESCRIPTION = `Your corner of ${SITE_NAME} — requests, messages, membership and experiences.`;
 
 /**
  * One entry per route family. A trailing slash marks a detail page
@@ -92,7 +92,7 @@ const ROUTES: Array<{prefix: string; title: string; description?: string}> = [
   {
     prefix: '/create-account',
     title: 'Apply for membership',
-    description: 'Apply to join the private Gillian Anderson membership.',
+    description: 'Apply to become a member and come closer to Gillian Anderson.',
   },
   {prefix: '/verify-email', title: 'Verify email'},
   {prefix: '/forgot-password', title: 'Forgot password'},

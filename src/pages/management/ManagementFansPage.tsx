@@ -137,6 +137,8 @@ export function ManagementFansPage() {
                           <img
                             src={fan.profile_photo}
                             alt=""
+                            loading="lazy"
+                            decoding="async"
                             className="size-9 shrink-0 rounded-full object-cover"
                           />
                         ) : (

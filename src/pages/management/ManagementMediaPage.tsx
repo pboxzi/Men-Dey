@@ -322,6 +322,7 @@ export function ManagementMediaPage() {
                         alt={asset.alt_text || asset.title}
                         className="size-full object-cover"
                         loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       <span className="text-muted">{kindIcon(asset.kind)}</span>

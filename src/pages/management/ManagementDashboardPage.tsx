@@ -563,48 +563,24 @@ export function ManagementDashboardPage() {
       </section>
 
       <section className="order-4 lg:order-3" aria-label="Key metrics">
-        <div className="surface divide-y divide-stone sm:hidden">
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:gap-4 xl:grid-cols-6">
           {metrics.map((metric) => (
             <Link
               key={metric.key}
               to={metric.to}
-              className="flex min-h-11 items-center justify-between gap-3 px-4 py-2.5 transition-colors hover:bg-stone/50"
-            >
-              <span className="min-w-0 break-words text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
-                {metric.label}
-              </span>
-              <span className="flex shrink-0 items-center gap-2">
-                <span className="text-lg font-semibold tabular-nums text-charcoal">
-                  {metric.value}
-                </span>
-                <ArrowRight className="size-4 shrink-0 text-muted" aria-hidden />
-              </span>
-            </Link>
-          ))}
-        </div>
-
-        <div className="hidden grid-cols-1 gap-3 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-          {metrics.map((metric) => (
-            <Link
-              key={metric.key}
-              to={metric.to}
-              className="surface group relative flex min-h-11 items-center justify-between gap-3 overflow-hidden p-4 transition-colors hover:bg-stone/50 sm:p-5"
+              className="surface group relative flex min-h-11 flex-col justify-between gap-2 overflow-hidden p-3.5 transition-colors hover:bg-stone/50 sm:p-4"
             >
               <span className="absolute inset-x-0 top-0 h-0.5 bg-gold/55" aria-hidden />
-              <div className="min-w-0">
-                <p className="break-words text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-muted">
-                  {metric.label}
-                </p>
-                <p className="mt-1.5 text-4xl font-light leading-none tabular-nums text-charcoal">
+              <span className="flex items-start justify-between gap-2">
+                <span className="text-2xl font-light leading-none tabular-nums text-charcoal sm:text-3xl">
                   {metric.value}
-                </p>
-              </div>
-              <span className="flex shrink-0 flex-col items-end gap-3 text-stone-deep transition-colors group-hover:text-gold-deep">
-                {metric.icon}
-                <ArrowRight
-                  className="size-4 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-gold-deep"
-                  aria-hidden
-                />
+                </span>
+                <span className="text-stone-deep transition-colors group-hover:text-gold-deep">
+                  {metric.icon}
+                </span>
+              </span>
+              <span className="block break-words text-[0.6rem] font-semibold uppercase leading-snug tracking-[0.14em] text-muted sm:text-[0.65rem]">
+                {metric.label}
               </span>
             </Link>
           ))}

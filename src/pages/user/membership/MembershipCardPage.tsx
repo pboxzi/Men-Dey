@@ -114,87 +114,99 @@ export function MembershipCardPage() {
         />
       ) : (
         <>
-          <div className="relative mx-auto flex aspect-[1.5856/1] w-full max-w-[24rem] flex-col overflow-hidden rounded-md border border-gold/45 bg-gradient-to-br from-charcoal via-charcoal to-[#111111] text-alabaster shadow-[0_24px_48px_-30px_rgba(17,17,17,0.6)]">
+          <div className="relative mx-auto flex aspect-[1.5856/1] w-full max-w-[24rem] flex-col overflow-hidden rounded-xl border border-gold/40 bg-gradient-to-b from-[#151412] via-[#100f0e] to-[#0a0a0a] text-alabaster shadow-[0_28px_50px_-28px_rgba(0,0,0,0.65)]">
             <div
-              className="pointer-events-none absolute inset-2.5 rounded-sm border border-gold/20"
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_85%_at_18%_0%,rgba(200,155,60,0.08),transparent_55%)]"
               aria-hidden
             />
-            <span
-              className="pointer-events-none absolute -right-2 top-1/2 -translate-y-1/2 select-none font-display text-[5rem] leading-none text-alabaster/5"
+            <div
+              className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(115deg,transparent_0px,transparent_9px,rgba(255,255,255,0.02)_9px,rgba(255,255,255,0.02)_10px)]"
               aria-hidden
-            >
-              GA
-            </span>
+            />
+            <div
+              className="pointer-events-none absolute inset-2 rounded-lg border border-white/[0.07]"
+              aria-hidden
+            />
 
             <div className="relative flex min-h-0 flex-1 flex-col justify-between p-4 sm:p-5">
-              <div className="flex items-start justify-between gap-3 border-b border-white/10 pb-2 sm:pb-2.5">
-                <div className="min-w-0">
-                  <p className="truncate font-display text-sm leading-none sm:text-base">
-                    Gillian Anderson
-                  </p>
-                  <p className="mt-1 text-[0.5rem] font-semibold uppercase tracking-[0.3em] text-gold">
-                    Management
+              <div className="shrink-0">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-display text-[0.8rem] leading-none tracking-[0.04em] text-alabaster sm:text-[0.9rem]">
+                      Gillian Anderson
+                    </p>
+                    <p className="mt-1 text-[0.45rem] font-semibold uppercase leading-none tracking-[0.38em] text-gold">
+                      Official membership
+                    </p>
+                  </div>
+                  <p className="shrink-0 text-right text-[0.5rem] font-semibold uppercase leading-none tracking-[0.24em] text-gold">
+                    {data.tier?.name ?? 'Member'}
                   </p>
                 </div>
-                <p className="shrink-0 text-right text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-gold">
-                  {data.tier?.name ?? 'Member'}
-                </p>
+                <div className="mt-2 h-px bg-gradient-to-r from-gold/70 via-gold/25 to-transparent" />
               </div>
 
-              <dl className="grid grid-cols-2 gap-x-4 gap-y-2">
+              <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:gap-y-2">
                 <div className="min-w-0">
-                  <dt className="text-[0.5rem] font-medium uppercase tracking-[0.24em] text-alabaster/50">
+                  <dt className="text-[0.45rem] font-medium uppercase leading-none tracking-[0.22em] text-alabaster/45">
                     Holder
                   </dt>
-                  <dd className="mt-0.5 truncate text-xs font-medium uppercase tracking-[0.06em] text-alabaster">
+                  <dd className="mt-0.5 truncate text-[0.7rem] font-medium uppercase leading-tight tracking-[0.05em] text-alabaster">
                     {holderName || 'On file with management'}
                   </dd>
                 </div>
                 <div className="min-w-0">
-                  <dt className="text-[0.5rem] font-medium uppercase tracking-[0.24em] text-alabaster/50">
+                  <dt className="text-[0.45rem] font-medium uppercase leading-none tracking-[0.22em] text-alabaster/45">
                     Member no
                   </dt>
-                  <dd className="mt-0.5 font-mono text-xs tracking-wider text-alabaster">
+                  <dd className="mt-0.5 font-mono text-[0.68rem] leading-tight tracking-[0.06em] text-alabaster">
                     {data.membership.membership_number ?? '—'}
                   </dd>
                 </div>
                 <div className="min-w-0">
-                  <dt className="text-[0.5rem] font-medium uppercase tracking-[0.24em] text-alabaster/50">
+                  <dt className="text-[0.45rem] font-medium uppercase leading-none tracking-[0.22em] text-alabaster/45">
                     Issued
                   </dt>
-                  <dd className="mt-0.5 font-mono text-[0.65rem] text-alabaster">
+                  <dd className="mt-0.5 font-mono text-[0.625rem] leading-tight text-alabaster">
                     {formatDate(data.card.issued_at) || '—'}
                   </dd>
                 </div>
                 <div className="min-w-0">
-                  <dt className="text-[0.5rem] font-medium uppercase tracking-[0.24em] text-alabaster/50">
+                  <dt className="text-[0.45rem] font-medium uppercase leading-none tracking-[0.22em] text-alabaster/45">
                     {data.membership.expiration_date ? 'Valid thru' : 'Term'}
                   </dt>
-                  <dd className="mt-0.5 font-mono text-[0.65rem] text-alabaster">
+                  <dd className="mt-0.5 font-mono text-[0.625rem] leading-tight text-alabaster">
                     {formatDate(data.membership.expiration_date) || 'No expiry'}
                   </dd>
                 </div>
               </dl>
             </div>
 
-            <div
-              className="relative overflow-hidden border-t border-white/10 bg-black/40 px-4 pt-1.5 pb-2.5 sm:px-5 sm:pb-3"
-              aria-hidden
-            >
-              <div className="flex items-baseline gap-2">
-                <span className="hidden shrink-0 text-[0.5rem] font-medium uppercase tracking-[0.24em] text-alabaster/50 sm:inline">
-                  Card no
-                </span>
-                <p className="min-w-0 break-words font-mono text-xs font-medium tracking-[0.1em] text-gold sm:text-[0.8rem]">
-                  {data.card.card_serial}
-                </p>
+            <div className="relative flex items-center gap-3 border-t border-white/10 bg-black/45 px-4 pt-2 pb-2.5 sm:px-5 sm:pb-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline gap-2">
+                  <span className="shrink-0 text-[0.45rem] font-medium uppercase leading-none tracking-[0.22em] text-alabaster/45">
+                    Card no
+                  </span>
+                  <p className="min-w-0 break-words font-mono text-[0.72rem] font-medium leading-tight tracking-[0.1em] text-gold sm:text-[0.78rem]">
+                    {data.card.card_serial}
+                  </p>
+                </div>
+                <div className="mt-1" aria-hidden>
+                  <p className="whitespace-nowrap font-mono text-[0.45rem] leading-[1.4] text-alabaster/60 sm:text-[0.5rem]">
+                    {mrzLine1}
+                  </p>
+                  <p className="whitespace-nowrap font-mono text-[0.45rem] leading-[1.4] text-alabaster/60 sm:text-[0.5rem]">
+                    {mrzLine2}
+                  </p>
+                </div>
               </div>
-              <p className="mt-1 whitespace-nowrap font-mono text-[0.5rem] leading-[1.35] text-alabaster/70 sm:text-[0.55rem]">
-                {mrzLine1}
-              </p>
-              <p className="whitespace-nowrap font-mono text-[0.5rem] leading-[1.35] text-alabaster/70 sm:text-[0.55rem]">
-                {mrzLine2}
-              </p>
+              <span
+                className="grid size-6 shrink-0 place-items-center rounded-full border border-gold/45 font-display text-[0.55rem] leading-none text-gold/75"
+                aria-hidden
+              >
+                GA
+              </span>
             </div>
           </div>
 

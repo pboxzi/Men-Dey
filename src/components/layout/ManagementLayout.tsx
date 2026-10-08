@@ -209,7 +209,7 @@ export function ManagementLayout() {
           id="management-sidebar"
           aria-hidden={!isDesktop && !menuOpen ? true : undefined}
           inert={!isDesktop && !menuOpen ? true : undefined}
-          className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-stone bg-charcoal p-4 transform transition-transform duration-300 ease-in-out lg:static lg:z-auto lg:w-60 lg:max-w-none lg:shrink-0 lg:translate-x-0 lg:border-r lg:p-0 lg:py-6 lg:pr-6 lg:bg-transparent ${
+          className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col overflow-y-auto border border-white/10 bg-charcoal p-4 text-alabaster shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)] transition-transform duration-300 ease-in-out lg:sticky lg:top-16 lg:bottom-auto lg:z-auto lg:h-fit lg:max-h-[calc(100dvh_-_5rem)] lg:w-64 lg:max-w-none lg:shrink-0 lg:self-start lg:translate-x-0 lg:rounded-sm ${
             menuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           }`}
         >
@@ -262,7 +262,9 @@ export function ManagementLayout() {
           <nav className="flex flex-col gap-5" aria-label="Management">
             {NAV_SECTIONS.map((section) => (
               <div key={section.title} className="min-w-0">
-                <p className="eyebrow mb-2">{section.title}</p>
+                {/* pl-3.5 = the link's 2px active bar + 12px text padding, so
+                    section labels and link labels share one left edge. */}
+                <p className="eyebrow mb-2 pl-3.5 text-gold">{section.title}</p>
                 <div className="flex flex-col gap-0.5">
                   {section.links.map((link) => (
                     <NavLink
@@ -271,7 +273,11 @@ export function ManagementLayout() {
                       end={link.to === '/management'}
                       onClick={() => setMenuOpen(false)}
                       className={({isActive}) =>
-                        `nav-link min-h-11 whitespace-nowrap py-2.5 ${isActive ? 'nav-link-active' : ''}`
+                        `nav-link min-h-11 whitespace-nowrap border-l-2 py-2.5 transition-colors ${
+                          isActive
+                            ? 'nav-link-active border-gold bg-white/[0.07] font-medium text-gold'
+                            : 'border-transparent text-stone/70 hover:bg-white/[0.05] hover:text-alabaster'
+                        }`
                       }
                     >
                       {link.label}

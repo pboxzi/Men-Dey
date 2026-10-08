@@ -19,7 +19,6 @@ import {Link} from 'react-router-dom';
 import {useAuth} from '../../auth/AuthContext';
 import {Alert} from '../../components/ui/Alert';
 import {Chip} from '../../components/ui/Chip';
-import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDateTime, relativeTime} from '../../lib/format';
 import {MEMBERSHIP_STATUS_LABELS, MEMBERSHIP_STATUS_TONES} from '../../lib/membership';

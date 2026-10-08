@@ -2,6 +2,7 @@ import {useEffect} from 'react';
 import {useLocation, useNavigationType} from 'react-router-dom';
 
 import {AuthProvider} from './auth/AuthContext';
+import {DocumentMeta} from './components/DocumentMeta';
 import {InstallPrompt} from './components/InstallPrompt';
 import {AppRoutes} from './routes';
 
@@ -65,6 +66,7 @@ export function App() {
   return (
     <AuthProvider>
       <RobotsMeta />
+      <DocumentMeta />
       <ScrollToTop />
       <AppRoutes />
       <InstallGate />

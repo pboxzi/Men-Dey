@@ -9,7 +9,13 @@ import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate, formatDateTime, relativeTime} from '../../lib/format';
 import {formatPrice} from '../../lib/membership';
-import {PAYMENT_STATUS_LABELS, PAYMENT_STATUS_TONES} from '../../lib/payments';
+import {
+  PAYMENT_STATUS_LABELS,
+  PAYMENT_STATUS_TONES,
+  fetchPaymentSettings,
+  paymentMethodLabel,
+  type PaymentSettings,
+} from '../../lib/payments';
 import {
   PROPOSAL_STATUS_LABELS,
   PROPOSAL_STATUS_TONES,
@@ -48,7 +54,7 @@ const TERMINAL = ['completed', 'declined', 'cancelled'];
 function Row({label, value}: {label: string; value?: string | null}) {
   if (!value) return null;
   return (
-    <div className="flex items-start justify-between gap-4 py-2.5">
+    <div className="flex flex-wrap items-start justify-between gap-4 py-2.5">
       <dt className="text-sm text-muted">{label}</dt>
       <dd className="break-words text-right text-sm font-medium text-charcoal">{value}</dd>
     </div>
@@ -310,6 +316,12 @@ export function ManagementExperienceDetailPage() {
     [request, run, scheduleForm, userName],
   );
 
+  const [paySettings, setPaySettings] = useState<PaymentSettings | null>(null);
+
+  useEffect(() => {
+    void fetchPaymentSettings().then((result) => setPaySettings(result.settings));
+  }, []);
+
   if (loading) return <Spinner />;
 
   if (error || !request) {
@@ -337,7 +349,7 @@ export function ManagementExperienceDetailPage() {
   const canRequire = ['submitted', 'in_review', 'information_requested'].includes(status);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow={requestCategoryLabel(request.type)}
         title={request.title}
@@ -358,7 +370,7 @@ export function ManagementExperienceDetailPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
           Lifecycle
         </h2>
@@ -417,7 +429,7 @@ export function ManagementExperienceDetailPage() {
             <p className="text-danger">
               Decline this request? The member is notified and the request is resolved.
             </p>
-            <div className="mt-2 flex gap-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               <Button variant="ghost" onClick={() => setConfirmAction(null)} disabled={busy}>
                 Keep request
               </Button>
@@ -434,7 +446,7 @@ export function ManagementExperienceDetailPage() {
         {confirmAction === 'complete' ? (
           <div className="mt-4 rounded-sm border border-gold/40 bg-gold/5 p-3 text-sm">
             <p className="text-charcoal">Mark this experience as completed?</p>
-            <div className="mt-2 flex gap-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               <Button variant="ghost" onClick={() => setConfirmAction(null)} disabled={busy}>
                 Not yet
               </Button>
@@ -446,8 +458,8 @@ export function ManagementExperienceDetailPage() {
         ) : null}
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <section className="surface p-6">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+        <section className="surface p-4 sm:p-6">
           <h2 className="mb-3 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Request details
           </h2>
@@ -464,7 +476,7 @@ export function ManagementExperienceDetailPage() {
           </dl>
         </section>
 
-        <section className="surface p-6">
+        <section className="surface p-4 sm:p-6">
           <h2 className="mb-3 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Requirements
           </h2>
@@ -472,7 +484,7 @@ export function ManagementExperienceDetailPage() {
             <ul className="mb-4 divide-y divide-stone">
               {requirements.map((requirement) => (
                 <li key={requirement.id} className="py-3">
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-sm font-medium text-charcoal">{requirement.label}</p>
                     <Chip tone={requirement.responded_at ? 'success' : 'gold'}>
                       {requirement.responded_at ? 'Answered' : 'Awaiting answer'}
@@ -542,7 +554,7 @@ export function ManagementExperienceDetailPage() {
                   }
                 />
               </label>
-              <label className="flex items-center gap-2 text-sm text-charcoal">
+              <label className="flex flex-wrap items-center gap-2 text-sm text-charcoal">
                 <input
                   type="checkbox"
                   checked={reqForm.is_required}
@@ -559,13 +571,13 @@ export function ManagementExperienceDetailPage() {
           ) : null}
         </section>
 
-        <section className="surface p-6">
+        <section className="surface p-4 sm:p-6">
           <h2 className="mb-3 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Proposal
           </h2>
           {latestProposal ? (
             <div className="mb-4">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="text-sm font-medium text-charcoal">v{latestProposal.version}</p>
                 <Chip tone={PROPOSAL_STATUS_TONES[latestProposal.status]}>
                   {PROPOSAL_STATUS_LABELS[latestProposal.status]}
@@ -743,7 +755,14 @@ export function ManagementExperienceDetailPage() {
                   }
                 />
               </label>
-              <div className="flex gap-2">
+              <div className="rounded-sm border border-gold/40 bg-gold/5 p-3 text-xs leading-relaxed text-muted">
+                <span className="font-medium text-charcoal">
+                  Payment instructions the member will see with this proposal:
+                </span>{' '}
+                {paySettings ? paymentMethodLabel(paySettings) : 'Managed payment'} —{' '}
+                {paySettings?.instructions ?? 'Management will confirm the accepted payment method.'}
+              </div>
+              <div className="flex flex-wrap gap-2">
                 <Button onClick={() => void createProposal(true)} loading={busy}>
                   Save & send
                 </Button>
@@ -755,7 +774,7 @@ export function ManagementExperienceDetailPage() {
           ) : null}
         </section>
 
-        <section className="surface p-6">
+        <section className="surface p-4 sm:p-6">
           <h2 className="mb-3 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Payment
           </h2>
@@ -778,7 +797,7 @@ export function ManagementExperienceDetailPage() {
                       {payment.reference ? ` · ref ${payment.reference}` : ''}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
                       {PAYMENT_STATUS_LABELS[payment.status]}
                     </Chip>
@@ -798,7 +817,7 @@ export function ManagementExperienceDetailPage() {
           </p>
         </section>
 
-        <section className="surface p-6 lg:col-span-2">
+        <section className="surface p-4 sm:p-6 lg:col-span-2">
           <h2 className="mb-3 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Scheduling
           </h2>
@@ -910,7 +929,7 @@ export function ManagementExperienceDetailPage() {
         </section>
       </div>
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <h2 className="mb-5 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
           Timeline
         </h2>

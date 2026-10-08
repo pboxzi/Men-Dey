@@ -24,7 +24,7 @@ export const PAYMENT_PROVIDER_LABELS: Record<string, string> = {
 
 export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
   pending: 'Pending',
-  processing: 'Processing',
+  processing: 'Reported sent',
   paid: 'Paid',
   failed: 'Failed',
   refunded: 'Refunded',

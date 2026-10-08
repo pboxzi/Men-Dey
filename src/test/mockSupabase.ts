@@ -796,6 +796,37 @@ export function buildSupabaseMock() {
         return {data: {appointment_id: appointmentId, request_id: request.id}, error: null, count: null};
       }
 
+      case 'report_payment_sent': {
+        // Mirrors public.report_payment_sent(uuid, text): member reports, management verifies.
+        const table = String(params.p_table ?? 'membership_payments');
+        if (table !== 'membership_payments' && table !== 'experience_payments') {
+          return fail('unknown payment table');
+        }
+        const payment = materialize(table).find((row) => row.id === params.p_payment_id);
+        if (!payment) return fail('payment not found');
+        if (payment.user_id !== mockCtl.profile?.id) {
+          return fail('this payment does not belong to you');
+        }
+        if (payment.status !== 'pending') return fail('this payment has already been reported');
+        payment.status = 'processing';
+        payment.updated_at = now;
+        const label =
+          table === 'membership_payments' ? 'Membership payment' : 'Experience payment';
+        for (const staff of materialize('profiles').filter(
+          (row) =>
+            (row.role === 'management' || row.role === 'admin') && row.status === 'active',
+        )) {
+          notifyUser(
+            String(staff.id),
+            'membership',
+            'Member reported a payment sent',
+            `${label} reported as sent. Verify it on the payments page.`,
+            '/management/payments',
+          );
+        }
+        return {data: null, error: null, count: null};
+      }
+
       default:
         return fail(`unknown rpc function: ${name}`);
     }

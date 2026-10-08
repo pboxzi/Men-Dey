@@ -2,6 +2,7 @@ import {ArrowUpRight, CreditCard, Ticket} from 'lucide-react';
 import {useCallback, useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 
+import {Button} from '../../components/ui/Button';
 import {Chip} from '../../components/ui/Chip';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
@@ -46,6 +47,8 @@ export function MembershipPage() {
   const [settings, setSettings] = useState<PaymentSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reportingPayment, setReportingPayment] = useState(false);
+  const [reportError, setReportError] = useState<string | null>(null);
 
   const load = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
@@ -115,6 +118,25 @@ export function MembershipPage() {
     'membership_payments',
     'membership_cards',
   ]);
+
+  const reportPayment = useCallback(async () => {
+    const payment = payments.find((row) => row.status === 'pending');
+    if (!payment) return;
+    setReportingPayment(true);
+    setReportError(null);
+    try {
+      const {error: rpcError} = await supabase.rpc('report_payment_sent', {
+        p_payment_id: payment.id,
+        p_table: 'membership_payments',
+      });
+      if (rpcError) throw new Error(rpcError.message);
+      await load(true);
+    } catch (e) {
+      setReportError(e instanceof Error ? e.message : 'Could not report your payment.');
+    } finally {
+      setReportingPayment(false);
+    }
+  }, [payments, load]);
 
   if (loading) return <Spinner />;
 
@@ -221,6 +243,24 @@ export function MembershipPage() {
                       Never send card numbers, CVVs or passwords through this platform. Once you have
                       paid, management verifies the payment and activates your membership.
                     </p>
+                    {pendingPayment.status === 'processing' ? (
+                      <p className="mt-3 text-sm font-medium text-gold-deep">
+                        You reported this payment as sent — management is verifying it now.
+                      </p>
+                    ) : (
+                      <div className="mt-3">
+                        <Button
+                          variant="primary"
+                          loading={reportingPayment}
+                          onClick={() => void reportPayment()}
+                        >
+                          I've sent the payment
+                        </Button>
+                        {reportError ? (
+                          <p className="mt-2 text-sm text-danger">{reportError}</p>
+                        ) : null}
+                      </div>
+                    )}
                   </div>
                 ) : null}
 

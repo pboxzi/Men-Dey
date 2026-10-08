@@ -78,6 +78,7 @@ export function RequestDetailPage() {
   const [savingRequirement, setSavingRequirement] = useState<string | null>(null);
   const [messageDraft, setMessageDraft] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [reportingPayment, setReportingPayment] = useState(false);
 
   const load = useCallback(async (silent = false) => {
     if (!id) return;
@@ -267,6 +268,25 @@ export function RequestDetailPage() {
     [load, requirementDrafts],
   );
 
+  const reportPayment = useCallback(async () => {
+    const payment = payments.find((row) => row.status === 'pending');
+    if (!payment) return;
+    setReportingPayment(true);
+    setActionError(null);
+    try {
+      const {error: rpcError} = await supabase.rpc('report_payment_sent', {
+        p_payment_id: payment.id,
+        p_table: 'experience_payments',
+      });
+      if (rpcError) throw new Error(rpcError.message);
+      await load();
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : 'Could not report your payment.');
+    } finally {
+      setReportingPayment(false);
+    }
+  }, [payments, load]);
+
   if (loading) return <FullPageLoader />;
 
   if (error || !request) {
@@ -289,6 +309,17 @@ export function RequestDetailPage() {
     (latestProposal.status === 'sent' || latestProposal.status === 'viewed') &&
     !proposalExpired(latestProposal);
   const unansweredRequirements = requirements.filter((requirement) => !requirement.responded_at);
+  const paymentGuide = (
+    <div className="mt-5 rounded-sm border border-gold/40 bg-gold/5 p-4">
+      <p className="text-sm font-medium text-charcoal">
+        How to pay — {settings ? paymentMethodLabel(settings) : 'Managed payment'}
+      </p>
+      <p className="mt-1 text-sm leading-relaxed text-muted">
+        {settings?.instructions ??
+          'Management will confirm the accepted payment method for your experience.'}
+      </p>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -511,6 +542,7 @@ export function RequestDetailPage() {
                   This proposal has expired. Message management if you would like a new one.
                 </p>
               ) : null}
+              {proposalActionable || latestProposal.status === 'accepted' ? paymentGuide : null}
             </section>
           ) : null}
 
@@ -616,8 +648,19 @@ export function RequestDetailPage() {
                   <p className="text-sm text-muted">
                     {latestPayment.status === 'paid'
                       ? 'Payment recorded. Management confirms your experience next.'
-                      : 'Once you have paid through the confirmed method, management verifies the payment and confirms your experience.'}
+                      : latestPayment.status === 'processing'
+                        ? 'You reported this payment as sent. Management verifies it, then confirms your experience.'
+                        : 'Once you have paid through the confirmed method, management verifies the payment and confirms your experience.'}
                   </p>
+                  {latestPayment.status === 'pending' ? (
+                    <Button
+                      variant="primary"
+                      loading={reportingPayment}
+                      onClick={() => void reportPayment()}
+                    >
+                      I've sent the payment
+                    </Button>
+                  ) : null}
                 </div>
               ) : (
                 <p className="text-sm text-muted">

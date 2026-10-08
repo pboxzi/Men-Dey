@@ -284,6 +284,63 @@ describe('membership lifecycle', () => {
     const {error} = await supabase.rpc('activate_membership', {p_membership_id: 'mem-1'});
     expect(error?.message).toMatch(/already active/);
   });
+
+  it('a member reports the payment sent; management still verifies before activation', async () => {
+    await supabase.from('membership_offers').update({status: 'accepted'}).eq('id', 'offer-1');
+    mockData.profiles = [makeProfile('manager-1', 'management') as unknown as Row];
+    const payment = mockData.membership_payments[0];
+
+    signInAs('user', 'user-1');
+    const {error} = await supabase.rpc('report_payment_sent', {
+      p_payment_id: payment.id,
+      p_table: 'membership_payments',
+    });
+    expect(error).toBeNull();
+    expect(mockData.membership_payments[0].status).toBe('processing');
+    expect(mockData.memberships[0].status).toBe('pending');
+    expect(
+      mockData.notifications.some(
+        (notification) =>
+          notification.title === 'Member reported a payment sent' &&
+          notification.user_id === 'manager-1',
+      ),
+    ).toBe(true);
+
+    signInAs('management');
+    const blocked = await supabase.rpc('activate_membership', {
+      p_membership_id: String(mockData.memberships[0].id),
+    });
+    expect(blocked.error?.message).toMatch(/payment must be confirmed before activation/);
+
+    await supabase.from('membership_payments').update({status: 'paid'}).eq('id', payment.id);
+    expect(mockData.memberships[0].status).toBe('verification');
+  });
+
+  it('only the owner can report a payment, and only once', async () => {
+    await supabase.from('membership_offers').update({status: 'accepted'}).eq('id', 'offer-1');
+    const payment = mockData.membership_payments[0];
+
+    signInAs('user', 'user-2');
+    const stranger = await supabase.rpc('report_payment_sent', {
+      p_payment_id: payment.id,
+      p_table: 'membership_payments',
+    });
+    expect(stranger.error?.message).toMatch(/does not belong to you/);
+    expect(mockData.membership_payments[0].status).toBe('pending');
+
+    signInAs('user', 'user-1');
+    const first = await supabase.rpc('report_payment_sent', {
+      p_payment_id: payment.id,
+      p_table: 'membership_payments',
+    });
+    expect(first.error).toBeNull();
+    const second = await supabase.rpc('report_payment_sent', {
+      p_payment_id: payment.id,
+      p_table: 'membership_payments',
+    });
+    expect(second.error?.message).toMatch(/already been reported/);
+    expect(mockData.membership_payments[0].status).toBe('processing');
+  });
 });
 
 describe('experience lifecycle', () => {
@@ -339,6 +396,27 @@ describe('experience lifecycle', () => {
     expect(mockData.experience_payments[0].paid_at).not.toBeNull();
     expect(requestRow().status).toBe('payment_required');
     expect(events()).not.toContain('confirmed');
+  });
+
+  it('a member reports the experience payment sent; the request stays payment_required', async () => {
+    await supabase.from('experience_proposals').update({status: 'sent'}).eq('id', 'prop-1');
+    await supabase.from('experience_proposals').update({status: 'accepted'}).eq('id', 'prop-1');
+    mockData.profiles = [makeProfile('manager-1', 'management') as unknown as Row];
+    const payment = mockData.experience_payments[0];
+
+    signInAs('user', 'user-1');
+    const {error} = await supabase.rpc('report_payment_sent', {
+      p_payment_id: payment.id,
+      p_table: 'experience_payments',
+    });
+    expect(error).toBeNull();
+    expect(mockData.experience_payments[0].status).toBe('processing');
+    expect(requestRow().status).toBe('payment_required');
+    expect(
+      mockData.notifications.some(
+        (notification) => notification.title === 'Member reported a payment sent',
+      ),
+    ).toBe(true);
   });
 
   it('management confirms, and scheduling is gated on confirmation', async () => {

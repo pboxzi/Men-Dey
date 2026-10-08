@@ -11,7 +11,14 @@ import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDateTime, formatDate, relativeTime} from '../../lib/format';
 import {formatPrice} from '../../lib/membership';
-import {PAYMENT_PROVIDER_LABELS, PAYMENT_STATUS_LABELS, PAYMENT_STATUS_TONES} from '../../lib/payments';
+import {
+  PAYMENT_PROVIDER_LABELS,
+  PAYMENT_STATUS_LABELS,
+  PAYMENT_STATUS_TONES,
+  fetchPaymentSettings,
+  paymentMethodLabel,
+  type PaymentSettings,
+} from '../../lib/payments';
 import {
   PROPOSAL_STATUS_LABELS,
   PROPOSAL_STATUS_TONES,
@@ -411,6 +418,12 @@ export function ManagementRequestDetailPage() {
     }
   }, [data.proposals, data.request, id, load, me, proposalForm]);
 
+  const [paySettings, setPaySettings] = useState<PaymentSettings | null>(null);
+
+  useEffect(() => {
+    void fetchPaymentSettings().then((result) => setPaySettings(result.settings));
+  }, []);
+
   if (loading) return <Spinner label="Loading request" />;
 
   const {request, user} = data;
@@ -444,7 +457,7 @@ export function ManagementRequestDetailPage() {
   const actions = lifecycleActions(request.status);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Requests"
         title={request.title}
@@ -476,9 +489,9 @@ export function ManagementRequestDetailPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <section className="surface p-6" aria-label="Request details">
+          <section className="surface p-4 sm:p-6" aria-label="Request details">
             <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Request details
             </h2>
@@ -495,7 +508,7 @@ export function ManagementRequestDetailPage() {
             </dl>
           </section>
 
-          <section className="surface p-6" aria-label="Conversation">
+          <section className="surface p-4 sm:p-6" aria-label="Conversation">
             <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Messages
             </h2>
@@ -548,7 +561,7 @@ export function ManagementRequestDetailPage() {
                 </Button>
               </div>
               <label className="block text-sm">
-                <span className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wider text-muted">
+                <span className="mb-1 flex flex-wrap items-center gap-2 text-xs uppercase tracking-wider text-muted">
                   Internal note <Chip tone="gold">Internal only</Chip>
                 </span>
                 <textarea
@@ -572,8 +585,8 @@ export function ManagementRequestDetailPage() {
             </div>
           </section>
 
-          <section className="surface p-6" aria-label="Proposals">
-            <div className="mb-4 flex items-center justify-between gap-3">
+          <section className="surface p-4 sm:p-6" aria-label="Proposals">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
                 Proposals
               </h2>
@@ -672,7 +685,14 @@ export function ManagementRequestDetailPage() {
                     }
                   />
                 </label>
-                <div className="flex gap-2 sm:col-span-2">
+                <div className="rounded-sm border border-gold/40 bg-gold/5 p-3 text-xs leading-relaxed text-muted sm:col-span-2">
+                  <span className="font-medium text-charcoal">
+                    Payment instructions the member will see with this proposal:
+                  </span>{' '}
+                  {paySettings ? paymentMethodLabel(paySettings) : 'Managed payment'} —{' '}
+                  {paySettings?.instructions ?? 'Management will confirm the accepted payment method.'}
+                </div>
+                <div className="flex flex-wrap gap-2 sm:col-span-2">
                   <Button onClick={() => void createProposal()} loading={creatingProposal}>
                     Create and send
                   </Button>
@@ -713,8 +733,8 @@ export function ManagementRequestDetailPage() {
             )}
           </section>
 
-          <section className="surface p-6" aria-label="Payments">
-            <div className="mb-4 flex items-center justify-between gap-3">
+          <section className="surface p-4 sm:p-6" aria-label="Payments">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
                 Payments
               </h2>
@@ -743,13 +763,13 @@ export function ManagementRequestDetailPage() {
                         {payment.paid_at ? ` · paid ${formatDate(payment.paid_at)}` : ''}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
                         {PAYMENT_STATUS_LABELS[payment.status]}
                       </Chip>
                       {payment.status === 'pending' || payment.status === 'processing' ? (
                         confirmPaymentId === payment.id ? (
-                          <span className="flex gap-2">
+                          <span className="flex flex-wrap gap-2">
                             <Button variant="ghost" onClick={() => setConfirmPaymentId(null)}>
                               Back
                             </Button>
@@ -762,7 +782,7 @@ export function ManagementRequestDetailPage() {
                             </Button>
                           </span>
                         ) : (
-                          <span className="flex gap-2">
+                          <span className="flex flex-wrap gap-2">
                             <Button
                               variant="secondary"
                               onClick={() => setConfirmPaymentId(payment.id)}
@@ -787,8 +807,8 @@ export function ManagementRequestDetailPage() {
           </section>
 
           {data.documents.length > 0 ? (
-            <section className="surface p-6" aria-label="Documents">
-              <div className="mb-4 flex items-center justify-between gap-3">
+            <section className="surface p-4 sm:p-6" aria-label="Documents">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
                   Documents
                 </h2>
@@ -798,7 +818,7 @@ export function ManagementRequestDetailPage() {
               </div>
               <ul className="divide-y divide-stone">
                 {data.documents.map((document) => (
-                  <li key={document.id} className="flex items-center justify-between gap-3 py-2.5">
+                  <li key={document.id} className="flex flex-wrap items-center justify-between gap-3 py-2.5">
                     <span className="truncate text-sm text-charcoal">{document.title}</span>
                     <span className="shrink-0 text-xs text-muted">
                       {DOCUMENT_CATEGORY_LABELS[document.category] ?? document.category} ·{' '}
@@ -812,7 +832,7 @@ export function ManagementRequestDetailPage() {
         </div>
 
         <div className="space-y-6">
-          <section className="surface p-6" aria-label="Lifecycle">
+          <section className="surface p-4 sm:p-6" aria-label="Lifecycle">
             <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Move this request forward
             </h2>
@@ -841,7 +861,7 @@ export function ManagementRequestDetailPage() {
                     />
                   </label>
                 ) : null}
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button variant="ghost" onClick={() => setConfirming(null)}>
                     Back
                   </Button>
@@ -874,7 +894,7 @@ export function ManagementRequestDetailPage() {
             )}
           </section>
 
-          <section className="surface p-6" aria-label="Timeline">
+          <section className="surface p-4 sm:p-6" aria-label="Timeline">
             <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Timeline
             </h2>

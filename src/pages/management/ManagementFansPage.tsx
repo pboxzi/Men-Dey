@@ -1,10 +1,10 @@
-import {Search} from 'lucide-react';
 import {useCallback, useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 
 import {Alert} from '../../components/ui/Alert';
 import {Chip} from '../../components/ui/Chip';
 import {EmptyState} from '../../components/ui/EmptyState';
+import {ListToolbar} from '../../components/ui/ListToolbar';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
@@ -97,36 +97,21 @@ export function ManagementFansPage() {
       {error ? <Alert tone="error">{error}</Alert> : null}
 
       <section className="surface p-4 sm:p-6">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div className="filter-row min-w-0 flex-1">
-            {STATUS_FILTERS.map((filter) => (
-              <button
-                key={filter}
-                type="button"
-                className={`filter-chip ${statusFilter === filter ? 'is-active' : ''}`}
-                onClick={() => setStatusFilter(filter)}
-              >
-                {filter === 'all' ? 'All' : PROFILE_STATUS_LABELS[filter]}
-              </button>
-            ))}
-          </div>
-          <span className="text-xs text-muted">
-            {visible.length} of {fans.length} accounts
-          </span>
-        </div>
-
-        <label className="mb-5 block text-sm">
-          <span className="mb-1 block text-xs uppercase tracking-wider text-muted">Search</span>
-          <span className="search-field">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
-            <input
-              className="field-input"
-              value={search}
-              placeholder="Name or email"
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </span>
-        </label>
+        <ListToolbar
+          search={search}
+          onSearch={setSearch}
+          searchPlaceholder="Name or email"
+          count={`${visible.length} of ${fans.length} accounts`}
+          filter={{
+            value: statusFilter,
+            onChange: (value) => setStatusFilter(value as typeof statusFilter),
+            label: 'Status',
+            options: STATUS_FILTERS.map((value) => ({
+              value,
+              label: value === 'all' ? 'All statuses' : PROFILE_STATUS_LABELS[value],
+            })),
+          }}
+        />
 
         {visible.length === 0 ? (
           <EmptyState

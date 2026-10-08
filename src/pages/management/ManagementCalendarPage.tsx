@@ -499,24 +499,17 @@ export function ManagementCalendarPage() {
 
       <section className="surface p-4 sm:p-6" aria-label="Schedule calendar">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div className="filter-row min-w-0 flex-1">
-              {(['agenda', 'day', 'week', 'month'] as const).map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  className={`filter-chip ${view === value ? 'is-active' : ''}`}
-                  onClick={() => setView(value)}
-                >
-                  {value === 'day'
-                    ? 'Day'
-                    : value === 'week'
-                      ? 'Week'
-                      : value === 'month'
-                        ? 'Month'
-                        : 'Agenda'}
-                </button>
-              ))}
-            </div>
+            <select
+              className="field-input w-full sm:w-auto"
+              aria-label="Calendar view"
+              value={view}
+              onChange={(event) => setView(event.target.value as typeof view)}
+            >
+              <option value="agenda">Agenda</option>
+              <option value="day">Day</option>
+              <option value="week">Week</option>
+              <option value="month">Month</option>
+            </select>
             <div className="flex flex-wrap items-center justify-center gap-2 sm:flex-nowrap">
             <Button variant="ghost" onClick={() => step(-1)} aria-label="Previous">
               <ChevronLeft className="size-4" aria-hidden />

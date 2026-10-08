@@ -6,6 +6,7 @@ import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
 import {Chip} from '../../components/ui/Chip';
 import {EmptyState} from '../../components/ui/EmptyState';
+import {ListToolbar} from '../../components/ui/ListToolbar';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDateTime, relativeTime} from '../../lib/format';
@@ -204,19 +205,15 @@ export function ManagementBookingsPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <div className="filter-row">
-        {FILTERS.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => setFilter(option.value)}
-            className={`filter-chip ${filter === option.value ? 'is-active' : ''}`}
-            aria-pressed={filter === option.value}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
+      <ListToolbar
+        className=""
+        filter={{
+          value: filter,
+          onChange: (value) => setFilter(value as typeof filter),
+          label: 'When',
+          options: FILTERS.map((option) => ({value: option.value, label: option.label})),
+        }}
+      />
 
       <section className="surface p-4 sm:p-6">
         {rows.length === 0 ? (

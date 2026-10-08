@@ -7,6 +7,7 @@ import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
 import {Chip} from '../../components/ui/Chip';
 import {EmptyState} from '../../components/ui/EmptyState';
+import {ListToolbar} from '../../components/ui/ListToolbar';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {loadConversationSummaries} from '../../lib/conversations';
@@ -544,18 +545,18 @@ export function ManagementMessagesPage() {
 
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-[22rem_1fr]">
         <div className={`surface min-w-0 p-4 ${conversationId ? 'hidden lg:block' : ''}`}>
-          <div className="filter-row mb-3">
-            {(['all', 'open', 'waiting', 'closed'] as const).map((filter) => (
-              <button
-                key={filter}
-                type="button"
-                className={`filter-chip ${statusFilter === filter ? 'is-active' : ''}`}
-                onClick={() => setStatusFilter(filter)}
-              >
-                {filter === 'all' ? 'All' : CONVERSATION_STATUS_LABELS[filter]}
-              </button>
-            ))}
-          </div>
+          <ListToolbar
+            className="mb-3"
+            filter={{
+              value: statusFilter,
+              onChange: (value) => setStatusFilter(value as typeof statusFilter),
+              label: 'Conversation status',
+              options: (['all', 'open', 'waiting', 'closed'] as const).map((value) => ({
+                value,
+                label: value === 'all' ? 'All conversations' : CONVERSATION_STATUS_LABELS[value],
+              })),
+            }}
+          />
 
           {listLoading ? (
             <Spinner label="Loading conversations" />

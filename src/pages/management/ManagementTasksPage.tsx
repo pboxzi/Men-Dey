@@ -7,6 +7,7 @@ import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
 import {Chip} from '../../components/ui/Chip';
 import {EmptyState} from '../../components/ui/EmptyState';
+import {ListToolbar} from '../../components/ui/ListToolbar';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
@@ -351,21 +352,18 @@ export function ManagementTasksPage() {
       ) : null}
 
       <section className="surface p-4 sm:p-6">
-        <div className="filter-row mb-4">
-          {(['all', ...STATUSES] as const).map((filter) => (
-            <button
-              key={filter}
-              type="button"
-              className={`filter-chip ${statusFilter === filter ? 'is-active' : ''}`}
-              onClick={() => setStatusFilter(filter)}
-            >
-              {filter === 'all' ? 'All' : TASK_STATUS_LABELS[filter]}
-            </button>
-          ))}
-          <span className="filter-meta text-[11px] text-muted">{visible.length} shown</span>
-        </div>
-
-        <div className="mb-5 flex flex-wrap items-center gap-3">
+        <ListToolbar
+          count={`${visible.length} shown`}
+          filter={{
+            value: statusFilter,
+            onChange: (value) => setStatusFilter(value as typeof statusFilter),
+            label: 'Status',
+            options: (['all', ...STATUSES] as const).map((value) => ({
+              value,
+              label: value === 'all' ? 'All statuses' : TASK_STATUS_LABELS[value],
+            })),
+          }}
+        >
           <select
             className="field-input w-auto"
             value={assigneeFilter}
@@ -389,7 +387,7 @@ export function ManagementTasksPage() {
               </option>
             ))}
           </select>
-        </div>
+        </ListToolbar>
 
         {visible.length === 0 ? (
           <EmptyState

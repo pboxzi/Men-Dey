@@ -3,6 +3,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 
 import {Chip} from '../../../components/ui/Chip';
+import {ListToolbar} from '../../../components/ui/ListToolbar';
 import {Spinner} from '../../../components/ui/Spinner';
 import {formatDate, relativeTime} from '../../../lib/format';
 import {useLiveRefresh} from '../../../hooks/useLiveRefresh';
@@ -78,22 +79,19 @@ export function RequestsListPage() {
         </Link>
       </div>
 
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by status">
-        {FILTERS.map((option) => (
-          <button
-            key={option.key}
-            type="button"
-            onClick={() => setFilter(option.key)}
-            className={`inline-flex min-h-11 items-center rounded-full border px-3.5 text-xs font-medium tracking-wide transition-colors ${
-              filter === option.key
-                ? 'border-charcoal bg-charcoal text-alabaster'
-                : 'border-stone bg-white text-muted hover:border-gold'
-            }`}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
+      <ListToolbar
+        className=""
+        count={`${visible.length} of ${rows.length}`}
+        filter={{
+          value: filter,
+          onChange: (value) => setFilter(value as typeof filter),
+          label: 'Status',
+          options: FILTERS.map((option) => ({
+            value: option.key,
+            label: option.key === 'all' ? 'All requests' : option.label,
+          })),
+        }}
+      />
 
       {loading ? (
         <Spinner />

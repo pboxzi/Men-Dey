@@ -1,10 +1,10 @@
 import {useCallback, useEffect, useState} from 'react';
-import {Search} from 'lucide-react';
 import {Link} from 'react-router-dom';
 
 import {Alert} from '../../components/ui/Alert';
 import {Chip} from '../../components/ui/Chip';
 import {EmptyState} from '../../components/ui/EmptyState';
+import {ListToolbar} from '../../components/ui/ListToolbar';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDateTime} from '../../lib/format';
@@ -122,9 +122,14 @@ export function ManagementAuditPage() {
       {error ? <Alert tone="error">{error}</Alert> : null}
 
       <section className="surface p-4 sm:p-6">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <ListToolbar
+          search={search}
+          onSearch={setSearch}
+          searchPlaceholder="Search actor or action"
+          count={`${visible.length} of ${rows.length} entries`}
+        >
           <select
-            className="field-input w-full sm:w-auto"
+            className="field-input w-auto"
             value={entityFilter}
             onChange={(event) => setEntityFilter(event.target.value)}
           >
@@ -136,7 +141,7 @@ export function ManagementAuditPage() {
             ))}
           </select>
           <select
-            className="field-input w-full sm:w-auto"
+            className="field-input w-auto"
             value={actionFilter}
             onChange={(event) => setActionFilter(event.target.value)}
           >
@@ -147,22 +152,7 @@ export function ManagementAuditPage() {
               </option>
             ))}
           </select>
-          <span className="search-field w-full sm:w-auto">
-            <Search
-              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted"
-              aria-hidden
-            />
-            <input
-              className="field-input w-full sm:max-w-56"
-              value={search}
-              placeholder="Search actor or action"
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </span>
-          <span className="text-xs text-muted sm:ml-auto">
-            {visible.length} of {rows.length} entries
-          </span>
-        </div>
+        </ListToolbar>
 
         {visible.length === 0 ? (
           <EmptyState

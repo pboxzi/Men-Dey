@@ -1,4 +1,4 @@
-import {Archive, ArchiveRestore, Download, Link2, Plus, Search, Upload} from 'lucide-react';
+import {Archive, ArchiveRestore, Download, Link2, Plus, Upload} from 'lucide-react';
 import {useCallback, useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 
@@ -7,6 +7,7 @@ import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
 import {Chip} from '../../components/ui/Chip';
 import {EmptyState} from '../../components/ui/EmptyState';
+import {ListToolbar} from '../../components/ui/ListToolbar';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
@@ -438,23 +439,28 @@ export function ManagementDocumentsPage({
       ) : null}
 
       <section className="surface p-4 sm:p-6">
-        <div className="filter-row mb-4">
-          {!presetCategory
-            ? (['all', ...CATEGORIES] as const).map((filter) => (
-                <button
-                  key={filter}
-                  type="button"
-                  className={`filter-chip ${categoryFilter === filter ? 'is-active' : ''}`}
-                  onClick={() => setCategoryFilter(filter)}
-                >
-                  {filter === 'all' ? 'All' : DOCUMENT_CATEGORY_LABELS[filter]}
-                </button>
-              ))
-            : <span className="text-xs uppercase tracking-wider text-muted">Agreements</span>}
-          <span className="filter-meta text-[11px] text-muted">{visible.length} shown</span>
-        </div>
-
-        <div className="mb-5 flex flex-wrap items-center gap-3">
+        <ListToolbar
+          search={search}
+          onSearch={setSearch}
+          searchPlaceholder="Search title"
+          count={`${visible.length} shown`}
+          filter={
+            presetCategory
+              ? undefined
+              : {
+                  value: categoryFilter,
+                  onChange: (value) => setCategoryFilter(value as typeof categoryFilter),
+                  label: 'Category',
+                  options: (['all', ...CATEGORIES] as const).map((value) => ({
+                    value,
+                    label: value === 'all' ? 'All categories' : DOCUMENT_CATEGORY_LABELS[value],
+                  })),
+                }
+          }
+        >
+          {presetCategory ? (
+            <span className="text-xs uppercase tracking-wider text-muted">Agreements</span>
+          ) : null}
           <select
             className="field-input w-auto"
             value={visibilityFilter}
@@ -475,19 +481,7 @@ export function ManagementDocumentsPage({
             />
             Include archived
           </label>
-          <span className="search-field">
-            <Search
-              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted"
-              aria-hidden
-            />
-            <input
-              className="field-input max-w-56"
-              value={search}
-              placeholder="Search title"
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </span>
-        </div>
+        </ListToolbar>
 
         {visible.length === 0 ? (
           <EmptyState

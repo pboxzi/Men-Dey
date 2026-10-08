@@ -1,4 +1,4 @@
-import {Copy, Image as ImageIcon, Plus, Search, Video, FileText, Music} from 'lucide-react';
+import {Copy, Image as ImageIcon, Plus, Video, FileText, Music} from 'lucide-react';
 import {useCallback, useEffect, useState} from 'react';
 
 import {useAuth} from '../../auth/AuthContext';
@@ -6,6 +6,7 @@ import {Alert} from '../../components/ui/Alert';
 import {Button} from '../../components/ui/Button';
 import {Chip} from '../../components/ui/Chip';
 import {EmptyState} from '../../components/ui/EmptyState';
+import {ListToolbar} from '../../components/ui/ListToolbar';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDate} from '../../lib/format';
@@ -288,34 +289,20 @@ export function ManagementMediaPage() {
       ) : null}
 
       <section className="surface p-4 sm:p-6">
-        <div className="filter-row mb-3">
-          {(['all', ...KINDS] as const).map((filter) => (
-            <button
-              key={filter}
-              type="button"
-              className={`filter-chip ${kindFilter === filter ? 'is-active' : ''}`}
-              onClick={() => setKindFilter(filter)}
-            >
-              {filter === 'all' ? 'All' : filter}
-            </button>
-          ))}
-        </div>
-
-        <label className="mb-5 block text-sm">
-          <span className="mb-1 block text-xs uppercase tracking-wider text-muted">Search</span>
-          <span className="search-field">
-            <Search
-              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted"
-              aria-hidden
-            />
-            <input
-              className="field-input w-full sm:max-w-72"
-              value={search}
-              placeholder="Search title"
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </span>
-        </label>
+        <ListToolbar
+          search={search}
+          onSearch={setSearch}
+          searchPlaceholder="Search title"
+          filter={{
+            value: kindFilter,
+            onChange: (value) => setKindFilter(value as typeof kindFilter),
+            label: 'Media type',
+            options: (['all', ...KINDS] as const).map((value) => ({
+              value,
+              label: value === 'all' ? 'All types' : value,
+            })),
+          }}
+        />
 
         {visible.length === 0 ? (
           <EmptyState

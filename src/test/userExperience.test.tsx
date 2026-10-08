@@ -480,9 +480,10 @@ describe('requests', () => {
     renderApp('/dashboard/requests');
 
     expect(await screen.findByText('Meet at the theatre')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', {name: 'Under Review'}));
+    const statusFilter = screen.getByRole('combobox', {name: 'Status'});
+    await user.selectOptions(statusFilter, 'in_review');
     expect(screen.getByText('No requests with this status.')).toBeInTheDocument();
-    await user.click(screen.getByRole('button', {name: 'All'}));
+    await user.selectOptions(statusFilter, 'all');
     expect(await screen.findByText('Meet at the theatre')).toBeInTheDocument();
   });
 

@@ -8,15 +8,15 @@ export function ManagementOfficeSection() {
         <div className="order-2 flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:order-1 lg:px-16 lg:py-24">
           <Reveal>
             <span className="block h-px w-10 bg-[#C89B3C]" aria-hidden />
-            <h2 className="mt-4 break-words font-sans text-[12px] font-semibold uppercase leading-[1.7] tracking-[0.26em] text-[#1E1E1E] sm:text-[13px]">
+            <h2 className="mt-4 break-words font-sans text-[11px] font-bold uppercase leading-[1.7] tracking-[0.28em] text-[#1E1E1E] sm:text-[12px]">
               The management office
             </h2>
 
-            <p className="mt-5 max-w-[26rem] break-words font-display text-[19px] italic leading-[1.5] text-[#1E1E1E] lg:text-[23px]">
+            <p className="mt-4 max-w-[30rem] break-words font-display text-[19px] italic leading-[1.55] text-[#1E1E1E] lg:text-[23px]">
               Every request begins with a conversation.
             </p>
 
-            <p className="mt-4 max-w-[28rem] text-sm leading-[1.85] text-[#77716A]">
+            <p className="mt-4 max-w-[30rem] break-words font-display text-[15px] leading-[1.9] text-[#77716A] lg:text-base">
               Management is the private point of contact for personal requests, experiences and
               professional enquiries.
             </p>

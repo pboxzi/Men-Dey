@@ -663,53 +663,22 @@ export function DashboardHomePage() {
       </div>
 
       {/* =========================================================================
-          4. BOTTOM DARK BANNER ("Where would you like to begin?")
-      ========================================================================= */}
-      <div className="bg-[#14171A] text-white py-12 px-6 text-center rounded-xl border border-black/20 my-10 shadow-sm relative overflow-hidden">
-        <h2 className="font-serif text-2xl sm:text-3xl text-white font-normal mb-6 tracking-tight">
-          Where would you like to begin?
-        </h2>
-
-        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 text-xs font-sans tracking-wide text-neutral-300">
-          <Link
-            to="/dashboard/messages"
-            className="hover:text-[#C89B3C] transition-colors flex items-center gap-1.5 group"
-          >
-            <span>Talk to Management</span>
-            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-          </Link>
-
-          <Link
-            to="/dashboard/membership"
-            className="hover:text-[#C89B3C] transition-colors flex items-center gap-1.5 group"
-          >
-            <span>Explore Membership</span>
-            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-          </Link>
-
-          <Link
-            to="/dashboard/requests/new"
-            className="hover:text-[#C89B3C] transition-colors flex items-center gap-1.5 group"
-          >
-            <span>Make a Request</span>
-            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* =========================================================================
           5. SUBTLE FOOTER LOCKUP
       ========================================================================= */}
       <footer className="py-6 border-t border-[#EAE4DA] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#8C8275] gap-3">
         <GaBrand variant="light" size="sm" to="/home" />
 
         <div className="flex items-center gap-4 text-[#8C8275]">
-          <Link to="/dashboard/documents" className="hover:text-[#1E1E1E] transition-colors">
+          <Link to="/privacy" className="hover:text-[#1E1E1E] transition-colors">
             Privacy
           </Link>
           <span>·</span>
-          <Link to="/dashboard/documents" className="hover:text-[#1E1E1E] transition-colors">
+          <Link to="/terms" className="hover:text-[#1E1E1E] transition-colors">
             Terms
+          </Link>
+          <span>·</span>
+          <Link to="/policies" className="hover:text-[#1E1E1E] transition-colors">
+            Policies
           </Link>
           <span>·</span>
           <Link to="/dashboard/messages" className="hover:text-[#1E1E1E] transition-colors">

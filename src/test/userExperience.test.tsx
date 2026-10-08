@@ -247,7 +247,6 @@ describe('dashboard', () => {
     expect(
       screen.getByText("You're up to date. Notifications will appear here."),
     ).toBeInTheDocument();
-    expect(screen.getByText('Where would you like to begin?')).toBeInTheDocument();
 
     // sidebar groups
     expect(screen.getByText('MAIN')).toBeInTheDocument();

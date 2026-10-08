@@ -15,11 +15,11 @@ export function JourneySection() {
         <div className="order-2 flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:order-1 lg:px-16 lg:py-24">
           <Reveal>
             <span className="block h-px w-10 bg-[#C89B3C]" aria-hidden />
-            <h2 className="mt-4 break-words font-sans text-[12px] font-semibold uppercase leading-[1.7] tracking-[0.26em] text-[#1E1E1E] sm:text-[13px]">
+            <h2 className="mt-4 break-words font-sans text-[11px] font-bold uppercase leading-[1.7] tracking-[0.28em] text-[#1E1E1E] sm:text-[12px]">
               Your journey
             </h2>
 
-            <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#77716A] sm:text-[11px]">
+            <p className="mt-4 font-display text-[15px] italic leading-snug text-[#77716A] sm:text-base">
               A simple process. A personal approach.
             </p>
           </Reveal>

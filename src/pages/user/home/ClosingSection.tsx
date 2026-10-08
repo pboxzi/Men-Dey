@@ -19,11 +19,11 @@ export function ClosingSection() {
       <div className="mx-auto w-full max-w-[1500px] px-6 pb-16 pt-10 sm:px-10 lg:px-16 lg:pb-24 lg:pt-12">
         <Reveal className="max-w-[34rem]">
           <span className="block h-px w-10 bg-[#C89B3C]" aria-hidden />
-          <h2 className="mt-4 break-words font-sans text-[12px] font-semibold uppercase leading-[1.7] tracking-[0.26em] text-[#1E1E1E] sm:text-[13px]">
+          <h2 className="mt-4 break-words font-sans text-[11px] font-bold uppercase leading-[1.7] tracking-[0.28em] text-[#1E1E1E] sm:text-[12px]">
             Private relationships. Considered experiences.
           </h2>
 
-          <p className="mt-4 text-sm leading-[1.85] text-[#77716A]">
+          <p className="mt-4 max-w-[30rem] break-words font-display text-[17px] italic leading-[1.7] text-[#1E1E1E] sm:text-[19px]">
             Every relationship begins with a conversation.
           </p>
         </Reveal>

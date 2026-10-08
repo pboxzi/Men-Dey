@@ -35,11 +35,11 @@ export function MembershipSection() {
         <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
             <span className="block h-px w-10 bg-[#C89B3C]" aria-hidden />
-            <h2 className="mt-4 break-words font-sans text-[12px] font-semibold uppercase leading-[1.7] tracking-[0.26em] text-[#FCFAF7] sm:text-[13px]">
+            <h2 className="mt-4 break-words font-sans text-[11px] font-bold uppercase leading-[1.7] tracking-[0.28em] text-[#FCFAF7] sm:text-[12px]">
               Membership is personal
             </h2>
 
-            <p className="mt-5 max-w-[28rem] text-sm leading-[1.85] text-[#B5AEA3]">
+            <p className="mt-4 max-w-[30rem] break-words font-display text-[15px] leading-[1.9] text-[#B5AEA3] lg:text-base">
               Membership is arranged through management after your request has been reviewed.
             </p>
           </Reveal>

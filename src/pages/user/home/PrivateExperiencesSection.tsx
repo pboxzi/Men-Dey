@@ -27,15 +27,15 @@ export function PrivateExperiencesSection() {
         <div className="flex min-w-0 flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-24">
           <Reveal>
             <span className="block h-px w-10 bg-[#C89B3C]" aria-hidden />
-            <h2 className="mt-4 break-words font-sans text-[12px] font-semibold uppercase leading-[1.7] tracking-[0.26em] text-[#1E1E1E] sm:text-[13px]">
+            <h2 className="mt-4 break-words font-sans text-[11px] font-bold uppercase leading-[1.7] tracking-[0.28em] text-[#1E1E1E] sm:text-[12px]">
               Private experiences
             </h2>
 
-            <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#A67F2C] sm:text-[11px]">
+            <p className="mt-4 font-display text-[15px] italic leading-snug text-[#A67F2C] sm:text-base">
               Curated. Discreet. Exceptional.
             </p>
 
-            <p className="mt-4 max-w-[30rem] text-sm leading-[1.85] text-[#77716A]">
+            <p className="mt-4 max-w-[30rem] font-display text-[15px] leading-[1.9] text-[#77716A] lg:text-base">
               Experiences are discussed directly with management and considered according to
               availability and the nature of the request.
             </p>

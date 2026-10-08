@@ -1,4 +1,5 @@
 import {useCallback, useEffect, useState} from 'react';
+import {Search} from 'lucide-react';
 import {Link} from 'react-router-dom';
 
 import {Alert} from '../../components/ui/Alert';
@@ -146,12 +147,18 @@ export function ManagementAuditPage() {
               </option>
             ))}
           </select>
-          <input
-            className="field-input w-full sm:max-w-56"
-            value={search}
-            placeholder="Search actor or action"
-            onChange={(event) => setSearch(event.target.value)}
-          />
+          <span className="search-field w-full sm:w-auto">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted"
+              aria-hidden
+            />
+            <input
+              className="field-input w-full sm:max-w-56"
+              value={search}
+              placeholder="Search actor or action"
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </span>
           <span className="text-xs text-muted sm:ml-auto">
             {visible.length} of {rows.length} entries
           </span>
@@ -201,13 +208,13 @@ export function ManagementAuditPage() {
               </ul>
             </div>
 
-            <div className="space-y-3 md:hidden">
+            <div className="divide-y divide-stone md:hidden">
               {visible.map((row) => {
                 const link = recordLink(row);
                 return (
                   <div
                     key={row.id}
-                    className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                    className="block py-3 space-y-1"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <span className="min-w-0 break-words text-sm font-medium text-charcoal">
@@ -230,7 +237,7 @@ export function ManagementAuditPage() {
                     {link ? (
                       <Link
                         to={link.to}
-                        className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                        className="flex items-center justify-between gap-2 min-h-11 border-t border-stone pt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep hover:text-gold"
                       >
                         <span>{link.text}</span>
                         <span aria-hidden="true">→</span>

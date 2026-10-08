@@ -193,18 +193,18 @@ export function ManagementNotificationsPage() {
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
       <section className="surface p-4 sm:p-6">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="filter-row mb-4">
           {(['all', 'unread'] as const).map((value) => (
             <button
               key={value}
               type="button"
-              className={`btn ${filter === value ? 'btn-primary' : 'btn-ghost'}`}
+              className={`filter-chip ${filter === value ? 'is-active' : ''}`}
               onClick={() => setFilter(value)}
             >
               {value === 'all' ? 'All' : 'Unread'}
             </button>
           ))}
-          <span className="ml-auto text-xs text-muted">
+          <span className="filter-meta text-[11px] text-muted">
             {unreadCount} unread of {rows.length}
           </span>
         </div>
@@ -219,7 +219,7 @@ export function ManagementNotificationsPage() {
             {visible.map((notification) => {
               const inner = (
                 <>
-                  <span className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                  <span className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
                     <span className="truncate text-sm font-medium text-charcoal">
                       {notification.title}
                     </span>

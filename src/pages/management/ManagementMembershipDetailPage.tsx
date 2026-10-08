@@ -359,7 +359,7 @@ export function ManagementMembershipDetailPage() {
               {payments.map((payment) => (
                 <li
                   key={payment.id}
-                  className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-3"
+                  className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 py-3"
                 >
                   <div>
                     <p className="text-sm font-medium text-charcoal">

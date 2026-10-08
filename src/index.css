@@ -143,6 +143,105 @@
     color: var(--color-charcoal);
   }
 
+  /* ── Management console filters ─────────────────────────────────────────
+     One shared, reusable control for every status/kind/tab row in the admin
+     area. Below sm the chips hold a single line and scroll sideways, so a
+     dozen statuses never stack into a tall block; from sm upward they wrap
+     exactly as the desktop console always has. Active chip = signature gold. */
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Result count pinned to the right edge of the scrolling chip row. */
+  .filter-meta {
+    position: sticky;
+    right: 0;
+    flex-shrink: 0;
+    margin-left: auto;
+    white-space: nowrap;
+    background: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    height: 2.5rem;
+    padding: 0 0.75rem;
+    border: 1px solid var(--color-stone);
+    border-radius: 2px;
+    background: transparent;
+    color: var(--color-muted);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .filter-chip:hover:not(:disabled) {
+    border-color: var(--color-stone-deep);
+    color: var(--color-charcoal);
+  }
+
+  .filter-chip.is-active,
+  .filter-chip.is-active:hover:not(:disabled) {
+    border-color: var(--color-gold);
+    background: var(--color-gold);
+    color: var(--color-charcoal);
+  }
+
+  .filter-chip:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* Compact search field: icon inside a 44px field, no giant empty space. */
+  .search-field {
+    position: relative;
+    display: block;
+  }
+
+  .search-field .field-input {
+    min-height: 2.75rem;
+    padding-left: 2.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .filter-row {
+      flex-wrap: wrap;
+      overflow-x: visible;
+    }
+
+    .filter-meta {
+      position: static;
+      background: none;
+    }
+
+    .filter-chip {
+      height: 2.75rem;
+      padding: 0 0.875rem;
+      font-size: 0.75rem;
+    }
+  }
+
   .surface {
     background: #fff;
     border: 1px solid var(--color-stone);

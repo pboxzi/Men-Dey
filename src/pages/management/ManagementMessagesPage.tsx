@@ -322,7 +322,7 @@ export function ManagementMessagesPage() {
         </div>
       ) : (
         <>
-          <header className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 border-b border-stone p-5">
+          <header className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 border-b border-stone p-5">
             <div className="min-w-0">
               <Link
                 to="/management/messages"
@@ -368,7 +368,7 @@ export function ManagementMessagesPage() {
           </header>
 
           {confirmingClose ? (
-            <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 border-b border-stone bg-stone/40 px-5 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 border-b border-stone bg-stone/40 px-5 py-3">
               <p className="text-sm text-charcoal">
                 Close this conversation? The member will see it as closed.
               </p>
@@ -544,12 +544,12 @@ export function ManagementMessagesPage() {
 
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-[22rem_1fr]">
         <div className={`surface min-w-0 p-4 ${conversationId ? 'hidden lg:block' : ''}`}>
-          <div className="mb-3 flex flex-wrap gap-1.5">
+          <div className="filter-row mb-3">
             {(['all', 'open', 'waiting', 'closed'] as const).map((filter) => (
               <button
                 key={filter}
                 type="button"
-                className={`btn ${statusFilter === filter ? 'btn-primary' : 'btn-ghost'}`}
+                className={`filter-chip ${statusFilter === filter ? 'is-active' : ''}`}
                 onClick={() => setStatusFilter(filter)}
               >
                 {filter === 'all' ? 'All' : CONVERSATION_STATUS_LABELS[filter]}

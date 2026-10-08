@@ -147,26 +147,26 @@ export function ManagementSecurityPage() {
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
       <section className="surface p-4 sm:p-6">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="filter-row mb-4">
           {STATUS_FILTERS.map((filter) => (
             <button
               key={filter}
               type="button"
-              className={`btn ${statusFilter === filter ? 'btn-primary' : 'btn-ghost'}`}
+              className={`filter-chip ${statusFilter === filter ? 'is-active' : ''}`}
               onClick={() => setStatusFilter(filter)}
             >
               {filter === 'all' ? 'All' : PROFILE_STATUS_LABELS[filter]}
             </button>
           ))}
-          <span className="ml-auto text-xs text-muted">
+          <span className="filter-meta text-[11px] text-muted">
             {visible.length} of {rows.length} accounts
           </span>
         </div>
 
         <label className="mb-5 block text-sm">
           <span className="mb-1 block text-xs uppercase tracking-wider text-muted">Search</span>
-          <span className="flex items-center gap-2">
-            <Search className="size-4 text-muted" aria-hidden />
+          <span className="search-field">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
             <input
               className="field-input"
               value={search}
@@ -185,7 +185,7 @@ export function ManagementSecurityPage() {
           <ul className="divide-y divide-stone">
             {visible.map((account) => (
               <li key={account.id} className="py-3">
-                <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-charcoal">
                       {account.full_name || account.email}

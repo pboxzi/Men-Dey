@@ -204,13 +204,13 @@ export function ManagementBookingsPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="filter-row">
         {FILTERS.map((option) => (
           <button
             key={option.value}
             type="button"
             onClick={() => setFilter(option.value)}
-            className={`btn ${filter === option.value ? 'btn-primary' : 'btn-ghost'}`}
+            className={`filter-chip ${filter === option.value ? 'is-active' : ''}`}
             aria-pressed={filter === option.value}
           >
             {option.label}
@@ -270,11 +270,11 @@ export function ManagementBookingsPage() {
               </ul>
             </div>
 
-            <div className="space-y-3 md:hidden">
+            <div className="divide-y divide-stone md:hidden">
               {rows.map((row) => (
                 <div
                   key={row.id}
-                  className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                  className="block py-3 space-y-1"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">
@@ -306,7 +306,7 @@ export function ManagementBookingsPage() {
                   {row.request_id ? (
                     <Link
                       to={`/management/experiences/${row.request_id}`}
-                      className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                      className="flex items-center justify-between gap-2 min-h-11 border-t border-stone pt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep hover:text-gold"
                     >
                       <span>Open request</span>
                       <span aria-hidden="true">→</span>

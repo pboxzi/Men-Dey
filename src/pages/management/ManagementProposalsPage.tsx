@@ -229,17 +229,17 @@ export function ManagementProposalsPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="filter-row">
         <button
           type="button"
-          className={`btn w-full sm:w-auto ${tab === 'experiences' ? 'btn-primary' : 'btn-ghost'}`}
+          className={`filter-chip ${tab === 'experiences' ? 'is-active' : ''}`}
           onClick={() => setTab('experiences')}
         >
           Experience proposals
         </button>
         <button
           type="button"
-          className={`btn w-full sm:w-auto ${tab === 'memberships' ? 'btn-primary' : 'btn-ghost'}`}
+          className={`filter-chip ${tab === 'memberships' ? 'is-active' : ''}`}
           onClick={() => setTab('memberships')}
         >
           Membership offers
@@ -298,14 +298,14 @@ export function ManagementProposalsPage() {
                 </ul>
               </div>
 
-              <div className="space-y-3 md:hidden">
+              <div className="divide-y divide-stone md:hidden">
                 {proposals.map((proposal) => {
                   const request = first(proposal.request);
                   const requester = first(request?.user);
                   return (
                     <div
                       key={proposal.id}
-                      className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                      className="block py-3 space-y-1"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <span className="min-w-0 break-words text-sm font-medium text-charcoal">
@@ -331,7 +331,7 @@ export function ManagementProposalsPage() {
                       </div>
                       <Link
                         to={`/management/requests/${proposal.request_id}`}
-                        className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                        className="flex items-center justify-between gap-2 min-h-11 border-t border-stone pt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep hover:text-gold"
                       >
                         <span>View request</span>
                         <span aria-hidden="true">→</span>
@@ -395,14 +395,14 @@ export function ManagementProposalsPage() {
                 </ul>
               </div>
 
-              <div className="space-y-3 md:hidden">
+              <div className="divide-y divide-stone md:hidden">
                 {offers.map((offer) => {
                   const person = first(offer.user);
                   const tier = first(offer.tier);
                   return (
                     <div
                       key={offer.id}
-                      className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                      className="block py-3 space-y-1"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <span className="min-w-0 break-words text-sm font-medium text-charcoal">
@@ -424,7 +424,7 @@ export function ManagementProposalsPage() {
                       <div className="flex flex-wrap gap-2 pt-1">{renderOfferActions(offer)}</div>
                       <Link
                         to={`/management/fans/${offer.user_id}`}
-                        className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                        className="flex items-center justify-between gap-2 min-h-11 border-t border-stone pt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep hover:text-gold"
                       >
                         <span>View member</span>
                         <span aria-hidden="true">→</span>

@@ -370,7 +370,7 @@ export function ManagementFanDetailPage() {
           ) : (
             <ul className="divide-y divide-stone">
               {data.documents.map((document) => (
-                <li key={document.id} className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-2.5">
+                <li key={document.id} className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 py-2.5">
                   <span className="min-w-0">
                     <span className="block truncate text-sm text-charcoal">{document.title}</span>
                     <span className="block text-xs text-muted">

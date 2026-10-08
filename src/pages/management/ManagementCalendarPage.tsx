@@ -460,7 +460,7 @@ export function ManagementCalendarPage() {
           ) : (
             <ul className="divide-y divide-stone">
               {upcomingBlocks.map((block) => (
-                <li key={block.id} className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-3">
+                <li key={block.id} className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 py-3">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-charcoal">{block.title}</p>
                     <p className="text-xs text-muted">
@@ -499,12 +499,12 @@ export function ManagementCalendarPage() {
 
       <section className="surface p-4 sm:p-6" aria-label="Schedule calendar">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="filter-row min-w-0 flex-1">
               {(['agenda', 'day', 'week', 'month'] as const).map((value) => (
                 <button
                   key={value}
                   type="button"
-                  className={`btn ${view === value ? 'btn-primary' : 'btn-ghost'}`}
+                  className={`filter-chip ${view === value ? 'is-active' : ''}`}
                   onClick={() => setView(value)}
                 >
                   {value === 'day'

@@ -102,26 +102,26 @@ export function ManagementApplicantsPage() {
       {error ? <Alert tone="error">{error}</Alert> : null}
 
       <section className="surface p-4 sm:p-6">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="filter-row mb-4">
           {STATUS_FILTERS.map((filter) => (
             <button
               key={filter}
               type="button"
-              className={`btn ${statusFilter === filter ? 'btn-primary' : 'btn-ghost'}`}
+              className={`filter-chip ${statusFilter === filter ? 'is-active' : ''}`}
               onClick={() => setStatusFilter(filter)}
             >
               {filter === 'all' ? 'All' : APPLICANT_STATUS_LABELS[filter]}
             </button>
           ))}
-          <span className="ml-auto text-xs text-muted">
+          <span className="filter-meta text-[11px] text-muted">
             {visible.length} of {applicants.length}
           </span>
         </div>
 
         <label className="mb-5 block text-sm">
           <span className="mb-1 block text-xs uppercase tracking-wider text-muted">Search</span>
-          <span className="flex items-center gap-2">
-            <Search className="size-4 text-muted" aria-hidden />
+          <span className="search-field">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
             <input
               className="field-input"
               value={search}
@@ -173,13 +173,13 @@ export function ManagementApplicantsPage() {
               </ul>
             </div>
 
-            <div className="space-y-3 md:hidden">
+            <div className="divide-y divide-stone md:hidden">
               {visible.map((applicant) => {
                 const person = first(applicant.user);
                 return (
                   <div
                     key={applicant.id}
-                    className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                    className="block py-3 space-y-1"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <span className="min-w-0 break-words text-sm font-medium text-charcoal">
@@ -206,7 +206,7 @@ export function ManagementApplicantsPage() {
                     </p>
                     <Link
                       to={`/management/applicants/${applicant.id}`}
-                      className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                      className="flex items-center justify-between gap-2 min-h-11 border-t border-stone pt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep hover:text-gold"
                     >
                       <span>View</span>
                       <span aria-hidden="true">→</span>

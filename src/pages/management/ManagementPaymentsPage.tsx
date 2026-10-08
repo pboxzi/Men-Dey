@@ -218,17 +218,17 @@ export function ManagementPaymentsPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div className="filter-row">
         <button
           type="button"
-          className={`btn w-full sm:w-auto ${tab === 'memberships' ? 'btn-primary' : 'btn-ghost'}`}
+          className={`filter-chip ${tab === 'memberships' ? 'is-active' : ''}`}
           onClick={() => setTab('memberships')}
         >
           Membership payments
         </button>
         <button
           type="button"
-          className={`btn w-full sm:w-auto ${tab === 'experiences' ? 'btn-primary' : 'btn-ghost'}`}
+          className={`filter-chip ${tab === 'experiences' ? 'is-active' : ''}`}
           onClick={() => setTab('experiences')}
         >
           Experience payments
@@ -236,24 +236,24 @@ export function ManagementPaymentsPage() {
       </div>
 
       <section className="surface p-4 sm:p-6">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="filter-row mb-4">
           {STATUS_FILTERS.map((filter) => (
             <button
               key={filter}
               type="button"
-              className={`btn ${statusFilter === filter ? 'btn-primary' : 'btn-ghost'}`}
+              className={`filter-chip ${statusFilter === filter ? 'is-active' : ''}`}
               onClick={() => setStatusFilter(filter)}
             >
               {filter === 'all' ? 'All' : PAYMENT_STATUS_LABELS[filter]}
             </button>
           ))}
-          <span className="ml-auto text-xs text-muted">{visible.length} shown</span>
+          <span className="filter-meta text-[11px] text-muted">{visible.length} shown</span>
         </div>
 
         <label className="mb-5 block text-sm">
           <span className="mb-1 block text-xs uppercase tracking-wider text-muted">Search</span>
-          <span className="flex items-center gap-2">
-            <Search className="size-4 text-muted" aria-hidden />
+          <span className="search-field">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
             <input
               className="field-input"
               value={search}
@@ -337,7 +337,7 @@ export function ManagementPaymentsPage() {
               </ul>
             </div>
 
-            <div className="space-y-3 md:hidden">
+            <div className="divide-y divide-stone md:hidden">
               {tab === 'memberships'
                 ? visibleMemberships.map((payment) => {
                     const membership = first(payment.membership);
@@ -346,7 +346,7 @@ export function ManagementPaymentsPage() {
                     return (
                       <div
                         key={payment.id}
-                        className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                        className="block py-3 space-y-1"
                       >
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <span className="min-w-0 break-words text-sm font-medium text-charcoal">
@@ -372,7 +372,7 @@ export function ManagementPaymentsPage() {
                         {actions ? <div className="pt-1">{actions}</div> : null}
                         <Link
                           to={`/management/memberships/${payment.membership_id}`}
-                          className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                          className="flex items-center justify-between gap-2 min-h-11 border-t border-stone pt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep hover:text-gold"
                         >
                           <span>View membership</span>
                           <span aria-hidden="true">→</span>
@@ -386,7 +386,7 @@ export function ManagementPaymentsPage() {
                     return (
                       <div
                         key={payment.id}
-                        className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                        className="block py-3 space-y-1"
                       >
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <span className="min-w-0 break-words text-sm font-medium text-charcoal">
@@ -410,7 +410,7 @@ export function ManagementPaymentsPage() {
                         {actions ? <div className="pt-1">{actions}</div> : null}
                         <Link
                           to={`/management/requests/${payment.request_id}`}
-                          className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                          className="flex items-center justify-between gap-2 min-h-11 border-t border-stone pt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep hover:text-gold"
                         >
                           <span>View request</span>
                           <span aria-hidden="true">→</span>

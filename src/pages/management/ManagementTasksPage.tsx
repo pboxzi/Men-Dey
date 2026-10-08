@@ -351,18 +351,18 @@ export function ManagementTasksPage() {
       ) : null}
 
       <section className="surface p-4 sm:p-6">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="filter-row mb-4">
           {(['all', ...STATUSES] as const).map((filter) => (
             <button
               key={filter}
               type="button"
-              className={`btn ${statusFilter === filter ? 'btn-primary' : 'btn-ghost'}`}
+              className={`filter-chip ${statusFilter === filter ? 'is-active' : ''}`}
               onClick={() => setStatusFilter(filter)}
             >
               {filter === 'all' ? 'All' : TASK_STATUS_LABELS[filter]}
             </button>
           ))}
-          <span className="ml-auto text-xs text-muted">{visible.length} shown</span>
+          <span className="filter-meta text-[11px] text-muted">{visible.length} shown</span>
         </div>
 
         <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -404,7 +404,7 @@ export function ManagementTasksPage() {
               const expanded = expandedId === task.id;
               return (
                 <li key={task.id} className="py-3">
-                  <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
                     <div className="flex flex-wrap min-w-0 items-start gap-2">
                       <button
                         type="button"

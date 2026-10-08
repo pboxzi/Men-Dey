@@ -1,4 +1,4 @@
-import {Archive, ArchiveRestore, Download, Link2, Plus, Upload} from 'lucide-react';
+import {Archive, ArchiveRestore, Download, Link2, Plus, Search, Upload} from 'lucide-react';
 import {useCallback, useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 
@@ -438,20 +438,20 @@ export function ManagementDocumentsPage({
       ) : null}
 
       <section className="surface p-4 sm:p-6">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="filter-row mb-4">
           {!presetCategory
             ? (['all', ...CATEGORIES] as const).map((filter) => (
                 <button
                   key={filter}
                   type="button"
-                  className={`btn ${categoryFilter === filter ? 'btn-primary' : 'btn-ghost'}`}
+                  className={`filter-chip ${categoryFilter === filter ? 'is-active' : ''}`}
                   onClick={() => setCategoryFilter(filter)}
                 >
                   {filter === 'all' ? 'All' : DOCUMENT_CATEGORY_LABELS[filter]}
                 </button>
               ))
             : <span className="text-xs uppercase tracking-wider text-muted">Agreements</span>}
-          <span className="ml-auto text-xs text-muted">{visible.length} shown</span>
+          <span className="filter-meta text-[11px] text-muted">{visible.length} shown</span>
         </div>
 
         <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -475,12 +475,18 @@ export function ManagementDocumentsPage({
             />
             Include archived
           </label>
-          <input
-            className="field-input max-w-56"
-            value={search}
-            placeholder="Search title"
-            onChange={(event) => setSearch(event.target.value)}
-          />
+          <span className="search-field">
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted"
+              aria-hidden
+            />
+            <input
+              className="field-input max-w-56"
+              value={search}
+              placeholder="Search title"
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </span>
         </div>
 
         {visible.length === 0 ? (
@@ -494,7 +500,7 @@ export function ManagementDocumentsPage({
               const linked = linkedLabel(document);
               return (
                 <li key={document.id} className="py-3">
-                  <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-charcoal">
                         {document.title}

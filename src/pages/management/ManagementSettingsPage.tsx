@@ -241,7 +241,7 @@ export function ManagementSettingsPage() {
           <ul className="divide-y divide-stone">
             {settings.map((setting) => (
               <li key={setting.id} className="py-4">
-                <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3">
                   <div className="min-w-0">
                     <p className="font-mono text-sm text-charcoal">{setting.key}</p>
                     <p className="text-xs text-muted">updated {formatDate(setting.updated_at)}</p>

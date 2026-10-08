@@ -453,7 +453,7 @@ export function ManagementMembershipsPage() {
             <div className="hidden md:block">
               <ul className="divide-y divide-stone">
                 {tiers.map((tier) => (
-                  <li key={tier.id} className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-3">
+                  <li key={tier.id} className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-3 py-3">
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-charcoal">
                         {tier.name} <span className="text-xs text-muted">({tier.key})</span>
@@ -480,13 +480,13 @@ export function ManagementMembershipsPage() {
               </ul>
             </div>
 
-            <div className="space-y-3 md:hidden">
+            <div className="divide-y divide-stone md:hidden">
               {tiers.map((tier) => (
                 <div
                   key={tier.id}
-                  className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                  className="block py-3 space-y-1"
                 >
-                  <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-2.5 sm:gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                       {tier.name} <span className="text-xs text-muted">({tier.key})</span>
                     </span>
@@ -842,11 +842,11 @@ export function ManagementMembershipsPage() {
               </ul>
             </div>
 
-            <div className="space-y-3 md:hidden">
+            <div className="divide-y divide-stone md:hidden">
               {offers.map((offer) => (
                 <div
                   key={offer.id}
-                  className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                  className="block py-3 space-y-1"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">
@@ -914,11 +914,11 @@ export function ManagementMembershipsPage() {
               </ul>
             </div>
 
-            <div className="space-y-3 md:hidden">
+            <div className="divide-y divide-stone md:hidden">
               {memberships.map((membership) => (
                 <div
                   key={membership.id}
-                  className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                  className="block py-3 space-y-1"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">
@@ -943,7 +943,7 @@ export function ManagementMembershipsPage() {
                   </p>
                   <Link
                     to={`/management/memberships/${membership.id}`}
-                    className="flex items-center justify-between min-h-11 border-t border-[#EAE4DA] pt-2 text-xs font-semibold uppercase tracking-wider text-gold-deep hover:text-gold"
+                    className="flex items-center justify-between gap-2 min-h-11 border-t border-stone pt-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep hover:text-gold"
                   >
                     <span>View</span>
                     <span aria-hidden="true">→</span>
@@ -995,11 +995,11 @@ export function ManagementMembershipsPage() {
               </ul>
             </div>
 
-            <div className="space-y-3 md:hidden">
+            <div className="divide-y divide-stone md:hidden">
               {payments.map((payment) => (
                 <div
                   key={payment.id}
-                  className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
+                  className="block py-3 space-y-1"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">

@@ -78,7 +78,7 @@ export function ManagementTasksPage() {
       const [tasksRes, staffRes, requestsRes, fansRes] = await Promise.all([
         supabase
           .from('tasks')
-          .select('*, assignee:profiles(full_name, email)')
+          .select('*, assignee:profiles!tasks_assignee_id_fkey(full_name, email)')
           .order('due_at', {ascending: true, nullsFirst: false})
           .order('created_at', {ascending: false})
           .limit(200),
@@ -404,11 +404,11 @@ export function ManagementTasksPage() {
               const expanded = expandedId === task.id;
               return (
                 <li key={task.id} className="py-3">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <div className="flex flex-wrap min-w-0 items-start gap-2">
                       <button
                         type="button"
-                        className="mt-0.5 text-muted hover:text-gold-deep"
+                        className="flex min-h-11 min-w-11 items-center justify-center text-muted hover:text-gold-deep sm:min-h-0 sm:min-w-0"
                         aria-expanded={expanded}
                         onClick={() => {
                           setExpandedId(expanded ? null : task.id);

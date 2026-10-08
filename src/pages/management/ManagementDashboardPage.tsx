@@ -190,19 +190,21 @@ export function ManagementDashboardPage() {
       const results = await Promise.all([
         supabase
           .from('applicant_profiles')
-          .select('id, status, headline, created_at, user:profiles(email, full_name)')
+          .select(
+            'id, status, headline, created_at, user:profiles!applicant_profiles_user_id_fkey(email, full_name)',
+          )
           .in('status', ['new', 'submitted', 'in_review'])
           .order('created_at', {ascending: false})
           .limit(200),
         supabase
           .from('requests')
-          .select('*, user:profiles(email, full_name)')
+          .select('*, user:profiles!requests_user_id_fkey(email, full_name)')
           .in('status', OPEN_REQUEST_STATUSES)
           .order('submitted_at', {ascending: false})
           .limit(200),
         supabase
           .from('management_conversations')
-          .select('*, user:profiles(email, full_name)')
+          .select('*, user:profiles!management_conversations_user_id_fkey(email, full_name)')
           .in('status', ['open', 'waiting'])
           .order('updated_at', {ascending: false})
           .limit(200),
@@ -220,7 +222,9 @@ export function ManagementDashboardPage() {
           .limit(50),
         supabase
           .from('experience_proposals')
-          .select('*, request:requests(id, title, status, user:profiles(email, full_name))')
+          .select(
+            '*, request:requests(id, title, status, user:profiles!requests_user_id_fkey(email, full_name))',
+          )
           .in('status', ['draft', 'sent', 'viewed'])
           .order('created_at', {ascending: false})
           .limit(50),
@@ -530,7 +534,7 @@ export function ManagementDashboardPage() {
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Latest applicants
             </h2>
-            <Link to="/management/applicants" className="text-xs text-gold-deep hover:underline">
+            <Link to="/management/applicants" className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
               View all
             </Link>
           </div>
@@ -573,7 +577,7 @@ export function ManagementDashboardPage() {
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Open requests
             </h2>
-            <Link to="/management/requests" className="text-xs text-gold-deep hover:underline">
+            <Link to="/management/requests" className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
               View all
             </Link>
           </div>
@@ -608,7 +612,7 @@ export function ManagementDashboardPage() {
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Upcoming schedule
             </h2>
-            <Link to="/management/calendar" className="text-xs text-gold-deep hover:underline">
+            <Link to="/management/calendar" className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
               Calendar
             </Link>
           </div>

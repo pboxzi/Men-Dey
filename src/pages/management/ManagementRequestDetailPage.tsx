@@ -234,24 +234,12 @@ export function ManagementRequestDetailPage() {
       setActionError(null);
       setNotice(null);
       try {
-        const {data: updated, error: updateError} = await supabase
-          .from('requests')
-          .update({
-            status: action.next,
-            ...(action.next === 'completed' ? {resolved_at: new Date().toISOString()} : {}),
-          })
-          .eq('id', id)
-          .select('id, status')
-          .maybeSingle();
-        if (updateError) throw new Error(updateError.message);
-        if (!updated) throw new Error(PERMISSION_ERROR);
-        const {error: eventError} = await supabase.from('request_events').insert({
-          request_id: id,
-          actor_id: me,
-          event_type: action.event,
-          note: transitionNote.trim() || action.note || null,
+        const {error: transitionError} = await supabase.rpc('transition_request', {
+          p_request_id: id,
+          p_next: action.next,
+          p_note: transitionNote.trim() || action.note || null,
         });
-        if (eventError) throw new Error(eventError.message);
+        if (transitionError) throw new Error(transitionError.message);
         setNotice(
           `Request moved to ${REQUEST_STATUS_LABELS[action.next].toLowerCase()}. The member sees this change on their timeline.`,
         );
@@ -263,7 +251,7 @@ export function ManagementRequestDetailPage() {
         setConfirming(null);
       }
     },
-    [id, load, me, transitionNote],
+    [id, load, transitionNote],
   );
 
   const sendMessage = useCallback(
@@ -385,19 +373,12 @@ export function ManagementRequestDetailPage() {
         .maybeSingle();
       if (touchError) throw new Error(touchError.message);
       if (!request.status.startsWith('completed')) {
-        const {error: statusError} = await supabase
-          .from('requests')
-          .update({status: 'proposal'})
-          .eq('id', id)
-          .select('id, status')
-          .maybeSingle();
-        if (statusError) throw new Error(statusError.message);
-        await supabase.from('request_events').insert({
-          request_id: id,
-          actor_id: me,
-          event_type: 'proposal_created',
-          note: `Proposal v${version} sent`,
+        const {error: transitionError} = await supabase.rpc('transition_request', {
+          p_request_id: id,
+          p_next: 'proposal',
+          p_note: `Proposal v${version} sent`,
         });
+        if (transitionError) throw new Error(transitionError.message);
       }
       setNotice('Proposal created and sent to the member.');
       setProposalOpen(false);
@@ -416,7 +397,7 @@ export function ManagementRequestDetailPage() {
     } finally {
       setCreatingProposal(false);
     }
-  }, [data.proposals, data.request, id, load, me, proposalForm]);
+  }, [data.proposals, data.request, id, load, proposalForm]);
 
   const [paySettings, setPaySettings] = useState<PaymentSettings | null>(null);
 
@@ -435,7 +416,7 @@ export function ManagementRequestDetailPage() {
           title="No request here."
           description="It may have been removed, or the link is out of date."
         />
-        <Link to="/management/requests" className="text-sm text-gold-deep hover:underline">
+        <Link to="/management/requests" className="text-sm text-gold-deep hover:underline py-3 sm:py-0">
           Back to requests
         </Link>
       </div>
@@ -476,10 +457,10 @@ export function ManagementRequestDetailPage() {
         <Chip tone={PRIORITY_TONES[request.priority] ?? 'neutral'}>
           {PRIORITY_LABELS[request.priority] ?? request.priority}
         </Chip>
-        <Link to={`/management/fans/${request.user_id}`} className="text-xs text-gold-deep hover:underline">
+        <Link to={`/management/fans/${request.user_id}`} className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
           View fan account
         </Link>
-        <button type="button" className="text-xs text-gold-deep hover:underline" onClick={() => void assignToMe()}>
+        <button type="button" className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0" onClick={() => void assignToMe()}>
           Assign to me
         </button>
         {request.assigned_to === me ? <Chip tone="info">Assigned to you</Chip> : null}
@@ -738,7 +719,7 @@ export function ManagementRequestDetailPage() {
               <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
                 Payments
               </h2>
-              <Link to="/management/payments" className="text-xs text-gold-deep hover:underline">
+              <Link to="/management/payments" className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
                 All payments
               </Link>
             </div>
@@ -749,7 +730,7 @@ export function ManagementRequestDetailPage() {
                 {data.payments.map((payment) => (
                   <li
                     key={payment.id}
-                    className="flex flex-wrap items-center justify-between gap-3 py-3"
+                    className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-3"
                   >
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-charcoal">
@@ -812,7 +793,7 @@ export function ManagementRequestDetailPage() {
                 <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
                   Documents
                 </h2>
-                <Link to="/management/documents" className="text-xs text-gold-deep hover:underline">
+                <Link to="/management/documents" className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
                   Document centre
                 </Link>
               </div>

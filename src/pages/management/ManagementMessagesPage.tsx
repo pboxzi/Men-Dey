@@ -99,7 +99,7 @@ export function ManagementMessagesPage() {
       const [conversationRes, messagesRes] = await Promise.all([
         supabase
           .from('management_conversations')
-          .select('*, user:profiles(email, full_name)')
+          .select('*, user:profiles!management_conversations_user_id_fkey(email, full_name)')
           .eq('id', conversationId)
           .maybeSingle(),
         supabase
@@ -316,13 +316,13 @@ export function ManagementMessagesPage() {
             title="Conversation not found."
             description="It may have been closed, or the link is out of date."
           />
-          <Link to="/management/messages" className="text-sm text-gold-deep hover:underline">
+          <Link to="/management/messages" className="text-sm text-gold-deep hover:underline py-3 sm:py-0">
             Back to messages
           </Link>
         </div>
       ) : (
         <>
-          <header className="flex flex-wrap items-center justify-between gap-3 border-b border-stone p-5">
+          <header className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 border-b border-stone p-5">
             <div className="min-w-0">
               <Link
                 to="/management/messages"
@@ -334,7 +334,7 @@ export function ManagementMessagesPage() {
               <div className="mt-1 flex flex-wrap items-center gap-2">
                 <Link
                   to={`/management/fans/${active.user_id}`}
-                  className="text-xs text-gold-deep hover:underline"
+                  className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0"
                 >
                   {personName(first(active.user))}
                 </Link>
@@ -368,7 +368,7 @@ export function ManagementMessagesPage() {
           </header>
 
           {confirmingClose ? (
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone bg-stone/40 px-5 py-3">
+            <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 border-b border-stone bg-stone/40 px-5 py-3">
               <p className="text-sm text-charcoal">
                 Close this conversation? The member will see it as closed.
               </p>
@@ -415,7 +415,7 @@ export function ManagementMessagesPage() {
                             <li key={attachment.path}>
                               <button
                                 type="button"
-                                className="block text-left text-xs underline"
+                                className="block py-3 text-left text-xs underline sm:py-0"
                                 onClick={() => void openAttachment(attachment)}
                               >
                                 {attachment.name}
@@ -460,7 +460,7 @@ export function ManagementMessagesPage() {
                     <button
                       type="button"
                       aria-label={`Remove ${attachment.name}`}
-                      className="text-muted hover:text-danger"
+                      className="-my-3 flex min-h-11 min-w-11 items-center justify-center text-muted hover:text-danger sm:my-0 sm:min-h-0 sm:min-w-0"
                       onClick={() => setPending((prev) => prev.filter((_, i) => i !== index))}
                     >
                       ×

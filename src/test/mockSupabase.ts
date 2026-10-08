@@ -827,6 +827,60 @@ export function buildSupabaseMock() {
         return {data: null, error: null, count: null};
       }
 
+      case 'transition_request': {
+        // Mirrors public.transition_request(uuid, text, text): management-only,
+        // moves the status (the timeline event follows) and carries the note.
+        if (!isManagement()) {
+          return fail('only management can move requests through the lifecycle');
+        }
+        const request = materialize('requests').find((r) => r.id === params.p_request_id);
+        if (!request) return fail('request not found');
+        const next = String(params.p_next ?? '');
+        const allowed = [
+          'in_review',
+          'information_requested',
+          'proposal',
+          'payment_required',
+          'confirmed',
+          'approved',
+          'scheduled',
+          'completed',
+          'declined',
+          'cancelled',
+        ];
+        if (!allowed.includes(next)) return fail('invalid request status');
+        const note =
+          typeof params.p_note === 'string' && params.p_note.trim() !== '' ? params.p_note : null;
+        const previous = String(request.status);
+        request.status = next;
+        request.updated_at = now;
+        if (next === 'completed') request.resolved_at = now;
+        const eventByStatus: Record<string, string> = {
+          in_review: 'review_started',
+          information_requested: 'information_requested',
+          proposal: 'proposal_created',
+          payment_required: 'proposal_accepted',
+          confirmed: 'confirmed',
+          approved: 'approved',
+          scheduled: 'scheduled',
+          completed: 'completed',
+          declined: 'declined',
+          cancelled: 'cancelled',
+        };
+        const eventType = eventByStatus[next];
+        if (eventType && (previous !== next || note)) {
+          materialize('request_events').push({
+            id: nextId('request_events'),
+            request_id: request.id,
+            actor_id: mockCtl.profile?.id ?? null,
+            event_type: eventType,
+            note,
+            created_at: now,
+          });
+        }
+        return {data: null, error: null, count: null};
+      }
+
       default:
         return fail(`unknown rpc function: ${name}`);
     }

@@ -419,6 +419,33 @@ describe('experience lifecycle', () => {
     ).toBe(true);
   });
 
+  it('management transitions land on the timeline with notes; members cannot transition', async () => {
+    const moved = await supabase.rpc('transition_request', {
+      p_request_id: 'req-1',
+      p_next: 'in_review',
+      p_note: 'Looking into this now.',
+    });
+    expect(moved.error).toBeNull();
+    expect(requestRow().status).toBe('in_review');
+    const noted = mockData.request_events.find((event) => event.event_type === 'review_started');
+    expect(noted?.note).toBe('Looking into this now.');
+
+    const done = await supabase.rpc('transition_request', {
+      p_request_id: 'req-1',
+      p_next: 'completed',
+    });
+    expect(done.error).toBeNull();
+    expect(requestRow().resolved_at).not.toBeNull();
+
+    signInAs('user', 'user-1');
+    const denied = await supabase.rpc('transition_request', {
+      p_request_id: 'req-1',
+      p_next: 'approved',
+    });
+    expect(denied.error?.message).toMatch(/only management can move requests/);
+    expect(requestRow().status).toBe('completed');
+  });
+
   it('management confirms, and scheduling is gated on confirmation', async () => {
     const early = await supabase.rpc('schedule_experience', {
       p_request_id: 'req-1',

@@ -57,7 +57,9 @@ export function ManagementProposalsPage() {
       const [proposalsRes, offersRes] = await Promise.all([
         supabase
           .from('experience_proposals')
-          .select('*, request:requests(id, title, status, user:profiles(email, full_name))')
+          .select(
+            '*, request:requests(id, title, status, user:profiles!requests_user_id_fkey(email, full_name))',
+          )
           .order('created_at', {ascending: false})
           .limit(200),
         supabase

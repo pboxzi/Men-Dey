@@ -65,7 +65,7 @@ export function ManagementExperiencesPage() {
         supabase.from('experiences').select('*').order('created_at', {ascending: false}).limit(100),
         supabase
           .from('requests')
-          .select('*, user:profiles(email, full_name)')
+          .select('*, user:profiles!requests_user_id_fkey(email, full_name)')
           .order('created_at', {ascending: false})
           .limit(100),
         supabase.from('membership_tiers').select('*').order('sort_order', {ascending: true}),
@@ -353,7 +353,7 @@ export function ManagementExperiencesPage() {
         ) : (
           <ul className="divide-y divide-stone">
             {experiences.map((experience) => (
-              <li key={experience.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+              <li key={experience.id} className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-3">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-charcoal">{experience.title}</p>
                   <p className="text-xs text-muted">

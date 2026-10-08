@@ -57,7 +57,9 @@ export function ManagementApplicantsPage() {
     try {
       const {data, error: resError} = await supabase
         .from('applicant_profiles')
-        .select('id, status, headline, submitted_at, created_at, user:profiles(email, full_name)')
+        .select(
+          'id, status, headline, submitted_at, created_at, user:profiles!applicant_profiles_user_id_fkey(email, full_name)',
+        )
         .order('created_at', {ascending: false})
         .limit(200);
       if (resError) throw new Error(resError.message);

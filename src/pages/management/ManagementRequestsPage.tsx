@@ -52,7 +52,7 @@ export function ManagementRequestsPage() {
     try {
       const {data, error: resError} = await supabase
         .from('requests')
-        .select('*, user:profiles(email, full_name)')
+        .select('*, user:profiles!requests_user_id_fkey(email, full_name)')
         .order('submitted_at', {ascending: false})
         .limit(200);
       if (resError) throw new Error(resError.message);

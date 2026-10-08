@@ -64,7 +64,9 @@ export function ManagementBookingsPage() {
     try {
       const {data, error: loadError} = await supabase
         .from('appointments')
-        .select('*, user:profiles(full_name, email), request:requests(title)')
+        .select(
+          '*, user:profiles!appointments_user_id_fkey(full_name, email), request:requests(title)',
+        )
         .order('starts_at', {ascending: true})
         .limit(200);
       if (loadError) throw new Error(loadError.message);
@@ -249,7 +251,7 @@ export function ManagementBookingsPage() {
                         {row.request_id ? (
                           <Link
                             to={`/management/experiences/${row.request_id}`}
-                            className="mt-1 inline-block text-xs font-medium text-gold-deep underline underline-offset-2"
+                            className="mt-1 inline-block text-xs font-medium text-gold-deep underline underline-offset-2 py-3.5 sm:py-0"
                           >
                             Open request
                           </Link>

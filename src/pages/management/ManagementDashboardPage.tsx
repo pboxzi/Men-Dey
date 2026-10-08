@@ -1,10 +1,16 @@
 import {
   ArrowRight,
+  BadgeCheck,
   CalendarClock,
+  CalendarDays,
   CircleDollarSign,
+  Inbox,
   Mail,
   MessageSquare,
+  MessagesSquare,
+  Send,
   UserPlus,
+  Users,
 } from 'lucide-react';
 import {useCallback, useEffect, useState} from 'react';
 import type {ReactNode} from 'react';
@@ -13,7 +19,6 @@ import {Link} from 'react-router-dom';
 import {useAuth} from '../../auth/AuthContext';
 import {Alert} from '../../components/ui/Alert';
 import {Chip} from '../../components/ui/Chip';
-import {EmptyState} from '../../components/ui/EmptyState';
 import {PageHeader} from '../../components/ui/PageHeader';
 import {Spinner} from '../../components/ui/Spinner';
 import {formatDateTime, relativeTime} from '../../lib/format';
@@ -22,12 +27,7 @@ import {PAYMENT_STATUS_LABELS, PAYMENT_STATUS_TONES} from '../../lib/payments';
 import {REQUEST_STATUS_LABELS, REQUEST_STATUS_TONES} from '../../lib/requests';
 import {supabase} from '../../lib/supabase';
 import type {ChipTone} from '../../lib/requests';
-import {
-  APPLICANT_STATUS_LABELS,
-  APPLICANT_STATUS_TONES,
-  CONVERSATION_STATUS_LABELS,
-  CONVERSATION_STATUS_TONES,
-} from './shared';
+import {APPLICANT_STATUS_LABELS, APPLICANT_STATUS_TONES} from './shared';
 import type {
   Appointment,
   ExperiencePayment,
@@ -79,7 +79,7 @@ interface ProposalHit extends ExperienceProposal {
         title: string;
         status: string;
         user?: MaybePerson;
-      }[]
+      }
     | {
         id: string;
         title: string;
@@ -103,16 +103,6 @@ interface AttentionItem {
   detail: string;
   to: string;
   chip?: {label: string; tone: ChipTone};
-}
-
-interface ScheduleRow {
-  key: string;
-  title: string;
-  when: string;
-  meta: string;
-  status: string;
-  tone: ChipTone;
-  href: string;
 }
 
 interface DashboardData {
@@ -152,13 +142,43 @@ const OPEN_REQUEST_STATUSES = [
   'scheduled',
 ];
 
-const QUICK_ACTIONS = [
-  {key: 'requests', label: 'Open requests', to: '/management/requests'},
-  {key: 'messages', label: 'Messages', to: '/management/messages'},
-  {key: 'applicants', label: 'Applicants', to: '/management/applicants'},
-  {key: 'calendar', label: 'Calendar', to: '/management/calendar'},
-  {key: 'memberships', label: 'Memberships', to: '/management/memberships'},
-  {key: 'bookings', label: 'Bookings', to: '/management/bookings'},
+const QUICK_ACTIONS: Array<{key: string; label: string; to: string; icon: ReactNode}> = [
+  {
+    key: 'requests',
+    label: 'Open requests',
+    to: '/management/requests',
+    icon: <Inbox className="size-4.5" aria-hidden />,
+  },
+  {
+    key: 'messages',
+    label: 'Messages',
+    to: '/management/messages',
+    icon: <MessageSquare className="size-4.5" aria-hidden />,
+  },
+  {
+    key: 'applicants',
+    label: 'Applicants',
+    to: '/management/applicants',
+    icon: <Users className="size-4.5" aria-hidden />,
+  },
+  {
+    key: 'calendar',
+    label: 'Calendar',
+    to: '/management/calendar',
+    icon: <CalendarDays className="size-4.5" aria-hidden />,
+  },
+  {
+    key: 'memberships',
+    label: 'Memberships',
+    to: '/management/memberships',
+    icon: <BadgeCheck className="size-4.5" aria-hidden />,
+  },
+  {
+    key: 'bookings',
+    label: 'Bookings',
+    to: '/management/bookings',
+    icon: <CalendarClock className="size-4.5" aria-hidden />,
+  },
 ];
 
 function first<T>(value: T[] | T | null | undefined): T | null {
@@ -205,7 +225,7 @@ export function ManagementDashboardPage() {
         supabase
           .from('management_conversations')
           .select('*, user:profiles!management_conversations_user_id_fkey(email, full_name)')
-          .in('status', ['open', 'waiting'])
+          .in('status', ['open', 'waiting', 'closed'])
           .order('updated_at', {ascending: false})
           .limit(200),
         supabase
@@ -305,29 +325,13 @@ export function ManagementDashboardPage() {
     (payment) => first(payment.request)?.status === 'payment_required',
   );
   const upcomingAppointments = data.appointments.slice(0, 5);
-  const scheduleRows: ScheduleRow[] = [
-    ...upcomingAppointments.map((appointment) => ({
-      key: `appointment-${appointment.id}`,
-      title: appointment.title,
-      when: formatDateTime(appointment.starts_at),
-      meta: appointment.location ?? appointment.virtual_link ?? 'No location yet',
-      status: appointment.status,
-      tone: 'info' as ChipTone,
-      href: '/management/bookings',
-    })),
-    ...data.schedules.slice(0, 5 - upcomingAppointments.length).map((schedule) => ({
-      key: `schedule-${schedule.id}`,
-      title: schedule.title,
-      when: formatDateTime(schedule.starts_at),
-      meta: schedule.location ?? schedule.virtual_link ?? 'No location yet',
-      status: schedule.status,
-      tone: 'gold' as ChipTone,
-      href: '/management/calendar',
-    })),
-  ];
   const unreadConversationIds = new Set(
     data.unreadMessages.map((message) => message.conversation_id),
   );
+  const activeConversationCount = data.conversations.filter(
+    (conversation) =>
+      conversation.status !== 'closed' || unreadConversationIds.has(conversation.id),
+  ).length;
   const newestApplicant = data.applicants.find(
     (applicant) => applicant.status === 'new' || applicant.status === 'submitted',
   );
@@ -340,14 +344,51 @@ export function ManagementDashboardPage() {
   const paidAwaitingConfirm = awaitingConfirmation[0];
   const upcomingAppointment = data.appointments[0];
 
-  const metrics: Array<{key: string; label: string; value: number; to: string}> = [
-    {key: 'applicants', label: 'New applicants', value: data.applicants.length, to: '/management/applicants'},
-    {key: 'conversations', label: 'Active conversations', value: data.conversations.length, to: '/management/messages'},
-    {key: 'requests', label: 'Open requests', value: data.requests.length, to: '/management/requests'},
-    {key: 'reviews', label: 'Membership reviews', value: data.memberships.length, to: '/management/memberships'},
-    {key: 'proposals', label: 'Pending proposals', value: pendingProposalCount, to: '/management/proposals'},
-    {key: 'upcoming', label: 'Upcoming experiences', value: upcomingCount, to: '/management/calendar'},
-  ];
+  const metrics: Array<{key: string; label: string; value: number; to: string; icon: ReactNode}> =
+    [
+      {
+        key: 'applicants',
+        label: 'New applicants',
+        value: data.applicants.length,
+        to: '/management/applicants',
+        icon: <UserPlus className="size-5" aria-hidden />,
+      },
+      {
+        key: 'conversations',
+        label: 'Active conversations',
+        value: activeConversationCount,
+        to: '/management/messages',
+        icon: <MessagesSquare className="size-5" aria-hidden />,
+      },
+      {
+        key: 'requests',
+        label: 'Open requests',
+        value: data.requests.length,
+        to: '/management/requests',
+        icon: <Inbox className="size-5" aria-hidden />,
+      },
+      {
+        key: 'reviews',
+        label: 'Membership reviews',
+        value: data.memberships.length,
+        to: '/management/memberships',
+        icon: <BadgeCheck className="size-5" aria-hidden />,
+      },
+      {
+        key: 'proposals',
+        label: 'Pending proposals',
+        value: pendingProposalCount,
+        to: '/management/proposals',
+        icon: <Send className="size-5" aria-hidden />,
+      },
+      {
+        key: 'upcoming',
+        label: 'Upcoming experiences',
+        value: upcomingCount,
+        to: '/management/calendar',
+        icon: <CalendarClock className="size-5" aria-hidden />,
+      },
+    ];
 
   const attention: AttentionItem[] = [];
   if (newestApplicant) {
@@ -386,7 +427,7 @@ export function ManagementDashboardPage() {
   if (newestSubmittedRequest) {
     attention.push({
       key: `request-${newestSubmittedRequest.id}`,
-      icon: <ArrowRight className="size-4" aria-hidden />,
+      icon: <Inbox className="size-4" aria-hidden />,
       title: 'New request awaiting review',
       detail: `${newestSubmittedRequest.title} — ${personName(newestSubmittedRequest.user)}`,
       to: `/management/requests/${newestSubmittedRequest.id}`,
@@ -398,7 +439,7 @@ export function ManagementDashboardPage() {
   } else if (reviewRequest) {
     attention.push({
       key: `request-${reviewRequest.id}`,
-      icon: <ArrowRight className="size-4" aria-hidden />,
+      icon: <Inbox className="size-4" aria-hidden />,
       title: 'Request in review',
       detail: `${reviewRequest.title} — ${personName(reviewRequest.user)}`,
       to: `/management/requests/${reviewRequest.id}`,
@@ -451,6 +492,10 @@ export function ManagementDashboardPage() {
     });
   }
 
+  const sectionHeadingClass =
+    'text-[0.8rem] font-semibold uppercase tracking-[0.16em] text-charcoal';
+  const viewAllClass = 'py-3.5 text-xs font-medium text-gold-deep hover:underline sm:py-0';
+
   return (
     <div className="flex flex-col space-y-5 sm:space-y-10">
       <div className="order-1 lg:order-1">
@@ -467,36 +512,46 @@ export function ManagementDashboardPage() {
         </div>
       ) : null}
 
-      <section className="surface order-3 p-4 sm:p-6 lg:order-4" aria-label="Priority attention">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
+      <section
+        className="surface order-3 overflow-hidden lg:order-4"
+        aria-label="Priority attention"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2 bg-charcoal px-4 py-3 sm:px-6">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
             Priority attention
           </h2>
-          <span className="text-xs text-muted">{attention.length} items</span>
+          <span className="text-[11px] uppercase tracking-[0.14em] tabular-nums text-alabaster/60">
+            {attention.length} {attention.length === 1 ? 'item' : 'items'}
+          </span>
         </div>
         {attention.length === 0 ? (
-          <EmptyState
-            title="Nothing needs attention."
-            description="New applicants, requests, messages, payments and appointments appear here as soon as they arrive."
-          />
+          <div className="px-4 py-6 sm:px-6">
+            <p className="text-sm font-medium text-charcoal">Nothing needs attention.</p>
+            <p className="mt-1 text-xs leading-relaxed text-muted">
+              New applicants, requests, messages, payments and appointments appear here as soon as
+              they arrive.
+            </p>
+          </div>
         ) : (
           <ul className="divide-y divide-stone">
             {attention.map((item) => (
               <li key={item.key}>
                 <Link
                   to={item.to}
-                  className="flex flex-wrap min-h-11 items-center justify-between gap-3 py-3.5 hover:bg-stone/40 sm:gap-4"
+                  className="flex min-h-11 flex-wrap items-center justify-between gap-3 px-4 py-3.5 transition-colors hover:bg-stone/40 sm:gap-4 sm:px-6"
                 >
-                  <span className="flex flex-wrap min-w-0 items-start gap-3">
+                  <span className="flex min-w-0 flex-wrap items-start gap-3">
                     <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-stone text-gold-deep">
                       {item.icon}
                     </span>
                     <span className="min-w-0">
-                      <span className="block break-words text-sm font-medium text-charcoal">{item.title}</span>
+                      <span className="block break-words text-sm font-medium text-charcoal">
+                        {item.title}
+                      </span>
                       <span className="block truncate text-xs text-muted">{item.detail}</span>
                     </span>
                   </span>
-                  <span className="flex flex-wrap shrink-0 items-center gap-3">
+                  <span className="flex shrink-0 flex-wrap items-center gap-3">
                     {item.chip ? <Chip tone={item.chip.tone}>{item.chip.label}</Chip> : null}
                     <ArrowRight className="size-4 text-muted" aria-hidden />
                   </span>
@@ -508,7 +563,6 @@ export function ManagementDashboardPage() {
       </section>
 
       <section className="order-4 lg:order-3" aria-label="Key metrics">
-        {/* Phone: one panel of compact summary rows — label left, value right. */}
         <div className="surface divide-y divide-stone sm:hidden">
           {metrics.map((metric) => (
             <Link
@@ -520,29 +574,38 @@ export function ManagementDashboardPage() {
                 {metric.label}
               </span>
               <span className="flex shrink-0 items-center gap-2">
-                <span className="text-lg font-semibold tabular-nums text-charcoal">{metric.value}</span>
+                <span className="text-lg font-semibold tabular-nums text-charcoal">
+                  {metric.value}
+                </span>
                 <ArrowRight className="size-4 shrink-0 text-muted" aria-hidden />
               </span>
             </Link>
           ))}
         </div>
 
-        {/* Tablet & desktop: the original analytics card grid. */}
         <div className="hidden grid-cols-1 gap-3 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {metrics.map((metric) => (
             <Link
               key={metric.key}
               to={metric.to}
-              className="surface group flex min-h-11 items-center justify-between gap-3 p-4 transition-colors hover:bg-stone/50 sm:p-5"
+              className="surface group relative flex min-h-11 items-center justify-between gap-3 overflow-hidden p-4 transition-colors hover:bg-stone/50 sm:p-5"
             >
+              <span className="absolute inset-x-0 top-0 h-0.5 bg-gold/55" aria-hidden />
               <div className="min-w-0">
-                <p className="break-words text-xs uppercase tracking-widest text-muted">{metric.label}</p>
-                <p className="mt-1 text-3xl font-light text-charcoal">{metric.value}</p>
+                <p className="break-words text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-muted">
+                  {metric.label}
+                </p>
+                <p className="mt-1.5 text-4xl font-light leading-none tabular-nums text-charcoal">
+                  {metric.value}
+                </p>
               </div>
-              <ArrowRight
-                className="size-5 shrink-0 text-muted transition-transform group-hover:translate-x-1 group-hover:text-gold-deep"
-                aria-hidden
-              />
+              <span className="flex shrink-0 flex-col items-end gap-3 text-stone-deep transition-colors group-hover:text-gold-deep">
+                {metric.icon}
+                <ArrowRight
+                  className="size-4 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-gold-deep"
+                  aria-hidden
+                />
+              </span>
             </Link>
           ))}
         </div>
@@ -550,23 +613,21 @@ export function ManagementDashboardPage() {
 
       <div className="order-5 grid gap-4 sm:gap-6 lg:grid-cols-3 lg:order-5">
         <section className="surface p-4 sm:p-6" aria-label="Latest applicants">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
-              Latest applicants
-            </h2>
-            <Link to="/management/applicants" className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
+          <div className="mb-1 flex flex-wrap items-center justify-between gap-2 border-b border-stone pb-2.5">
+            <h2 className={sectionHeadingClass}>Latest applicants</h2>
+            <Link to="/management/applicants" className={viewAllClass}>
               View all
             </Link>
           </div>
           {data.applicants.length === 0 ? (
-            <p className="text-sm text-muted">No applicants waiting for review.</p>
+            <p className="pt-3 text-sm text-muted">No applicants waiting for review.</p>
           ) : (
             <ul className="divide-y divide-stone">
               {data.applicants.slice(0, 5).map((applicant) => (
                 <li key={applicant.id}>
                   <Link
                     to={`/management/applicants/${applicant.id}`}
-                    className="flex flex-wrap items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
+                    className="flex flex-wrap items-center justify-between gap-3 py-2.5 transition-colors hover:bg-stone/40"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm text-charcoal">
@@ -582,8 +643,9 @@ export function ManagementDashboardPage() {
                         'neutral'
                       }
                     >
-                      {APPLICANT_STATUS_LABELS[applicant.status as keyof typeof APPLICANT_STATUS_LABELS] ??
-                        applicant.status}
+                      {APPLICANT_STATUS_LABELS[
+                        applicant.status as keyof typeof APPLICANT_STATUS_LABELS
+                      ] ?? applicant.status}
                     </Chip>
                   </Link>
                 </li>
@@ -593,26 +655,26 @@ export function ManagementDashboardPage() {
         </section>
 
         <section className="surface p-4 sm:p-6" aria-label="Open requests">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
-              Open requests
-            </h2>
-            <Link to="/management/requests" className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
+          <div className="mb-1 flex flex-wrap items-center justify-between gap-2 border-b border-stone pb-2.5">
+            <h2 className={sectionHeadingClass}>Open requests</h2>
+            <Link to="/management/requests" className={viewAllClass}>
               View all
             </Link>
           </div>
           {data.requests.length === 0 ? (
-            <p className="text-sm text-muted">No open requests right now.</p>
+            <p className="pt-3 text-sm text-muted">No open requests right now.</p>
           ) : (
             <ul className="divide-y divide-stone">
               {data.requests.slice(0, 5).map((request) => (
                 <li key={request.id}>
                   <Link
                     to={`/management/requests/${request.id}`}
-                    className="flex flex-wrap items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
+                    className="flex flex-wrap items-center justify-between gap-3 py-2.5 transition-colors hover:bg-stone/40"
                   >
                     <span className="min-w-0">
-                      <span className="block truncate text-sm text-charcoal">{request.title}</span>
+                      <span className="block truncate text-sm text-charcoal">
+                        {request.title}
+                      </span>
                       <span className="block truncate text-xs text-muted">
                         {personName(request.user)} · {relativeTime(request.submitted_at)}
                       </span>
@@ -628,26 +690,26 @@ export function ManagementDashboardPage() {
         </section>
 
         <section className="surface p-4 sm:p-6" aria-label="Upcoming schedule">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
-              Upcoming schedule
-            </h2>
-            <Link to="/management/calendar" className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
+          <div className="mb-1 flex flex-wrap items-center justify-between gap-2 border-b border-stone pb-2.5">
+            <h2 className={sectionHeadingClass}>Upcoming schedule</h2>
+            <Link to="/management/calendar" className={viewAllClass}>
               Calendar
             </Link>
           </div>
           {upcomingAppointments.length === 0 && data.schedules.length === 0 ? (
-            <p className="text-sm text-muted">Nothing scheduled ahead.</p>
+            <p className="pt-3 text-sm text-muted">Nothing scheduled ahead.</p>
           ) : (
             <ul className="divide-y divide-stone">
               {upcomingAppointments.map((appointment) => (
                 <li key={appointment.id}>
                   <Link
                     to="/management/bookings"
-                    className="flex flex-wrap min-h-11 items-center justify-between gap-3 border-l-2 border-[#C89B3C]/45 py-3 pl-3.5 hover:bg-stone/40 lg:border-l-0 lg:pl-0 lg:py-2.5"
+                    className="flex min-h-11 flex-wrap items-center justify-between gap-3 border-l-2 border-[#C89B3C]/45 py-3 pl-3.5 transition-colors hover:bg-stone/40 lg:border-l-0 lg:py-2.5 lg:pl-0"
                   >
                     <span className="min-w-0">
-                      <span className="block truncate text-sm text-charcoal">{appointment.title}</span>
+                      <span className="block truncate text-sm text-charcoal">
+                        {appointment.title}
+                      </span>
                       <span className="block text-xs text-muted">
                         {formatDateTime(appointment.starts_at)}
                       </span>
@@ -660,10 +722,12 @@ export function ManagementDashboardPage() {
                 <li key={schedule.id}>
                   <Link
                     to="/management/calendar"
-                    className="flex flex-wrap min-h-11 items-center justify-between gap-3 border-l-2 border-[#C89B3C]/45 py-3 pl-3.5 hover:bg-stone/40 lg:border-l-0 lg:pl-0 lg:py-2.5"
+                    className="flex min-h-11 flex-wrap items-center justify-between gap-3 border-l-2 border-[#C89B3C]/45 py-3 pl-3.5 transition-colors hover:bg-stone/40 lg:border-l-0 lg:py-2.5 lg:pl-0"
                   >
                     <span className="min-w-0">
-                      <span className="block truncate text-sm text-charcoal">{schedule.title}</span>
+                      <span className="block truncate text-sm text-charcoal">
+                        {schedule.title}
+                      </span>
                       <span className="block text-xs text-muted">
                         {formatDateTime(schedule.starts_at)}
                       </span>
@@ -678,18 +742,26 @@ export function ManagementDashboardPage() {
       </div>
 
       <section className="order-6 lg:order-6" aria-label="Quick actions">
-        <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
-          Quick actions
-        </h2>
-        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="mb-3 border-b border-stone pb-2.5">
+          <h2 className={sectionHeadingClass}>Quick actions</h2>
+        </div>
+        <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6">
           {QUICK_ACTIONS.map((action) => (
             <Link
               key={action.key}
               to={action.to}
-              className="surface flex min-h-12 items-center justify-between gap-3 px-4 py-3 text-sm font-medium text-charcoal transition-colors hover:border-gold hover:text-gold-deep"
+              className="surface group flex min-h-12 items-center gap-3 px-4 py-3 transition-colors hover:border-gold hover:bg-stone/40"
             >
-              <span className="min-w-0 truncate">{action.label}</span>
-              <ArrowRight className="size-4 shrink-0 text-muted" aria-hidden />
+              <span className="grid size-9 shrink-0 place-items-center rounded-sm bg-stone/70 text-gold-deep transition-colors group-hover:bg-gold/15">
+                {action.icon}
+              </span>
+              <span className="min-w-0 flex-1 truncate text-sm font-medium text-charcoal">
+                {action.label}
+              </span>
+              <ArrowRight
+                className="size-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-gold-deep"
+                aria-hidden
+              />
             </Link>
           ))}
         </div>

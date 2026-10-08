@@ -668,7 +668,11 @@ export function DashboardHomePage() {
       <footer className="py-6 border-t border-[#EAE4DA] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#8C8275] gap-3">
         <GaBrand variant="light" size="sm" to="/home" />
 
-        <div className="flex items-center gap-4 text-[#8C8275]">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[#8C8275]">
+          <Link to="/legal" className="hover:text-[#1E1E1E] transition-colors">
+            Legal
+          </Link>
+          <span>·</span>
           <Link to="/privacy" className="hover:text-[#1E1E1E] transition-colors">
             Privacy
           </Link>

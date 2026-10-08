@@ -6,6 +6,7 @@ import {InstallPrompt} from './components/InstallPrompt';
 import {AppRoutes} from './routes';
 
 // The private gate and its auth flow stay free of floating install/chat chrome.
+// The legal desk reads like a document, so it gets the same treatment.
 const PUBLIC_PREFIXES = [
   '/sign-in',
   '/acknowledgement',
@@ -14,6 +15,10 @@ const PUBLIC_PREFIXES = [
   '/forgot-password',
   '/reset-password',
   '/forbidden',
+  '/legal',
+  '/privacy',
+  '/terms',
+  '/policies',
 ];
 
 function isPublicSurface(pathname: string): boolean {

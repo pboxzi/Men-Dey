@@ -40,8 +40,7 @@ const S = Object.fromEntries(TOC.map(({id, title}) => [id, {id, title}])) as Rec
 
 const mailProps = (subject: string) => ({
   href: `mailto:${LEGAL_CONTACT}?subject=${encodeURIComponent(subject)}`,
-  className:
-    'underline decoration-[#C89B3C]/60 underline-offset-4 transition-colors hover:text-[#C89B3C]',
+  className: 'underline',
 });
 
 /**
@@ -74,27 +73,27 @@ export function PrivacyPolicyPage() {
       <DocSection spec={S.glance} n={1}>
         <DocList>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">We collect what the service needs.</strong>{' '}
+            <strong className="font-semibold text-[#1E1E1E]">We collect what the service needs.</strong>{' '}
             The details you give in your application and profile, the messages and requests you
             send, the documents you choose to upload, your membership and payment records, and a
             small amount of technical data required to keep your session secure.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">We use it to run the service</strong> —
+            <strong className="font-semibold text-[#1E1E1E]">We use it to run the service</strong> —
             to review applications, reply to you, arrange membership and experiences, send the
             notifications you ask for, keep accounts safe, and meet legal obligations.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">Only you and management see it.</strong>{' '}
+            <strong className="font-semibold text-[#1E1E1E]">Only you and management see it.</strong>{' '}
             Access inside the platform is controlled row by row: members see their own records,
             management sees the records it administers, and staff only see what their role needs.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">We do not sell, rent or advertise with it.</strong>{' '}
+            <strong className="font-semibold text-[#1E1E1E]">We do not sell, rent or advertise with it.</strong>{' '}
             No data broker, no ad network, no behavioural profiling, no shadow profiles.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">You stay in control.</strong> Access,
+            <strong className="font-semibold text-[#1E1E1E]">You stay in control.</strong> Access,
             correction, deletion, restriction, objection, portability and withdrawal of consent are
             described in section 16.
           </li>
@@ -109,7 +108,7 @@ export function PrivacyPolicyPage() {
 
       <DocSection spec={S.controller} n={2}>
         <p>
-          <strong className="font-medium text-[#EAE4DA]">Gillian Anderson Management</strong> (the
+          <strong className="font-semibold text-[#1E1E1E]">Gillian Anderson Management</strong> (the
           &ldquo;Office&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;) is the controller of the
           personal data described in this policy. The management team administers the platform on
           behalf of Gillian Anderson; the Office is the entity accountable to you for it.
@@ -234,25 +233,25 @@ export function PrivacyPolicyPage() {
       <DocSection spec={S.sources} n={5}>
         <DocList>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">From you</strong> — form fields,
+            <strong className="font-semibold text-[#1E1E1E]">From you</strong> — form fields,
             messages, uploads, preferences, and conversations with management.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">From the platform as you use it</strong> —
+            <strong className="font-semibold text-[#1E1E1E]">From the platform as you use it</strong> —
             session and device information, page events, and security signals described in section 4.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">From management</strong> — notes,
+            <strong className="font-semibold text-[#1E1E1E]">From management</strong> — notes,
             decisions, categorisations and records the team creates while handling your
             application, membership or requests.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">From your identity provider</strong> — if
+            <strong className="font-semibold text-[#1E1E1E]">From your identity provider</strong> — if
             you ever sign in through a third-party provider, we receive the identifiers it returns
             (typically your email address) so we do not have to ask again.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">From providers acting for us</strong> —
+            <strong className="font-semibold text-[#1E1E1E]">From providers acting for us</strong> —
             for example delivery status from our email service, so we know a message reached you.
           </li>
         </DocList>
@@ -389,7 +388,7 @@ export function PrivacyPolicyPage() {
         </p>
         <DocList>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">We never see or store card numbers.</strong>{' '}
+            <strong className="font-semibold text-[#1E1E1E]">We never see or store card numbers.</strong>{' '}
             The platform has no card form. Payment details are handled by whichever provider
             management names for the arrangement (bank transfer, card via Stripe, PayPal or a
             managed payment), and we record only the method, amount, date and status.
@@ -655,36 +654,36 @@ export function PrivacyPolicyPage() {
       <DocSection spec={S.security} n={15}>
         <DocList>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">Access is enforced by the database,</strong>{' '}
+            <strong className="font-semibold text-[#1E1E1E]">Access is enforced by the database,</strong>{' '}
             not by interface wishes: row-level security policies decide what each signed-in user
             and each staff role may read or write, so a hidden button is never the only thing
             standing between records.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">Transport is encrypted</strong> (TLS)
+            <strong className="font-semibold text-[#1E1E1E]">Transport is encrypted</strong> (TLS)
             throughout, and storage is encrypted at rest by our providers.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">Secrets stay server-side.</strong> Service
+            <strong className="font-semibold text-[#1E1E1E]">Secrets stay server-side.</strong> Service
             keys, email credentials and administrative privileges live only in server functions and
             never ship inside the web app.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">Staff access is minimal and logged.</strong>{' '}
+            <strong className="font-semibold text-[#1E1E1E]">Staff access is minimal and logged.</strong>{' '}
             Roles grant only the permissions the role needs, sensitive actions are recorded in an
             audit trail, and privileged routes are restricted to administrators.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">Password handling is standard and
+            <strong className="font-semibold text-[#1E1E1E]">Password handling is standard and
             careful</strong> — hashed and salted by the authentication service, never visible to
             us, resettable only through a time-limited link sent to you.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">Backups are taken regularly</strong> and
+            <strong className="font-semibold text-[#1E1E1E]">Backups are taken regularly</strong> and
             tested through the platform&rsquo;s recovery procedures.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">You play a part too:</strong> a unique
+            <strong className="font-semibold text-[#1E1E1E]">You play a part too:</strong> a unique
             password, no reuse from another site, and telling us promptly if you think your account
             has been accessed by someone else.
           </li>
@@ -796,7 +795,7 @@ export function PrivacyPolicyPage() {
                   <span key={item.to}>
                     <Link
                       to={item.to}
-                      className="underline decoration-[#C89B3C]/60 underline-offset-4 transition-colors hover:text-[#C89B3C]"
+                      className="underline"
                     >
                       {item.label}
                     </Link>

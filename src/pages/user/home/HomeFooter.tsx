@@ -6,7 +6,6 @@ export function HomeFooter() {
   return (
     <footer className="bg-[#111111] text-[#E8E1D7]">
       <div className="mx-auto w-full max-w-[1500px] px-6 py-12 sm:px-10 lg:px-16 lg:py-16">
-        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between sm:gap-10">
           <div className="min-w-0">
             <p className="font-display text-[26px] font-medium leading-none tracking-[0.08em] text-[#C89B3C]">
               GA
@@ -17,29 +16,32 @@ export function HomeFooter() {
             </p>
           </div>
 
-          <nav aria-label="Footer legal" className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#8F887E]">
-              Legal
-            </p>
-            <ul className="mt-4 space-y-1">
-              {LEGAL_LINKS.map((item) => (
-                <li key={item.label}>
-                  <Link
-                    to={item.to}
-                    className="inline-flex min-h-11 items-center text-[13px] text-[#E8E1D7] transition-colors hover:text-[#C89B3C]"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
+        <div className="mt-12 border-t border-white/10 pt-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
+            <nav aria-label="Footer legal">
+              <ul className="-ml-2 flex flex-wrap items-center">
+                {LEGAL_LINKS.map((item, index) => (
+                  <li key={item.to} className="flex items-center">
+                    <Link
+                      to={item.to}
+                      className="inline-flex min-h-10 items-center px-2 text-[0.5625rem] font-semibold uppercase tracking-[0.28em] text-[#E8E1D7]/75 transition-colors hover:text-[#C89B3C] sm:text-[0.6rem] sm:tracking-[0.3em]"
+                    >
+                      {item.label}
+                    </Link>
+                    {index < LEGAL_LINKS.length - 1 ? (
+                      <span aria-hidden className="text-[#C89B3C]/60">
+                        &middot;
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </nav>
 
-        <div className="mt-12 border-t border-white/10 pt-7">
-          <p className="text-center text-[10px] font-semibold uppercase tracking-[0.34em] text-[#8F887E]">
-            PRIVATE · DISCREET · BY ARRANGEMENT
-          </p>
+            <p className="text-[0.5625rem] font-semibold uppercase tracking-[0.3em] text-[#8F887E] sm:text-[0.6rem] sm:tracking-[0.34em]">
+              Private &middot; discreet &middot; by arrangement
+            </p>
+          </div>
         </div>
       </div>
     </footer>

@@ -34,7 +34,20 @@ import {DashboardHomePage} from './pages/user/DashboardHomePage';
 import {HomePage} from './pages/user/HomePage';
 
 // Second-pass bundles: everything behind the auth gates is lazy-loaded so the
-// public landing and sign-in first paint stays small.
+// public landing and sign-in first paint stays small. The legal desk (linked
+// from the landing footer) rides in the same pass for the same reason.
+const LegalNoticePage = lazy(async () => ({
+  default: (await import('./pages/public/legal/LegalNoticePage')).LegalNoticePage,
+}));
+const PoliciesPage = lazy(async () => ({
+  default: (await import('./pages/public/legal/PoliciesPage')).PoliciesPage,
+}));
+const PrivacyPolicyPage = lazy(async () => ({
+  default: (await import('./pages/public/legal/PrivacyPolicyPage')).PrivacyPolicyPage,
+}));
+const TermsOfServicePage = lazy(async () => ({
+  default: (await import('./pages/public/legal/TermsOfServicePage')).TermsOfServicePage,
+}));
 const ManagementApplicantDetailPage = lazy(async () => ({
   default: (await import('./pages/management/ManagementApplicantDetailPage'))
     .ManagementApplicantDetailPage,
@@ -196,6 +209,14 @@ export function AppRoutes() {
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/forbidden" element={<ForbiddenPage />} />
           </Route>
+
+          {/* The legal desk: four white, document-first pages. Deliberately
+              outside the gate — no portrait, no dark surface, just copy that
+              is easy to read, print and cite. */}
+          <Route path="/legal" element={<LegalNoticePage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsOfServicePage />} />
+          <Route path="/policies" element={<PoliciesPage />} />
 
           <Route element={<RequireAuth />}>
             <Route element={<HomeLayout />}>

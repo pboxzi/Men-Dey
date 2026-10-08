@@ -302,7 +302,10 @@ export function ManagementMessagesPage() {
   );
 
   const threadPane = conversationId ? (
-    <div className="flex min-h-[32rem] flex-col surface p-0">
+    // min-w-0: as a grid item this pane's automatic minimum size is its
+    // min-content width, so a long nowrap subject pushed the track past the
+    // viewport (whole page zoomed out on phones). Same for the list pane below.
+    <div className="surface flex min-h-[32rem] min-w-0 flex-col p-0">
       {threadLoading && !active ? (
         <div className="p-6">
           <Spinner label="Loading conversation" />
@@ -540,7 +543,7 @@ export function ManagementMessagesPage() {
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
       <div className="grid gap-6 lg:grid-cols-[22rem_1fr]">
-        <div className={`surface p-4 ${conversationId ? 'hidden lg:block' : ''}`}>
+        <div className={`surface min-w-0 p-4 ${conversationId ? 'hidden lg:block' : ''}`}>
           <div className="mb-3 flex flex-wrap gap-1.5">
             {(['all', 'open', 'waiting', 'closed'] as const).map((filter) => (
               <button

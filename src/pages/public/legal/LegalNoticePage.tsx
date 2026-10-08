@@ -60,9 +60,9 @@ export function LegalNoticePage() {
     >
       <DocSection spec={S.operator} n={1}>
         <p>
-          The platform at <strong className="font-medium text-[#EAE4DA]">{LEGAL_SITE}</strong>, the
+          The platform at <strong className="font-semibold text-[#1E1E1E]">{LEGAL_SITE}</strong>, the
           member area it opens into, and the messaging, request, membership and experience tools
-          within it are operated by <strong className="font-medium text-[#EAE4DA]">Gillian Anderson Management</strong>{' '}
+          within it are operated by <strong className="font-semibold text-[#1E1E1E]">Gillian Anderson Management</strong>{' '}
           (&ldquo;the Office&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;), the management team
           responsible for administering applications, memberships, requests and experiences on
           behalf of Gillian Anderson.
@@ -89,7 +89,7 @@ export function LegalNoticePage() {
               <>
                 <a
                   href={`mailto:${LEGAL_CONTACT}`}
-                  className="underline decoration-[#C89B3C]/60 underline-offset-4 hover:text-[#C89B3C]"
+                  className="underline"
                 >
                   {LEGAL_CONTACT}
                 </a>{' '}
@@ -171,7 +171,7 @@ export function LegalNoticePage() {
                 Email{' '}
                 <a
                   href={`mailto:${LEGAL_CONTACT}`}
-                  className="underline decoration-[#C89B3C]/60 underline-offset-4 hover:text-[#C89B3C]"
+                  className="underline"
                 >
                   {LEGAL_CONTACT}
                 </a>
@@ -197,25 +197,25 @@ export function LegalNoticePage() {
           head={['Document', 'What it covers']}
           rows={[
             [
-              <Link to="/legal" className="text-[#EAE4DA] underline decoration-[#C89B3C]/60 underline-offset-4 hover:text-[#C89B3C]">
+              <Link to="/legal" className="underline">
                 Legal notice
               </Link>,
               'Who operates the platform, how to reach us, third parties, the liability summary, and the document index you are reading now.',
             ],
             [
-              <Link to="/privacy" className="text-[#EAE4DA] underline decoration-[#C89B3C]/60 underline-offset-4 hover:text-[#C89B3C]">
+              <Link to="/privacy" className="underline">
                 Privacy Policy
               </Link>,
               'The personal data we collect, why we collect it, on what legal basis, who can see it, how long we keep it, and every right you can exercise.',
             ],
             [
-              <Link to="/terms" className="text-[#EAE4DA] underline decoration-[#C89B3C]/60 underline-offset-4 hover:text-[#C89B3C]">
+              <Link to="/terms" className="underline">
                 Terms of Service
               </Link>,
               'The agreement between you and us: eligibility, accounts, requests, membership, experiences, payments, acceptable use, suspension and liability.',
             ],
             [
-              <Link to="/policies" className="text-[#EAE4DA] underline decoration-[#C89B3C]/60 underline-offset-4 hover:text-[#C89B3C]">
+              <Link to="/policies" className="underline">
                 Policies
               </Link>,
               'The operating rules: conduct, discretion, content and copyright, billing and refunds, bookings, safety, accessibility, reporting and enforcement.',
@@ -271,7 +271,7 @@ export function LegalNoticePage() {
           If you believe something on this platform infringes your rights, write to{' '}
           <a
             href={`mailto:${LEGAL_CONTACT}`}
-            className="underline decoration-[#C89B3C]/60 underline-offset-4 hover:text-[#C89B3C]"
+            className="underline"
           >
             {LEGAL_CONTACT}
           </a>{' '}
@@ -310,21 +310,21 @@ export function LegalNoticePage() {
         </p>
         <DocList>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">Gillian&rsquo;s availability.</strong>{' '}
+            <strong className="font-semibold text-[#1E1E1E]">Gillian&rsquo;s availability.</strong>{' '}
             Dates, participation, response times and outcomes exist only once management has
             confirmed them in writing, and even then circumstances can change.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">Approval.</strong> Creating an account
+            <strong className="font-semibold text-[#1E1E1E]">Approval.</strong> Creating an account
             begins an application; membership and access are granted at management&rsquo;s
             discretion and may be declined.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">A reply to everything.</strong> We read
+            <strong className="font-semibold text-[#1E1E1E]">A reply to everything.</strong> We read
             every message with care; volume and timing mean we cannot always answer each one.
           </li>
           <li>
-            <strong className="font-medium text-[#EAE4DA]">Continuous uptime.</strong> The service
+            <strong className="font-semibold text-[#1E1E1E]">Continuous uptime.</strong> The service
             may be paused, maintained or altered, including to protect members or the Office.
           </li>
         </DocList>
@@ -424,7 +424,7 @@ export function LegalNoticePage() {
             Feedback and accessibility requests go to{' '}
             <a
               href={`mailto:${LEGAL_CONTACT}`}
-              className="underline decoration-[#C89B3C]/60 underline-offset-4 hover:text-[#C89B3C]"
+              className="underline"
             >
               {LEGAL_CONTACT}
             </a>
@@ -461,11 +461,11 @@ export function LegalNoticePage() {
             ['Previous versions', <>Available from {LEGAL_CONTACT} on request</>],
             ['Related documents', (
               <>
-                <Link to="/privacy" className="underline decoration-[#C89B3C]/60 underline-offset-4 hover:text-[#C89B3C]">Privacy Policy</Link>
+                <Link to="/privacy" className="underline">Privacy Policy</Link>
                 {' · '}
-                <Link to="/terms" className="underline decoration-[#C89B3C]/60 underline-offset-4 hover:text-[#C89B3C]">Terms of Service</Link>
+                <Link to="/terms" className="underline">Terms of Service</Link>
                 {' · '}
-                <Link to="/policies" className="underline decoration-[#C89B3C]/60 underline-offset-4 hover:text-[#C89B3C]">Policies</Link>
+                <Link to="/policies" className="underline">Policies</Link>
               </>
             )],
           ]}

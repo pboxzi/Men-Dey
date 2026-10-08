@@ -5,6 +5,7 @@ import {motion, useReducedMotion} from 'motion/react';
 import {Link} from 'react-router-dom';
 
 import {GateBrand} from '../../components/auth/GateBrand';
+import {LandingFooter} from './LandingFooter';
 
 const EASE: [number, number, number, number] = [0.22, 0.61, 0.36, 1];
 
@@ -82,18 +83,10 @@ export function LandingPage() {
             <ArrowRight className="size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
           </Link>
         </div>
+      </motion.div>
 
-        <p className="gate-statement flex flex-wrap items-center gap-x-3 gap-y-2 text-[0.5625rem] uppercase leading-none tracking-[0.3em] text-[#EAE4DA]/75 sm:gap-x-5 sm:text-[0.625rem] sm:tracking-[0.34em]">
-          <span>Personal</span>
-          <span aria-hidden className="text-[#C89B3C]">
-            &middot;
-          </span>
-          <span>Welcomed</span>
-          <span aria-hidden className="text-[#C89B3C]">
-            &middot;
-          </span>
-          <span>Cared for</span>
-        </p>
+      <motion.div {...rise(0.52)}>
+        <LandingFooter />
       </motion.div>
     </div>
   );

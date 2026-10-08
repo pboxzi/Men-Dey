@@ -1,24 +1,19 @@
-import {useEffect, useState, type ReactNode} from 'react';
+import {type ReactNode} from 'react';
 
-import {ArrowLeft, ArrowRight} from 'lucide-react';
-import {motion, useReducedMotion} from 'motion/react';
+import {ArrowRight} from 'lucide-react';
 import {Link, useLocation} from 'react-router-dom';
 
-import {GateHeader} from '../../../components/auth/GateHeader';
 import {LEGAL_CONTACT, LEGAL_NAV, LEGAL_UPDATED, type TocItem} from './legalNav';
 
 /**
- * Shared reading surface for the four public documents (legal notice, privacy,
- * terms, policies). They live on the same cinematic portrait as the gate, so
- * the copy sits in the flat `gate-doc` band — a hairline of gold on the left,
- * no card, no shadow — with a sticky table of contents beside it.
- *
- * The table of contents highlights the section currently being read; the
- * arrays passed in come from module scope in each page, so the observer only
- * ever binds once per document.
+ * Shared chrome for the four public documents (legal notice, privacy, terms,
+ * policies). One reading column, top to bottom: a slim header with the four
+ * document tabs, the title and summary, a quiet contents list, the document
+ * itself, then a plain footer. No sidebar, no sticky rail, no scroll-spy —
+ * these are pages people need to read straight through.
  */
 
-const EASE: [number, number, number, number] = [0.22, 0.61, 0.36, 1];
+const YEAR = new Date().getFullYear();
 
 export function LegalShell({
   eyebrow,
@@ -33,87 +28,71 @@ export function LegalShell({
   toc: TocItem[];
   children: ReactNode;
 }) {
-  const reduce = useReducedMotion() === true;
   const location = useLocation();
-  const [active, setActive] = useState<string | null>(toc[0]?.id ?? null);
-
-  useEffect(() => {
-    const sections = toc
-      .map(({id}) => document.getElementById(id))
-      .filter((el): el is HTMLElement => el instanceof HTMLElement);
-    if (sections.length === 0) return;
-
-    // Read-ahead: a section becomes "current" once it passes the top quarter of
-    // the viewport, which keeps the rail in step with what the eye is on.
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      {rootMargin: '-12% 0px -64% 0px', threshold: 0},
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, [toc]);
-
   const related = LEGAL_NAV.filter((item) => item.to !== location.pathname);
 
-  const tocLinks = (className: string) => (
-    <ul className={className}>
-      {toc.map((item, index) => {
-        const isActive = active === item.id;
-        return (
-          <li key={item.id}>
-            <a
-              href={`#${item.id}`}
-              aria-current={isActive ? 'true' : undefined}
-              className={`flex min-h-9 items-start gap-3 border-l-2 py-1.5 pl-3 text-[12.5px] leading-snug transition-colors ${
-                isActive
-                  ? 'border-[#C89B3C] text-[#FCFAF7]'
-                  : 'border-transparent text-[#E6E0D6]/62 hover:border-[#C89B3C]/50 hover:text-[#EAE4DA]'
-              }`}
-            >
-              <span className="w-4 shrink-0 pt-px text-[10px] font-semibold tracking-[0.14em] text-[#C89B3C]/80 tabular-nums">
-                {String(index + 1).padStart(2, '0')}
-              </span>
-              <span>{item.title}</span>
-            </a>
-          </li>
-        );
-      })}
-    </ul>
-  );
-
-  const rise = {
-    initial: reduce ? {opacity: 1, y: 0} : {opacity: 0, y: 16},
-    animate: {opacity: 1, y: 0},
-    transition: {duration: reduce ? 0 : 0.6, ease: EASE},
-  };
-
   return (
-    <div className="gate-flow min-h-[100svh] w-full px-6 pb-16 pt-8 sm:px-10 sm:pb-20 sm:pt-10 lg:px-16 lg:pt-14">
-      <GateHeader />
+    <div className="min-h-[100svh] w-full bg-white text-[#3B3833]">
+      <header className="sticky top-0 z-30 border-b border-[#EAE4DA] bg-white">
+        <div className="mx-auto flex w-full max-w-[52rem] items-center justify-between gap-4 px-6 py-4 sm:px-8">
+          <Link
+            to="/"
+            aria-label="Gillian Anderson Management — home"
+            className="flex shrink-0 items-center gap-3"
+          >
+            <span
+              aria-hidden
+              className="grid size-9 shrink-0 place-items-center border border-[#C89B3C]/70 font-display text-[0.85rem] leading-none text-[#A67F2C] sm:size-10 sm:text-[0.95rem]"
+            >
+              GA
+            </span>
+            <span className="flex min-w-0 flex-col leading-none">
+              <span className="truncate font-display text-[0.8rem] tracking-[0.16em] text-[#1E1E1E] sm:text-[0.9rem]">
+                GILLIAN ANDERSON
+              </span>
+              <span className="mt-1.5 text-[0.5rem] font-medium uppercase tracking-[0.4em] text-[#A67F2C]">
+                Management
+              </span>
+            </span>
+          </Link>
 
-      <motion.header {...rise} className="mx-auto mt-9 w-full max-w-[70rem] sm:mt-12">
-        <div className="flex items-center gap-4 sm:gap-5">
-          <span className="h-px w-10 shrink-0 bg-[#C89B3C]/85 sm:w-14" aria-hidden />
-          <p className="text-[0.5625rem] font-semibold uppercase leading-none tracking-[0.34em] text-[#C89B3C] sm:text-[0.66rem] sm:tracking-[0.4em]">
+          <nav aria-label="Legal documents" className="flex items-center gap-1 sm:gap-2">
+            {LEGAL_NAV.map((item) => {
+              const current = item.to === location.pathname;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  aria-current={current ? 'page' : undefined}
+                  className={`inline-flex min-h-10 items-center border-b-2 px-1.5 text-[0.625rem] font-semibold uppercase tracking-[0.18em] transition-colors sm:px-2.5 sm:text-[0.6875rem] sm:tracking-[0.2em] ${
+                    current
+                      ? 'border-[#C89B3C] text-[#1E1E1E]'
+                      : 'border-transparent text-[#6E6A63] hover:text-[#1E1E1E]'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      </header>
+
+      <main className="mx-auto w-full max-w-[52rem] px-6 pb-20 pt-11 sm:px-8 sm:pt-16">
+        <div className="flex items-center gap-4">
+          <span className="h-px w-10 shrink-0 bg-[#C89B3C]" aria-hidden />
+          <p className="text-[0.625rem] font-semibold uppercase leading-none tracking-[0.3em] text-[#8A6A1F]">
             {eyebrow}
           </p>
         </div>
 
-        <h1 className="mt-5 font-display text-[clamp(1.85rem,5.4vw,3rem)] font-normal leading-[1.16] text-[#FCFAF7]">
+        <h1 className="mt-5 font-display text-[clamp(1.85rem,5vw,2.7rem)] font-medium leading-[1.2] text-[#1E1E1E]">
           {title}
         </h1>
 
-        <div className="mt-6 max-w-[46rem] text-[0.9375rem] leading-[1.95] text-[#E6E0D6]">
-          {lede}
-        </div>
+        <div className="legal-doc mt-6 text-[1rem] leading-[1.9] text-[#4A4640]">{lede}</div>
 
-        <p className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 text-[0.5625rem] font-semibold uppercase tracking-[0.28em] text-[#E6E0D6]/60 sm:text-[0.625rem] sm:tracking-[0.32em]">
+        <p className="mt-7 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[13px] text-[#6E6A63]">
           <span>Last updated {LEGAL_UPDATED}</span>
           <span aria-hidden className="text-[#C89B3C]">
             &middot;
@@ -122,93 +101,95 @@ export function LegalShell({
             Questions:{' '}
             <a
               href={`mailto:${LEGAL_CONTACT}`}
-              className="text-[#EAE4DA] underline decoration-[#C89B3C]/60 underline-offset-4 transition-colors hover:text-[#C89B3C]"
+              className="text-[#8A6A1F] underline transition-colors hover:text-[#1E1E1E]"
             >
               {LEGAL_CONTACT}
             </a>
           </span>
         </p>
-      </motion.header>
 
-      <div className="mx-auto mt-10 grid w-full max-w-[70rem] gap-7 lg:mt-14 lg:grid-cols-[14.5rem_minmax(0,1fr)] lg:gap-10">
-        <aside className="lg:sticky lg:top-10 lg:max-h-[calc(100svh-5.5rem)] lg:self-start lg:overflow-y-auto lg:pr-2">
-          {/* Narrow screens: the rail folds into a disclosure so the document
-              itself stays the first thing on the page. */}
-          <details className="group border-l-2 border-[#C89B3C]/60 bg-[#0C0B0A]/55 px-4 py-3 lg:hidden">
-            <summary className="cursor-pointer list-none text-[0.625rem] font-semibold uppercase tracking-[0.3em] text-[#C89B3C] [&::-webkit-details-marker]:hidden">
-              On this page
-            </summary>
-            <div className="mt-3 border-t border-[#EAE4DA]/12 pt-2">{tocLinks('space-y-0.5')}</div>
-          </details>
+        <nav aria-label="Contents" className="mt-10">
+          <p className="text-[0.625rem] font-semibold uppercase tracking-[0.26em] text-[#6E6A63]">
+            Contents
+          </p>
+          <ol className="mt-3 grid gap-x-8 gap-y-2 sm:grid-cols-2">
+            {toc.map((item, index) => (
+              <li key={item.id} className="flex gap-2.5 text-[13.5px] leading-relaxed">
+                <span className="w-5 shrink-0 text-[#A67F2C] tabular-nums">{index + 1}.</span>
+                <a
+                  href={`#${item.id}`}
+                  className="text-[#6E6A63] underline-offset-4 transition-colors hover:text-[#1E1E1E] hover:underline"
+                >
+                  {item.title}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
 
-          <nav aria-label="On this page" className="hidden lg:block">
-            <p className="text-[0.625rem] font-semibold uppercase tracking-[0.3em] text-[#8F887E]">
-              On this page
-            </p>
-            <div className="mt-4 border-t border-[#EAE4DA]/12 pt-3">{tocLinks('space-y-0.5')}</div>
-          </nav>
-        </aside>
-
-        <article
-          id="document-top"
-          className="gate-doc min-w-0 px-5 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-11"
-        >
+        <article className="legal-doc mt-12 text-[0.9375rem] leading-[1.95] text-[#3B3833]">
           {children}
 
-          <p className="mt-12 border-t border-[#EAE4DA]/12 pt-6 text-[12.5px] leading-relaxed text-[#E6E0D6]/65">
+          <p className="mt-12 border-t border-[#EAE4DA] pt-6 text-[13px] leading-relaxed text-[#6E6A63]">
             This document was last updated on {LEGAL_UPDATED}. Earlier versions are available on
-            request from {LEGAL_CONTACT}. Reading it takes a few minutes; living by it takes no
-            effort at all — thank you for doing both.
+            request from {LEGAL_CONTACT}.
           </p>
         </article>
-      </div>
 
-      <section
-        aria-label="Related legal documents"
-        className="mx-auto mt-12 w-full max-w-[70rem] sm:mt-16"
-      >
-        <p className="text-[0.625rem] font-semibold uppercase tracking-[0.3em] text-[#8F887E]">
-          The rest of the legal desk
-        </p>
+        <section aria-label="Related legal documents" className="mt-16">
+          <p className="text-[0.625rem] font-semibold uppercase tracking-[0.26em] text-[#6E6A63]">
+            Continue reading
+          </p>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-3">
-          {related.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className="group flex min-h-[7.5rem] flex-col justify-between border border-[#EAE4DA]/18 bg-[#0C0B0A]/55 px-5 py-5 transition-colors hover:border-[#C89B3C]/70"
-            >
-              <span className="font-display text-[1.05rem] text-[#FCFAF7] transition-colors group-hover:text-[#C89B3C]">
+          <ul className="mt-5 divide-y divide-[#EAE4DA] border-y border-[#EAE4DA]">
+            {related.map((item) => (
+              <li key={item.to}>
+                <Link
+                  to={item.to}
+                  className="group flex items-start gap-4 py-4 transition-colors hover:bg-[#FCFBF9]"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="font-display text-[1.1rem] font-medium text-[#1E1E1E] transition-colors group-hover:text-[#8A6A1F]">
+                      {item.label}
+                    </span>
+                    <span className="mt-1 block text-[13px] leading-relaxed text-[#6E6A63]">
+                      {item.note}
+                    </span>
+                  </span>
+                  <ArrowRight
+                    className="mt-1.5 size-4 shrink-0 text-[#A67F2C] transition-transform duration-200 group-hover:translate-x-1"
+                    aria-hidden
+                  />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </main>
+
+      <footer className="border-t border-[#EAE4DA] bg-[#FAF8F4]">
+        <div className="mx-auto flex w-full max-w-[52rem] flex-col gap-3 px-6 py-6 text-[12.5px] text-[#6E6A63] sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <span>&copy; {YEAR} Gillian Anderson Management. All rights reserved.</span>
+          <nav aria-label="Footer legal" className="flex flex-wrap items-center gap-x-5 gap-y-1">
+            {LEGAL_NAV.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="transition-colors hover:text-[#1E1E1E]"
+              >
                 {item.label}
-              </span>
-              <span className="mt-2 text-[12.5px] leading-relaxed text-[#E6E0D6]/68">
-                {item.note}
-              </span>
-              <span className="mt-4 inline-flex items-center gap-2 text-[0.5625rem] font-semibold uppercase tracking-[0.28em] text-[#C89B3C]">
-                Read
-                <ArrowRight
-                  className="size-3.5 transition-transform duration-200 group-hover:translate-x-1"
-                  aria-hidden
-                />
-              </span>
-            </Link>
-          ))}
+              </Link>
+            ))}
+          </nav>
         </div>
-
-        <div className="mt-8">
-          <Link to="/" className="gate-back">
-            <ArrowLeft className="size-4" aria-hidden />
-            Back to the welcome page
-          </Link>
-        </div>
-      </section>
+      </footer>
     </div>
   );
 }
 
 /* ---------------------------------------------------------------------------
    Document primitives. Every page is built from these so the four documents
-   share one rhythm: numbered serif headings, a gold rule, then prose.
+   share one rhythm: numbered serif headings, a hairline rule, then prose.
    --------------------------------------------------------------------------- */
 
 export interface DocSectionSpec {
@@ -226,38 +207,33 @@ export function DocSection({
   children: ReactNode;
 }) {
   return (
-    <section id={spec.id} className="mt-10 scroll-mt-24 first:mt-0">
-      <h2 className="flex items-baseline gap-3 font-display text-[1.25rem] font-medium leading-snug text-[#FCFAF7] sm:text-[1.45rem]">
-        <span className="shrink-0 text-[0.7rem] font-semibold tracking-[0.18em] text-[#C89B3C] tabular-nums">
+    <section id={spec.id} className="mt-12 scroll-mt-24 first:mt-0">
+      <h2 className="flex items-baseline gap-3 font-display text-[1.3rem] font-medium leading-snug text-[#1E1E1E] sm:text-[1.45rem]">
+        <span className="shrink-0 text-[0.7rem] font-semibold tracking-[0.16em] text-[#A67F2C] tabular-nums">
           {String(n).padStart(2, '0')}
         </span>
         <span>{spec.title}</span>
       </h2>
-      <div className="mt-3 h-px w-full bg-[#C89B3C]/35" aria-hidden />
-      <div className="mt-4 space-y-4 text-[0.90625rem] leading-[1.95] text-[#E6E0D6]">
-        {children}
-      </div>
+      <div className="mt-4 space-y-4">{children}</div>
     </section>
   );
 }
 
 export function DocSub({children}: {children: ReactNode}) {
   return (
-    <h3 className="!font-display text-[1.02rem] font-medium leading-snug text-[#EAE4DA]">
+    <h3 className="!font-display text-[1.05rem] font-medium leading-snug text-[#1E1E1E]">
       {children}
     </h3>
   );
 }
 
 export function DocList({children}: {children: ReactNode}) {
-  return (
-    <ul className="mt-3 list-disc space-y-2.5 pl-5 marker:text-[#C89B3C]">{children}</ul>
-  );
+  return <ul className="mt-3 list-disc space-y-2.5 pl-5 marker:text-[#C89B3C]">{children}</ul>;
 }
 
 export function DocOrderedList({children}: {children: ReactNode}) {
   return (
-    <ol className="mt-3 list-decimal space-y-2.5 pl-5 marker:font-semibold marker:text-[#C89B3C]">
+    <ol className="mt-3 list-decimal space-y-2.5 pl-5 marker:font-semibold marker:text-[#A67F2C]">
       {children}
     </ol>
   );
@@ -265,27 +241,25 @@ export function DocOrderedList({children}: {children: ReactNode}) {
 
 export function DocNote({label, children}: {label: string; children: ReactNode}) {
   return (
-    <aside className="border-l-2 border-[#C89B3C]/75 bg-[#0C0B0A]/55 px-4 py-4 sm:px-5">
-      <p className="text-[0.5625rem] font-semibold uppercase tracking-[0.3em] text-[#C89B3C]">
+    <aside className="mt-5 border-l-2 border-[#C89B3C] bg-[#FAF8F4] px-5 py-4">
+      <p className="text-[0.5625rem] font-semibold uppercase tracking-[0.28em] text-[#8A6A1F]">
         {label}
       </p>
-      <div className="mt-2.5 space-y-3 text-[0.875rem] leading-[1.9] text-[#EAE4DA]">
-        {children}
-      </div>
+      <div className="mt-2.5 space-y-3 text-[0.875rem] leading-[1.9]">{children}</div>
     </aside>
   );
 }
 
-/** Two-column fact list — used for retention periods, contact points, rights. */
+/** Two-column fact list — retention periods, contact points, rights. */
 export function DocFacts({rows}: {rows: ReadonlyArray<readonly [string, ReactNode]>}) {
   return (
-    <dl className="mt-4 divide-y divide-[#EAE4DA]/12 border-y border-[#EAE4DA]/12">
+    <dl className="mt-4 divide-y divide-[#EFEAE1] border-y border-[#EFEAE1]">
       {rows.map(([term, detail]) => (
-        <div key={term} className="grid gap-1 py-3 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-5">
-          <dt className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-[#C89B3C]">
+        <div key={term} className="grid gap-1 py-3.5 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6">
+          <dt className="text-[0.6875rem] font-semibold uppercase tracking-[0.16em] text-[#8A6A1F]">
             {term}
           </dt>
-          <dd className="text-[0.875rem] leading-[1.85] text-[#E6E0D6]">{detail}</dd>
+          <dd className="text-[0.875rem] leading-[1.85]">{detail}</dd>
         </div>
       ))}
     </dl>
@@ -300,28 +274,28 @@ export function DocTable({
   rows: ReadonlyArray<readonly ReactNode[]>;
 }) {
   return (
-    <div className="mt-4 overflow-x-auto">
-      <table className="w-full min-w-[32rem] border-collapse text-left align-top">
+    <div className="mt-5 overflow-x-auto border border-[#EFEAE1]">
+      <table className="w-full min-w-[34rem] border-collapse text-left align-top">
         <thead>
-          <tr className="border-b border-[#C89B3C]/45">
+          <tr className="bg-[#FAF8F4]">
             {head.map((column) => (
               <th
                 key={column}
                 scope="col"
-                className="px-1 pb-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.2em] text-[#C89B3C]"
+                className="border-b border-[#EFEAE1] px-4 py-3 text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-[#8A6A1F]"
               >
                 {column}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#EAE4DA]/12">
+        <tbody className="divide-y divide-[#EFEAE1]">
           {rows.map((row, index) => (
             <tr key={index}>
               {row.map((cell, cellIndex) => (
                 <td
                   key={cellIndex}
-                  className="px-1 py-3 text-[0.8125rem] leading-[1.8] text-[#E6E0D6] first:text-[#EAE4DA] first:font-medium"
+                  className="px-4 py-3.5 text-[0.8125rem] leading-[1.75] text-[#3B3833]"
                 >
                   {cell}
                 </td>

@@ -278,15 +278,18 @@ const ROUTES = [
   {name: 'mgmt-inbox', path: '/management/messages', role: 'management'},
   {name: 'mgmt-thread', path: '/management/messages/c1', role: 'management'},
 ];
-const SIZES = [
-  [320, 568],
-  [360, 640],
-  [390, 740],
-  [390, 844],
-  [412, 915],
-  [430, 932],
-  [768, 1024],
-];
+// SIZES=1024x768,1280x800,1440x900 node scripts/messages-audit.mjs … for desktop
+const SIZES = process.env.SIZES
+  ? process.env.SIZES.split(',').map((s) => s.split('x').map(Number))
+  : [
+      [320, 568],
+      [360, 640],
+      [390, 740],
+      [390, 844],
+      [412, 915],
+      [430, 932],
+      [768, 1024],
+    ];
 const SHOT_SIZES = new Set(['360x640', '390x740', '390x844', '412x915']);
 
 mkdirSync(OUT, {recursive: true});
@@ -362,7 +365,7 @@ for (const route of ROUTES) {
         `${horizontalFail ? ' FAIL' : ' ok'}`
     );
     for (const o of m.offenders.slice(0, 6)) console.log('    ! ' + o);
-    if (m.head) console.log('    > ' + m.head);
+    if (m.head) console.log('    > [' + page.url().replace(BASE, '') + '] ' + m.head);
 
     if (SHOT_SIZES.has(`${w}x${h}`)) {
       await page.screenshot({path: `${OUT}\\msg-${route.name}-${w}x${h}.png`});

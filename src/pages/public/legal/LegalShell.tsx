@@ -175,7 +175,7 @@ export function LegalShell({
               <Link
                 key={item.to}
                 to={item.to}
-                className="transition-colors hover:text-[#1E1E1E]"
+                className="inline-flex min-h-10 items-center transition-colors hover:text-[#1E1E1E]"
               >
                 {item.label}
               </Link>

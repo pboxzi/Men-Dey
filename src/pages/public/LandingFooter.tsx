@@ -12,17 +12,17 @@ export function LandingFooter() {
   return (
     <footer className="mt-6 border-t border-[#EAE4DA]/15 pt-3 sm:mt-7 sm:pt-4">
       <nav aria-label="Legal">
-        <ul className="-ml-2 flex flex-wrap items-center">
+        <ul className="-ml-2 flex flex-wrap items-center gap-y-1">
           {LEGAL_LINKS.map((item, index) => (
             <li key={item.to} className="flex items-center">
               <Link
                 to={item.to}
-                className="inline-flex min-h-10 items-center px-2 text-[0.5625rem] font-semibold uppercase tracking-[0.28em] text-[#E6E0D6]/75 transition-colors hover:text-[#C89B3C] sm:text-[0.6rem] sm:tracking-[0.3em]"
+                className="inline-flex min-h-10 items-center px-2 text-[0.5625rem] font-semibold uppercase leading-none tracking-[0.18em] text-[#E6E0D6]/75 transition-colors hover:text-[#C89B3C] sm:text-[0.6rem] sm:tracking-[0.3em]"
               >
                 {item.label}
               </Link>
               {index < LEGAL_LINKS.length - 1 ? (
-                <span aria-hidden className="text-[#C89B3C]/60">
+                <span aria-hidden className="hidden text-[#C89B3C]/60 sm:inline">
                   &middot;
                 </span>
               ) : null}

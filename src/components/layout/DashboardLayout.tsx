@@ -139,7 +139,7 @@ export function DashboardLayout() {
         id="dashboard-sidebar"
         aria-hidden={!isDesktop && !mobileOpen ? true : undefined}
         inert={!isDesktop && !mobileOpen ? true : undefined}
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#14171A] text-stone-300 flex flex-col justify-between shrink-0 transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#14171A] text-stone-300 flex flex-col justify-between shrink-0 transform transition-transform duration-300 ease-in-out lg:sticky lg:bottom-auto lg:z-auto lg:h-dvh lg:translate-x-0 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

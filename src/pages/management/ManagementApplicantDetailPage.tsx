@@ -219,7 +219,7 @@ export function ManagementApplicantDetailPage() {
   const canReview = ['new', 'draft', 'submitted'].includes(applicant.status);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Applicants"
         title={user?.full_name || user?.email || applicant.headline || 'Application'}
@@ -244,8 +244,8 @@ export function ManagementApplicantDetailPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <section className="surface p-6 lg:col-span-2" aria-label="Application answers">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
+        <section className="surface p-4 sm:p-6 lg:col-span-2" aria-label="Application answers">
           <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Application answers
           </h2>
@@ -294,13 +294,13 @@ export function ManagementApplicantDetailPage() {
         </section>
 
         <div className="space-y-6">
-          <section className="surface p-6" aria-label="Timeline">
+          <section className="surface p-4 sm:p-6" aria-label="Timeline">
             <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Timeline
             </h2>
             <dl className="space-y-3">
               {timeline.map((row) => (
-                <div key={row.label} className="flex items-baseline justify-between gap-3">
+                <div key={row.label} className="flex flex-wrap items-baseline justify-between gap-3">
                   <dt className="text-xs uppercase tracking-wider text-muted">{row.label}</dt>
                   <dd className="break-words text-sm text-charcoal">{row.value}</dd>
                 </div>
@@ -308,7 +308,7 @@ export function ManagementApplicantDetailPage() {
             </dl>
           </section>
 
-          <section className="surface p-6" aria-label="Review">
+          <section className="surface p-4 sm:p-6" aria-label="Review">
             <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Review decision
             </h2>
@@ -336,7 +336,7 @@ export function ManagementApplicantDetailPage() {
                 confirming === 'review' ? (
                   <div className="rounded-sm border border-stone bg-stone/40 p-3">
                     <p className="text-sm text-charcoal">Move this application into review?</p>
-                    <div className="mt-2 flex gap-2">
+                    <div className="mt-2 flex flex-wrap gap-2">
                       <Button variant="ghost" onClick={() => setConfirming(null)}>
                         Back
                       </Button>
@@ -358,7 +358,7 @@ export function ManagementApplicantDetailPage() {
                     <p className="text-sm text-charcoal">
                       Approve this applicant? They move forward to membership and experiences.
                     </p>
-                    <div className="mt-2 flex gap-2">
+                    <div className="mt-2 flex flex-wrap gap-2">
                       <Button variant="ghost" onClick={() => setConfirming(null)}>
                         Back
                       </Button>
@@ -381,7 +381,7 @@ export function ManagementApplicantDetailPage() {
                       Reject this application? The decision and your notes are recorded — nothing is
                       deleted.
                     </p>
-                    <div className="mt-2 flex gap-2">
+                    <div className="mt-2 flex flex-wrap gap-2">
                       <Button variant="ghost" onClick={() => setConfirming(null)}>
                         Back
                       </Button>

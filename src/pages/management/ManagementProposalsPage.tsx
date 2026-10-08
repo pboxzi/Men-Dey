@@ -216,7 +216,7 @@ export function ManagementProposalsPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Business"
         title="Proposals"
@@ -245,8 +245,8 @@ export function ManagementProposalsPage() {
       </div>
 
       {tab === 'experiences' ? (
-        <section className="surface p-6" aria-label="Experience proposals">
-          <div className="mb-4 flex items-center justify-between gap-3">
+        <section className="surface p-4 sm:p-6" aria-label="Experience proposals">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Experience proposals
             </h2>
@@ -284,7 +284,7 @@ export function ManagementProposalsPage() {
                               : ''}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <Chip tone={PROPOSAL_STATUS_TONES[proposal.status]}>
                             {PROPOSAL_STATUS_LABELS[proposal.status]}
                           </Chip>
@@ -305,7 +305,7 @@ export function ManagementProposalsPage() {
                       key={proposal.id}
                       className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                     >
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
                         <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                           {request?.title ?? 'Request'} · v{proposal.version}
                         </span>
@@ -342,8 +342,8 @@ export function ManagementProposalsPage() {
           )}
         </section>
       ) : (
-        <section className="surface p-6" aria-label="Membership offers">
-          <div className="mb-4 flex items-center justify-between gap-3">
+        <section className="surface p-4 sm:p-6" aria-label="Membership offers">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Membership offers
             </h2>
@@ -381,7 +381,7 @@ export function ManagementProposalsPage() {
                             · offered {formatDate(offer.offered_at)}
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <Chip tone={OFFER_STATUS_TONES[offer.status]}>
                             {OFFER_STATUS_LABELS[offer.status]}
                           </Chip>
@@ -402,7 +402,7 @@ export function ManagementProposalsPage() {
                       key={offer.id}
                       className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                     >
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
                         <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                           {person?.full_name || person?.email || 'Member'}
                         </span>

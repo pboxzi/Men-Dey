@@ -111,7 +111,7 @@ export function ManagementAuditPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="System"
         title="Audit log"
@@ -120,7 +120,7 @@ export function ManagementAuditPage() {
 
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <select
             className="field-input w-full sm:w-auto"
@@ -181,7 +181,7 @@ export function ManagementAuditPage() {
                             {row.entity_id ? ` · ${row.entity_id.slice(0, 8)}` : ''}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-3">
                           <span className="text-xs text-muted">{formatDateTime(row.created_at)}</span>
                           {link ? (
                             <Link to={link.to} className="text-xs text-gold-deep hover:underline">
@@ -209,7 +209,7 @@ export function ManagementAuditPage() {
                     key={row.id}
                     className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                   >
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
                       <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                         {row.actor_label ?? 'System'}
                       </span>

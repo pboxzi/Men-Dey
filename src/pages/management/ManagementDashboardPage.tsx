@@ -448,7 +448,7 @@ export function ManagementDashboardPage() {
   }
 
   return (
-    <div className="flex flex-col space-y-10">
+    <div className="flex flex-col space-y-7 sm:space-y-10">
       <div className="order-1 lg:order-1">
         <PageHeader
           eyebrow="Overview"
@@ -464,7 +464,7 @@ export function ManagementDashboardPage() {
       ) : null}
 
       <section className="surface order-3 p-4 sm:p-6 lg:order-4" aria-label="Priority attention">
-        <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Priority attention
           </h2>
@@ -481,9 +481,9 @@ export function ManagementDashboardPage() {
               <li key={item.key}>
                 <Link
                   to={item.to}
-                  className="flex min-h-11 items-center justify-between gap-3 py-3.5 hover:bg-stone/40 sm:gap-4"
+                  className="flex flex-wrap min-h-11 items-center justify-between gap-3 py-3.5 hover:bg-stone/40 sm:gap-4"
                 >
-                  <span className="flex min-w-0 items-start gap-3">
+                  <span className="flex flex-wrap min-w-0 items-start gap-3">
                     <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-stone text-gold-deep">
                       {item.icon}
                     </span>
@@ -492,7 +492,7 @@ export function ManagementDashboardPage() {
                       <span className="block truncate text-xs text-muted">{item.detail}</span>
                     </span>
                   </span>
-                  <span className="flex shrink-0 items-center gap-3">
+                  <span className="flex flex-wrap shrink-0 items-center gap-3">
                     {item.chip ? <Chip tone={item.chip.tone}>{item.chip.label}</Chip> : null}
                     <ArrowRight className="size-4 text-muted" aria-hidden />
                   </span>
@@ -524,9 +524,9 @@ export function ManagementDashboardPage() {
         </div>
       </section>
 
-      <div className="order-5 grid gap-6 lg:grid-cols-3 lg:order-5">
-        <section className="surface p-6" aria-label="Latest applicants">
-          <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="order-5 grid gap-4 sm:gap-6 lg:grid-cols-3 lg:order-5">
+        <section className="surface p-4 sm:p-6" aria-label="Latest applicants">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Latest applicants
             </h2>
@@ -542,7 +542,7 @@ export function ManagementDashboardPage() {
                 <li key={applicant.id}>
                   <Link
                     to={`/management/applicants/${applicant.id}`}
-                    className="flex items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
+                    className="flex flex-wrap items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm text-charcoal">
@@ -568,8 +568,8 @@ export function ManagementDashboardPage() {
           )}
         </section>
 
-        <section className="surface p-6" aria-label="Open requests">
-          <div className="mb-4 flex items-center justify-between gap-3">
+        <section className="surface p-4 sm:p-6" aria-label="Open requests">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Open requests
             </h2>
@@ -585,7 +585,7 @@ export function ManagementDashboardPage() {
                 <li key={request.id}>
                   <Link
                     to={`/management/requests/${request.id}`}
-                    className="flex items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
+                    className="flex flex-wrap items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm text-charcoal">{request.title}</span>
@@ -603,8 +603,8 @@ export function ManagementDashboardPage() {
           )}
         </section>
 
-        <section className="surface p-6" aria-label="Upcoming schedule">
-          <div className="mb-4 flex items-center justify-between gap-3">
+        <section className="surface p-4 sm:p-6" aria-label="Upcoming schedule">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Upcoming schedule
             </h2>
@@ -620,7 +620,7 @@ export function ManagementDashboardPage() {
                 <li key={appointment.id}>
                   <Link
                     to="/management/bookings"
-                    className="flex min-h-11 items-center justify-between gap-3 border-l-2 border-[#C89B3C]/45 py-3 pl-3.5 hover:bg-stone/40 lg:border-l-0 lg:pl-0 lg:py-2.5"
+                    className="flex flex-wrap min-h-11 items-center justify-between gap-3 border-l-2 border-[#C89B3C]/45 py-3 pl-3.5 hover:bg-stone/40 lg:border-l-0 lg:pl-0 lg:py-2.5"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm text-charcoal">{appointment.title}</span>
@@ -636,7 +636,7 @@ export function ManagementDashboardPage() {
                 <li key={schedule.id}>
                   <Link
                     to="/management/calendar"
-                    className="flex min-h-11 items-center justify-between gap-3 border-l-2 border-[#C89B3C]/45 py-3 pl-3.5 hover:bg-stone/40 lg:border-l-0 lg:pl-0 lg:py-2.5"
+                    className="flex flex-wrap min-h-11 items-center justify-between gap-3 border-l-2 border-[#C89B3C]/45 py-3 pl-3.5 hover:bg-stone/40 lg:border-l-0 lg:pl-0 lg:py-2.5"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm text-charcoal">{schedule.title}</span>

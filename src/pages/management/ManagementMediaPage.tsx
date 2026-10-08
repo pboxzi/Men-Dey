@@ -192,7 +192,7 @@ export function ManagementMediaPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Content"
         title="Media library"
@@ -209,7 +209,7 @@ export function ManagementMediaPage() {
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
       {uploadOpen ? (
-        <section className="surface p-6" aria-label="Upload an asset">
+        <section className="surface p-4 sm:p-6" aria-label="Upload an asset">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm sm:col-span-2">
               <span className="mb-1 block text-xs uppercase tracking-wider text-muted">File</span>
@@ -275,7 +275,7 @@ export function ManagementMediaPage() {
                 ))}
               </select>
             </label>
-            <div className="flex gap-2 sm:col-span-2">
+            <div className="flex flex-wrap gap-2 sm:col-span-2">
               <Button onClick={() => void upload()} loading={uploading}>
                 Upload
               </Button>
@@ -287,7 +287,7 @@ export function ManagementMediaPage() {
         </section>
       ) : null}
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {(['all', ...KINDS] as const).map((filter) => (
             <button
@@ -332,7 +332,7 @@ export function ManagementMediaPage() {
                   </div>
                   <div className="space-y-2 p-3">
                     {renamingId === asset.id ? (
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <input
                           className="field-input"
                           value={renameValue}

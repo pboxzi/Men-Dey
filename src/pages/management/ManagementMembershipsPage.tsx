@@ -396,7 +396,7 @@ export function ManagementMembershipsPage() {
   );
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-7 sm:space-y-10">
       <PageHeader
         eyebrow="Membership"
         title="Memberships"
@@ -410,8 +410,8 @@ export function ManagementMembershipsPage() {
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
       {/* ---------------- Tiers ---------------- */}
-      <section className="surface p-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="surface p-4 sm:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Membership tiers
           </h2>
@@ -440,7 +440,7 @@ export function ManagementMembershipsPage() {
                         · {tier.benefits.length} benefits
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Chip
                         tone={tier.status === 'active' ? 'success' : tier.status === 'draft' ? 'gold' : 'neutral'}
                       >
@@ -461,7 +461,7 @@ export function ManagementMembershipsPage() {
                   key={tier.id}
                   className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                       {tier.name} <span className="text-xs text-muted">({tier.key})</span>
                     </span>
@@ -599,7 +599,7 @@ export function ManagementMembershipsPage() {
               onChange={(event) => setTierForm((prev) => ({...prev, sort_order: event.target.value}))}
             />
           </label>
-          <div className="flex items-end gap-2">
+          <div className="flex flex-wrap items-end gap-2">
             <Button onClick={() => void saveTier()} loading={tierBusy}>
               {tierForm.id ? 'Save tier' : 'Create tier'}
             </Button>
@@ -629,8 +629,8 @@ export function ManagementMembershipsPage() {
       </section>
 
       {/* ---------------- Offers ---------------- */}
-      <section className="surface p-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="surface p-4 sm:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Membership offers
           </h2>
@@ -642,7 +642,7 @@ export function ManagementMembershipsPage() {
             <span className="mb-1 block text-xs uppercase tracking-wider text-muted">
               Member email
             </span>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <input
                 className="field-input"
                 value={offerForm.email}
@@ -729,7 +729,7 @@ export function ManagementMembershipsPage() {
               onChange={(event) => setOfferForm((prev) => ({...prev, expires: event.target.value}))}
             />
           </label>
-          <div className="flex items-end gap-2">
+          <div className="flex flex-wrap items-end gap-2">
             <Button onClick={() => void saveOffer(true)} loading={offerBusy}>
               <Plus className="size-4" aria-hidden /> Save & send
             </Button>
@@ -762,7 +762,7 @@ export function ManagementMembershipsPage() {
                         · {formatDate(offer.created_at)}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Chip tone={OFFER_STATUS_TONES[offer.status]}>
                         {OFFER_STATUS_LABELS[offer.status]}
                       </Chip>
@@ -779,7 +779,7 @@ export function ManagementMembershipsPage() {
                   key={offer.id}
                   className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                       {offer.user?.full_name || offer.user?.email || offer.user_id.slice(0, 8)}
                     </span>
@@ -805,8 +805,8 @@ export function ManagementMembershipsPage() {
       </section>
 
       {/* ---------------- Members ---------------- */}
-      <section className="surface p-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="surface p-4 sm:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Members
           </h2>
@@ -851,7 +851,7 @@ export function ManagementMembershipsPage() {
                   key={membership.id}
                   className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                       {membership.user?.full_name ||
                         membership.user?.email ||
@@ -887,8 +887,8 @@ export function ManagementMembershipsPage() {
       </section>
 
       {/* ---------------- Payments ---------------- */}
-      <section className="surface p-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="surface p-4 sm:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Membership payments
           </h2>
@@ -915,7 +915,7 @@ export function ManagementMembershipsPage() {
                         {payment.paid_at ? ` · paid ${formatDate(payment.paid_at)}` : ''}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
                         {PAYMENT_STATUS_LABELS[payment.status]}
                       </Chip>
@@ -932,7 +932,7 @@ export function ManagementMembershipsPage() {
                   key={payment.id}
                   className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                       {formatPrice(payment.amount_cents, payment.currency)}
                     </span>

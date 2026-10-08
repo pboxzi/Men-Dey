@@ -130,7 +130,7 @@ export function ManagementSecurityPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="System"
         title="Security"
@@ -146,7 +146,7 @@ export function ManagementSecurityPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {STATUS_FILTERS.map((filter) => (
             <button
@@ -207,7 +207,7 @@ export function ManagementSecurityPage() {
                       account.id === me ? (
                         <span className="text-xs text-muted">Your account</span>
                       ) : confirmId === `status-${account.id}` ? (
-                        <span className="flex gap-2">
+                        <span className="flex flex-wrap gap-2">
                           <Button
                             variant="ghost"
                             onClick={() => setConfirmId(null)}
@@ -277,7 +277,7 @@ export function ManagementSecurityPage() {
         )}
       </section>
 
-      <section className="surface p-6" aria-label="How access is enforced">
+      <section className="surface p-4 sm:p-6" aria-label="How access is enforced">
         <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
           How access is enforced
         </h2>

@@ -307,11 +307,11 @@ export function ManagementMessagesPage() {
     // viewport (whole page zoomed out on phones). Same for the list pane below.
     <div className="surface flex min-h-[32rem] min-w-0 flex-col p-0">
       {threadLoading && !active ? (
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <Spinner label="Loading conversation" />
         </div>
       ) : !active ? (
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <EmptyState
             title="Conversation not found."
             description="It may have been closed, or the link is out of date."
@@ -372,7 +372,7 @@ export function ManagementMessagesPage() {
               <p className="text-sm text-charcoal">
                 Close this conversation? The member will see it as closed.
               </p>
-              <span className="flex gap-2">
+              <span className="flex flex-wrap gap-2">
                 <Button variant="ghost" onClick={() => setConfirmingClose(false)}>
                   Back
                 </Button>
@@ -475,7 +475,7 @@ export function ManagementMessagesPage() {
               </div>
             ) : null}
             <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <input
                   ref={fileRef}
                   type="file"
@@ -499,7 +499,7 @@ export function ManagementMessagesPage() {
                     <Paperclip className="size-4" aria-hidden />
                   )}
                 </button>
-                <label className="flex items-center gap-2 text-xs text-muted">
+                <label className="flex flex-wrap items-center gap-2 text-xs text-muted">
                   <input
                     type="checkbox"
                     checked={internal}
@@ -522,7 +522,7 @@ export function ManagementMessagesPage() {
       )}
     </div>
   ) : (
-    <div className="surface hidden p-6 lg:block">
+    <div className="surface hidden p-4 sm:p-6 lg:block">
       <EmptyState
         title="No conversation selected."
         description="Choose a conversation from the list to read the thread and reply."
@@ -531,7 +531,7 @@ export function ManagementMessagesPage() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Relationships"
         title="Messages"
@@ -542,7 +542,7 @@ export function ManagementMessagesPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <div className="grid gap-6 lg:grid-cols-[22rem_1fr]">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-[22rem_1fr]">
         <div className={`surface min-w-0 p-4 ${conversationId ? 'hidden lg:block' : ''}`}>
           <div className="mb-3 flex flex-wrap gap-1.5">
             {(['all', 'open', 'waiting', 'closed'] as const).map((filter) => (
@@ -576,7 +576,7 @@ export function ManagementMessagesPage() {
                         conversationId === summary.id ? 'bg-stone/60' : ''
                       }`}
                     >
-                      <span className="flex min-w-0 items-center justify-between gap-2">
+                      <span className="flex flex-wrap min-w-0 items-center justify-between gap-2">
                         <span className="min-w-0 truncate text-sm font-medium text-charcoal">
                           {summary.subject}
                         </span>
@@ -586,7 +586,7 @@ export function ManagementMessagesPage() {
                           </span>
                         ) : null}
                       </span>
-                      <span className="mt-0.5 flex items-center justify-between gap-2">
+                      <span className="mt-0.5 flex flex-wrap items-center justify-between gap-2">
                         <span className="min-w-0 truncate text-xs text-muted">
                           {personName(people[summary.user_id])} ·{' '}
                           {CONVERSATION_STATUS_LABELS[summary.status] ?? summary.status}

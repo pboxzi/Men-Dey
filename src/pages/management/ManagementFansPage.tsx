@@ -87,7 +87,7 @@ export function ManagementFansPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Relationships"
         title="Fans"
@@ -96,7 +96,7 @@ export function ManagementFansPage() {
 
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
             {STATUS_FILTERS.map((filter) => (
@@ -145,9 +145,9 @@ export function ManagementFansPage() {
                   <li key={fan.id}>
                     <Link
                       to={`/management/fans/${fan.id}`}
-                      className="flex items-center justify-between gap-4 py-3 hover:bg-stone/40"
+                      className="flex flex-wrap items-center justify-between gap-4 py-3 hover:bg-stone/40"
                     >
-                      <span className="flex min-w-0 items-center gap-3">
+                      <span className="flex flex-wrap min-w-0 items-center gap-3">
                         {fan.profile_photo ? (
                           <img
                             src={fan.profile_photo}
@@ -185,7 +185,7 @@ export function ManagementFansPage() {
                   key={fan.id}
                   className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                       {displayName(fan)}
                     </span>

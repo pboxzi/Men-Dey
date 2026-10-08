@@ -209,7 +209,7 @@ export function ManagementFanDetailPage() {
   ].filter((row) => row.value);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Fans"
         title={profile.full_name || profile.email || 'Account'}
@@ -234,7 +234,7 @@ export function ManagementFanDetailPage() {
       {error ? <Alert tone="error">{error}</Alert> : null}
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
 
-      <section className="surface p-6" aria-label="Profile">
+      <section className="surface p-4 sm:p-6" aria-label="Profile">
         <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
           Profile
         </h2>
@@ -252,9 +252,9 @@ export function ManagementFanDetailPage() {
         )}
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <section className="surface p-6" aria-label="Memberships">
-          <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+        <section className="surface p-4 sm:p-6" aria-label="Memberships">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Memberships
             </h2>
@@ -268,7 +268,7 @@ export function ManagementFanDetailPage() {
                 <li key={membership.id}>
                   <Link
                     to={`/management/memberships/${membership.id}`}
-                    className="flex items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
+                    className="flex flex-wrap items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm text-charcoal">
@@ -288,8 +288,8 @@ export function ManagementFanDetailPage() {
           )}
         </section>
 
-        <section className="surface p-6" aria-label="Requests">
-          <div className="mb-4 flex items-center justify-between gap-3">
+        <section className="surface p-4 sm:p-6" aria-label="Requests">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Requests
             </h2>
@@ -303,7 +303,7 @@ export function ManagementFanDetailPage() {
                 <li key={request.id}>
                   <Link
                     to={`/management/requests/${request.id}`}
-                    className="flex items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
+                    className="flex flex-wrap items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm text-charcoal">{request.title}</span>
@@ -321,8 +321,8 @@ export function ManagementFanDetailPage() {
           )}
         </section>
 
-        <section className="surface p-6" aria-label="Conversations">
-          <div className="mb-4 flex items-center justify-between gap-3">
+        <section className="surface p-4 sm:p-6" aria-label="Conversations">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Conversations
             </h2>
@@ -336,7 +336,7 @@ export function ManagementFanDetailPage() {
                 <li key={conversation.id}>
                   <Link
                     to={`/management/messages/${conversation.id}`}
-                    className="flex items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
+                    className="flex flex-wrap items-center justify-between gap-3 py-2.5 hover:bg-stone/40"
                   >
                     <span className="min-w-0">
                       <span className="block truncate text-sm text-charcoal">
@@ -356,8 +356,8 @@ export function ManagementFanDetailPage() {
           )}
         </section>
 
-        <section className="surface p-6" aria-label="Documents">
-          <div className="mb-4 flex items-center justify-between gap-3">
+        <section className="surface p-4 sm:p-6" aria-label="Documents">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Documents
             </h2>
@@ -370,7 +370,7 @@ export function ManagementFanDetailPage() {
           ) : (
             <ul className="divide-y divide-stone">
               {data.documents.map((document) => (
-                <li key={document.id} className="flex items-center justify-between gap-3 py-2.5">
+                <li key={document.id} className="flex flex-wrap items-center justify-between gap-3 py-2.5">
                   <span className="min-w-0">
                     <span className="block truncate text-sm text-charcoal">{document.title}</span>
                     <span className="block text-xs text-muted">
@@ -388,7 +388,7 @@ export function ManagementFanDetailPage() {
         </section>
       </div>
 
-      <section className="surface p-6" aria-label="Internal notes">
+      <section className="surface p-4 sm:p-6" aria-label="Internal notes">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Internal notes

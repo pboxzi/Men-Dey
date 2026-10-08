@@ -207,7 +207,7 @@ export function ManagementPaymentsPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Business"
         title="Payments"
@@ -235,7 +235,7 @@ export function ManagementPaymentsPage() {
         </button>
       </div>
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {STATUS_FILTERS.map((filter) => (
             <button
@@ -295,7 +295,7 @@ export function ManagementPaymentsPage() {
                               {payment.paid_at ? ` · paid ${formatDate(payment.paid_at)}` : ''}
                             </p>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
                               {PAYMENT_STATUS_LABELS[payment.status]}
                             </Chip>
@@ -325,7 +325,7 @@ export function ManagementPaymentsPage() {
                               {payment.paid_at ? ` · paid ${formatDate(payment.paid_at)}` : ''}
                             </p>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
                               {PAYMENT_STATUS_LABELS[payment.status]}
                             </Chip>
@@ -348,7 +348,7 @@ export function ManagementPaymentsPage() {
                         key={payment.id}
                         className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                       >
-                        <div className="flex items-start justify-between gap-3">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
                           <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                             {formatPrice(payment.amount_cents, payment.currency)}
                           </span>
@@ -388,7 +388,7 @@ export function ManagementPaymentsPage() {
                         key={payment.id}
                         className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                       >
-                        <div className="flex items-start justify-between gap-3">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
                           <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                             {formatPrice(payment.amount_cents, payment.currency)} —{' '}
                             {request?.title ?? 'Request'}

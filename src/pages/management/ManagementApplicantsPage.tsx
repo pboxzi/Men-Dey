@@ -90,7 +90,7 @@ export function ManagementApplicantsPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Relationships"
         title="Applicants"
@@ -99,7 +99,7 @@ export function ManagementApplicantsPage() {
 
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {STATUS_FILTERS.map((filter) => (
             <button
@@ -146,7 +146,7 @@ export function ManagementApplicantsPage() {
                   <li key={applicant.id}>
                     <Link
                       to={`/management/applicants/${applicant.id}`}
-                      className="flex items-center justify-between gap-4 py-3.5 hover:bg-stone/40"
+                      className="flex flex-wrap items-center justify-between gap-4 py-3.5 hover:bg-stone/40"
                     >
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-medium text-charcoal">
@@ -159,7 +159,7 @@ export function ManagementApplicantsPage() {
                             : `started ${relativeTime(applicant.created_at)}`}
                         </span>
                       </span>
-                      <span className="flex shrink-0 items-center gap-3">
+                      <span className="flex flex-wrap shrink-0 items-center gap-3">
                         <Chip tone={APPLICANT_STATUS_TONES[applicant.status]}>
                           {APPLICANT_STATUS_LABELS[applicant.status]}
                         </Chip>
@@ -179,7 +179,7 @@ export function ManagementApplicantsPage() {
                     key={applicant.id}
                     className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                   >
-                    <div className="flex items-start justify-between gap-3">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
                       <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                         {applicantName(applicant)}
                       </span>

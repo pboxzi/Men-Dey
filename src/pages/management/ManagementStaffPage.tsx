@@ -181,7 +181,7 @@ export function ManagementStaffPage() {
   const selectedCandidate = candidates.find((candidate) => candidate.id === form.user_id);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Operations"
         title="Staff"
@@ -198,7 +198,7 @@ export function ManagementStaffPage() {
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
       {addOpen ? (
-        <section className="surface p-6" aria-label="Add a team member">
+        <section className="surface p-4 sm:p-6" aria-label="Add a team member">
           <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Add a team member
           </h2>
@@ -278,7 +278,7 @@ export function ManagementStaffPage() {
                 onChange={(event) => setForm((prev) => ({...prev, department: event.target.value}))}
               />
             </label>
-            <div className="flex items-end gap-2">
+            <div className="flex flex-wrap items-end gap-2">
               <Button onClick={() => void addStaff()} loading={adding}>
                 Add to team
               </Button>
@@ -290,8 +290,8 @@ export function ManagementStaffPage() {
         </section>
       ) : null}
 
-      <section className="surface p-6" aria-label="Team">
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="surface p-4 sm:p-6" aria-label="Team">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Console team
           </h2>
@@ -355,7 +355,7 @@ export function ManagementStaffPage() {
                     </select>
                     {row.is_active ? (
                       confirmId === row.id ? (
-                        <span className="flex gap-2">
+                        <span className="flex flex-wrap gap-2">
                           <Button variant="ghost" onClick={() => setConfirmId(null)}>
                             Keep
                           </Button>
@@ -391,8 +391,8 @@ export function ManagementStaffPage() {
         )}
       </section>
 
-      <section className="surface p-6" aria-label="Role permissions">
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="surface p-4 sm:p-6" aria-label="Role permissions">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Role permissions
           </h2>
@@ -421,8 +421,8 @@ export function ManagementStaffPage() {
         </p>
       </section>
 
-      <section className="surface p-6" aria-label="Platform roles">
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="surface p-4 sm:p-6" aria-label="Platform roles">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Platform roles
           </h2>
@@ -448,14 +448,14 @@ export function ManagementStaffPage() {
                     {candidate.email} · joined {formatDate(candidate.created_at)}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <Chip tone={candidate.role === 'admin' ? 'danger' : candidate.role === 'management' ? 'gold' : 'neutral'}>
                     {candidate.role}
                   </Chip>
                   {candidate.id === me ? (
                     <span className="text-xs text-muted">You</span>
                   ) : roleConfirm === candidate.id ? (
-                    <span className="flex gap-2">
+                    <span className="flex flex-wrap gap-2">
                       <Button variant="ghost" onClick={() => setRoleConfirm(null)}>
                         Keep
                       </Button>

@@ -152,7 +152,7 @@ export function ManagementExperiencesPage() {
   );
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-7 sm:space-y-10">
       <PageHeader
         eyebrow="Experiences"
         title="Experiences"
@@ -163,8 +163,8 @@ export function ManagementExperiencesPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <section className="surface p-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="surface p-4 sm:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Request pipeline
           </h2>
@@ -200,8 +200,8 @@ export function ManagementExperiencesPage() {
         )}
       </section>
 
-      <section className="surface p-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="surface p-4 sm:p-6">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Experience catalog
           </h2>
@@ -333,7 +333,7 @@ export function ManagementExperiencesPage() {
               ))}
             </select>
           </label>
-          <div className="flex items-end gap-2">
+          <div className="flex flex-wrap items-end gap-2">
             <Button onClick={() => void save()} loading={busy}>
               {form.id ? 'Save experience' : 'Create experience'}
             </Button>
@@ -364,7 +364,7 @@ export function ManagementExperiencesPage() {
                     · {experience.starts_at ? `starts ${formatDate(experience.starts_at)}` : 'no date'}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <Chip
                     tone={
                       experience.status === 'published'

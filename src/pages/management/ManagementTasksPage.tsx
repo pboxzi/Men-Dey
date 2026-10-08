@@ -218,7 +218,7 @@ export function ManagementTasksPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Operations"
         title="Tasks"
@@ -235,7 +235,7 @@ export function ManagementTasksPage() {
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
       {formOpen ? (
-        <section className="surface p-6" aria-label="Create a task">
+        <section className="surface p-4 sm:p-6" aria-label="Create a task">
           <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Create a task
           </h2>
@@ -338,7 +338,7 @@ export function ManagementTasksPage() {
                 ))}
               </select>
             </label>
-            <div className="flex gap-2 sm:col-span-2">
+            <div className="flex flex-wrap gap-2 sm:col-span-2">
               <Button onClick={() => void createTask()} loading={creating}>
                 Create task
               </Button>
@@ -350,7 +350,7 @@ export function ManagementTasksPage() {
         </section>
       ) : null}
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {(['all', ...STATUSES] as const).map((filter) => (
             <button
@@ -405,7 +405,7 @@ export function ManagementTasksPage() {
               return (
                 <li key={task.id} className="py-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex min-w-0 items-start gap-2">
+                    <div className="flex flex-wrap min-w-0 items-start gap-2">
                       <button
                         type="button"
                         className="mt-0.5 text-muted hover:text-gold-deep"

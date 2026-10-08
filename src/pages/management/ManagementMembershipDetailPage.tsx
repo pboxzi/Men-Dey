@@ -40,7 +40,7 @@ interface DetailData {
 function Row({label, value}: {label: string; value?: string | null}) {
   if (!value) return null;
   return (
-    <div className="flex items-start justify-between gap-4 py-2.5">
+    <div className="flex flex-wrap items-start justify-between gap-4 py-2.5">
       <dt className="text-sm text-muted">{label}</dt>
       <dd className="break-words text-right text-sm font-medium text-charcoal">{value}</dd>
     </div>
@@ -200,7 +200,7 @@ export function ManagementMembershipDetailPage() {
     (membership.status === 'pending' || membership.status === 'verification') && !pendingPayment;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Membership"
         title={userName || userEmail || 'Member'}
@@ -215,9 +215,9 @@ export function ManagementMembershipDetailPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <section className="surface p-6">
-          <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+        <section className="surface p-4 sm:p-6">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Status
             </h2>
@@ -292,7 +292,7 @@ export function ManagementMembershipDetailPage() {
                 Reissue the membership card? The current serial ({card?.card_serial}) stops being
                 valid immediately.
               </p>
-              <div className="mt-2 flex gap-2">
+              <div className="mt-2 flex flex-wrap gap-2">
                 <Button variant="ghost" onClick={() => setConfirmAction(null)} disabled={busy}>
                   Keep card
                 </Button>
@@ -310,7 +310,7 @@ export function ManagementMembershipDetailPage() {
               <p className="text-danger">
                 Cancel this membership? The member is notified and the card stops being current.
               </p>
-              <div className="mt-2 flex gap-2">
+              <div className="mt-2 flex flex-wrap gap-2">
                 <Button variant="ghost" onClick={() => setConfirmAction(null)} disabled={busy}>
                   Keep membership
                 </Button>
@@ -326,7 +326,7 @@ export function ManagementMembershipDetailPage() {
           ) : null}
         </section>
 
-        <section className="surface p-6">
+        <section className="surface p-4 sm:p-6">
           <h2 className="mb-3 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Membership card
           </h2>
@@ -345,7 +345,7 @@ export function ManagementMembershipDetailPage() {
           )}
         </section>
 
-        <section className="surface p-6 lg:col-span-2">
+        <section className="surface p-4 sm:p-6 lg:col-span-2">
           <h2 className="mb-3 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Payments
           </h2>
@@ -372,13 +372,13 @@ export function ManagementMembershipDetailPage() {
                       {payment.provider ? ` · ${payment.provider}` : ''}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Chip tone={PAYMENT_STATUS_TONES[payment.status]}>
                       {PAYMENT_STATUS_LABELS[payment.status]}
                     </Chip>
                     {payment.status === 'pending' || payment.status === 'processing' ? (
                       confirmAction === payment.id ? (
-                        <span className="flex gap-2">
+                        <span className="flex flex-wrap gap-2">
                           <Button variant="ghost" onClick={() => setConfirmAction(null)}>
                             Back
                           </Button>

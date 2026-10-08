@@ -85,7 +85,7 @@ export function ManagementRequestsPage() {
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Relationships"
         title="Requests"
@@ -94,7 +94,7 @@ export function ManagementRequestsPage() {
 
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {STATUS_FILTERS.map((filter) => (
             <button
@@ -143,7 +143,7 @@ export function ManagementRequestsPage() {
                     <li key={request.id}>
                       <Link
                         to={`/management/requests/${request.id}`}
-                        className="flex items-center justify-between gap-4 py-3.5 hover:bg-stone/40"
+                        className="flex flex-wrap items-center justify-between gap-4 py-3.5 hover:bg-stone/40"
                       >
                         <span className="min-w-0">
                           <span className="block truncate text-sm font-medium text-charcoal">
@@ -154,7 +154,7 @@ export function ManagementRequestsPage() {
                             {requestCategoryLabel(request.type)} · {formatDate(request.submitted_at)}
                           </span>
                         </span>
-                        <span className="flex shrink-0 items-center gap-2">
+                        <span className="flex flex-wrap shrink-0 items-center gap-2">
                           <Chip tone={PRIORITY_TONES[request.priority] ?? 'neutral'}>
                             {PRIORITY_LABELS[request.priority] ?? request.priority}
                           </Chip>

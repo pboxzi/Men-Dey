@@ -213,7 +213,7 @@ export function ManagementCmsPage() {
     'The change was not saved. Editing content requires an administrator or the content.manage permission.';
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Content"
         title="CMS"
@@ -230,7 +230,7 @@ export function ManagementCmsPage() {
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
       {newPageOpen ? (
-        <section className="surface p-6" aria-label="Create a page">
+        <section className="surface p-4 sm:p-6" aria-label="Create a page">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm">
               <span className="mb-1 block text-xs uppercase tracking-wider text-muted">Title</span>
@@ -253,7 +253,7 @@ export function ManagementCmsPage() {
                 onChange={(event) => setPageForm((prev) => ({...prev, slug: event.target.value}))}
               />
             </label>
-            <div className="flex gap-2 sm:col-span-2">
+            <div className="flex flex-wrap gap-2 sm:col-span-2">
               <Button onClick={() => void createPage()} loading={creatingPage}>
                 Create draft page
               </Button>
@@ -265,7 +265,7 @@ export function ManagementCmsPage() {
         </section>
       ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-[18rem_1fr]">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-[18rem_1fr]">
         <div className="surface p-4">
           <h2 className="mb-3 text-xs uppercase tracking-wider text-muted">Pages</h2>
           {data.pages.length === 0 ? (
@@ -288,7 +288,7 @@ export function ManagementCmsPage() {
                     <span className="block truncate text-sm font-medium text-charcoal">
                       {page.title}
                     </span>
-                    <span className="mt-0.5 flex items-center gap-2 text-xs text-muted">
+                    <span className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted">
                       /{page.slug}
                       <Chip tone={page.status === 'published' ? 'success' : 'neutral'}>
                         {page.status}
@@ -303,7 +303,7 @@ export function ManagementCmsPage() {
 
         <div className="space-y-6">
           {!selected ? (
-            <div className="surface p-6">
+            <div className="surface p-4 sm:p-6">
               <EmptyState
                 title="No page selected."
                 description="Choose a page from the list to edit its sections."
@@ -311,7 +311,7 @@ export function ManagementCmsPage() {
             </div>
           ) : (
             <>
-              <section className="surface p-6" aria-label="Page">
+              <section className="surface p-4 sm:p-6" aria-label="Page">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0">
                     <h2 className="truncate text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
@@ -326,7 +326,7 @@ export function ManagementCmsPage() {
                       {selected.status}
                     </Chip>
                     {editTitle === selected.id ? (
-                      <span className="flex gap-2">
+                      <span className="flex flex-wrap gap-2">
                         <input
                           className="field-input w-48"
                           defaultValue={selected.title}
@@ -360,7 +360,7 @@ export function ManagementCmsPage() {
                     )}
                     {selected.status === 'draft' ? (
                       confirmId === selected.id ? (
-                        <span className="flex gap-2">
+                        <span className="flex flex-wrap gap-2">
                           <Button variant="ghost" onClick={() => setConfirmId(null)}>
                             Back
                           </Button>
@@ -385,7 +385,7 @@ export function ManagementCmsPage() {
                         </Button>
                       )
                     ) : confirmId === selected.id ? (
-                      <span className="flex gap-2">
+                      <span className="flex flex-wrap gap-2">
                         <Button variant="ghost" onClick={() => setConfirmId(null)}>
                           Back
                         </Button>
@@ -413,7 +413,7 @@ export function ManagementCmsPage() {
                 </div>
 
                 <div className="border-t border-stone pt-4">
-                  <div className="mb-3 flex items-center justify-between gap-3">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
                     <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-charcoal">
                       Sections
                     </h3>
@@ -462,7 +462,7 @@ export function ManagementCmsPage() {
                           }
                         />
                       </label>
-                      <div className="flex gap-2 sm:col-span-2">
+                      <div className="flex flex-wrap gap-2 sm:col-span-2">
                         <Button loading={creatingSection} onClick={() => void createSection()}>
                           Create section
                         </Button>
@@ -493,7 +493,7 @@ export function ManagementCmsPage() {
                                 order {section.sort_order} · updated {formatDate(section.updated_at)}
                               </p>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
                               <Chip tone={section.is_visible ? 'success' : 'neutral'}>
                                 {section.is_visible ? 'Visible' : 'Hidden'}
                               </Chip>
@@ -595,7 +595,7 @@ export function ManagementCmsPage() {
                                   }
                                 />
                               </label>
-                              <div className="flex gap-2 sm:col-span-3">
+                              <div className="flex flex-wrap gap-2 sm:col-span-3">
                                 <Button
                                   loading={busyId === section.id}
                                   onClick={() => void saveSection(section)}

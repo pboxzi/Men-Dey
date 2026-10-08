@@ -134,7 +134,7 @@ export function ManagementSettingsPage() {
   const paymentSetting = settings.find((row) => row.key === 'payment_settings');
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="System"
         title="Settings"
@@ -158,7 +158,7 @@ export function ManagementSettingsPage() {
       ) : null}
 
       {newOpen ? (
-        <section className="surface p-6" aria-label="Create a setting">
+        <section className="surface p-4 sm:p-6" aria-label="Create a setting">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm">
               <span className="mb-1 block text-xs uppercase tracking-wider text-muted">Key</span>
@@ -169,7 +169,7 @@ export function ManagementSettingsPage() {
                 onChange={(event) => setForm((prev) => ({...prev, key: event.target.value}))}
               />
             </label>
-            <label className="flex items-end gap-2 text-sm text-muted">
+            <label className="flex flex-wrap items-end gap-2 text-sm text-muted">
               <input
                 type="checkbox"
                 checked={form.is_public}
@@ -190,7 +190,7 @@ export function ManagementSettingsPage() {
                 onChange={(event) => setForm((prev) => ({...prev, value: event.target.value}))}
               />
             </label>
-            <div className="flex gap-2 sm:col-span-2">
+            <div className="flex flex-wrap gap-2 sm:col-span-2">
               <Button onClick={() => void createSetting()} loading={creating}>
                 Create setting
               </Button>
@@ -202,8 +202,8 @@ export function ManagementSettingsPage() {
         </section>
       ) : null}
 
-      <section className="surface p-6" aria-label="Payment settings">
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="surface p-4 sm:p-6" aria-label="Payment settings">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Payment provider
           </h2>
@@ -224,8 +224,8 @@ export function ManagementSettingsPage() {
         )}
       </section>
 
-      <section className="surface p-6" aria-label="All settings">
-        <div className="mb-4 flex items-center justify-between gap-3">
+      <section className="surface p-4 sm:p-6" aria-label="All settings">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             All settings
           </h2>
@@ -246,7 +246,7 @@ export function ManagementSettingsPage() {
                     <p className="font-mono text-sm text-charcoal">{setting.key}</p>
                     <p className="text-xs text-muted">updated {formatDate(setting.updated_at)}</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Chip tone={setting.is_public ? 'info' : 'neutral'}>
                       {setting.is_public ? 'Public' : 'Internal'}
                     </Chip>
@@ -286,7 +286,7 @@ export function ManagementSettingsPage() {
                         onChange={(event) => setEditValue(event.target.value)}
                       />
                     </label>
-                    <label className="flex items-center gap-2 text-sm text-muted">
+                    <label className="flex flex-wrap items-center gap-2 text-sm text-muted">
                       <input
                         type="checkbox"
                         checked={editPublic}
@@ -295,7 +295,7 @@ export function ManagementSettingsPage() {
                       />
                       Public value
                     </label>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       {confirmId === setting.id ? (
                         <>
                           <Button variant="ghost" onClick={() => setConfirmId(null)}>

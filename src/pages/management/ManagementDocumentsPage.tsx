@@ -320,7 +320,7 @@ export function ManagementDocumentsPage({
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Content"
         title={presetCategory === 'agreement' ? 'Agreements' : 'Documents'}
@@ -341,7 +341,7 @@ export function ManagementDocumentsPage({
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
       {uploadOpen ? (
-        <section className="surface p-6" aria-label="Upload a document">
+        <section className="surface p-4 sm:p-6" aria-label="Upload a document">
           <h2 className="mb-4 text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Upload a document
           </h2>
@@ -425,7 +425,7 @@ export function ManagementDocumentsPage({
                 onChange={(event) => setFile(event.target.files?.[0] ?? null)}
               />
             </label>
-            <div className="flex gap-2 sm:col-span-2">
+            <div className="flex flex-wrap gap-2 sm:col-span-2">
               <Button onClick={() => void upload()} loading={uploading}>
                 <Plus className="size-4" aria-hidden /> Upload document
               </Button>
@@ -437,7 +437,7 @@ export function ManagementDocumentsPage({
         </section>
       ) : null}
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {!presetCategory
             ? (['all', ...CATEGORIES] as const).map((filter) => (
@@ -467,7 +467,7 @@ export function ManagementDocumentsPage({
               </option>
             ))}
           </select>
-          <label className="flex items-center gap-2 text-sm text-muted">
+          <label className="flex flex-wrap items-center gap-2 text-sm text-muted">
             <input
               type="checkbox"
               checked={showArchived}
@@ -546,7 +546,7 @@ export function ManagementDocumentsPage({
                           <ArchiveRestore className="size-4" aria-hidden /> Restore
                         </Button>
                       ) : confirmId === document.id ? (
-                        <span className="flex gap-2">
+                        <span className="flex flex-wrap gap-2">
                           <Button variant="ghost" onClick={() => setConfirmId(null)}>
                             Keep
                           </Button>
@@ -606,7 +606,7 @@ export function ManagementDocumentsPage({
                           ))}
                         </select>
                       </label>
-                      <div className="flex gap-2 sm:col-span-2">
+                      <div className="flex flex-wrap gap-2 sm:col-span-2">
                         <Button
                           variant="secondary"
                           loading={busyId === document.id}

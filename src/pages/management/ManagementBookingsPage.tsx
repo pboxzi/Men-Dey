@@ -170,7 +170,7 @@ export function ManagementBookingsPage() {
         <p className="text-danger">
           Cancel “{row.title}”? The member is notified of the cancellation.
         </p>
-        <div className="mt-2 flex gap-2">
+        <div className="mt-2 flex flex-wrap gap-2">
           <Button variant="ghost" disabled={busy} onClick={() => setConfirmId(null)}>
             Keep booking
           </Button>
@@ -186,7 +186,7 @@ export function ManagementBookingsPage() {
     ) : null;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Calendar"
         title="Bookings"
@@ -216,7 +216,7 @@ export function ManagementBookingsPage() {
         ))}
       </div>
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         {rows.length === 0 ? (
           <EmptyState
             title="No bookings here."
@@ -274,7 +274,7 @@ export function ManagementBookingsPage() {
                   key={row.id}
                   className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                       {row.title}
                     </span>

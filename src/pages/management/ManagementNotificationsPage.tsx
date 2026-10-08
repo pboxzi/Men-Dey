@@ -174,7 +174,7 @@ export function ManagementNotificationsPage() {
   const visible = filter === 'unread' ? rows.filter((row) => !row.read_at) : rows;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Operations"
         title="Notifications"
@@ -192,7 +192,7 @@ export function ManagementNotificationsPage() {
       {actionError ? <Alert tone="error">{actionError}</Alert> : null}
       {notice ? <Alert tone="success">{notice}</Alert> : null}
 
-      <section className="surface p-6">
+      <section className="surface p-4 sm:p-6">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {(['all', 'unread'] as const).map((value) => (
             <button
@@ -219,7 +219,7 @@ export function ManagementNotificationsPage() {
             {visible.map((notification) => {
               const inner = (
                 <>
-                  <span className="flex items-center justify-between gap-3">
+                  <span className="flex flex-wrap items-center justify-between gap-3">
                     <span className="truncate text-sm font-medium text-charcoal">
                       {notification.title}
                     </span>
@@ -257,8 +257,8 @@ export function ManagementNotificationsPage() {
         )}
       </section>
 
-      <section className="surface p-6">
-        <div className="mb-4 flex items-center gap-2">
+      <section className="surface p-4 sm:p-6">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           <Megaphone className="size-4 text-gold-deep" aria-hidden />
           <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
             Send an announcement

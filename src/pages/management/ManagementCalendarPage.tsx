@@ -324,14 +324,14 @@ export function ManagementCalendarPage() {
 
   const entryRow = (entry: CalendarEntry) => (
     <li key={entry.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-      <div className="flex min-w-0 items-baseline gap-3">
+      <div className="flex flex-wrap min-w-0 items-baseline gap-3">
         <span className="text-sm tabular-nums text-muted">{entry.iso.slice(11, 16)}</span>
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-charcoal">{entry.title}</p>
           <p className="truncate text-xs text-muted">{entry.meta}</p>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Chip tone={entry.tone}>{entry.label}</Chip>
         {entry.href ? (
           <Link
@@ -357,7 +357,7 @@ export function ManagementCalendarPage() {
         <ul className="space-y-1">
           {entries.map((entry) => (
             <li key={entry.id}>
-              <span className="flex items-baseline gap-1.5">
+              <span className="flex flex-wrap items-baseline gap-1.5">
                 <span className="text-[11px] tabular-nums text-muted">{entry.iso.slice(11, 16)}</span>
                 <span
                   className={`truncate text-[11px] ${
@@ -385,7 +385,7 @@ export function ManagementCalendarPage() {
   const upcomingBlocks = blocks.filter((block) => block.ends_at >= nowIso);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <PageHeader
         eyebrow="Calendar"
         title="Availability & schedule"
@@ -469,7 +469,7 @@ export function ManagementCalendarPage() {
                     </p>
                   </div>
                   {confirmId === `block-${block.id}` ? (
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <Button variant="ghost" disabled={busy} onClick={() => setConfirmId(null)}>
                         Keep block
                       </Button>
@@ -559,7 +559,7 @@ export function ManagementCalendarPage() {
                       );
                       if (!schedule || schedule.status === 'cancelled') return null;
                       return confirmId === `schedule-${schedule.id}` ? (
-                        <div key={schedule.id} className="flex gap-2">
+                        <div key={schedule.id} className="flex flex-wrap gap-2">
                           <Button variant="ghost" disabled={busy} onClick={() => setConfirmId(null)}>
                             Keep schedule
                           </Button>

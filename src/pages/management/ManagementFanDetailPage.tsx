@@ -185,7 +185,7 @@ export function ManagementFanDetailPage() {
           title="No account here."
           description="This account may have been removed, or the link is out of date."
         />
-        <Link to="/management/fans" className="text-sm text-gold-deep hover:underline">
+        <Link to="/management/fans" className="text-sm text-gold-deep hover:underline py-3 sm:py-0">
           Back to fans
         </Link>
       </div>
@@ -226,7 +226,7 @@ export function ManagementFanDetailPage() {
           {PROFILE_STATUS_LABELS[profile.status]}
         </Chip>
         <Chip tone="neutral">{profile.role}</Chip>
-        <Link to="/management/applicants" className="text-xs text-gold-deep hover:underline">
+        <Link to="/management/applicants" className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
           Application history
         </Link>
       </div>
@@ -361,7 +361,7 @@ export function ManagementFanDetailPage() {
             <h2 className="text-base font-semibold uppercase tracking-[0.14em] text-charcoal">
               Documents
             </h2>
-            <Link to="/management/documents" className="text-xs text-gold-deep hover:underline">
+            <Link to="/management/documents" className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
               Document centre
             </Link>
           </div>
@@ -370,7 +370,7 @@ export function ManagementFanDetailPage() {
           ) : (
             <ul className="divide-y divide-stone">
               {data.documents.map((document) => (
-                <li key={document.id} className="flex flex-wrap items-center justify-between gap-3 py-2.5">
+                <li key={document.id} className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-2.5">
                   <span className="min-w-0">
                     <span className="block truncate text-sm text-charcoal">{document.title}</span>
                     <span className="block text-xs text-muted">

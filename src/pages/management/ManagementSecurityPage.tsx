@@ -185,7 +185,7 @@ export function ManagementSecurityPage() {
           <ul className="divide-y divide-stone">
             {visible.map((account) => (
               <li key={account.id} className="py-3">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-charcoal">
                       {account.full_name || account.email}
@@ -263,7 +263,7 @@ export function ManagementSecurityPage() {
                     <div className="mt-2">
                       <button
                         type="button"
-                        className="text-xs text-gold-deep hover:underline"
+                        className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0"
                         onClick={() => setConfirmId(`role-${account.id}`)}
                       >
                         Change platform role

@@ -29,6 +29,9 @@
     font-family: var(--font-sans);
     font-size: 0.9375rem;
     line-height: 1.6;
+    /* Long emails, references and IDs wrap instead of pushing a phone-sized
+       column past the right edge of the screen. */
+    overflow-wrap: break-word;
   }
 
   button,

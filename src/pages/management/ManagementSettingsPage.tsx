@@ -169,7 +169,7 @@ export function ManagementSettingsPage() {
                 onChange={(event) => setForm((prev) => ({...prev, key: event.target.value}))}
               />
             </label>
-            <label className="flex flex-wrap items-end gap-2 text-sm text-muted">
+            <label className="flex flex-wrap items-end gap-2 text-sm text-muted min-h-11 sm:min-h-0">
               <input
                 type="checkbox"
                 checked={form.is_public}
@@ -241,7 +241,7 @@ export function ManagementSettingsPage() {
           <ul className="divide-y divide-stone">
             {settings.map((setting) => (
               <li key={setting.id} className="py-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                   <div className="min-w-0">
                     <p className="font-mono text-sm text-charcoal">{setting.key}</p>
                     <p className="text-xs text-muted">updated {formatDate(setting.updated_at)}</p>
@@ -286,7 +286,7 @@ export function ManagementSettingsPage() {
                         onChange={(event) => setEditValue(event.target.value)}
                       />
                     </label>
-                    <label className="flex flex-wrap items-center gap-2 text-sm text-muted">
+                    <label className="flex flex-wrap items-center gap-2 text-sm text-muted min-h-11 sm:min-h-0">
                       <input
                         type="checkbox"
                         checked={editPublic}

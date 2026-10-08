@@ -219,7 +219,7 @@ export function ManagementNotificationsPage() {
             {visible.map((notification) => {
               const inner = (
                 <>
-                  <span className="flex flex-wrap items-center justify-between gap-3">
+                  <span className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <span className="truncate text-sm font-medium text-charcoal">
                       {notification.title}
                     </span>
@@ -317,7 +317,7 @@ export function ManagementNotificationsPage() {
 
       <p className="text-xs text-muted">
         Notifications for other parts of your account live in{' '}
-        <Link to="/dashboard/notifications" className="text-gold-deep hover:underline">
+        <Link to="/dashboard/notifications" className="text-gold-deep hover:underline py-3 sm:py-0">
           your dashboard
         </Link>
         .

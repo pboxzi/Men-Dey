@@ -428,7 +428,7 @@ export function ManagementMembershipsPage() {
             <div className="hidden md:block">
               <ul className="divide-y divide-stone">
                 {tiers.map((tier) => (
-                  <li key={tier.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                  <li key={tier.id} className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-3">
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-charcoal">
                         {tier.name} <span className="text-xs text-muted">({tier.key})</span>
@@ -461,7 +461,7 @@ export function ManagementMembershipsPage() {
                   key={tier.id}
                   className="bg-white border border-[#EAE4DA] rounded-lg p-4 space-y-1.5"
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
                     <span className="min-w-0 break-words text-sm font-medium text-charcoal">
                       {tier.name} <span className="text-xs text-muted">({tier.key})</span>
                     </span>

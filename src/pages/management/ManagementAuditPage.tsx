@@ -184,7 +184,7 @@ export function ManagementAuditPage() {
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="text-xs text-muted">{formatDateTime(row.created_at)}</span>
                           {link ? (
-                            <Link to={link.to} className="text-xs text-gold-deep hover:underline">
+                            <Link to={link.to} className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
                               {link.text}
                             </Link>
                           ) : null}

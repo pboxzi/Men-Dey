@@ -185,7 +185,7 @@ export function ManagementApplicantDetailPage() {
           title="No application here."
           description="This application may have been removed, or the link is out of date."
         />
-        <Link to="/management/applicants" className="text-sm text-gold-deep hover:underline">
+        <Link to="/management/applicants" className="text-sm text-gold-deep hover:underline py-3 sm:py-0">
           Back to applicants
         </Link>
       </div>
@@ -235,7 +235,7 @@ export function ManagementApplicantDetailPage() {
         <Chip tone={APPLICANT_STATUS_TONES[applicant.status]}>
           {APPLICANT_STATUS_LABELS[applicant.status]}
         </Chip>
-        <Link to={`/management/fans/${applicant.user_id}`} className="text-xs text-gold-deep hover:underline">
+        <Link to={`/management/fans/${applicant.user_id}`} className="text-xs text-gold-deep hover:underline py-3.5 sm:py-0">
           View fan account
         </Link>
       </div>

@@ -336,7 +336,7 @@ export function ManagementCalendarPage() {
         {entry.href ? (
           <Link
             to={entry.href}
-            className="text-xs font-medium text-gold-deep underline underline-offset-2"
+            className="text-xs font-medium text-gold-deep underline underline-offset-2 py-3.5 sm:py-0"
           >
             Open
           </Link>
@@ -460,7 +460,7 @@ export function ManagementCalendarPage() {
           ) : (
             <ul className="divide-y divide-stone">
               {upcomingBlocks.map((block) => (
-                <li key={block.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                <li key={block.id} className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-3">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-charcoal">{block.title}</p>
                     <p className="text-xs text-muted">

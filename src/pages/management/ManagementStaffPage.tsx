@@ -308,7 +308,7 @@ export function ManagementStaffPage() {
               const person = first(row.user);
               const role = first(row.staff_role);
               return (
-                <li key={row.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                <li key={row.id} className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-charcoal">
                       {person?.full_name || person?.email || row.user_id.slice(0, 8)}
@@ -438,7 +438,7 @@ export function ManagementStaffPage() {
             {candidates.map((candidate) => (
               <li
                 key={candidate.id}
-                className="flex flex-wrap items-center justify-between gap-3 py-3"
+                className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-3"
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-charcoal">

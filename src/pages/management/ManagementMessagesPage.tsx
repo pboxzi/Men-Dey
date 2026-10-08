@@ -499,7 +499,7 @@ export function ManagementMessagesPage() {
                     <Paperclip className="size-4" aria-hidden />
                   )}
                 </button>
-                <label className="flex flex-wrap items-center gap-2 text-xs text-muted">
+                <label className="flex flex-wrap items-center gap-2 text-xs text-muted min-h-11 sm:min-h-0">
                   <input
                     type="checkbox"
                     checked={internal}

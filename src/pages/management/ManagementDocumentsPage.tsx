@@ -467,7 +467,7 @@ export function ManagementDocumentsPage({
               </option>
             ))}
           </select>
-          <label className="flex flex-wrap items-center gap-2 text-sm text-muted">
+          <label className="flex flex-wrap items-center gap-2 text-sm text-muted min-h-11 sm:min-h-0">
             <input
               type="checkbox"
               checked={showArchived}
@@ -494,7 +494,7 @@ export function ManagementDocumentsPage({
               const linked = linkedLabel(document);
               return (
                 <li key={document.id} className="py-3">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-charcoal">
                         {document.title}
@@ -513,7 +513,7 @@ export function ManagementDocumentsPage({
                       {linked ? (
                         <Link
                           to={linked.to}
-                          className="mt-0.5 inline-flex items-center gap-1 text-xs text-gold-deep hover:underline"
+                          className="mt-0.5 inline-flex items-center gap-1 text-xs text-gold-deep hover:underline py-3.5 sm:py-0"
                         >
                           <Link2 className="size-3" aria-hidden /> {linked.text}
                         </Link>

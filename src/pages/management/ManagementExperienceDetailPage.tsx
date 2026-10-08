@@ -554,7 +554,7 @@ export function ManagementExperienceDetailPage() {
                   }
                 />
               </label>
-              <label className="flex flex-wrap items-center gap-2 text-sm text-charcoal">
+              <label className="flex flex-wrap items-center gap-2 text-sm text-charcoal min-h-11 sm:min-h-0">
                 <input
                   type="checkbox"
                   checked={reqForm.is_required}
@@ -786,7 +786,7 @@ export function ManagementExperienceDetailPage() {
           ) : (
             <ul className="divide-y divide-stone">
               {payments.map((payment) => (
-                <li key={payment.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                <li key={payment.id} className="flex flex-wrap flex-col items-start gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3 py-3">
                   <div>
                     <p className="text-sm font-medium text-charcoal">
                       {formatPrice(payment.amount_cents, payment.currency)}

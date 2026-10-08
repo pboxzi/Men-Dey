@@ -408,7 +408,7 @@ export function ManagementTasksPage() {
                     <div className="flex flex-wrap min-w-0 items-start gap-2">
                       <button
                         type="button"
-                        className="flex min-h-11 min-w-11 items-center justify-center text-muted hover:text-gold-deep sm:min-h-0 sm:min-w-0"
+                        className="flex min-h-11 min-w-11 items-center justify-center text-muted hover:text-gold-deep sm:mt-0.5 sm:min-h-0 sm:min-w-0"
                         aria-expanded={expanded}
                         onClick={() => {
                           setExpandedId(expanded ? null : task.id);
